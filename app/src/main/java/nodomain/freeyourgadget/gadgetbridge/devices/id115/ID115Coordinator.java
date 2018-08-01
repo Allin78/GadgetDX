@@ -1,26 +1,17 @@
-/*  Copyright (C) 2016-2018 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti
+package nodomain.freeyourgadget.gadgetbridge.devices.id115;
 
-    This file is part of Gadgetbridge.
-
-    Gadgetbridge is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Gadgetbridge is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.liveview;
-
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.bluetooth.le.ScanFilter;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.os.ParcelUuid;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import java.util.Collection;
+import java.util.Collections;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
@@ -33,44 +24,62 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
-public class LiveviewCoordinator extends AbstractDeviceCoordinator {
+public class ID115Coordinator extends AbstractDeviceCoordinator {
+    @NonNull
+    @Override
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public Collection<? extends ScanFilter> createBLEScanFilters() {
+        ParcelUuid service = new ParcelUuid(ID115Constants.UUID_SERVICE_ID115);
+        ScanFilter filter = new ScanFilter.Builder().setServiceUuid(service).build();
+        return Collections.singletonList(filter);
+    }
+
+    @Override
+    protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
+    }
+
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        String name = candidate.getDevice().getName();
-        if (name != null && name.startsWith("LiveView")) {
-            return DeviceType.LIVEVIEW;
+        if (candidate.supportsService(ID115Constants.UUID_SERVICE_ID115)) {
+            return DeviceType.ID115;
         }
         return DeviceType.UNKNOWN;
     }
 
     @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.LIVEVIEW;
+    public int getBondingStyle(GBDevice deviceCandidate){
+        return BONDING_STYLE_NONE;
     }
 
+    @Override
+    public DeviceType getDeviceType() {
+        return DeviceType.ID115;
+    }
+
+    @Nullable
     @Override
     public Class<? extends Activity> getPairingActivity() {
         return null;
     }
 
     @Override
-    public InstallHandler findInstallHandler(Uri uri, Context context) {
-        return null;
-    }
-
-    @Override
     public boolean supportsActivityDataFetching() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supportsActivityTracking() {
-        return false;
+        return true;
     }
 
     @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
+        return new ID115SampleProvider(device, session);
+    }
+
+    @Override
+    public InstallHandler findInstallHandler(Uri uri, Context context) {
         return null;
     }
 
@@ -96,7 +105,7 @@ public class LiveviewCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public String getManufacturer() {
-        return "Sony Ericsson";
+        return "VeryFit";
     }
 
     @Override
@@ -126,11 +135,6 @@ public class LiveviewCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsFindDevice() {
-        return true;
-    }
-
-    @Override
-    protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
-        // nothing to delete, yet
+        return false;
     }
 }
