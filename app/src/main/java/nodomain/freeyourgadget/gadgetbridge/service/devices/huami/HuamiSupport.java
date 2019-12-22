@@ -1486,21 +1486,34 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             return;
         }
 
-        int base = 0;
+        int alarm_tag;
+        int daysMask;
+
         if (alarm.getEnabled()) {
-            base = 128;
+            //add alarm on the watch
+            alarm_tag = 128 + alarm.getPosition() ; //add 128 to tell the watch to create the alarm if it doesn't exist yet
+
+            daysMask = alarm.getRepetition();
+            if (!alarm.isRepetitive()) {
+                daysMask = 128;
+            }
         }
-        int daysMask = alarm.getRepetition();
-        if (!alarm.isRepetitive()) {
-            daysMask = 128;
+        else
+        {
+            //delete the alarm on the watch.
+            //Miband4 displays the alarms sorted by their time, not their position. So it's annoying to display many default alarms set to 6h30 (default value for new alarms in GadgetBridge) before the important alarms on such a small screen.
+            alarm_tag = alarm.getPosition();
+            daysMask = 0x0;
         }
+
         byte[] alarmMessage = new byte[] {
                 (byte) 0x2, // TODO what is this?
-                (byte) (base + alarm.getPosition()), // 128 is the base, alarm slot is added
+                (byte) alarm_tag,
                 (byte) calendar.get(Calendar.HOUR_OF_DAY),
                 (byte) calendar.get(Calendar.MINUTE),
                 (byte) daysMask,
         };
+
         builder.write(characteristic, alarmMessage);
         // TODO: react on 0x10, 0x02, 0x01 on notification (success)
     }
