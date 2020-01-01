@@ -51,6 +51,14 @@
             android:defaultValue="@string/pref_button_action_disabled_value"
             android:title="@string/mi2_prefs_button_triple_press_action_selection_title" />
 
+        <ListPreference
+            android:dependency="button_action_enable"
+            android:entries="@array/button_action_options"
+            android:entryValues="@array/button_action_values"
+            android:key="button_long_press_action_selection"
+            android:defaultValue="@string/pref_button_action_disabled_value"
+            android:summary="%s"
+            android:title="@string/mi2_prefs_button_long_press_action_selection_title" />
         <PreferenceCategory android:title="@string/mi2_prefs_button_variable_actions">
 
             <EditTextPreference
