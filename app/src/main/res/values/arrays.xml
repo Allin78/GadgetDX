@@ -614,11 +614,11 @@
     </string-array>
     
     <string name="pref_button_action_disabled">Disabled</string>
-    <string name="pref_media_play">Play</string>
-    <string name="pref_media_pause">Pause</string>
+    <string name="pref_media_play">Media Play</string>
+    <string name="pref_media_pause">Media Pause</string>
     <string name="pref_media_playpause">Toggle playback</string>
-    <string name="pref_media_next">Next</string>
-    <string name="pref_media_previous">Previous</string>
+    <string name="pref_media_next">Next Track</string>
+    <string name="pref_media_previous">Previous Track</string>
     <string name="pref_media_volumeup">Volume Up</string>
     <string name="pref_media_volumedown">Volume Down</string>
 

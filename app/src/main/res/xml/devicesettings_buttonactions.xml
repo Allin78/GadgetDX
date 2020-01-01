@@ -51,18 +51,19 @@
             android:defaultValue="@string/pref_button_action_disabled_value"
             android:title="@string/mi2_prefs_button_tripple_press_action_selection_title" />
 
+        <ListPreference
+            android:dependency="button_action_enable"
+            android:entries="@array/button_action_options"
+            android:entryValues="@array/button_action_values"
+            android:key="button_long_press_action_selection"
+            android:defaultValue="@string/pref_button_action_disabled_value"
+            android:summary="%s"
+            android:title="@string/mi2_prefs_button_long_press_action_selection_title" />
         <PreferenceCategory android:title="@string/mi2_prefs_button_variable_actions">
-
-            <SwitchPreference
-                android:defaultValue="true"
-                android:dependency="button_action_enable"
-                android:key="button_variable_actions_enable"
-                android:summary="@string/mi2_prefs_button_variable_actions_summary"
-                android:title="@string/mi2_prefs_button_variable_actions" />
 
             <EditTextPreference
                 android:defaultValue="6"
-                android:dependency="button_variable_actions_enable"
+                android:dependency="button_action_enable"
                 android:inputType="number"
                 android:key="button_action_press_count"
                 android:summary="@string/mi2_prefs_button_press_count_summary"
@@ -70,14 +71,14 @@
 
             <EditTextPreference
                 android:defaultValue="@string/mi2_prefs_button_press_broadcast_default_value"
-                android:dependency="button_variable_actions_enable"
+                android:dependency="button_action_enable"
                 android:key="button_action_broadcast"
                 android:summary="@string/mi2_prefs_button_press_broadcast_summary"
                 android:title="@string/mi2_prefs_button_press_broadcast" />
 
             <EditTextPreference
                 android:defaultValue="2000"
-                android:dependency="button_variable_actions_enable"
+                android:dependency="button_action_enable"
                 android:inputType="number"
                 android:key="button_action_press_max_interval"
                 android:summary="@string/mi2_prefs_button_press_count_max_delay_summary"
@@ -85,8 +86,7 @@
 
             <EditTextPreference
                 android:defaultValue="0"
-                android:dependency="button_variable_actions_enable"
-
+                android:dependency="button_action_enable"
                 android:inputType="number"
                 android:key="button_action_broadcast_delay"
                 android:summary="@string/mi2_prefs_button_press_count_match_delay_summary"

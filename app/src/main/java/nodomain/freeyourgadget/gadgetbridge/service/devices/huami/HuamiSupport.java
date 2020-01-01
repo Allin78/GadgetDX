@@ -152,6 +152,11 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
     private static long currentButtonPressTime = 0;
     private static long currentButtonTimerActivationTime = 0;
 
+    //for the simpler version 1,2,3 button presses
+    private static int currentButtonPressCountSimple = 0;
+    private static long currentButtonPressTimeSimple = 0;
+    private Timer buttonActionTimerSimple = null;
+
     private static final Logger LOG = LoggerFactory.getLogger(HuamiSupport.class);
     private final DeviceInfoProfile<HuamiSupport> deviceInfoProfile;
     private final IntentListener mListener = new IntentListener() {
@@ -1124,6 +1129,40 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         currentButtonPressTime = System.currentTimeMillis();
     }
 
+    private void handleMediaButton(String MediaAction) {
+        if (MediaAction =="UNKNOWN"){
+            return;
+        }
+        GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
+        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(MediaAction);
+        evaluateGBDeviceEvent(deviceEventMusicControl);
+
+    }
+    private void runButtonActionSimple() {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+
+        switch (currentButtonPressCountSimple){
+            case 1:
+                handleMediaButton(prefs.getString("button_single_press_action_selection","UNKNOWN"));
+                break;
+            case 2:
+                handleMediaButton(prefs.getString("button_double_press_action_selection","UNKNOWN"));
+                break;
+            case 3:
+                handleMediaButton(prefs.getString("button_tripple_press_action_selection","UNKNOWN"));
+                break;
+            default:
+                break;
+        }
+
+        if (prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_VIBRATE, false)) {
+            vibrateOnce();
+        }
+
+        currentButtonPressCountSimple = 0;
+        currentButtonPressTimeSimple = System.currentTimeMillis();
+    }
+
     private void handleDeviceEvent(byte[] value) {
         if (value == null || value.length == 0) {
             return;
@@ -1144,9 +1183,11 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             case HuamiDeviceEvent.BUTTON_PRESSED:
                 LOG.info("button pressed");
                 handleButtonEvent();
+                handleSimpleButtonEvent();
                 break;
             case HuamiDeviceEvent.BUTTON_PRESSED_LONG:
                 LOG.info("button long-pressed ");
+                handleLongButtonEvent();
                 break;
             case HuamiDeviceEvent.START_NONWEAR:
                 LOG.info("non-wear start detected");
@@ -1257,6 +1298,16 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
+    private void handleLongButtonEvent(){
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+
+        handleMediaButton(prefs.getString("button_long_press_action_selection","UNKNOWN"));
+
+        if (prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_VIBRATE, false)) {
+            vibrateOnce();
+        }
+    }
+
     private void handleButtonEvent() {
 
         // If disabled we return from function immediately
@@ -1303,6 +1354,41 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             }
         }
     }
+
+
+    private void handleSimpleButtonEvent() {
+
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+        if (!prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_ENABLE, false)) {
+            return;
+        }
+        int buttonPressMaxDelay = prefs.getInt(HuamiConst.PREF_BUTTON_ACTION_PRESS_MAX_INTERVAL, 2000);
+        long timeSinceLastPress = System.currentTimeMillis() - currentButtonPressTimeSimple;
+
+        if ((currentButtonPressTimeSimple == 0) || (timeSinceLastPress < buttonPressMaxDelay)) {
+            currentButtonPressCountSimple++;
+        }
+        else {
+            currentButtonPressCountSimple = 1;
+        }
+        currentButtonPressTimeSimple = System.currentTimeMillis();
+
+        if (buttonActionTimerSimple != null){
+            buttonActionTimerSimple.cancel();
+        }
+
+        buttonActionTimerSimple = new Timer("Huami Button Action Timer Simple");
+
+        buttonActionTimerSimple.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runButtonActionSimple();
+                buttonActionTimerSimple.cancel();
+            }
+        }, buttonPressMaxDelay, buttonPressMaxDelay);
+
+    }
+
 
     @Override
     public boolean onCharacteristicChanged(BluetoothGatt gatt,
