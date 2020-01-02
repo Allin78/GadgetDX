@@ -775,7 +775,7 @@
 
     <string name="mi2_prefs_button_single_press_action_selection_title">Single press button action</string>
     <string name="mi2_prefs_button_double_press_action_selection_title">Double press button action</string>
-    <string name="mi2_prefs_button_tripple_press_action_selection_title">Tripple press button action</string>
+    <string name="mi2_prefs_button_triple_press_action_selection_title">Triple press button action</string>
     <string name="mi2_prefs_button_variable_actions">Detailed button press settings</string>
     <string name="mi2_prefs_button_long_press_action_selection_title">Long press button action</string>
 

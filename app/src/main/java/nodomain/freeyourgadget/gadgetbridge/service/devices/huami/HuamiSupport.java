@@ -1130,26 +1130,26 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void handleMediaButton(String MediaAction) {
-        if (MediaAction =="UNKNOWN"){
+        if (MediaAction == "UNKNOWN") {
             return;
         }
         GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
         deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(MediaAction);
         evaluateGBDeviceEvent(deviceEventMusicControl);
-
     }
+
     private void runButtonActionSimple() {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
 
-        switch (currentButtonPressCountSimple){
+        switch (currentButtonPressCountSimple) {
             case 1:
-                handleMediaButton(prefs.getString("button_single_press_action_selection","UNKNOWN"));
+                handleMediaButton(prefs.getString("button_single_press_action_selection", "UNKNOWN"));
                 break;
             case 2:
-                handleMediaButton(prefs.getString("button_double_press_action_selection","UNKNOWN"));
+                handleMediaButton(prefs.getString("button_double_press_action_selection", "UNKNOWN"));
                 break;
             case 3:
-                handleMediaButton(prefs.getString("button_tripple_press_action_selection","UNKNOWN"));
+                handleMediaButton(prefs.getString("button_triple_press_action_selection", "UNKNOWN"));
                 break;
             default:
                 break;
@@ -1362,6 +1362,13 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         if (!prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_ENABLE, false)) {
             return;
         }
+        if (
+                (prefs.getString("button_single_press_action_selection", "UNKNOWN") == "UNKNOWN") &&
+                        (prefs.getString("button_double_press_action_selection", "UNKNOWN") == "UNKNOWN") &&
+                        (prefs.getString("button_triple_press_action_selection", "UNKNOWN") == "UNKNOWN")) {
+            return;
+        }
+
         int buttonPressMaxDelay = prefs.getInt(HuamiConst.PREF_BUTTON_ACTION_PRESS_MAX_INTERVAL, 2000);
         long timeSinceLastPress = System.currentTimeMillis() - currentButtonPressTimeSimple;
 
