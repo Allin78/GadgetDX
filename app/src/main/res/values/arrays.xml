@@ -611,6 +611,8 @@
         <item>@string/pref_media_previous</item>
         <item>@string/pref_media_volumeup</item>
         <item>@string/pref_media_volumedown</item>
+        <item>@string/pref_media_forward</item>
+        <item>@string/pref_media_rewind</item>
     </string-array>
     
     <string name="pref_button_action_disabled">Disabled</string>
@@ -621,6 +623,8 @@
     <string name="pref_media_previous">Previous Track</string>
     <string name="pref_media_volumeup">Volume Up</string>
     <string name="pref_media_volumedown">Volume Down</string>
+    <string name="pref_media_forward">Skip forward</string>
+    <string name="pref_media_rewind">Skip back</string>
 
     <string-array name="button_action_values">
         <item>@string/pref_button_action_disabled_value</item>
@@ -631,6 +635,9 @@
         <item>@string/pref_media_previous_value</item>
         <item>@string/pref_media_volumeup_value</item>
         <item>@string/pref_media_volumedown_value</item>
+        <item>@string/pref_media_forward_value</item>
+        <item>@string/pref_media_rewind_value</item>
+
     </string-array>
 
     <string name="pref_button_action_disabled_value" translatable="false">UNKNOWN</string>
@@ -641,5 +648,7 @@
     <string name="pref_media_previous_value" translatable="false">PREVIOUS</string>
     <string name="pref_media_volumeup_value" translatable="false">VOLUMEUP</string>
     <string name="pref_media_volumedown_value" translatable="false">VOLUMEDOWN</string>
+    <string name="pref_media_forward_value" translatable="false">FORWARD</string>
+    <string name="pref_media_rewind_value" translatable="false">REWIND</string>
 
 </resources>
