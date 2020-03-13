@@ -429,15 +429,16 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     public boolean playRawNotification(NotificationSpec notificationSpec) {
         String senderOrTitle = StringUtils.getFirstOf(notificationSpec.sender, notificationSpec.title);
+        String notificationBody = notificationSpec.body.substring(0, Math.min(400, notificationSpec.body.length()));
 
         try {
             for (NotificationHRConfiguration configuration : this.notificationConfigurations){
                 if(configuration.getPackageName().equals(notificationSpec.sourceAppId)){
-                    queueWrite(new PlayTextNotificationRequest(notificationSpec.sourceAppId, senderOrTitle, notificationSpec.body, this));
+                    queueWrite(new PlayTextNotificationRequest(notificationSpec.sourceAppId, senderOrTitle, notificationBody, this));
                     return true;
                 }
             }
-            queueWrite(new PlayTextNotificationRequest("generic", senderOrTitle, notificationSpec.body, this));
+            queueWrite(new PlayTextNotificationRequest("generic", senderOrTitle, notificationBody, this));
         }catch (Exception e){
             e.printStackTrace();
         }
