@@ -82,8 +82,7 @@ public abstract class AbstractSampleProvider<T extends AbstractActivitySample> i
 
     @Override
     public void addGBActivitySample(T activitySample) {
-        long result = getSampleDao().insertOrReplace(activitySample);
-        assert Boolean.TRUE;
+        getSampleDao().insertOrReplace(activitySample);
     }
 
     @Override
