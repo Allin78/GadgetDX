@@ -19,6 +19,7 @@ import de.greenrobot.daogenerator.DaoGenerator;
 import de.greenrobot.daogenerator.Entity;
 import de.greenrobot.daogenerator.Index;
 import de.greenrobot.daogenerator.Property;
+import de.greenrobot.daogenerator.PropertyType;
 import de.greenrobot.daogenerator.Schema;
 
 /**
@@ -43,7 +44,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        Schema schema = new Schema(24, MAIN_PACKAGE + ".entities");
+        Schema schema = new Schema(25, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -71,6 +72,7 @@ public class GBDaoGenerator {
         addZeTimeActivitySample(schema, user, device);
         addID115ActivitySample(schema, user, device);
         addJYouActivitySample(schema, user, device);
+        addHybridHRActivitySample(schema, user, device);
         addCalendarSyncState(schema, device);
         addAlarms(schema, user, device);
 
@@ -337,6 +339,21 @@ public class GBDaoGenerator {
         activitySample.addIntProperty("caloriesBurnt");
         activitySample.addIntProperty("distanceMeters");
         activitySample.addIntProperty("activeTimeMinutes");
+        addHeartRateProperties(activitySample);
+        return activitySample;
+    }
+
+    private static Entity addHybridHRActivitySample(Schema schema, Entity user, Entity device) {
+        Entity activitySample = addEntity(schema, "HybridHRActivitySample");
+        activitySample.implementsSerializable();
+        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty("calories");
+        activitySample.addIntProperty("variability");
+        activitySample.addIntProperty("max_variability");
+        activitySample.addIntProperty("heartrate_quality");
+        activitySample.addBooleanProperty("active");
+        activitySample.addByteProperty("wearType");
         addHeartRateProperties(activitySample);
         return activitySample;
     }
