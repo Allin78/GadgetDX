@@ -514,9 +514,13 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                             ArrayList<ActivityEntry> entries = parser.parseFile(fileData);
                             HybridHRActivitySampleProvider provider = new HybridHRActivitySampleProvider(getDeviceSupport().getDevice(), dbHandler.getDaoSession());
 
-                            for(ActivityEntry entry : entries){
-                                provider.addGBActivitySample(entry.toDAOActivitySample(DBHelper.getDevice(getDeviceSupport().getDevice(), dbHandler.getDaoSession()).getId()));
+                            HybridHRActivitySample[] samples = new HybridHRActivitySample[entries.size()];
+
+                            for(int i = 0; i < entries.size(); i++){
+                                samples[i] = entries.get(i).toDAOActivitySample(DBHelper.getDevice(getDeviceSupport().getDevice(), dbHandler.getDaoSession()).getId());
                             }
+
+                            provider.addGBActivitySamples(samples);
 
                             writeFile(String.valueOf(System.currentTimeMillis()), fileData);
                             queueWrite(new FileDeleteRequest(fileHandle));
