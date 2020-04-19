@@ -346,14 +346,14 @@ public class GBDaoGenerator {
     private static Entity addHybridHRActivitySample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "HybridHRActivitySample");
         activitySample.implementsSerializable();
-        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        addCommonActivitySampleProperties("AbstractHybridHRActivitySample", activitySample, user, device);
         activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
-        activitySample.addIntProperty("calories");
-        activitySample.addIntProperty("variability");
-        activitySample.addIntProperty("max_variability");
-        activitySample.addIntProperty("heartrate_quality");
-        activitySample.addBooleanProperty("active");
-        activitySample.addByteProperty("wearType");
+        activitySample.addIntProperty("calories").notNull();
+        activitySample.addIntProperty("variability").notNull();
+        activitySample.addIntProperty("max_variability").notNull();
+        activitySample.addIntProperty("heartrate_quality").notNull();
+        activitySample.addBooleanProperty("active").notNull();
+        activitySample.addByteProperty("wearType").notNull();
         addHeartRateProperties(activitySample);
         return activitySample;
     }
