@@ -12,6 +12,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.HybridHRActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.HybridHRActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.parser.ActivityEntry;
 
 public class HybridHRActivitySampleProvider extends AbstractSampleProvider<HybridHRActivitySample> {
     public HybridHRActivitySampleProvider(GBDevice device, DaoSession session) {
@@ -43,7 +44,8 @@ public class HybridHRActivitySampleProvider extends AbstractSampleProvider<Hybri
 
     @Override
     public int normalizeType(int rawType) {
-        return 0;
+        if(rawType == -1) return 0;
+        return ActivityEntry.WEARING_STATE.fromValue((byte) rawType).getActivityKind();
     }
 
     @Override
