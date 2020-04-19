@@ -22,6 +22,7 @@ public class ActivityEntry {
         HybridHRActivitySample sample = new HybridHRActivitySample(
                 timestamp,
                 deviceId,
+                -1,
                 stepCount,
                 calories,
                 variability,

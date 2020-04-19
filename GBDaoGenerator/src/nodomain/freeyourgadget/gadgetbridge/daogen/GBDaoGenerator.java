@@ -346,15 +346,7 @@ public class GBDaoGenerator {
         Entity activitySample = addEntity(schema, "HybridHRActivitySample");
         activitySample.implementsSerializable();
 
-        activitySample.setSuperclass("AbstractHybridHRActivitySample");
-        activitySample.addImport(MAIN_PACKAGE + ".devices.SampleProvider");
-        activitySample.setJavaDoc(
-                "This class represents a sample specific to the device. Values like activity kind or\n" +
-                        "intensity, are device specific. Normalized values can be retrieved through the\n" +
-                        "corresponding {@link SampleProvider}.");
-        activitySample.addIntProperty("timestamp").notNull().codeBeforeGetterAndSetter(OVERRIDE).primaryKey();
-        Property deviceId = activitySample.addLongProperty("deviceId").primaryKey().notNull().codeBeforeGetterAndSetter(OVERRIDE).getProperty();
-        activitySample.addToOne(device, deviceId);
+        addCommonActivitySampleProperties("AbstractHybridHRActivitySample", activitySample, user, device);
 
         activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
         activitySample.addIntProperty("calories").notNull();
