@@ -7,4 +7,12 @@ public abstract class AbstractHybridHRActivitySample extends AbstractActivitySam
     public int getRawIntensity() {
         return getCalories();
     }
+
+    @Override
+    public void setUserId(long userId) {}
+
+    @Override
+    public long getUserId() {
+        return 0;
+    }
 }

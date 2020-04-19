@@ -19,7 +19,6 @@ import de.greenrobot.daogenerator.DaoGenerator;
 import de.greenrobot.daogenerator.Entity;
 import de.greenrobot.daogenerator.Index;
 import de.greenrobot.daogenerator.Property;
-import de.greenrobot.daogenerator.PropertyType;
 import de.greenrobot.daogenerator.Schema;
 
 /**
@@ -346,14 +345,24 @@ public class GBDaoGenerator {
     private static Entity addHybridHRActivitySample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "HybridHRActivitySample");
         activitySample.implementsSerializable();
-        addCommonActivitySampleProperties("AbstractHybridHRActivitySample", activitySample, user, device);
+
+        activitySample.setSuperclass("AbstractHybridHRActivitySample");
+        activitySample.addImport(MAIN_PACKAGE + ".devices.SampleProvider");
+        activitySample.setJavaDoc(
+                "This class represents a sample specific to the device. Values like activity kind or\n" +
+                        "intensity, are device specific. Normalized values can be retrieved through the\n" +
+                        "corresponding {@link SampleProvider}.");
+        activitySample.addIntProperty("timestamp").notNull().codeBeforeGetterAndSetter(OVERRIDE).primaryKey();
+        Property deviceId = activitySample.addLongProperty("deviceId").primaryKey().notNull().codeBeforeGetterAndSetter(OVERRIDE).getProperty();
+        activitySample.addToOne(device, deviceId);
+
         activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
         activitySample.addIntProperty("calories").notNull();
         activitySample.addIntProperty("variability").notNull();
         activitySample.addIntProperty("max_variability").notNull();
         activitySample.addIntProperty("heartrate_quality").notNull();
         activitySample.addBooleanProperty("active").notNull();
-        activitySample.addByteProperty("wearType").notNull();
+        activitySample.addByteProperty("wear_type").notNull();
         addHeartRateProperties(activitySample);
         return activitySample;
     }
