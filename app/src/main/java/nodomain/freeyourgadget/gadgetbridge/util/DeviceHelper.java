@@ -53,6 +53,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr.AmazfitGTRC
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr.AmazfitGTRLiteCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfittrex.AmazfitTRexCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts.AmazfitGTSCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband5.MiBand5Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.itag.ITagCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.Q8Coordinator;
@@ -225,6 +226,7 @@ public class DeviceHelper {
         result.add(new AmazfitBipSCoordinator());
         result.add(new MiBand3Coordinator());
         result.add(new MiBand4Coordinator());
+        result.add(new MiBand5Coordinator());
         result.add(new MiBand2HRXCoordinator());
         result.add(new MiBand2Coordinator()); // Note: MiBand2 and all of the above  must come before MiBand because detection is hacky, atm
         result.add(new MiBandCoordinator());
