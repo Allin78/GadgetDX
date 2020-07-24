@@ -37,20 +37,12 @@ public class MiBand5FirmwareInfo extends HuamiFirmwareInfo {
 
     static {
         // firmware
-        crcToVersion.put(8969, "1.0.5.22");
-        crcToVersion.put(43437, "1.0.5.66");
-        crcToVersion.put(31632, "1.0.6.00");
-        crcToVersion.put(6856, "1.0.7.14");
-        crcToVersion.put(50145, "1.0.7.60");
-        crcToVersion.put(22570, "1.0.9.48-58");
+        crcToVersion.put(29062, "1.0.0.76");
+        crcToVersion.put(26302, "1.0.1.16");
 
         // resources
-        crcToVersion.put(27412, "1.0.5.22");
-        crcToVersion.put(5466, "1.0.5.66");
-        crcToVersion.put(20047, "1.0.6.00");
-        crcToVersion.put(62914, "1.0.7.14");
-        crcToVersion.put(17303, "1.0.7.60");
-        crcToVersion.put(57922, "1.0.9.58");
+        crcToVersion.put(8009, "1.0.0.76");
+        crcToVersion.put(47040, "1.0.1.16");
 
         // font
         crcToVersion.put(31978, "1");
@@ -66,7 +58,7 @@ public class MiBand5FirmwareInfo extends HuamiFirmwareInfo {
             return HuamiFirmwareType.RES_COMPRESSED;
         }
         if (ArrayUtils.equals(bytes, FW_HEADER, FW_HEADER_OFFSET)) {
-            if (searchString32BitAligned(bytes, "Mi Smart Band 4")) {
+            if (searchString32BitAligned(bytes, "Mi Smart Band 5")) {
                 return HuamiFirmwareType.FIRMWARE;
             }
             return HuamiFirmwareType.INVALID;
@@ -89,7 +81,7 @@ public class MiBand5FirmwareInfo extends HuamiFirmwareInfo {
 
     @Override
     public boolean isGenerallyCompatibleWith(GBDevice device) {
-        return isHeaderValid() && device.getType() == DeviceType.MIBAND4;
+        return isHeaderValid() && device.getType() == DeviceType.MIBAND5;
     }
 
     @Override

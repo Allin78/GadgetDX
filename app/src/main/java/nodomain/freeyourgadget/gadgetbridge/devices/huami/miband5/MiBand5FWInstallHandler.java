@@ -1,4 +1,4 @@
-/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer
 
     This file is part of Gadgetbridge.
 
@@ -14,38 +14,37 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband5;
+package nodomain.freeyourgadget.gadgetbridge.devices.huami.miband5;
 
 import android.content.Context;
 import android.net.Uri;
 
 import java.io.IOException;
 
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband5.MiBand5FWHelper;
-import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband3.MiBand3Support;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperationNew;
+import nodomain.freeyourgadget.gadgetbridge.devices.miband.AbstractMiBandFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.miband.AbstractMiBandFWInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
-public class MiBand5Support extends MiBand3Support {
-
-    @Override
-    public byte getCryptFlags() {
-        return (byte) 0x80;
+class MiBand5FWInstallHandler extends AbstractMiBandFWInstallHandler {
+    MiBand5FWInstallHandler(Uri uri, Context context) {
+        super(uri, context);
     }
 
     @Override
-    public void onNotification(NotificationSpec notificationSpec) {
-        super.sendNotificationNew(notificationSpec, true);
+    protected String getFwUpgradeNotice() {
+        return mContext.getString(R.string.fw_upgrade_notice_miband5, helper.getHumanFirmwareVersion());
     }
 
     @Override
-    public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
+    protected AbstractMiBandFWHelper createHelper(Uri uri, Context context) throws IOException {
         return new MiBand5FWHelper(uri, context);
     }
 
     @Override
-    public UpdateFirmwareOperationNew createUpdateFirmwareOperation(Uri uri) {
-        return new UpdateFirmwareOperationNew(uri, this);
+    protected boolean isSupportedDeviceType(GBDevice device) {
+        return device.getType() == DeviceType.MIBAND5;
     }
 }
