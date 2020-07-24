@@ -64,6 +64,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband2.MiBand2Coordin
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband2.MiBand2HRXCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband3.MiBand3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband4.MiBand4Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband5.MiBand5Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.id115.ID115Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.jyou.TeclastH30.TeclastH30Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.jyou.y5.Y5Coordinator;
