@@ -61,7 +61,8 @@ public class MiBand5Coordinator extends HuamiCoordinator {
 
     @Override
     public InstallHandler findInstallHandler(Uri uri, Context context) {
-        return null;
+        MiBand5FWInstallHandler handler = new MiBand5FWInstallHandler(uri, context);
+        return handler.isValid() ? handler : null;
     }
 
     @Override
