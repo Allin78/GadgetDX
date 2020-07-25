@@ -23,29 +23,12 @@ import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband5.MiBand5FWHelper;
-import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband3.MiBand3Support;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperationNew;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband4.MiBand4Support;
 
-public class MiBand5Support extends MiBand3Support {
-
-    @Override
-    public byte getCryptFlags() {
-        return (byte) 0x80;
-    }
-
-    @Override
-    public void onNotification(NotificationSpec notificationSpec) {
-        super.sendNotificationNew(notificationSpec, true);
-    }
+public class MiBand5Support extends MiBand4Support {
 
     @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
         return new MiBand5FWHelper(uri, context);
-    }
-
-    @Override
-    public UpdateFirmwareOperationNew createUpdateFirmwareOperation(Uri uri) {
-        return new UpdateFirmwareOperationNew(uri, this);
     }
 }
