@@ -674,6 +674,24 @@
         <item>ko_KO</item>
     </string-array>
 
+    <string-array name="pref_miband5_language">
+        <item name="auto">@string/automatic</item>
+        <item name="zh_CN">@string/simplified_chinese</item>
+        <item name="zh_TW">@string/traditional_chinese</item>
+        <item name="en_US">@string/english</item>
+        <item name="ru_RU">@string/russian</item>
+        <item name="es_ES">@string/spanish</item>
+    </string-array>
+
+    <string-array name="pref_miband5_language_values">
+        <item>auto</item>
+        <item>zh_CN</item>
+        <item>zh_TW</item>
+        <item>en_US</item>
+        <item>ru_RU</item>
+        <item>es_ES</item>
+    </string-array>
+
     <string-array name="pref_zetime_language">
         <item name="auto">@string/automatic</item>
         <item name="zh_CN">@string/simplified_chinese</item>
