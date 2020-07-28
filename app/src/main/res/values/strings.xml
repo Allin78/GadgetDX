@@ -767,6 +767,8 @@
     <string name="menuitem_notifications">Notifications</string>
     <string name="menuitem_activity">Activity</string>
     <string name="menuitem_weather">Weather</string>
+    <string name="menuitem_breathing">Breathing</string>
+    <string name="menuitem_cycles">Cycles</string>
     <string name="menuitem_alarm">Alarm</string>
     <string name="menuitem_timer">Timer</string>
     <string name="menuitem_compass">Compass</string>
@@ -776,6 +778,7 @@
     <string name="menuitem_music">Music</string>
     <string name="menuitem_more">More</string>
     <string name="menuitem_nfc">NFC</string>
+    <string name="menuitem_stress">Stress</string>
     <string name="menuitem_pai">PAI</string>
     <string name="menuitem_hr">Heart Rate</string>
     <string name="menuitem_eventreminder">Event Reminder</string>
