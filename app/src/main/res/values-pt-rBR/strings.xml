@@ -385,7 +385,7 @@
     <string name="pref_call_privacy_mode_number">Ocultar número, mas exibir nome</string>
     <string name="pref_blacklist_calendars">Calendários na lista negra</string>
     <string name="pref_title_weather">Clima</string>
-    <string name="pref_title_weather_location">Localização climática (CM/LOS)</string>
+    <string name="pref_title_weather_location">Localização climática (para provedor de clina do LineageOS)</string>
     <string name="pref_title_enable_calendar_sync">Sincronizar calendário</string>
     <string name="pref_title_pebble_enable_bgjs">Habilitar JS em segundo plano</string>
     <string name="pref_summary_pebble_enable_bgjs">Quando habilitado, permite que os watchfaces mostrem o clima, informações da bateria, etc.</string>
@@ -919,11 +919,13 @@
 \n 
 \nPROSSIGA POR SUA CONTA E RISCO!</string>
     <string name="devicetype_amazfit_trex">Amazfit T-Rex</string>
-    <string name="about_additional_contributions">Muito obrigado a todos os contribuidores não listados aqui por contribuição com código, suporte, ideias, motivação, relatórios de erros, dinheiro... ✊</string>
+    <string name="about_additional_contributions">Muito obrigado a todos os contribuidores não listados aqui por contribuição com código, suporte, ideias, motivação, relatórios de erros, dinheiro… ✊</string>
     <string name="about_additional_device_support">Suporte a dispositivos adicionais</string>
     <string name="about_contributors">Contribuidores</string>
     <string name="about_core_team_title">Equipe Core (na ordem da primeira contribuição de código)</string>
     <string name="about_description">Um substituto livre e sem nuvem para os aplicativos Android de código fechado dos seus fornecedores de gadgets.</string>
     <string name="about_activity_title">Sobre o Gadgetbridge</string>
     <string name="about_title">Sobre</string>
+    <string name="pref_title_weather_summary">Usado para o provedor do clima do LineageOS, outras versões do Android precisam usar um aplicativo como o \"Notificação de clima\". Encontrará mais informações no wiki do Gadgetbridge.</string>
+    <string name="menuitem_worldclock">Relógio mundial</string>
 </resources>

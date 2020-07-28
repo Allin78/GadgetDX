@@ -145,7 +145,7 @@
 \nGA VERDER OP EIGEN RISICO!</string>
     <string name="pref_title_charts_swipe">Activeer links/rechts vegen in grafiek schermen</string>
     <string name="pref_title_weather">Weer</string>
-    <string name="pref_title_weather_location">Weer locatie (CM/LOS)</string>
+    <string name="pref_title_weather_location">Weer locatie (voor LinageOS weer aanbieder)</string>
     <string name="pref_title_autoremove_notifications">Verwijder automatisch verworpen meldingen</string>
     <string name="pref_summary_autoremove_notifications">Meldingen worden automatisch verwijderd op de Pebble als ze verwijderd worden op het Android toestel</string>
     <string name="pref_pebble_privacy_mode_content">Schuif de meldingstekst van het scherm</string>
@@ -448,7 +448,7 @@
     <string name="StringUtils_sender">(%1$s)</string>
     <string name="find_device_you_found_it">U hebt het gevonden!</string>
     <string name="miband2_prefs_timeformat">Mi2: Tijdsformaat</string>
-    <string name="mi2_fw_installhandler_fw53_hint">U moet versie% 1 $ s installeren voordat u deze firmware installeert!</string>
+    <string name="mi2_fw_installhandler_fw53_hint">U moet versie %1$s installeren voordat u deze firmware installeert!</string>
     <string name="mi2_enable_text_notifications">Tekst meldingen</string>
     <string name="mi2_enable_text_notifications_summary">Vereist dat firmware &gt;= 1.0.1.28 en Mili_pro.ft* geïnstalleerd is.</string>
     <string name="off">Uit</string>
@@ -917,4 +917,6 @@
     <string name="about_description">Een gratis en cloudloze vervanging voor de closed source Android-applicaties van uw gadgetverkoper.</string>
     <string name="about_activity_title">Over Gadgetbridge</string>
     <string name="about_title">Over</string>
+    <string name="pref_title_weather_summary">Gebruikt voor de LineageOS weer provider, andere Android versies moeten een app zoals \"Weather notification\" gebruiiken. Meer informatie is te vinden in de Gadgetbridge wiki.</string>
+    <string name="menuitem_worldclock">Wereld Klok</string>
 </resources>

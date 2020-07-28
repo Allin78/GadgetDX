@@ -35,7 +35,7 @@
     <string name="appmanager_hrm_deactivate">HRM deaktivieren</string>
     <string name="appmanager_weather_activate">Aktiviere die Wetter App des Systems</string>
     <string name="appmanager_weather_deactivate">Deaktiviere die Wetter App des Systems</string>
-    <string name="appmanager_weather_install_provider">Wetterbenachrichtigungs App installieren</string>
+    <string name="appmanager_weather_install_provider">App \"Weather Notification\" installieren</string>
     <string name="app_configure">Konfigurieren</string>
     <string name="app_move_to_top">Nach oben</string>
     <!--Strings related to AppBlacklist-->
@@ -80,7 +80,7 @@
     <string name="pref_title_notification_filter">Bitte nicht stören</string>
     <string name="pref_summary_notification_filter">Unerwünschte Benachrichtigungen werden in diesem Modus unterdrückt</string>
     <string name="pref_title_transliteration">Sonderzeichen umschreiben</string>
-    <string name="pref_summary_transliteration">Aktiviere dies, falls dein Gerät keine Unterstützung für die Schriftart deiner Sprache hat</string>
+    <string name="pref_summary_transliteration">Zum Umschreiben von Sonderzeichen aktivieren, falls dein Gerät keine Unterstützung für bestimmte Zeichen hat (z.B. ü-&gt;ue)</string>
     <string name="always">Immer</string>
     <string name="when_screen_off">Wenn der Bildschirm aus ist</string>
     <string name="never">Niemals</string>
@@ -201,7 +201,7 @@
     <string name="miband_pairing_using_dummy_userdata">Keine gültigen Benutzerdaten angegeben, es werden jetzt Dummy-Benutzerdaten verwendet.</string>
     <string name="miband_pairing_tap_hint">Wenn dein Mi Band vibriert und blinkt, tippe es ein paar Mal hintereinander an.</string>
     <string name="appinstaller_install">Installieren</string>
-    <string name="discovery_connected_devices_hint">Mache dein Gerät auffindbar. Derzeit verbundene Geräte werden wahrscheinlich nicht erkannt. Aktiviere die Standortsbestimmung (zum Beispiel GPS) in Android 6+. Deaktiviere Privacy Guard für Gadgetbridge, da er zu Abstürzen und Neustarts deines Telefons führen kann. Wenn nach einigen Minuten kein Gerät erkannt wird, versuche es nach dem Neustart deines mobilen Gerätes erneut.</string>
+    <string name="discovery_connected_devices_hint">Mache dein Gerät auffindbar. Derzeit verbundene Geräte werden wahrscheinlich nicht erkannt. Aktiviere die Standortbestimmung (zum Beispiel GPS) in Android 6+. Deaktiviere Privacy Guard für Gadgetbridge, da er zu Abstürzen und Neustarts deines Telefons führen kann. Wenn nach einigen Minuten kein Gerät erkannt wird, versuche es nach dem Neustart deines mobilen Gerätes erneut.</string>
     <string name="discovery_note">Hinweis:</string>
     <string name="candidate_item_device_image">Gerätesymbol</string>
     <string name="miband_prefs_alias">Name/Alias</string>
@@ -384,7 +384,7 @@
     <!--Strings related to Pebble Pairing Activity-->
     <string name="title_activity_pebble_pairing">Pebble koppeln</string>
     <string name="pebble_pairing_hint">Auf deinem Android-Gerät erscheint ein Koppeln-Dialog. Wenn nicht, schaue in die Benachrichtigungsübersicht und akzeptiere die Kopplungsanforderung. Akzeptiere es auch danach auf deiner Pebble.</string>
-    <string name="weather_notification_label">Stelle sicher, dass dieser Skin in der Wetterbenachrichtigungs-App aktiviert ist, damit du Wetterdaten auf deiner Pebble erhältst. 
+    <string name="weather_notification_label">Stelle sicher, dass dieser Skin in der App \"Weather Notification\" aktiviert ist, damit du Wetterdaten auf deiner Pebble erhältst. 
 \n 
 \nHier ist keine Konfiguration nötig. 
 \n 
@@ -480,7 +480,7 @@
     <string name="devicetype_exrizu_k8">Exrizu K8</string>
     <string name="devicetype_no1_f1">No.1 F1</string>
     <string name="devicetype_teclast_h30">Teclast H30</string>
-    <string name="pref_title_weather_location">Wetterstandort (CM/LOS)</string>
+    <string name="pref_title_weather_location">Wetterstandort (für den LineageOS Wetter Dienst)</string>
     <string name="pref_header_auto_export">Automatisch exportieren</string>
     <string name="pref_title_auto_export_enabled">Automatisch exportieren aktiviert</string>
     <string name="pref_title_auto_export_location">Speicherort für den Export</string>
@@ -723,7 +723,7 @@
     <string name="prefs_hr_alarm_activity">Herzfrequenzalarm bei sportlicher Aktivität</string>
     <string name="prefs_hr_alarm_low">Untere Grenze</string>
     <string name="prefs_hr_alarm_high">Obere Grenze</string>
-    <string name="average">Durchschnitt: %1$s</string>
+    <string name="average">Mittelwert: %1$s</string>
     <string name="pref_header_charts">Diagrammeinstellungen</string>
     <string name="pref_title_charts_average">Durchschnittswerte im Diagramm anzeigen</string>
     <string name="pref_title_charts_range">Diagrammbereich</string>
@@ -859,7 +859,7 @@
     <string name="hr_appname_commute">Pendeln</string>
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="pref_summary_relax_firmware_checks">Firmwareüberprüfung deaktivieren</string>
-    <string name="pref_title_relax_firmware_checks">Aktiviere das flashen von Firmware, die nicht für dieses Gerät bestimmt ist (auf eigenes Risiko)</string>
+    <string name="pref_title_relax_firmware_checks">Zum flashen von Firmware, die nicht für dieses Gerät bestimmt ist aktivieren (auf eigenes Risiko)</string>
     <string name="pref_qhybrid_title_widget_draw_circles">Widget-Kreise zeichnen</string>
     <string name="pref_header_auto_fetch">Automatischer Abruf</string>
     <string name="pref_qhybrid_save_raw_activity_files">Raw Activity Dateien speichern</string>
@@ -916,11 +916,13 @@
 \n
 \nINSTALLATION AUF EIGENE GEFAHR!</string>
     <string name="devicetype_amazfit_trex">Amazfit T-Rex</string>
-    <string name="about_additional_contributions">Wir danken allen nicht gelisteten Mitwirkenden dafür uns zu unterstützen mit Code, Unterstützung, Ideen, Motivation, Fehlermeldungen, Geld... ✊</string>
+    <string name="about_additional_contributions">Wir danken allen nicht gelisteten Mitwirkenden dafür uns zu unterstützen mit Code, Unterstützung, Ideen, Motivation, Fehlermeldungen, Geld… ✊</string>
     <string name="about_additional_device_support">Unterstützung zusätzlicher Geräte</string>
     <string name="about_contributors">Mitwirkende</string>
     <string name="about_core_team_title">Kernteam (Reihenfolge der ersten Mitwirkung am Code)</string>
     <string name="about_description">Ein freier und nicht cloud basierter Ersatz für proprietäre Android Anwendungen der Hersteller von Gadgets.</string>
     <string name="about_activity_title">Über Gadgetbridge</string>
     <string name="about_title">Über</string>
+    <string name="pref_title_weather_summary">Wird für den LineageOS Wetterdienst genutzt, andere Android Versionen müssen eine App wie \"Weather notification\" nutzen. Mehr Informationen gibt es im Gadgetbride wiki.</string>
+    <string name="menuitem_worldclock">Weltzeit</string>
 </resources>
