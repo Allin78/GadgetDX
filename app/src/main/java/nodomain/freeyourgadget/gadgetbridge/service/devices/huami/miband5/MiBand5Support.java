@@ -40,11 +40,6 @@ public class MiBand5Support extends MiBand4Support {
     private static final Logger LOG = LoggerFactory.getLogger(MiBand5Support.class);
 
     @Override
-    protected byte getAuthFlags() {
-        return 0x00;
-    }
-
-    @Override
     protected MiBand5Support setDisplayItems(TransactionBuilder builder) {
         if (gbDevice.getFirmwareVersion() == null) {
             LOG.warn("Device not initialized yet, won't set menu items");
@@ -105,5 +100,10 @@ public class MiBand5Support extends MiBand4Support {
     @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
         return new MiBand5FWHelper(uri, context);
+    }
+
+    @Override
+    public int getActivitySampleSize() {
+        return 8;
     }
 }
