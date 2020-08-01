@@ -17,7 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -160,9 +159,8 @@ public class DbManagementActivity extends AbstractGBActivity {
                 if (cursor != null && cursor.moveToFirst()) {
                     return cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
                 }
-            }
-            catch (Exception fdfsdfds) {
-                LOG.warn("fuck");
+            } catch (Exception fdfsdfds) {
+                LOG.error("fuck", fdfsdfds);
             }
         }
         return "";
@@ -205,7 +203,8 @@ public class DbManagementActivity extends AbstractGBActivity {
                 }
             }
         } catch (Exception e) {
-            GB.toast("Error exporting device specific preferences", Toast.LENGTH_SHORT, GB.ERROR);
+            LOG.error("Error exporting device specific preferences", e);
+            GB.toast(getString(R.string.error_exporting_device_preferences), Toast.LENGTH_SHORT, GB.ERROR);
         }
     }
 
@@ -217,6 +216,7 @@ public class DbManagementActivity extends AbstractGBActivity {
         } catch (Exception ex) {
             GB.toast(DbManagementActivity.this, getString(R.string.dbmanagementactivity_error_importing_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
         }
+
         try (DBHandler lockHandler = GBApplication.acquireDB()) {
             List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
             for (Device dbDevice : activeDevices) {
@@ -244,6 +244,7 @@ public class DbManagementActivity extends AbstractGBActivity {
             File destFile = helper.exportDB(dbHandler, dir);
             GB.toast(this, getString(R.string.dbmanagementactivity_exported_to, destFile.getAbsolutePath()), Toast.LENGTH_LONG, GB.INFO);
         } catch (Exception ex) {
+            LOG.error("Error exporting database", ex);
             GB.toast(this, getString(R.string.dbmanagementactivity_error_exporting_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
         }
     }
