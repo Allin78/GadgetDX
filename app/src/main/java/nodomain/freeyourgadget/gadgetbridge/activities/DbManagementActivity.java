@@ -160,7 +160,7 @@ public class DbManagementActivity extends AbstractGBActivity {
                     return cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
                 }
             } catch (Exception fdfsdfds) {
-                LOG.error("fuck", fdfsdfds);
+                LOG.error("Error", fdfsdfds);
             }
         }
         return "";
@@ -203,8 +203,7 @@ public class DbManagementActivity extends AbstractGBActivity {
                 }
             }
         } catch (Exception e) {
-            LOG.error("Error exporting device specific preferences", e);
-            GB.toast(getString(R.string.error_exporting_device_preferences), Toast.LENGTH_SHORT, GB.ERROR);
+            GB.toast("Error exporting device specific preferences", Toast.LENGTH_SHORT, GB.ERROR, e);
         }
     }
 
@@ -244,7 +243,6 @@ public class DbManagementActivity extends AbstractGBActivity {
             File destFile = helper.exportDB(dbHandler, dir);
             GB.toast(this, getString(R.string.dbmanagementactivity_exported_to, destFile.getAbsolutePath()), Toast.LENGTH_LONG, GB.INFO);
         } catch (Exception ex) {
-            LOG.error("Error exporting database", ex);
             GB.toast(this, getString(R.string.dbmanagementactivity_error_exporting_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
         }
     }
