@@ -255,8 +255,7 @@ public class PebblePairingActivity extends AbstractGBActivity {
             gbDevice = deviceHelper.toGBDevice(devices.get(0));
             gbDevice.setVolatileAddress(btDevice.getAddress());
         } catch (Exception e) {
-            LOG.error("Error retrieving devices from database", e);
-            GB.toast(getString(R.string.error_retrieving_devices_database), Toast.LENGTH_SHORT, GB.ERROR);
+            GB.toast(getString(R.string.error_retrieving_devices_database), Toast.LENGTH_SHORT, GB.ERROR, e);
             returnToPairingActivity();
             return null;
         }

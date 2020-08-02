@@ -272,8 +272,7 @@ public class DeviceHelper {
             return result;
 
         } catch (Exception e) {
-            LOG.error("Error retrieving devices from database", e);
-            GB.toast(GBApplication.getContext().getString(R.string.error_retrieving_devices_database), Toast.LENGTH_SHORT, GB.ERROR);
+            GB.toast(GBApplication.getContext().getString(R.string.error_retrieving_devices_database), Toast.LENGTH_SHORT, GB.ERROR, e);
             return Collections.emptyList();
         }
     }

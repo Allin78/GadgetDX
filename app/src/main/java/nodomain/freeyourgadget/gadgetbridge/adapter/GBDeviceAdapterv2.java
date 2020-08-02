@@ -501,7 +501,6 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
                                     dbDevice.update();
                                     device.setAlias(alias);
                                 } catch (Exception ex) {
-                                    LOG.error("Error setting alias: ", ex);
                                     GB.toast(context, context.getString(R.string.error_setting_alias) + ex.getMessage(), Toast.LENGTH_LONG, GB.ERROR, ex);
                                 } finally {
                                     Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
