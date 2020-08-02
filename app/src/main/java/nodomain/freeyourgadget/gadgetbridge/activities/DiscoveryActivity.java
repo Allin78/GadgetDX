@@ -623,12 +623,7 @@ public class DiscoveryActivity extends AbstractGBActivity implements AdapterView
      */
     private void startBTDiscovery(Scanning what) {
         LOG.info("Starting BT discovery");
-        try {
-            // LineageOS quirk, can't start scan properly,
-            // if scan has been started by something else
-            stopBTDiscovery();
-        } catch (Exception ignored) {
-        }
+
         handler.removeMessages(0, stopRunnable);
         handler.sendMessageDelayed(getPostMessage(stopRunnable), SCAN_DURATION);
         if (adapter.startDiscovery()) {
@@ -636,8 +631,16 @@ public class DiscoveryActivity extends AbstractGBActivity implements AdapterView
             bluetoothProgress.setVisibility(View.VISIBLE);
             setIsScanning(what);
         } else {
-            LOG.error("Discovery starting failed");
+            LOG.error("Discovery starting failed the first time");
             setIsScanning(Scanning.SCANNING_OFF);
+            if (adapter.startDiscovery()) {
+                LOG.debug("Discovery started successfully");
+                bluetoothProgress.setVisibility(View.VISIBLE);
+                setIsScanning(what);
+            } else {
+                LOG.error("Discovery starting failed for the last time");
+                setIsScanning(Scanning.SCANNING_OFF);
+            }
         }
     }
 
