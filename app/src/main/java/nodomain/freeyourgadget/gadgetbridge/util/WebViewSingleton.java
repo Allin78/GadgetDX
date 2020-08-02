@@ -36,6 +36,8 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
-import androidx.annotation.NonNull;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.webview.GBChromeClient;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.webview.GBWebClient;
@@ -82,6 +83,7 @@ public class WebViewSingleton {
             instance.webView.setWebViewClient(new GBWebClient());
             instance.webView.setWebChromeClient(new GBChromeClient());
             WebSettings webSettings = instance.webView.getSettings();
+            //noinspection SetJavaScriptEnabled
             webSettings.setJavaScriptEnabled(true);
             //needed to access the DOM
             webSettings.setDomStorageEnabled(true);

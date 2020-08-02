@@ -1,4 +1,4 @@
-* Make voip call support optional (disabled by default)
+* Make VoIP call support optional (disabled by default)
 * Amazfit Bip: GPX export corrections
 * ZeTime: Fix setting alarms
 * ZeTime: Fix wrong activity timestamps

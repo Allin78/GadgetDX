@@ -1,4 +1,4 @@
-* Pebble: Change appstore search to point to RomanPort's pebble appstore
+* Pebble: Change app store search to point to RomanPort's Pebble app store
 * Mi Band 3: Allow flashing fonts (untested)
 * Amazfit Bip: Allow flashing latest firmwares
 * Amazfit Cor: Allow flashing Bip fonts (untested)

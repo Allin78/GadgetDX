@@ -35,15 +35,16 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 
@@ -137,7 +138,7 @@ public class AndroidUtils {
     }
 
     /**
-     * As seen on stackoverflow https://stackoverflow.com/a/36714242/1207186
+     * As seen on StackOverflow https://stackoverflow.com/a/36714242/1207186
      * Try to find the file path of a document uri
      * @param context the application context
      * @param uri the Uri for which the path should be resolved
@@ -159,7 +160,7 @@ public class AndroidUtils {
     }
 
     /**
-     * As seen on stackoverflow https://stackoverflow.com/a/36714242/1207186
+     * As seen on StackOverflow https://stackoverflow.com/a/36714242/1207186
      * Try to find the file path of a document uri
      * @param context the application context
      * @param uri the Uri for which the path should be resolved
@@ -206,8 +207,7 @@ public class AndroidUtils {
             String[] projection = {
                     MediaStore.Images.Media.DATA
             };
-            Cursor cursor = null;
-            cursor = context.getContentResolver()
+            Cursor cursor = context.getContentResolver()
                     .query(uri, projection, selection, selectionArgs, null);
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             if (cursor.moveToFirst()) {

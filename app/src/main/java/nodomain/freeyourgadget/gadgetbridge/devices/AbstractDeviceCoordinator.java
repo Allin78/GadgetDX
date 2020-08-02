@@ -37,7 +37,6 @@ import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
-import nodomain.freeyourgadget.gadgetbridge.devices.watch9.Watch9PairingActivity;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.DeviceAttributesDao;
@@ -77,17 +76,21 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
         if (gbDevice.isConnected() || gbDevice.isConnecting()) {
             GBApplication.deviceService().disconnect();
         }
+
         Prefs prefs = getPrefs();
+
         String lastDevice = prefs.getPreferences().getString("last_device_address","");
-        if (gbDevice.getAddress() == lastDevice){
+        if (gbDevice.getAddress().equals(lastDevice)){
             LOG.debug("#1605 removing last device");
             prefs.getPreferences().edit().remove("last_device_address").apply();
         }
+
         String macAddress = prefs.getPreferences().getString(MiBandConst.PREF_MIBAND_ADDRESS,"");
-        if (gbDevice.getAddress() == macAddress){
+        if (gbDevice.getAddress().equals(macAddress)){
             LOG.debug("#1605 removing devel miband");
             prefs.getPreferences().edit().remove(MiBandConst.PREF_MIBAND_ADDRESS).apply();
         }
+
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             DaoSession session = dbHandler.getDaoSession();
             Device device = DBHelper.findDevice(gbDevice, session);

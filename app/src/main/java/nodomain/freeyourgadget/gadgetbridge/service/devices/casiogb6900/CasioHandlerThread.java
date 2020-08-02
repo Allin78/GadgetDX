@@ -31,11 +31,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceIoThread;
 public class CasioHandlerThread extends GBDeviceIoThread {
     private static final Logger LOG = LoggerFactory.getLogger(CasioHandlerThread.class);
     private static final int TX_PERIOD = 60;
-    private boolean mQuit = false;
-    private CasioGB6900DeviceSupport mDeviceSupport;
     private final Object waitObject = new Object();
-
-
+    private boolean mQuit;
+    private CasioGB6900DeviceSupport mDeviceSupport;
     private Calendar mTxTime = GregorianCalendar.getInstance();
 
     public CasioHandlerThread(GBDevice gbDevice, Context context, CasioGB6900DeviceSupport deviceSupport) {
@@ -88,9 +86,7 @@ public class CasioHandlerThread extends GBDeviceIoThread {
     public void requestTxPowerLevel() {
         try {
             mDeviceSupport.readTxPowerLevel();
-
-        } catch(Exception e) {
-
+        } catch (Exception ignored) {
         }
 
         mTxTime = GregorianCalendar.getInstance();

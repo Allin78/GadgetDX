@@ -103,18 +103,18 @@ public class Alarm {
     @NonNull
     @Override
     public String toString() {
-        String description = this.hour + ":" + this.minute + "  ";
+        StringBuilder description = new StringBuilder(this.hour + ":" + this.minute + "  ");
         if(repeat){
             String[] dayNames = new String[]{"sunday", "monday", "tuesday", "thursday", "wednesday", "friday", "saturday"};
             for(int i = WEEKDAY_SUNDAY; i <= WEEKDAY_SATURDAY; i++){
                 if((days & 1 << i) != 0){
-                    description += dayNames[i] + " ";
+                    description.append(dayNames[i]).append(" ");
                 }
             }
         }else{
-            description += "not repeating";
+            description.append("not repeating");
         }
 
-        return description;
+        return description.toString();
     }
 }

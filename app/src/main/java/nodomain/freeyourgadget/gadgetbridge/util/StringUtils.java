@@ -17,11 +17,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.util;
 
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
-
-import androidx.annotation.NonNull;
 
 public class StringUtils {
 
@@ -56,9 +56,11 @@ public class StringUtils {
     }
 
     public static String pad(String s, int length, char padChar){
-        while(s.length() < length) {
-            s += padChar;
+        StringBuilder sBuilder = new StringBuilder(s);
+        while(sBuilder.length() < length) {
+            sBuilder.append(padChar);
         }
+        s = sBuilder.toString();
         return s;
     }
 

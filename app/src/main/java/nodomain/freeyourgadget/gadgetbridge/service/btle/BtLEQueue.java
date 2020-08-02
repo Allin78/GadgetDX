@@ -33,6 +33,8 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +46,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.Logging;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice.State;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.receivers.AutoConnectIntervalReceiver;
 
 /**
  * One queue/thread per connectable device.
@@ -383,9 +383,7 @@ public final class BtLEQueue {
         if (!transaction.isEmpty()) {
             List<AbstractTransaction> tail = new ArrayList<>(mTransactions.size() + 2);
             //mTransactions.drainTo(tail);
-            for( AbstractTransaction t : mTransactions) {
-                tail.add(t);
-            }
+            tail.addAll(mTransactions);
             mTransactions.clear();
             mTransactions.add(transaction);
             mTransactions.addAll(tail);

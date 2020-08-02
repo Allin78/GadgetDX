@@ -776,8 +776,8 @@ public class MakibesHR3DeviceSupport extends AbstractBTLEDeviceSupport implement
             byte[] value = characteristic.getValue();
             byte[] arguments = new byte[value.length - 6];
 
-            for (int i = 0; i < arguments.length; ++i) {
-                arguments[i] = value[i + 6];
+            if (arguments.length >= 0) {
+                System.arraycopy(value, 6, arguments, 0, arguments.length);
             }
 
             byte[] report = new byte[]{value[4], value[5]};
@@ -837,9 +837,7 @@ public class MakibesHR3DeviceSupport extends AbstractBTLEDeviceSupport implement
 
         result[MakibesHR3Constants.DATA_ARGUMENT_COUNT_INDEX] = (byte) (data.length + 3);
 
-        for (int i = 0; i < command.length; ++i) {
-            result[MakibesHR3Constants.DATA_COMMAND_INDEX + i] = command[i];
-        }
+        System.arraycopy(command, 0, result, 4, command.length);
 
         System.arraycopy(data, 0, result, 6, data.length);
 

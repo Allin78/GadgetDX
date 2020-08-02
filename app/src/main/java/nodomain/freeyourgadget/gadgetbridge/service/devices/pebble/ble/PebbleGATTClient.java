@@ -217,8 +217,7 @@ class PebbleGATTClient extends BluetoothGattCallback {
     private void connectToPebble(BluetoothDevice btDevice) {
         if (removeBond) {
             try {
-                Method m = btDevice.getClass()
-                        .getMethod("removeBond", (Class[]) null);
+                Method m = btDevice.getClass().getMethod("removeBond", (Class[]) null);
                 m.invoke(btDevice, (Object[]) null);
             } catch (Exception e) {
                 LOG.warn(e.getMessage());
