@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -25,6 +27,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -40,14 +43,20 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.adapter.ActivitySummariesAdapter;
+import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummary;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryItems;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
+import nodomain.freeyourgadget.gadgetbridge.util.SwipeEvents;
 
 public class ActivitySummaryDetail extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(ActivitySummaryDetail.class);
@@ -55,14 +64,67 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
     private JSONObject groupData = setGroups();
     private boolean show_raw_data = false;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary_details);
         Intent intent = getIntent();
         mGBDevice = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
+        final int filter = intent.getIntExtra("filter",0);
+        final int position = intent.getIntExtra("position",0);
 
-        final String gpxTrack = intent.getStringExtra("GpxTrack");
+        final ActivitySummaryItems items = new ActivitySummaryItems(this, mGBDevice, filter);
+
+        RelativeLayout layout = findViewById(R.id.activity_summary_detail_relative_layout);
+
+        layout.setOnTouchListener(new SwipeEvents(this) {
+            @Override
+            public void onSwipeRight() {
+                LOG.debug("petr swipe left, item: " + items.getNextItem());
+                BaseActivitySummary item = items.getNextItem();
+                if (item != null) {
+                    makeSummaryHeader(item);
+                }
+
+            }
+            @Override
+            public void onSwipeLeft() {
+                LOG.debug("petr swipe right, item: " + items.getPrevItem());
+                BaseActivitySummary item = items.getPrevItem();
+                if (item != null) {
+                    makeSummaryHeader(item);
+                }
+            }
+
+        });
+
+        BaseActivitySummary item = items.getItem(position);
+        makeSummaryHeader(item);
+        //makeSummaryContent(item);
+
+    }
+
+    private void use_later(){
+
+        /*final JSONObject finalSummaryData = summaryData;
+        activity_icon.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View v) {
+                show_raw_data=!show_raw_data;
+                TableLayout fieldLayout = findViewById(R.id.summaryDetails);
+                fieldLayout.removeAllViews();
+                JSONObject listOfSummaries = makeSummaryList(finalSummaryData);
+                makeSummaryContent(listOfSummaries);
+                return false;
+            }
+        });
+
+         */
+
+    }
+
+    private void makeSummaryHeader(BaseActivitySummary item){
+        final String gpxTrack = item.getGpxTrack();
         Button show_track_btn = (Button) findViewById(R.id.showTrack);
         show_track_btn.setVisibility(View.GONE);
 
@@ -78,15 +140,18 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                 }
             });
         }
-        String activitykindname = ActivityKind.asString(intent.getIntExtra("ActivityKind",0), getApplicationContext());
-        Date starttime = (Date) intent.getSerializableExtra("StartTime");
-        Date endtime = (Date) intent.getSerializableExtra("EndTime");
+        String activitykindname = ActivityKind.asString(item.getActivityKind(), getApplicationContext());
+        Date starttime = (Date) item.getStartTime();
+        Date endtime = (Date) item.getEndTime();
         String starttimeS = DateTimeUtils.formatDateTime(starttime);
+
+
         String endtimeS = DateTimeUtils.formatDateTime(endtime);
         String durationhms = DateTimeUtils.formatDurationHoursMinutes((endtime.getTime() - starttime.getTime()), TimeUnit.MILLISECONDS);
 
         ImageView activity_icon = (ImageView) findViewById(R.id.item_image);
-        activity_icon.setImageResource(ActivityKind.getIconId(intent.getIntExtra("ActivityKind",0)));
+        activity_icon.setImageResource(ActivityKind.getIconId(item.getActivityKind()));
+
         TextView activity_kind = (TextView) findViewById(R.id.activitykind);
         activity_kind.setText(activitykindname);
         TextView start_time = (TextView) findViewById(R.id.starttime);
@@ -96,37 +161,25 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         TextView activity_duration = (TextView) findViewById(R.id.duration);
         activity_duration.setText(durationhms);
 
-        JSONObject summaryData = null;
-        String sumData = intent.getStringExtra("SummaryData");
+
+
+    }
+
+    private void makeSummaryContent (BaseActivitySummary item){
+        //build view, use localized names
+        JSONObject data = null;
+        String sumData = item.getSummaryData();
+
         if (sumData != null) {
             try {
-                summaryData = new JSONObject(sumData);
+                data = new JSONObject(sumData);
             } catch (JSONException e) {
                 LOG.error("SportsActivity", e);
             }
         }
 
-        if (summaryData == null) return;
+        if (data == null) return;
 
-        JSONObject listOfSummaries = makeSummaryList(summaryData);
-        makeSummaryContent(listOfSummaries);
-
-        final JSONObject finalSummaryData = summaryData;
-        activity_icon.setOnLongClickListener(new View.OnLongClickListener() {
-            public boolean onLongClick(View v) {
-                show_raw_data=!show_raw_data;
-                TableLayout fieldLayout = findViewById(R.id.summaryDetails);
-                fieldLayout.removeAllViews();
-                JSONObject listOfSummaries = makeSummaryList(finalSummaryData);
-                makeSummaryContent(listOfSummaries);
-                return false;
-            }
-        });
-
-    }
-
-    private void makeSummaryContent (JSONObject data){
-        //build view, use localized names
         Iterator<String> keys = data.keys();
         DecimalFormat df = new DecimalFormat("#.##");
 
