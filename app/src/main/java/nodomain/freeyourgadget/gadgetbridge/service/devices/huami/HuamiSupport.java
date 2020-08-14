@@ -1204,6 +1204,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 break;
             case HuamiDeviceEvent.START_NONWEAR:
                 LOG.info("non-wear start detected");
+                forwardDeviceEvent(HuamiDeviceEvent.START_NONWEAR);
                 break;
             case HuamiDeviceEvent.ALARM_TOGGLED:
                 LOG.info("An alarm was toggled");
@@ -1213,9 +1214,11 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 break;
             case HuamiDeviceEvent.FELL_ASLEEP:
                 LOG.info("Fell asleep");
+                forwardDeviceEvent(HuamiDeviceEvent.FELL_ASLEEP);
                 break;
             case HuamiDeviceEvent.WOKE_UP:
                 LOG.info("Woke up");
+                forwardDeviceEvent(HuamiDeviceEvent.WOKE_UP);
                 break;
             case HuamiDeviceEvent.STEPSGOAL_REACHED:
                 LOG.info("Steps goal reached");
@@ -1316,6 +1319,39 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             builder.queue(getQueue());
         } catch (Exception ex) {
             LOG.error("Error sending current weather", ex);
+        }
+    }
+
+    private void forwardDeviceEvent(int event){
+        LOG.debug("Handling device event: " + event);
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+
+        if (!prefs.getBoolean("events_forwarding_enable",false)) return;
+
+        String eventsForwardMessage=null;
+
+        switch (event) {
+            case HuamiDeviceEvent.WOKE_UP:
+                if (!prefs.getBoolean("events_forwarding_wokeup",false)) return;
+                eventsForwardMessage= prefs.getString("prefs_events_forwarding_wokeup_broadcast",
+                        this.getContext().getString(R.string.prefs_events_forwarding_wokeup_broadcast_default_value));
+                break;
+            case HuamiDeviceEvent.FELL_ASLEEP:
+                if (!prefs.getBoolean("events_forwarding_fellsleep",false)) return;
+                eventsForwardMessage= prefs.getString("prefs_events_forwarding_fellsleep_broadcast",
+                        this.getContext().getString(R.string.prefs_events_forwarding_fellsleep_broadcast_default_value));
+                break;
+            case HuamiDeviceEvent.START_NONWEAR:
+                if (!prefs.getBoolean("events_forwarding_startnonwear",false)) return;
+                eventsForwardMessage= prefs.getString("prefs_events_forwarding_startnonwear_broadcast",
+                        this.getContext().getString(R.string.prefs_events_forwarding_startnonwear_broadcast_default_value));
+                break;
+        }
+        if (eventsForwardMessage !=null) {
+            Intent in = new Intent();
+            in.setAction(eventsForwardMessage);
+            LOG.info("Forwarding event " + eventsForwardMessage);
+            this.getContext().getApplicationContext().sendBroadcast(in);
         }
     }
 
