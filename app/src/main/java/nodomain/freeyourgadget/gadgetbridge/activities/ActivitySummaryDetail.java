@@ -18,13 +18,14 @@
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -43,15 +44,12 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.adapter.ActivitySummariesAdapter;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
-import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummary;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryItems;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
@@ -63,6 +61,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
     private GBDevice mGBDevice;
     private JSONObject groupData = setGroups();
     private boolean show_raw_data = false;
+    BaseActivitySummary currentItem = null;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -73,57 +72,68 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         mGBDevice = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
         final int filter = intent.getIntExtra("filter",0);
         final int position = intent.getIntExtra("position",0);
-
         final ActivitySummaryItems items = new ActivitySummaryItems(this, mGBDevice, filter);
+        final RelativeLayout layout = findViewById(R.id.activity_summary_detail_relative_layout);
 
-        RelativeLayout layout = findViewById(R.id.activity_summary_detail_relative_layout);
+        final Animation animFadein;
+        final Animation animFadeout;
+        animFadein = AnimationUtils.loadAnimation(
+                this,
+                R.anim.flyright);
+        animFadeout = AnimationUtils.loadAnimation(
+                this,
+                R.anim.flyleft);
 
         layout.setOnTouchListener(new SwipeEvents(this) {
             @Override
             public void onSwipeRight() {
-                LOG.debug("petr swipe left, item: " + items.getNextItem());
-                BaseActivitySummary item = items.getNextItem();
-                if (item != null) {
-                    makeSummaryHeader(item);
-                }
+                currentItem = items.getNextItem();
+                if (currentItem != null) {
+                    makeSummaryHeader(currentItem);
+                    makeSummaryContent(currentItem);
+                    layout.startAnimation(animFadein);
 
+                }else{
+                    GB.toast("No more items", Toast.LENGTH_SHORT,0);
+                }
             }
             @Override
             public void onSwipeLeft() {
-                LOG.debug("petr swipe right, item: " + items.getPrevItem());
-                BaseActivitySummary item = items.getPrevItem();
-                if (item != null) {
-                    makeSummaryHeader(item);
+                currentItem = items.getPrevItem();
+                if (currentItem != null) {
+                    makeSummaryHeader(currentItem);
+                    makeSummaryContent(currentItem);
+                    layout.startAnimation(animFadeout);
+                }else{
+                    GB.toast("No more items", Toast.LENGTH_SHORT,0);
                 }
             }
-
         });
 
-        BaseActivitySummary item = items.getItem(position);
-        makeSummaryHeader(item);
-        //makeSummaryContent(item);
+        currentItem = items.getItem(position);
+        if (currentItem != null) {
+            makeSummaryHeader(currentItem);
+            makeSummaryContent(currentItem);
+        }
 
-    }
-
-    private void use_later(){
-
-        /*final JSONObject finalSummaryData = summaryData;
+        //allows long-press.switch of data being in raw form or recalculated
+        ImageView activity_icon = (ImageView) findViewById(R.id.item_image);
         activity_icon.setOnLongClickListener(new View.OnLongClickListener() {
             public boolean onLongClick(View v) {
                 show_raw_data=!show_raw_data;
-                TableLayout fieldLayout = findViewById(R.id.summaryDetails);
-                fieldLayout.removeAllViews();
-                JSONObject listOfSummaries = makeSummaryList(finalSummaryData);
-                makeSummaryContent(listOfSummaries);
+                if (currentItem != null) {
+                    makeSummaryHeader(currentItem);
+                    makeSummaryContent(currentItem);
+                }
                 return false;
             }
         });
 
-         */
 
     }
 
     private void makeSummaryHeader(BaseActivitySummary item){
+        //make view of data from main part of item
         final String gpxTrack = item.getGpxTrack();
         Button show_track_btn = (Button) findViewById(R.id.showTrack);
         show_track_btn.setVisibility(View.GONE);
@@ -144,8 +154,6 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         Date starttime = (Date) item.getStartTime();
         Date endtime = (Date) item.getEndTime();
         String starttimeS = DateTimeUtils.formatDateTime(starttime);
-
-
         String endtimeS = DateTimeUtils.formatDateTime(endtime);
         String durationhms = DateTimeUtils.formatDurationHoursMinutes((endtime.getTime() - starttime.getTime()), TimeUnit.MILLISECONDS);
 
@@ -161,22 +169,29 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         TextView activity_duration = (TextView) findViewById(R.id.duration);
         activity_duration.setText(durationhms);
 
-
-
     }
 
     private void makeSummaryContent (BaseActivitySummary item){
-        //build view, use localized names
+        //make view of data from summaryData of item
+
+        TableLayout fieldLayout = findViewById(R.id.summaryDetails);
+        fieldLayout.removeAllViews(); //remove old widgets
+
+        JSONObject summarySubdata = null;
         JSONObject data = null;
+
         String sumData = item.getSummaryData();
 
         if (sumData != null) {
             try {
-                data = new JSONObject(sumData);
+                summarySubdata = new JSONObject(sumData);
             } catch (JSONException e) {
                 LOG.error("SportsActivity", e);
             }
         }
+
+        if (summarySubdata == null) return;
+        data = makeSummaryList(summarySubdata); //make new list, grouped by groups
 
         if (data == null) return;
 
@@ -189,7 +204,6 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                 LOG.error("SportsActivity:" + key + ": " + data.get(key) + "\n");
                 JSONArray innerList = (JSONArray) data.get(key);
 
-                TableLayout fieldLayout = findViewById(R.id.summaryDetails);
                 TableRow label_row = new TableRow(ActivitySummaryDetail.this);
                 TextView label_field = new TextView(ActivitySummaryDetail.this);
                 label_field.setTextSize(16);

@@ -35,7 +35,7 @@ public class ActivitySummaryItems {
     }
 
     public BaseActivitySummary getNextItem(){
-        if (current_position+1 <= itemsAdapter.getCount()){
+        if (current_position+1 < itemsAdapter.getCount()){
             current_position+=1;
             return itemsAdapter.getItem(current_position);
         }

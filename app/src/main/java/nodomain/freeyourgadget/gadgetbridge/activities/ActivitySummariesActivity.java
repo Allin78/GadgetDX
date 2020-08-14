@@ -325,6 +325,7 @@ public class ActivitySummariesActivity extends AbstractListActivity<BaseActivity
         ActivitySummaryDetailIntent.putExtra("filter", activityFilter);
         ActivitySummaryDetailIntent.putExtra(GBDevice.EXTRA_DEVICE, mGBDevice);
         startActivity(ActivitySummaryDetailIntent);
+
     }
 
     private void fetchTrackData() {

@@ -35,7 +35,7 @@
             android:textSize="18sp" />
 
         <TableLayout
-            android:id="@+id/summaryDetails"
+            android:id="@+id/summaryHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -101,6 +101,11 @@
             </TableRow>
 
         </TableLayout>
+
+        <TableLayout
+            android:id="@+id/summaryDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
 
         <Button
