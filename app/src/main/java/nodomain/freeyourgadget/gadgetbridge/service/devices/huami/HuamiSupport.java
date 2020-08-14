@@ -1326,8 +1326,6 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         LOG.debug("Handling device event: " + event);
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
 
-        if (!prefs.getBoolean("events_forwarding_enable",false)) return;
-
         String eventsForwardMessage=null;
 
         switch (event) {
@@ -1335,16 +1333,19 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 if (!prefs.getBoolean("events_forwarding_wokeup",false)) return;
                 eventsForwardMessage= prefs.getString("prefs_events_forwarding_wokeup_broadcast",
                         this.getContext().getString(R.string.prefs_events_forwarding_wokeup_broadcast_default_value));
+                handleMediaButton(prefs.getString("events_forwarding_wokeup_action_selection","UNKNOWN"));
                 break;
             case HuamiDeviceEvent.FELL_ASLEEP:
                 if (!prefs.getBoolean("events_forwarding_fellsleep",false)) return;
                 eventsForwardMessage= prefs.getString("prefs_events_forwarding_fellsleep_broadcast",
                         this.getContext().getString(R.string.prefs_events_forwarding_fellsleep_broadcast_default_value));
+                handleMediaButton(prefs.getString("events_forwarding_fellsleep_action_selection","UNKNOWN"));
                 break;
             case HuamiDeviceEvent.START_NONWEAR:
                 if (!prefs.getBoolean("events_forwarding_startnonwear",false)) return;
                 eventsForwardMessage= prefs.getString("prefs_events_forwarding_startnonwear_broadcast",
                         this.getContext().getString(R.string.prefs_events_forwarding_startnonwear_broadcast_default_value));
+                handleMediaButton(prefs.getString("events_forwarding_startnonwear_action_selection","UNKNOWN"));
                 break;
         }
         if (eventsForwardMessage !=null) {

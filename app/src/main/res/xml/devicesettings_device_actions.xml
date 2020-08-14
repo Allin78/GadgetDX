@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:key="screen_events_forwarding"
+        android:persistent="false"
+        android:summary="@string/prefs_events_forwarding_summary"
+        android:title="@string/prefs_events_forwarding_title">
+
+
+        <PreferenceCategory android:title="@string/prefs_events_forwarding_fellsleep">
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency=""
+                android:key="events_forwarding_fellsleep"
+                android:title="@string/prefs_events_forwarding_fellsleep_summary" />
+            <ListPreference
+                android:dependency="events_forwarding_fellsleep"
+                android:entries="@array/button_action_options"
+                android:entryValues="@array/button_action_values"
+                android:key="events_forwarding_fellsleep_action_selection"
+                android:summary="%s"
+                android:defaultValue="@string/pref_button_action_disabled_value"
+                android:title="@string/prefs_events_forwarding_action_title" />
+            <EditTextPreference
+                android:defaultValue="@string/prefs_events_forwarding_fellsleep_broadcast_default_value"
+                android:dependency="events_forwarding_fellsleep"
+                android:key="prefs_events_forwarding_fellsleep_broadcast"
+                android:summary="@string/prefs_events_forwarding_broadcast_summary"
+                android:title="@string/prefs_events_forwarding_broadcast_title" />
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/prefs_events_forwarding_wokeup">
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency=""
+                android:key="events_forwarding_wokeup"
+                android:title="@string/prefs_events_forwarding_wokeup_summary" />
+            <ListPreference
+                android:dependency="events_forwarding_wokeup"
+                android:entries="@array/button_action_options"
+                android:entryValues="@array/button_action_values"
+                android:key="events_forwarding_wokeup_action_selection"
+                android:summary="%s"
+                android:defaultValue="@string/pref_button_action_disabled_value"
+                android:title="@string/prefs_events_forwarding_action_title" />
+            <EditTextPreference
+                android:defaultValue="@string/prefs_events_forwarding_wokeup_broadcast_default_value"
+                android:dependency="events_forwarding_wokeup"
+                android:key="prefs_events_forwarding_wokeup_broadcast"
+                android:summary="@string/prefs_events_forwarding_broadcast_summary"
+                android:title="@string/prefs_events_forwarding_broadcast_title" />
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/prefs_events_forwarding_startnonwear">
+
+            <SwitchPreference
+                android:defaultValue="false"
+                android:dependency=""
+                android:key="events_forwarding_startnonwear"
+                android:title="@string/prefs_events_forwarding_startnonwear_summary" />
+            <ListPreference
+                android:dependency="events_forwarding_startnonwear"
+                android:entries="@array/button_action_options"
+                android:entryValues="@array/button_action_values"
+                android:key="events_forwarding_startnonwear_action_selection"
+                android:summary="%s"
+                android:defaultValue="@string/pref_button_action_disabled_value"
+                android:title="@string/prefs_events_forwarding_action_title" />
+            <EditTextPreference
+                android:defaultValue="@string/prefs_events_forwarding_startnonwear_broadcast_default_value"
+                android:dependency="events_forwarding_startnonwear"
+                android:key="prefs_events_forwarding_startnonwear_broadcast"
+                android:summary="@string/prefs_events_forwarding_broadcast_summary"
+                android:title="@string/prefs_events_forwarding_broadcast_title" />
+        </PreferenceCategory>
+
+
+    </PreferenceScreen>
+</androidx.preference.PreferenceScreen>

@@ -961,23 +961,22 @@
     <string name="activity_detail_duration_label">Duration:</string>
     <string name="activity_detail_show_gps_label">Show GPS Track</string>
     <!-- Event forwarding preferences -->
-    <string name="prefs_events_forwarding_summary">Forward device events via Android broadcasts</string>
-    <string name="prefs_events_forwarding_title">Device Events Forwarding</string>
-    <string name="prefs_events_forwarding_fellsleep">Fell Asleep</string>
-    <string name="prefs_events_forwarding_fellsleep_summary">Broadcast when FELL ASLEEP detected</string>
+    <string name="prefs_events_forwarding_summary">Use device events to trigger actions and Android broadcasts</string>
+    <string name="prefs_events_forwarding_title">Device actions</string>
+    <string name="prefs_events_forwarding_fellsleep">Fall Asleep</string>
+    <string name="prefs_events_forwarding_fellsleep_summary">React when sleep detected</string>
     <string name="prefs_events_forwarding_fellsleep_broadcast_default_value" translatable="false">nodomain.freeyourgadget.gadgetbridge.FellAsleep</string>
-    <string name="prefs_events_forwarding_fellsleep_broadcast_summary">Broadcast message when FELL ASLEEP detected</string>
-    <string name="prefs_events_forwarding_fellsleep_broadcast_title">Fell asleep broadcast message</string>
-    <string name="prefs_events_forwarding_wokeup">Woke Up</string>
-    <string name="prefs_events_forwarding_wokeup_summary">Broadcast when WOKE UP detected</string>
+    <string name="prefs_events_forwarding_fellsleep_broadcast_summary">Broadcast a message when FELL ASLEEP detected</string>
+    <string name="prefs_events_forwarding_wokeup">Wake Up</string>
+    <string name="prefs_events_forwarding_wokeup_summary">React when wake up detected</string>
     <string name="prefs_events_forwarding_wokeup_broadcast_default_value" translatable="false">nodomain.freeyourgadget.gadgetbridge.WokeUp</string>
-    <string name="prefs_events_forwarding_wokeup_broadcast_summary">Broadcast message when WOKE Up detected</string>
-    <string name="prefs_events_forwarding_wokeup_broadcast_title">Woke Up broadcast message</string>
-    <string name="prefs_events_forwarding_startnonwear">Start Non Wear</string>
-    <string name="prefs_events_forwarding_startnonwear_summary">Broadcast when START NON WEAR detected</string>
+    <string name="prefs_events_forwarding_broadcast_summary">Message to be sent if Broadact message is selected</string>
+    <string name="prefs_events_forwarding_startnonwear">On Charger</string>
+    <string name="prefs_events_forwarding_startnonwear_summary">React when charging detected</string>
     <string name="prefs_events_forwarding_startnonwear_broadcast_default_value" translatable="false">nodomain.freeyourgadget.gadgetbridge.StartNonWear</string>
-    <string name="prefs_events_forwarding_startnonwear_broadcast_summary">Broadcast message when START NON WEAR detected</string>
-    <string name="prefs_events_forwarding_startnonwear_broadcast_title">Start Non Wear broadcast message</string>
+    <string name="prefs_events_forwarding_startnonwear_broadcast_summary">Broadcast a message when START NON WEAR detected</string>
+    <string name="prefs_events_forwarding_broadcast_title">Broadcast message</string>
+    <string name="prefs_events_forwarding_action_title">Run action</string>
 
 
     <plurals name="widget_alarm_target_hours">
