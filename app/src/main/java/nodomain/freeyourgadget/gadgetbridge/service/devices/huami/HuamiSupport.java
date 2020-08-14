@@ -1204,7 +1204,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 break;
             case HuamiDeviceEvent.START_NONWEAR:
                 LOG.info("non-wear start detected");
-                forwardDeviceEvent(HuamiDeviceEvent.START_NONWEAR);
+                broadcastDeviceEvent(HuamiDeviceEvent.START_NONWEAR);
                 break;
             case HuamiDeviceEvent.ALARM_TOGGLED:
                 LOG.info("An alarm was toggled");
@@ -1214,11 +1214,11 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 break;
             case HuamiDeviceEvent.FELL_ASLEEP:
                 LOG.info("Fell asleep");
-                forwardDeviceEvent(HuamiDeviceEvent.FELL_ASLEEP);
+                broadcastDeviceEvent(HuamiDeviceEvent.FELL_ASLEEP);
                 break;
             case HuamiDeviceEvent.WOKE_UP:
                 LOG.info("Woke up");
-                forwardDeviceEvent(HuamiDeviceEvent.WOKE_UP);
+                broadcastDeviceEvent(HuamiDeviceEvent.WOKE_UP);
                 break;
             case HuamiDeviceEvent.STEPSGOAL_REACHED:
                 LOG.info("Steps goal reached");
@@ -1322,7 +1322,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private void forwardDeviceEvent(int event){
+    private void broadcastDeviceEvent(int event){
         LOG.debug("Handling device event: " + event);
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
 
