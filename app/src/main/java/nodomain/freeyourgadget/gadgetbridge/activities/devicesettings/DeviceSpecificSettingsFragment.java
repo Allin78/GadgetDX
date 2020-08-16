@@ -453,12 +453,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 public boolean onPreferenceChange(Preference preference, Object newVal) {
                     final boolean broadcast = PREF_DEVICE_ACTION_SELECTION_BROADCAST.equals(newVal.toString());
                     Objects.requireNonNull(deviceActionsFellSleepBroadcast).setEnabled(broadcast);
-                    invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            GBApplication.deviceService().onSendConfiguration(PREF_DEVICE_ACTION_FELL_SLEEP_SELECTION);
-                        }
-                    });
                     return true;
                 }
             });
@@ -470,12 +464,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newVal) {
                     deviceActionsFellSleepBroadcast.setSummary(newVal.toString());
-                    invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            GBApplication.deviceService().onSendConfiguration(PREF_DEVICE_ACTION_FELL_SLEEP_BROADCAST);
-                        }
-                    });
                     return true;
                 }
             });
@@ -494,12 +482,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 public boolean onPreferenceChange(Preference preference, Object newVal) {
                     final boolean broadcast = PREF_DEVICE_ACTION_SELECTION_BROADCAST.equals(newVal.toString());
                     Objects.requireNonNull(deviceActionsWokeUpBroadcast).setEnabled(broadcast);
-                    invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            GBApplication.deviceService().onSendConfiguration(PREF_DEVICE_ACTION_WOKE_UP_SELECTION);
-                        }
-                    });
                     return true;
                 }
             });
@@ -511,12 +493,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newVal) {
                     deviceActionsWokeUpBroadcast.setSummary(newVal.toString());
-                    invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            GBApplication.deviceService().onSendConfiguration(PREF_DEVICE_ACTION_WOKE_UP_BROADCAST);
-                        }
-                    });
                     return true;
                 }
             });
@@ -535,12 +511,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 public boolean onPreferenceChange(Preference preference, Object newVal) {
                     final boolean broadcast = PREF_DEVICE_ACTION_SELECTION_BROADCAST.equals(newVal.toString());
                     Objects.requireNonNull(deviceActionsStartNonWearBroadcast).setEnabled(broadcast);
-                    invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            GBApplication.deviceService().onSendConfiguration(PREF_DEVICE_ACTION_START_NON_WEAR_SELECTION);
-                        }
-                    });
                     return true;
                 }
             });
@@ -552,12 +522,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newVal) {
                     deviceActionsStartNonWearBroadcast.setSummary(newVal.toString());
-                    invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            GBApplication.deviceService().onSendConfiguration(PREF_DEVICE_ACTION_START_NON_WEAR_BROADCAST);
-                        }
-                    });
                     return true;
                 }
             });
