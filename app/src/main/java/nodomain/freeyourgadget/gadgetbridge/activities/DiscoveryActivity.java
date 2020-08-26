@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -171,7 +172,7 @@ public class DiscoveryActivity extends AbstractGBActivity implements AdapterView
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if (device != null) {
                         int bondState = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE);
-                        LOG.debug(String.format("Bond state: %d", bondState));
+                        LOG.debug(String.format(Locale.ENGLISH, "Bond state: %d", bondState));
 
                         if (bondState == BluetoothDevice.BOND_BONDED) {
                             BondingUtil.handleDeviceBonded((BondingInterface) context, getCandidateFromMAC(device));
@@ -737,7 +738,7 @@ public class DiscoveryActivity extends AbstractGBActivity implements AdapterView
             }
 
             try {
-                setCurrentTarget(deviceCandidate.getDevice());
+                this.bluetoothTarget = deviceCandidate.getDevice();
                 BondingUtil.initiateCorrectBonding(this, deviceCandidate);
             } catch (Exception e) {
                 LOG.error("Error pairing device: " + deviceCandidate.getMacAddress());
@@ -767,17 +768,11 @@ public class DiscoveryActivity extends AbstractGBActivity implements AdapterView
     }
 
     public void onBondingComplete(boolean success) {
-        // TODO:
-
         finish();
     }
 
     public BluetoothDevice getCurrentTarget() {
         return this.bluetoothTarget;
-    }
-
-    private void setCurrentTarget(BluetoothDevice target) {
-        this.bluetoothTarget = target;
     }
 
     public void unregisterBroadcastReceivers() {
