@@ -119,10 +119,11 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         layout.setOnTouchListener(new SwipeEvents(this) {
             @Override
             public void onSwipeRight() {
-                currentItem = items.getNextItem();
-                if (currentItem != null) {
-                    makeSummaryHeader(currentItem);
-                    makeSummaryContent(currentItem);
+                BaseActivitySummary newItem = items.getNextItem();
+                if (newItem != null) {
+                    currentItem = newItem;
+                    makeSummaryHeader(newItem);
+                    makeSummaryContent(newItem);
                     layout.startAnimation(animFadeRight);
 
                 } else {
@@ -132,10 +133,11 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
 
             @Override
             public void onSwipeLeft() {
-                currentItem = items.getPrevItem();
-                if (currentItem != null) {
-                    makeSummaryHeader(currentItem);
-                    makeSummaryContent(currentItem);
+                BaseActivitySummary newItem = items.getPrevItem();
+                if (newItem != null) {
+                    currentItem = newItem;
+                    makeSummaryHeader(newItem);
+                    makeSummaryContent(newItem);
                     layout.startAnimation(animFadeLeft);
                 } else {
                     layout.startAnimation(animBounceLeft);
@@ -241,6 +243,12 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
 
         TextView activity_name = findViewById(R.id.activityname);
         activity_name.setText(activityname);
+
+        if (activityname == null || (activityname != null && activityname.length() < 1)) {
+            activity_name.setVisibility(View.GONE);
+        } else {
+            activity_name.setVisibility(View.VISIBLE);
+        }
 
         TextView start_time = findViewById(R.id.starttime);
         start_time.setText(starttimeS);
