@@ -18,6 +18,7 @@
             android:icon="@drawable/ic_block" />
         <item android:id="@+id/device_action_discover"
             android:title="@string/action_discover"
+            android:iconTint="#7E7E7E"
             android:icon="@drawable/ic_add" />
 
         <item android:id="@+id/action_quit"
