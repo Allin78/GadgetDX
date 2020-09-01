@@ -14,7 +14,7 @@ steps:
     path: /root/.gradle
   commands:
   - GRADLE_OPTS="-XX:MaxPermSize=256m -Dorg.gradle.daemon=false" ./gradlew build connectedCheck --stacktrace
-- name: align and signed GadgetBridge
+- name: align and signed GadgetBridge apk
   image: androidsdk/android-29
   pull: if-not-exists
   volumes:
