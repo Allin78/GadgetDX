@@ -82,6 +82,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeJFCoordinat
 import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.QHybridCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.roidmi.Roidmi1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.roidmi.Roidmi3Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.sonyswr12.SonySWR12DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.tlw64.TLW64Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.um25.Coordinator.UM25Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.vibratissimo.VibratissimoCoordinator;
@@ -259,6 +260,7 @@ public class DeviceHelper {
         result.add(new PineTimeJFCoordinator());
         result.add(new SG2Coordinator());
         result.add(new LefunDeviceCoordinator());
+        result.add(new SonySWR12DeviceCoordinator());
         result.add(new UM25Coordinator());
 
         return result;

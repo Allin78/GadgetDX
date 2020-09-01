@@ -62,6 +62,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleSupport
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pinetime.PineTimeJFSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.roidmi.RoidmiSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sonyswr12.SonySWR12DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.tlw64.TLW64Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.um25.Support.UM25Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.vibratissimo.VibratissimoSupport;
@@ -264,6 +265,9 @@ public class DeviceSupportFactory {
                         break;
                     case LEFUN:
                         deviceSupport = new ServiceDeviceSupport(new LefunDeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case SONY_SWR12:
+                        deviceSupport = new ServiceDeviceSupport(new SonySWR12DeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                     case UM25:
                         deviceSupport = new ServiceDeviceSupport(new UM25Support(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
