@@ -48,6 +48,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.hplus.EXRIZUK8Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.HPlusCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.MakibesF68Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.Q8Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.hplus.SG2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbip.AmazfitBipCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbip.AmazfitBipLiteCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbips.AmazfitBipSCoordinator;
@@ -144,20 +145,17 @@ public class DeviceHelper {
     public Set<GBDevice> getAvailableDevices(Context context) {
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        Set<GBDevice> availableDevices = new LinkedHashSet<GBDevice>();
-
         if (btAdapter == null) {
             GB.toast(context, context.getString(R.string.bluetooth_is_not_supported_), Toast.LENGTH_SHORT, GB.WARN);
         } else if (!btAdapter.isEnabled()) {
             GB.toast(context, context.getString(R.string.bluetooth_is_disabled_), Toast.LENGTH_SHORT, GB.WARN);
         }
-        List<GBDevice> dbDevices = getDatabaseDevices();
-        availableDevices.addAll(dbDevices);
 
+        Set<GBDevice> availableDevices = new LinkedHashSet<>(getDatabaseDevices());
         Prefs prefs = GBApplication.getPrefs();
-        String miAddr = prefs.getString(MiBandConst.PREF_MIBAND_ADDRESS, "");
-        if (miAddr.length() > 0) {
-            GBDevice miDevice = new GBDevice(miAddr, "MI", null,  DeviceType.MIBAND);
+        String miAddress = prefs.getString(MiBandConst.PREF_MIBAND_ADDRESS, "");
+        if (miAddress.length() > 0) {
+            GBDevice miDevice = new GBDevice(miAddress, "MI", null, DeviceType.MIBAND);
             availableDevices.add(miDevice);
         }
 
@@ -257,6 +255,7 @@ public class DeviceHelper {
         result.add(new BangleJSCoordinator());
         result.add(new TLW64Coordinator());
         result.add(new PineTimeJFCoordinator());
+        result.add(new SG2Coordinator());
 
         return result;
     }

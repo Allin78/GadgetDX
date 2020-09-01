@@ -706,7 +706,7 @@
     <string name="activity_type_unknown">Unknown activity</string>
     <string name="activity_summaries">Sport Activities</string>
     <string name="activity_summary_detail">Sport Activity Detail</string>
-    <string name="activity_summary_edit_name_title">Edit name</string>
+    <string name="activity_summary_edit_name_title">Edit label</string>
     <string name="activity_summary_today">Today</string>
     <string name="activity_summary_yesterday">Yesterday</string>
     <string name="activity_type_biking">Biking</string>
@@ -770,6 +770,7 @@
     <string name="notification_channel_name">Gadgetbridge notifications</string>
     <string name="notification_channel_high_priority_name">Gadgetbridge notifications high priority</string>
     <string name="devicetype_amazfit_gts">Amazfit GTS</string>
+    <string name="devicetype_sg2">Lemfo SG2</string>
     <!-- Menus on the smart device -->
     <string name="menuitem_shortcut_alipay">Alipay (Shortcut)</string>
     <string name="menuitem_shortcut_weather">Weather (Shortcut)</string>
@@ -985,9 +986,10 @@
     <string name="activity_filter_date_to">To</string>
     <string name="activity_filter_reset_filter">Reset Filter</string>
     <string name="activity_filter_filter_title">Filter</string>
-    <string name="activity_filter_name_contains">Name</string>
+    <string name="activity_filter_name_contains">Label</string>
     <string name="activity_filter_apply_filter">Apply Filter</string>
     <string name="activity_summaries_statistics">Statistics</string>
+    <string name="activity_summaries_all_activities">All Activities</string>
 
     <!-- swim styles -->
     <string name="breaststroke">Breaststroke</string>
