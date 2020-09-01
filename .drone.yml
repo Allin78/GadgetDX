@@ -7,7 +7,7 @@ workspace:
 
 steps:
 - name: generate GadgetBridge
-  image: androidsdk/android-29
+  image: android-sdk
   pull: if-not-exists
   volumes:
   - name: gradle-cache
@@ -15,7 +15,7 @@ steps:
   commands:
   - GRADLE_OPTS="-XX:MaxPermSize=256m -Dorg.gradle.daemon=false" ./gradlew build connectedCheck --stacktrace
 - name: align and signed GadgetBridge apk
-  image: androidsdk/android-29
+  image: android-sdk
   pull: if-not-exists
   volumes:
   - name: keystore
