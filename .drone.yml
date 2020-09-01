@@ -14,6 +14,19 @@ steps:
     path: /root/.gradle
   commands:
   - GRADLE_OPTS="-XX:MaxPermSize=256m -Dorg.gradle.daemon=false" ./gradlew build connectedCheck --stacktrace
+- name: align and signed GadgetBridge
+  image: androidsdk/android-29
+  pull: if-not-exists
+  volumes:
+  - name: keystore
+    path: /keystore
+  commands:
+  - cd /drone/src/app/build/outputs/apk/release
+  - zipalign -v -p 4 app-release-unsigned.apk app-release-unsigned-aligned.apk
+  - apksigner sign --ks /keystore/memiks-release-key.jks --out app-release-signed.apk app-release-unsigned-aligned.apk
+  - cd /drone/src/app/build/outputs/apk/debug
+  - zipalign -v -p 4 app-debug.apk app-debug-unsigned-aligned.apk
+  - apksigner sign --ks /keystore/memiks-release-key.jks --out app-debug-signed.apk app-debug-unsigned-aligned.apk
 - name: share artifacts
   image: alpine/git
   volumes:
@@ -53,3 +66,6 @@ volumes:
   - name: gradle-cache
     host:
       path: /opt/dronevolumes/gradle-cache
+  - name: keystore
+    host:
+      path: /opt/dronevolumes/keys
