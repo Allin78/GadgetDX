@@ -3,6 +3,7 @@ apply plugin: "com.github.spotbugs"
 apply plugin: "pmd"
 
 def ABORT_ON_CHECK_FAILURE = false
+def defaultEncoding = 'UTF-8'
 
 tasks.withType(Test) {
     systemProperty "MiFirmwareDir", System.getProperty("MiFirmwareDir", null)
@@ -54,7 +55,8 @@ android {
 }
 
 pmd {
-    toolVersion = "5.5.5"
+    toolVersion = "6.27.0"
+    incrementalAnalysis = false
 }
 
 dependencies {
@@ -151,15 +153,15 @@ sourceSets {
 }
 
 spotbugs {
-    toolVersion = "3.1.12"
+    toolVersion = "4.1.2"
     ignoreFailures = !ABORT_ON_CHECK_FAILURE
     effort = "default"
     reportLevel = "medium"
 }
 
-tasks.withType(com.github.spotbugs.SpotBugsTask) {
-    source = fileTree('src/main/java')
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask) {
     classes = files("${project.rootDir}/app/build/intermediates/javac/debug/classes")
+    includeFilter = new File("${project.rootDir}/config/findbugs/findbugs-include-filter.xml")
     excludeFilter = new File("${project.rootDir}/config/findbugs/findbugs-filter.xml")
     reports {
         xml.enabled = false
