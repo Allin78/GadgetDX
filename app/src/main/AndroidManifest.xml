@@ -417,13 +417,11 @@
             android:name=".activities.AboutActivity"
             android:label="@string/about_activity_title"
             android:parentActivityName=".activities.ControlCenterv2"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activities.ActivitySummaryDetail"
             android:label="@string/activity_summary_detail"
             android:parentActivityName=".activities.ActivitySummariesActivity"
-            android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activities.ActivitySummariesFilter"

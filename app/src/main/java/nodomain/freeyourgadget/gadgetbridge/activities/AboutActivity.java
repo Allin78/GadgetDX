@@ -21,14 +21,9 @@ import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import nodomain.freeyourgadget.gadgetbridge.R;
 
-
 public class AboutActivity extends AbstractGBActivity {
-    private static final Logger LOG = LoggerFactory.getLogger(AboutActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +35,5 @@ public class AboutActivity extends AbstractGBActivity {
         link2.setMovementMethod(LinkMovementMethod.getInstance());
         TextView link3 = findViewById(R.id.links3);
         link3.setMovementMethod(LinkMovementMethod.getInstance());
-
     }
 }

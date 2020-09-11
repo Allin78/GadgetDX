@@ -912,7 +912,7 @@
 \n 
 \nהמשך התהליך הוא על אחריותך!</string>
     <string name="devicetype_amazfit_trex">Amazfit T-Rex</string>
-    <string name="about_additional_contributions">תודתנו נתונה לכל התורמים שתרמו קוד, תמיכה, רעיונות, מוטיבציה, דיווחי תקלות, כסף… ✊</string>
+    <string name="about_additional_contributions">תודתנו נתונה לכל התורמים שתרמו קוד, תרגומים, תמיכה, רעיונות, מוטיבציה, דיווחי תקלות, כסף… ✊</string>
     <string name="about_additional_device_support">תמיכה במכשירים נוספים</string>
     <string name="about_contributors">תורמים</string>
     <string name="about_core_team_title">צוות הליבה (מסודרים לפי מועד תרומת הקוד הראשונה)</string>
@@ -1035,4 +1035,26 @@
     <string name="activity_summary_yesterday">אתמול</string>
     <string name="activity_summary_today">היום</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
+    <string name="activity_summaries_all_devices">כל המכשירים</string>
+    <string name="sports_activity_quick_filter_select">תקופה</string>
+    <string name="sports_activity_quick_filter_30days">30 ימים</string>
+    <string name="sports_activity_quick_filter_7days">7 ימים</string>
+    <string name="sports_activity_quick_filter_last_month">חודש שעבר</string>
+    <string name="sports_activity_quick_filter_this_month">החודש</string>
+    <string name="sports_activity_quick_filter_last_week">שבוע שעבר</string>
+    <string name="sports_activity_quick_filter_this_week">השבוע</string>
+    <string name="no">לא</string>
+    <string name="yes">כן</string>
+    <string name="activity_filter_individual_items">פריטים שנבחרו פרטנית</string>
+    <string name="addto_filter">הוספה למסנן</string>
+    <string name="averageSpeed">מהירות ממוצעת</string>
+    <string name="activity_type_badminton">בדמינטון</string>
+    <string name="activity_type_pingpong">פינג פונג</string>
+    <string name="activity_type_basketball">כדורסל</string>
+    <string name="activity_type_cricket">קריקט</string>
+    <string name="activity_type_rowing_machine">מכונת חתירה</string>
+    <string name="activity_type_soccer">כדורגל</string>
+    <string name="activity_filter_to_placeholder">היום</string>
+    <string name="activity_filter_from_placeholder">מרחק שעבר</string>
+    <string name="about_links">קישורים</string>
 </resources>
