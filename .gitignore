@@ -35,4 +35,3 @@ fw.dirs
 **/.settings
 **/.classpath
 app/release/output-metadata.json
-.drone.yml
