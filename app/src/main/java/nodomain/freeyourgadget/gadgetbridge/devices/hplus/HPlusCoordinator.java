@@ -293,6 +293,16 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
         return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_END_TIME, 0);
     }
 
+    public static void setDisplayIncomingMessageIcon(String address, boolean state){
+        SharedPreferences.Editor editor = prefs.getPreferences().edit();
+        editor.putBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, state);
+        editor.apply();
+    }
+
+    public static boolean getDisplayIncomingMessageIcon(String address){
+        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, false));
+    }
+
     public static void setUnicodeSupport(String address, boolean state){
         SharedPreferences.Editor editor = prefs.getPreferences().edit();
         editor.putBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, state);
@@ -301,6 +311,16 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
 
     public static boolean getUnicodeSupport(String address){
         return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, false));
+    }
+
+    public static void setNotificationLinesNumber(String address, int lineNumber){
+        SharedPreferences.Editor editor = prefs.getPreferences().edit();
+        editor.putInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, lineNumber);
+        editor.apply();
+    }
+
+    public static int getNotificationLinesNumber(String address){
+        return (prefs.getInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, 5));
     }
 
     @Override

@@ -527,6 +527,8 @@ class HPlusHandlerThread extends GBDeviceIoThread {
     public boolean processVersion(byte[] data) {
         int major, minor;
 
+        LOG.info("Process Version Data: : '" + new String(data) + "'");
+
         if (data.length >= 11) {
             major = data[10] & 0xFF;
             minor = data[9] & 0xFF;

@@ -13,7 +13,7 @@ steps:
   - name: gradle-cache
     path: /root/.gradle
   commands:
-  - GRADLE_OPTS="-XX:MaxPermSize=256m -Dorg.gradle.daemon=false" ./gradlew build connectedCheck --stacktrace
+  - GRADLE_OPTS="-XX:MaxPermSize=256m -Dorg.gradle.daemon=false" ./gradlew build -x check -x pmd --stacktrace
 - name: align and signed GadgetBridge apk
   image: android-sdk
   pull: if-not-exists
@@ -21,12 +21,10 @@ steps:
   - name: keystore
     path: /keystore
   commands:
+  - APKSIGNER=$$(which apksigner)
   - cd /drone/src/app/build/outputs/apk/release
   - zipalign -v -p 4 app-release-unsigned.apk app-release-unsigned-aligned.apk
-  - apksigner sign --ks /keystore/memiks-release-key.jks --out app-release-signed.apk app-release-unsigned-aligned.apk
-  - cd /drone/src/app/build/outputs/apk/debug
-  - zipalign -v -p 4 app-debug.apk app-debug-unsigned-aligned.apk
-  - apksigner sign --ks /keystore/memiks-release-key.jks --out app-debug-signed.apk app-debug-unsigned-aligned.apk
+  - java -jar $$APKSIGNER sign --ks /keystore/memiks-release-key.jks --ks-pass file:/keystore/password.text --out app-release-signed.apk app-release-unsigned-aligned.apk
 - name: share artifacts
   image: alpine/git
   volumes:
@@ -38,14 +36,16 @@ steps:
   - apk add --no-cache zip alpine-conf
   - setup-timezone -z Asia/Tokyo 
   - export DATE="$(date +%F)"
+  - export TIME="$(date +%H%M)"
   - BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
   - echo "$${BRANCH_NAME}/$${DATE}"
   - mkdir -p /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}
   - cd /drone/src/app/build/outputs/apk
-  - zip -r -q /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/debug debug/
-  - zip -r -q /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/release release/
+  - zip -r -q /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/debug_$${TIME} debug/
+  - zip -r -q /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/release_$${TIME} release/
+  - cp ./release/app-release-signed.apk /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/app-release-signed_$${TIME}.apk
   - cd /drone/src/app/build
-  - zip -r -q /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/reports reports/
+  - zip -r -q /data/GadgetBridge/$${BRANCH_NAME}/$${DATE}/reports_$${TIME} reports/
 - name: send telegram notification
   image: appleboy/drone-telegram
   settings:
