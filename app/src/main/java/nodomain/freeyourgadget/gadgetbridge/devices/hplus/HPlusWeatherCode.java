@@ -1,72 +1,88 @@
+/*  Copyright (C) 2020 Lesur Frederic (memiks)
+
+    This file is part of Gadgetbridge.
+
+    Gadgetbridge is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Gadgetbridge is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.hplus;
-import lineageos.providers.WeatherContract;
 
 public class HPlusWeatherCode {
-    public static final int SUNNY=100;
-    public static final int CLOUDY=101;
-    public static final int FEW_CLOUDS=102;
-    public static final int PARTLY_CLOUDY=103;
-    public static final int OVERCAST=104;
-    public static final int CLEAR=150;
-    public static final int PARTLY_CLOUDY_NIGHT=153;
-    public static final int OVERCAST_NIGHT=154;
-    public static final int SHOWER_RAIN=300;
-    public static final int HEAVY_SHOWER_RAIN=301;
-    public static final int THUNDERSHOWER=302;
-    public static final int HEAVY_THUNDERSTORM=303;
-    public static final int THUNDERSHOWER_WITH_HAIL=304;
-    public static final int LIGHT_RAIN=305;
-    public static final int MODERATE_RAIN=306;
-    public static final int HEAVY_RAIN=307;
-    public static final int EXTREME_RAIN=308;
-    public static final int DRIZZLE_RAIN=309;
-    public static final int STORM=310;
-    public static final int HEAVY_STORM=311;
-    public static final int SEVERE_STORM=312;
-    public static final int FREEZING_RAIN=313;
-    public static final int LIGHT_TO_MODERATE_RAIN=314;
-    public static final int MODERATE_TO_HEAVY_RAIN=315;
-    public static final int HEAVY_RAIN_TO_STORM=316;
-    public static final int STORM_TO_HEAVY_STORM=317;
-    public static final int HEAVY_TO_SEVERE_STORM=318;
-    public static final int RAIN=399;
-    public static final int SHOWER_RAIN_NIGHT=350;
-    public static final int HEAVY_SHOWER_RAIN_NIGHT=351;
-    public static final int LIGHT_SNOW=400;
-    public static final int MODERATE_SNOW=401;
-    public static final int HEAVY_SNOW=402;
-    public static final int SNOWSTORM=403;
-    public static final int SLEET=404;
-    public static final int RAIN_AND_SNOW=405;
-    public static final int SHOWER_SNOW=406;
-    public static final int SNOW_FLURRY=407;
-    public static final int LIGHT_TO_MODERATE_SNOW=408;
-    public static final int MODERATE_TO_HEAVY_SNOW=409;
-    public static final int HEAVY_SNOW_TO_SNOWSTORM=410;
-    public static final int SNOW=499;
-    public static final int SHOWER_SNOW_NIGHT=456;
-    public static final int SNOW_FLURRY_NIGHT=457;
-    public static final int MIST=500;
-    public static final int FOGGY=501;
-    public static final int HAZE=502;
-    public static final int SAND=503;
-    public static final int DUST=504;
-    public static final int DUSTSTORM=507;
-    public static final int SANDSTORM=508;
-    public static final int DENSE_FOG=509;
-    public static final int STRONG_FOG=510;
-    public static final int MODERATE_HAZE=511;
-    public static final int HEAVY_HAZE=512;
-    public static final int SEVERE_HAZE=513;
-    public static final int HEAVY_FOG=514;
-    public static final int EXTRA_HEAVY_FOG=515;
-    public static final int HOT=900;
-    public static final int COLD=901;
-    public static final int UNKNOWN=999;
+    // Weather code from https://github.com/heweather/WeatherIcon
+    public static final int SUNNY = 100;
+    public static final int CLOUDY = 101;
+    public static final int FEW_CLOUDS = 102;
+    public static final int PARTLY_CLOUDY = 103;
+    public static final int OVERCAST = 104;
+    public static final int CLEAR = 150;
+    public static final int PARTLY_CLOUDY_NIGHT = 153;
+    public static final int OVERCAST_NIGHT = 154;
+    public static final int SHOWER_RAIN = 300;
+    public static final int HEAVY_SHOWER_RAIN = 301;
+    public static final int THUNDERSHOWER = 302;
+    public static final int HEAVY_THUNDERSTORM = 303;
+    public static final int THUNDERSHOWER_WITH_HAIL = 304;
+    public static final int LIGHT_RAIN = 305;
+    public static final int MODERATE_RAIN = 306;
+    public static final int HEAVY_RAIN = 307;
+    public static final int EXTREME_RAIN = 308;
+    public static final int DRIZZLE_RAIN = 309;
+    public static final int STORM = 310;
+    public static final int HEAVY_STORM = 311;
+    public static final int SEVERE_STORM = 312;
+    public static final int FREEZING_RAIN = 313;
+    public static final int LIGHT_TO_MODERATE_RAIN = 314;
+    public static final int MODERATE_TO_HEAVY_RAIN = 315;
+    public static final int HEAVY_RAIN_TO_STORM = 316;
+    public static final int STORM_TO_HEAVY_STORM = 317;
+    public static final int HEAVY_TO_SEVERE_STORM = 318;
+    public static final int RAIN = 399;
+    public static final int SHOWER_RAIN_NIGHT = 350;
+    public static final int HEAVY_SHOWER_RAIN_NIGHT = 351;
+    public static final int LIGHT_SNOW = 400;
+    public static final int MODERATE_SNOW = 401;
+    public static final int HEAVY_SNOW = 402;
+    public static final int SNOWSTORM = 403;
+    public static final int SLEET = 404;
+    public static final int RAIN_AND_SNOW = 405;
+    public static final int SHOWER_SNOW = 406;
+    public static final int SNOW_FLURRY = 407;
+    public static final int LIGHT_TO_MODERATE_SNOW = 408;
+    public static final int MODERATE_TO_HEAVY_SNOW = 409;
+    public static final int HEAVY_SNOW_TO_SNOWSTORM = 410;
+    public static final int SNOW = 499;
+    public static final int SHOWER_SNOW_NIGHT = 456;
+    public static final int SNOW_FLURRY_NIGHT = 457;
+    public static final int MIST = 500;
+    public static final int FOGGY = 501;
+    public static final int HAZE = 502;
+    public static final int SAND = 503;
+    public static final int DUST = 504;
+    public static final int DUSTSTORM = 507;
+    public static final int SANDSTORM = 508;
+    public static final int DENSE_FOG = 509;
+    public static final int STRONG_FOG = 510;
+    public static final int MODERATE_HAZE = 511;
+    public static final int HEAVY_HAZE = 512;
+    public static final int SEVERE_HAZE = 513;
+    public static final int HEAVY_FOG = 514;
+    public static final int EXTRA_HEAVY_FOG = 515;
+    public static final int HOT = 900;
+    public static final int COLD = 901;
+    public static final int UNKNOWN = 999;
 
     public static final int mapOpenWeatherConditionToHPlusCondition(int openWeatherMapCondition) {
         switch (openWeatherMapCondition) {
-        //Group 2xx: Thunderstorm
+            //Group 2xx: Thunderstorm
             case 200:  //thunderstorm with light rain:  //11d
                 return HPlusWeatherCode.STORM;
             case 201:  //thunderstorm with rain:  //11d
@@ -124,7 +140,7 @@ public class HPlusWeatherCode {
                 return HPlusWeatherCode.SNOW_FLURRY;
             case 621:  //shower snow:  //[[file:13d.png]]
             case 622:  //heavy shower snow:  //[[file:13d.png]]
-            return HPlusWeatherCode.SHOWER_SNOW;
+                return HPlusWeatherCode.SHOWER_SNOW;
             case 615:  //light rain and snow:  //[[file:13d.png]]
             case 616:  //rain and snow:  //[[file:13d.png]]
                 return HPlusWeatherCode.RAIN_AND_SNOW;
@@ -153,13 +169,13 @@ public class HPlusWeatherCode {
             case 804:  //overcast clouds:  //[[file:04d.png]] [[file:04d.png]]
                 return HPlusWeatherCode.CLOUDY;
 
-        //Group 90x: Extreme
+            //Group 90x: Extreme
             case 901:  //tropical storm
             case 903:  //cold
             case 904:  //hot
             case 905:  //windy
             case 906:  //hail
-        //Group 9xx: Additional
+                //Group 9xx: Additional
             case 951:  //calm
             case 952:  //light breeze
             case 953:  //gentle breeze

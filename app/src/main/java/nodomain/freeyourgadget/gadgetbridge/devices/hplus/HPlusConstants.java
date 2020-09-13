@@ -18,8 +18,8 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.hplus;
 
 /*
-* @author João Paulo Barraca &lt;jpbarraca@gmail.com&gt;
-*/
+ * @author João Paulo Barraca &lt;jpbarraca@gmail.com&gt;
+ */
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,7 +135,7 @@ public final class HPlusConstants {
     public static final String PREF_HPLUS_DISPLAY_NOTIFICATION_ICON = "hplus_display_notification_icon";
     public static final String PREF_HPLUS_NOTIFICATION_LINES = "hplus_notification_lines";
 
-    public static final Map<Character, byte[]> transliterateMap = new HashMap<Character, byte[]>(){
+    public static final Map<Character, byte[]> transliterateMap = new HashMap<Character, byte[]>() {
         {
             //These are missing
             put('ó', new byte[]{(byte) 111});

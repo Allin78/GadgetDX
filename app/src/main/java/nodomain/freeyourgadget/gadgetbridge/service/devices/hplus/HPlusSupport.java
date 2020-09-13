@@ -18,8 +18,8 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.hplus;
 
 /*
-* @author João Paulo Barraca &lt;jpbarraca@gmail.com&gt;
-*/
+ * @author João Paulo Barraca &lt;jpbarraca@gmail.com&gt;
+ */
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -59,19 +59,15 @@ import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfo;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.webview.CurrentPosition;
 import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
-import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.webview.CurrentPosition;
 
 public class HPlusSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(HPlusSupport.class);
-
+    private final GBDeviceEventBatteryInfo batteryCmd = new GBDeviceEventBatteryInfo();
     public BluetoothGattCharacteristic ctrlCharacteristic = null;
     public BluetoothGattCharacteristic measureCharacteristic = null;
-
-    private final GBDeviceEventBatteryInfo batteryCmd = new GBDeviceEventBatteryInfo();
-
     private HPlusHandlerThread syncHelper;
     private DeviceType deviceType = DeviceType.UNKNOWN;
 
@@ -111,7 +107,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
         gbDevice.setState(GBDevice.State.INITIALIZED);
         gbDevice.sendDeviceUpdateIntent(getContext());
 
-        if(syncHelper == null) {
+        if (syncHelper == null) {
             syncHelper = new HPlusHandlerThread(getDevice(), getContext(), this);
             syncHelper.start();
         }
@@ -418,7 +414,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
             setCurrentDate(builder);
             setCurrentTime(builder);
             builder.queue(getQueue());
-        }catch(IOException e){
+        } catch (IOException e) {
 
         }
     }
@@ -451,7 +447,8 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
             builder.queue(getQueue());
 
             GB.toast(getContext(), getContext().getString(R.string.user_feedback_all_alarms_disabled), Toast.LENGTH_SHORT, GB.INFO);
-        }catch(Exception e){}
+        } catch (Exception e) {
+        }
 
 
     }
@@ -519,7 +516,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
     @Override
     public void onFetchRecordedData(int dataTypes) {
 
-        if (syncHelper == null){
+        if (syncHelper == null) {
             syncHelper = new HPlusHandlerThread(gbDevice, getContext(), this);
             syncHelper.start();
         }
@@ -535,7 +532,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
             TransactionBuilder builder = performInitialized("Shutdown");
             builder.write(ctrlCharacteristic, new byte[]{HPlusConstants.CMD_SHUTDOWN, HPlusConstants.ARG_SHUTDOWN_EN});
             builder.queue(getQueue());
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -543,12 +540,12 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
     @Override
     public void onHeartRateTest() {
         getQueue().clear();
-        try{
+        try {
             TransactionBuilder builder = performInitialized("HeartRateTest");
 
             builder.write(ctrlCharacteristic, new byte[]{HPlusConstants.CMD_SET_HEARTRATE_STATE, HPlusConstants.ARG_HEARTRATE_MEASURE_ON}); //Set Real Time... ?
             builder.queue(getQueue());
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -566,7 +563,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
 
             builder.write(ctrlCharacteristic, new byte[]{HPlusConstants.CMD_SET_ALLDAY_HRM, state});
             builder.queue(getQueue());
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -670,9 +667,9 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
 
             int weatherCode = HPlusWeatherCode.mapOpenWeatherConditionToHPlusCondition(weatherSpec.currentConditionCode);
 
-            LOG.info("[WEATHER] currentConditionCode={} altitude={} temp={}",weatherCode,altitude,weatherSpec.currentTemp);
+            LOG.info("[WEATHER] currentConditionCode={} altitude={} temp={}", weatherCode, altitude, weatherSpec.currentTemp);
 
-            byte[] weatherInfo = new byte[] { (byte) HPlusConstants.CMD_SET_WEATHER_STATE,
+            byte[] weatherInfo = new byte[]{(byte) HPlusConstants.CMD_SET_WEATHER_STATE,
                     (byte) ((weatherCode >> 8) & 255),
                     (byte) (weatherCode & 255),
                     (byte) weatherSpec.windDirection, (byte) 0, // weatherSpec.getWinPower(),
@@ -702,7 +699,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    public void setUnicodeSupport(boolean support){
+    public void setUnicodeSupport(boolean support) {
         HPlusCoordinator.setUnicodeSupport(gbDevice.getAddress(), support);
     }
 
@@ -718,7 +715,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
             //Show Call Icon
             builder.write(ctrlCharacteristic, new byte[]{HPlusConstants.CMD_SET_INCOMING_CALL, HPlusConstants.ARG_INCOMING_CALL});
             builder.write(ctrlCharacteristic,
-                    new byte[] { HPlusConstants.CMD_SET_INCOMING_CALL, HPlusConstants.ARG_INCOMING_CALL });
+                    new byte[]{HPlusConstants.CMD_SET_INCOMING_CALL, HPlusConstants.ARG_INCOMING_CALL});
 
             byte space = encodeStringToDevice(" ")[0];
 
@@ -740,7 +737,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
                 builder.write(ctrlCharacteristic, msg);
             }
 
-            if(rawNumber != null) {
+            if (rawNumber != null) {
                 StringBuilder number = new StringBuilder();
 
                 //Clean up number as the device only accepts digits
@@ -795,16 +792,16 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
             length = length > linesNumbers ? linesNumbers : length;
             LOG.info("msglength:" + messageBytes.length + " length:" + length + " linesNumbers:" + linesNumbers);
 
-            if(HPlusCoordinator.getDisplayIncomingMessageIcon(this.gbDevice.getAddress()))
+            if (HPlusCoordinator.getDisplayIncomingMessageIcon(this.gbDevice.getAddress()))
                 builder.write(ctrlCharacteristic,
-                        new byte[] { HPlusConstants.CMD_SET_INCOMING_MESSAGE, HPlusConstants.ARG_INCOMING_MESSAGE });
+                        new byte[]{HPlusConstants.CMD_SET_INCOMING_MESSAGE, HPlusConstants.ARG_INCOMING_MESSAGE});
 
             int remaining = Math.min(255, (messageBytes.length % 17 > 0) ? length + 1 : length);
 
             byte[] msgSpace = new byte[20];
             byte[] msg;
 
-            Arrays.fill(msgSpace,encodeStringToDevice(" ")[0]);
+            Arrays.fill(msgSpace, encodeStringToDevice(" ")[0]);
 
             msgSpace[0] = HPlusConstants.CMD_ACTION_DISPLAY_TEXT;
             msgSpace[1] = (byte) remaining;
@@ -914,7 +911,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
             case HPlusConstants.DATA_STATS:
                 boolean result = syncHelper.processRealtimeStats(data, HPlusCoordinator.getUserAge());
                 if (result) {
-                    processExtraInfo (data);
+                    processExtraInfo(data);
                 }
                 return result;
 
@@ -936,7 +933,7 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private void  processExtraInfo (byte[] data) {
+    private void processExtraInfo(byte[] data) {
         try {
             HPlusDataRecordRealtime record = new HPlusDataRecordRealtime(data, HPlusCoordinator.getUserAge());
 
@@ -970,10 +967,10 @@ public class HPlusSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void handleBatteryInfo(byte data) {
-            if (batteryCmd.level != (short) data) {
-                batteryCmd.level = (short) data;
-                handleGBDeviceEvent(batteryCmd);
-            }
+        if (batteryCmd.level != (short) data) {
+            batteryCmd.level = (short) data;
+            handleGBDeviceEvent(batteryCmd);
+        }
     }
 
 }

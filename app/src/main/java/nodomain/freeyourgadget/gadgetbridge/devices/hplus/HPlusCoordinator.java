@@ -18,8 +18,8 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.hplus;
 
 /*
-* @author João Paulo Barraca &lt;jpbarraca@gmail.com&gt;
-*/
+ * @author João Paulo Barraca &lt;jpbarraca@gmail.com&gt;
+ */
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -30,6 +30,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.ParcelUuid;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
@@ -62,7 +63,149 @@ import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
 
 public class HPlusCoordinator extends AbstractDeviceCoordinator {
     protected static final Logger LOG = LoggerFactory.getLogger(HPlusCoordinator.class);
-    protected static Prefs prefs  = GBApplication.getPrefs();
+    protected static Prefs prefs = GBApplication.getPrefs();
+
+    public static byte getLanguage(String address) {
+        String language = prefs.getString("language", "default");
+        Locale locale;
+
+        if (language.equals("default")) {
+            locale = Locale.getDefault();
+        } else {
+            locale = new Locale(language);
+        }
+
+        if (locale.getLanguage().equals(new Locale("cn").getLanguage())) {
+            return HPlusConstants.ARG_LANGUAGE_CN;
+        } else {
+            return HPlusConstants.ARG_LANGUAGE_EN;
+        }
+    }
+
+    public static byte getTimeMode(String deviceAddress) {
+        GBPrefs gbPrefs = new GBPrefs(new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress)));
+
+        String tmode = gbPrefs.getTimeFormat();
+
+        if ("24h".equals(tmode)) {
+            return HPlusConstants.ARG_TIMEMODE_24H;
+        } else {
+            return HPlusConstants.ARG_TIMEMODE_12H;
+        }
+    }
+
+    public static byte getUnit(String address) {
+        String units = prefs.getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, getContext().getString(R.string.p_unit_metric));
+
+        if (units.equals(getContext().getString(R.string.p_unit_metric))) {
+            return HPlusConstants.ARG_UNIT_METRIC;
+        } else {
+            return HPlusConstants.ARG_UNIT_IMPERIAL;
+        }
+    }
+
+    public static byte getUserWeight() {
+        ActivityUser activityUser = new ActivityUser();
+
+        return (byte) (activityUser.getWeightKg() & 0xFF);
+    }
+
+    public static byte getUserHeight() {
+        ActivityUser activityUser = new ActivityUser();
+
+        return (byte) (activityUser.getHeightCm() & 0xFF);
+    }
+
+    public static byte getUserAge() {
+        ActivityUser activityUser = new ActivityUser();
+
+        return (byte) (activityUser.getAge() & 0xFF);
+    }
+
+    public static byte getUserGender() {
+        ActivityUser activityUser = new ActivityUser();
+
+        if (activityUser.getGender() == ActivityUser.GENDER_MALE)
+            return HPlusConstants.ARG_GENDER_MALE;
+
+        return HPlusConstants.ARG_GENDER_FEMALE;
+    }
+
+    public static int getGoal() {
+        ActivityUser activityUser = new ActivityUser();
+
+        return activityUser.getStepsGoal();
+    }
+
+    public static byte getScreenTime(String address) {
+        return (byte) (prefs.getInt(HPlusConstants.PREF_HPLUS_SCREENTIME, 5) & 0xFF);
+    }
+
+    public static byte getAllDayHR(String address) {
+        boolean value = (prefs.getBoolean(HPlusConstants.PREF_HPLUS_ALLDAYHR, true));
+
+        if (value) {
+            return HPlusConstants.ARG_HEARTRATE_ALLDAY_ON;
+        } else {
+            return HPlusConstants.ARG_HEARTRATE_ALLDAY_OFF;
+        }
+    }
+
+    public static byte getSocial(String address) {
+        //TODO: Figure what this is. Returning the default value
+
+        return (byte) 255;
+    }
+
+    //FIXME: unused
+    public static byte getUserWrist(String deviceAddress) {
+        SharedPreferences sharedPreferences = GBApplication.getDeviceSpecificSharedPrefs(deviceAddress);
+        String value = sharedPreferences.getString(DeviceSettingsPreferenceConst.PREF_WEARLOCATION, "left");
+
+        if ("left".equals(value)) {
+            return HPlusConstants.ARG_WRIST_LEFT;
+        } else {
+            return HPlusConstants.ARG_WRIST_RIGHT;
+        }
+    }
+
+    public static int getSITStartTime(String address) {
+        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_START_TIME, 0);
+    }
+
+    public static int getSITEndTime(String address) {
+        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_END_TIME, 0);
+    }
+
+    public static void setDisplayIncomingMessageIcon(String address, boolean state) {
+        SharedPreferences.Editor editor = prefs.getPreferences().edit();
+        editor.putBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, state);
+        editor.apply();
+    }
+
+    public static boolean getDisplayIncomingMessageIcon(String address) {
+        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, false));
+    }
+
+    public static void setUnicodeSupport(String address, boolean state) {
+        SharedPreferences.Editor editor = prefs.getPreferences().edit();
+        editor.putBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, state);
+        editor.apply();
+    }
+
+    public static boolean getUnicodeSupport(String address) {
+        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, false));
+    }
+
+    public static void setNotificationLinesNumber(String address, int lineNumber) {
+        SharedPreferences.Editor editor = prefs.getPreferences().edit();
+        editor.putInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, lineNumber);
+        editor.apply();
+    }
+
+    public static int getNotificationLinesNumber(String address) {
+        return (prefs.getInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, 5));
+    }
 
     @NonNull
     @Override
@@ -85,7 +228,7 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
-    public int getBondingStyle(){
+    public int getBondingStyle() {
         return BONDING_STYLE_NONE;
     }
 
@@ -179,148 +322,6 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
         Long deviceId = device.getId();
         QueryBuilder<?> qb = session.getHPlusHealthActivitySampleDao().queryBuilder();
         qb.where(HPlusHealthActivitySampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
-    }
-
-    public static byte getLanguage(String address) {
-        String language = prefs.getString("language", "default");
-        Locale locale;
-
-        if (language.equals("default")) {
-            locale = Locale.getDefault();
-        } else {
-            locale = new Locale(language);
-        }
-
-        if (locale.getLanguage().equals(new Locale("cn").getLanguage())){
-            return HPlusConstants.ARG_LANGUAGE_CN;
-        }else{
-            return HPlusConstants.ARG_LANGUAGE_EN;
-        }
-    }
-
-    public static byte getTimeMode(String deviceAddress) {
-        GBPrefs gbPrefs = new GBPrefs(new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress)));
-
-        String tmode = gbPrefs.getTimeFormat();
-
-        if ("24h".equals(tmode)) {
-            return HPlusConstants.ARG_TIMEMODE_24H;
-        }else{
-            return HPlusConstants.ARG_TIMEMODE_12H;
-        }
-    }
-
-    public static byte getUnit(String address) {
-        String units = prefs.getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, getContext().getString(R.string.p_unit_metric));
-
-        if(units.equals(getContext().getString(R.string.p_unit_metric))){
-            return HPlusConstants.ARG_UNIT_METRIC;
-        }else{
-            return HPlusConstants.ARG_UNIT_IMPERIAL;
-        }
-    }
-
-    public static byte getUserWeight() {
-        ActivityUser activityUser = new ActivityUser();
-
-        return (byte) (activityUser.getWeightKg() & 0xFF);
-    }
-
-    public static byte getUserHeight() {
-        ActivityUser activityUser = new ActivityUser();
-
-        return (byte) (activityUser.getHeightCm() & 0xFF);
-    }
-
-    public static byte getUserAge() {
-        ActivityUser activityUser = new ActivityUser();
-
-        return (byte) (activityUser.getAge() & 0xFF);
-    }
-
-    public static byte getUserGender() {
-        ActivityUser activityUser = new ActivityUser();
-
-        if (activityUser.getGender() == ActivityUser.GENDER_MALE)
-            return HPlusConstants.ARG_GENDER_MALE;
-
-        return HPlusConstants.ARG_GENDER_FEMALE;
-    }
-
-    public static int getGoal() {
-        ActivityUser activityUser = new ActivityUser();
-
-        return activityUser.getStepsGoal();
-    }
-
-    public static byte getScreenTime(String address) {
-        return (byte) (prefs.getInt(HPlusConstants.PREF_HPLUS_SCREENTIME, 5) & 0xFF);
-    }
-
-    public static byte getAllDayHR(String address) {
-        boolean value = (prefs.getBoolean(HPlusConstants.PREF_HPLUS_ALLDAYHR, true));
-
-        if(value){
-            return HPlusConstants.ARG_HEARTRATE_ALLDAY_ON;
-        }else{
-            return HPlusConstants.ARG_HEARTRATE_ALLDAY_OFF;
-        }
-    }
-
-    public static byte getSocial(String address) {
-        //TODO: Figure what this is. Returning the default value
-
-        return (byte) 255;
-    }
-
-    //FIXME: unused
-    public static byte getUserWrist(String deviceAddress) {
-        SharedPreferences sharedPreferences = GBApplication.getDeviceSpecificSharedPrefs(deviceAddress);
-        String value = sharedPreferences.getString(DeviceSettingsPreferenceConst.PREF_WEARLOCATION, "left");
-
-        if ("left".equals(value)) {
-            return HPlusConstants.ARG_WRIST_LEFT;
-        } else {
-            return HPlusConstants.ARG_WRIST_RIGHT;
-        }
-    }
-
-    public static int getSITStartTime(String address) {
-        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_START_TIME, 0);
-    }
-
-    public static int getSITEndTime(String address) {
-        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_END_TIME, 0);
-    }
-
-    public static void setDisplayIncomingMessageIcon(String address, boolean state){
-        SharedPreferences.Editor editor = prefs.getPreferences().edit();
-        editor.putBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, state);
-        editor.apply();
-    }
-
-    public static boolean getDisplayIncomingMessageIcon(String address){
-        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, false));
-    }
-
-    public static void setUnicodeSupport(String address, boolean state){
-        SharedPreferences.Editor editor = prefs.getPreferences().edit();
-        editor.putBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, state);
-        editor.apply();
-    }
-
-    public static boolean getUnicodeSupport(String address){
-        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, false));
-    }
-
-    public static void setNotificationLinesNumber(String address, int lineNumber){
-        SharedPreferences.Editor editor = prefs.getPreferences().edit();
-        editor.putInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, lineNumber);
-        editor.apply();
-    }
-
-    public static int getNotificationLinesNumber(String address){
-        return (prefs.getInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, 5));
     }
 
     @Override
