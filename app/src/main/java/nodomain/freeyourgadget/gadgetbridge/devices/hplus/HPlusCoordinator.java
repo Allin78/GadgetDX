@@ -292,7 +292,7 @@
         public static int getSITEndTime(String address) {
             return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_END_TIME, 0);
         }
-    
+
         public static void setDisplayIncomingMessageIcon(String address, boolean state){
             SharedPreferences.Editor editor = prefs.getPreferences().edit();
             editor.putBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, state);
