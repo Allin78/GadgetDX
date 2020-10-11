@@ -1058,6 +1058,7 @@
     <string name="lefun_prefs_hydration_reminder_interval_title">הפרש תזכורת שתייה (בדקות)</string>
     <string name="lefun_prefs_hydration_reminder_summary">הצמיד ירטוט כדי להזכיר לך לשתות מים</string>
     <string name="lefun_prefs_hydration_reminder_title">תזכורת שתייה</string>
+    <string name="baseAltitude">בסיס לחישוב רום</string>
     <string name="devicetype_sonyswr12">Sony SWR12</string>
     <string name="sonyswr12_settings_title">Sony SWR12 הגדרות</string>
     <string name="sonyswr12_settings_low_vibration">רטט נמוך מופעל</string>
