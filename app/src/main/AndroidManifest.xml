@@ -571,6 +571,9 @@
             android:name=".devices.qhybrid.ImageEditActivity"
             android:exported="true" />
         <activity
+            android:name=".devices.qhybrid.FileManagementActivity"
+            android:exported="true" />
+        <activity
             android:name=".devices.sonyswr12.SonySWR12PrefActivity"
             android:exported="true" />
         <activity
