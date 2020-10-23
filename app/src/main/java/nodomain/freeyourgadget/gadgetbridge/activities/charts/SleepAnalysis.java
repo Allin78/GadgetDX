@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import nodomain.freeyourgadget.gadgetbridge.entities.ZeTimeActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 
@@ -49,9 +50,9 @@ public class SleepAnalysis {
 
             if (previousSample != null) {
                 long durationSinceLastSample = sample.getTimestamp() - previousSample.getTimestamp();
-                if (sample.getKind() == ActivityKind.TYPE_LIGHT_SLEEP) {
+                if ((sample instanceof ZeTimeActivitySample ? previousSample : sample).getKind() == ActivityKind.TYPE_LIGHT_SLEEP) {
                     lightSleepDuration += durationSinceLastSample;
-                } else if (sample.getKind() == ActivityKind.TYPE_DEEP_SLEEP) {
+                } else if ((sample instanceof ZeTimeActivitySample ? previousSample : sample).getKind() == ActivityKind.TYPE_DEEP_SLEEP) {
                     deepSleepDuration += durationSinceLastSample;
                 } else {
                     durationSinceLastSleep += durationSinceLastSample;
@@ -65,8 +66,9 @@ public class SleepAnalysis {
                     }
                 }
             }
-
-            previousSample = sample;
+            if (!(sample instanceof ZeTimeActivitySample) || isSleep(sample)) {
+                previousSample = sample;
+            }
         }
         if (lightSleepDuration + deepSleepDuration > MIN_SESSION_LENGTH) {
             result.add(new SleepSession(sleepStart, sleepEnd, lightSleepDuration, deepSleepDuration));
@@ -75,7 +77,8 @@ public class SleepAnalysis {
     }
 
     private boolean isSleep(ActivitySample sample) {
-        return sample.getKind() == ActivityKind.TYPE_DEEP_SLEEP || sample.getKind() == ActivityKind.TYPE_LIGHT_SLEEP;
+        return sample.getKind() == ActivityKind.TYPE_DEEP_SLEEP || sample.getKind() == ActivityKind.TYPE_LIGHT_SLEEP
+                || sample instanceof ZeTimeActivitySample && sample.getKind() == ActivityKind.TYPE_UNKNOWN && sample.getHeartRate() == 0;
     }
 
     private Date getDateFromSample(ActivitySample sample) {
