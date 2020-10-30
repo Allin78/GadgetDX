@@ -78,6 +78,13 @@
                 android:title="@string/mi2_prefs_button_press_broadcast" />
 
             <EditTextPreference
+                android:defaultValue=""
+                android:dependency="button_action_enable"
+                android:key="button_action_httprequest"
+                android:summary="@string/mi2_prefs_button_press_httprequest_summary"
+                android:title="@string/mi2_prefs_button_press_httprequest" />
+
+            <EditTextPreference
                 android:defaultValue="2000"
                 android:dependency="button_action_enable"
                 android:inputType="number"

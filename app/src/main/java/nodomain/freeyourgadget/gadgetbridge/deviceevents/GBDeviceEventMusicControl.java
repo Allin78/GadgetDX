@@ -32,4 +32,16 @@ public class GBDeviceEventMusicControl extends GBDeviceEvent {
         FORWARD,
         REWIND
     }
+
+    static public boolean isMediaEvent(String eventName)
+    {
+        try
+        {
+            return Event.valueOf(eventName) != Event.UNKNOWN;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
 }

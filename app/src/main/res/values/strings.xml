@@ -531,6 +531,9 @@
     <string name="mi2_prefs_button_press_broadcast">Broadcast message to send</string>
     <string name="mi2_prefs_button_press_broadcast_summary">Broadcast message sent with the event. Parameter `button_id` is added automatically to each message.</string>
     <string name="mi2_prefs_button_press_broadcast_default_value" translatable="false">nodomain.freeyourgadget.gadgetbridge.ButtonPressed</string>
+    <string name="mi2_prefs_button_press_httprequest">HTTP request</string>
+    <string name="mi2_prefs_button_press_httprequest_summary">HTTP request sent with GET protocol.</string>
+    <string name="mi2_prefs_button_press_httprequest_default_value" translatable="false"></string>
     <string name="mi2_prefs_button_action">Enable button action</string>
     <string name="mi2_prefs_button_action_summary">Enable action on specified number of button presses</string>
     <string name="mi2_prefs_button_action_vibrate">Enable band vibration</string>
