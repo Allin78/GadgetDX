@@ -224,6 +224,11 @@ public class ControlCenterv2 extends AppCompatActivity
         } else {
             GBApplication.deviceService().requestDeviceInfo();
         }
+
+        if (GBApplication.getGBPrefs().getAutoReconnect())
+        {
+            GBApplication.deviceService().connect();
+        }
     }
 
     @Override
