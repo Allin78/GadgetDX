@@ -224,10 +224,6 @@
             android:summary="@string/pref_summary_notifications_pebblemsg"
             android:title="@string/pref_title_notifications_pebblemsg" />
 
-        <Preference
-            android:key="notifications_generic"
-            android:title="@string/pref_title_notifications_generic" />
-
         <CheckBoxPreference
             android:layout="@layout/preference_checkbox"
             android:defaultValue="false"
@@ -252,6 +248,16 @@
         <Preference
             android:key="pref_key_blacklist"
             android:title="@string/pref_blacklist" />
+
+        <Preference
+            android:key="pref_key_filters"
+            android:title="@string/pref_filters" />
+
+        <Preference
+            android:key="notifications_generic"
+            android:title="@string/pref_title_notifications_generic" />
+
+
     </PreferenceCategory>
 
     <PreferenceCategory

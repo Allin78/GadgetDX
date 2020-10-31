@@ -110,6 +110,10 @@
             android:label="@string/title_activity_appblacklist"
             android:parentActivityName=".activities.SettingsActivity" />
         <activity
+            android:name=".activities.AppFiltersActivity"
+            android:label="@string/title_activity_appfilters"
+            android:parentActivityName=".activities.SettingsActivity" />
+        <activity
             android:name=".activities.CalBlacklistActivity"
             android:label="@string/title_activity_calblacklist"
             android:parentActivityName=".activities.SettingsActivity" />

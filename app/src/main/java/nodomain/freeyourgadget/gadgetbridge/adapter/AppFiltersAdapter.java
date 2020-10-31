@@ -46,9 +46,11 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.NotificationFilterActivity;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
+import static nodomain.freeyourgadget.gadgetbridge.GBApplication.appIsNotifBlacklisted;
+
 //import static nodomain.freeyourgadget.gadgetbridge.GBApplication.packageNameToPebbleMsgSender;
 
-public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapter.AppBLViewHolder> implements Filterable {
+public class AppFiltersAdapter extends RecyclerView.Adapter<AppFiltersAdapter.AppBLViewHolder> implements Filterable {
 
     public static final String STRING_EXTRA_PACKAGE_NAME = "packageName";
 
@@ -60,12 +62,17 @@ public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapte
 
     private ApplicationFilter applicationFilter;
 
-    public AppBlacklistAdapter(int layoutId, Context context) {
+    public AppFiltersAdapter(int layoutId, Context context) {
         mLayoutId = layoutId;
         mContext = context;
         mPm = context.getPackageManager();
 
-        applicationInfoList = GBApplication.getInstalledApplications();
+        applicationInfoList = new ArrayList<>();
+        List<ApplicationInfo> fullApplicationInfoList = GBApplication.getInstalledApplications();
+        for (ApplicationInfo ai : fullApplicationInfoList) {
+            if (!appIsNotifBlacklisted(ai.packageName))
+                applicationInfoList.add(ai);
+        }
 
         mNameMap = new IdentityHashMap<>(applicationInfoList.size());
         for (ApplicationInfo ai : applicationInfoList) {
@@ -88,61 +95,27 @@ public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapte
     }
 
     @Override
-    public AppBlacklistAdapter.AppBLViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AppFiltersAdapter.AppBLViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(mLayoutId, parent, false);
         return new AppBLViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final AppBlacklistAdapter.AppBLViewHolder holder, int position) {
+    public void onBindViewHolder(final AppFiltersAdapter.AppBLViewHolder holder, int position) {
         final ApplicationInfo appInfo = applicationInfoList.get(position);
 
         holder.deviceAppVersionAuthorLabel.setText(appInfo.packageName);
         holder.deviceAppNameLabel.setText(mNameMap.get(appInfo));
         holder.deviceImageView.setImageDrawable(appInfo.loadIcon(mPm));
-        holder.blacklist_checkbox.setChecked(GBApplication.appIsNotifBlacklisted(appInfo.packageName));
 
-        holder.blacklist_checkbox.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //holder.blacklist_checkbox.toggle();
-                if (holder.blacklist_checkbox.isChecked()) {
-                    GBApplication.addAppToNotifBlacklist(appInfo.packageName);
-                } else {
-                    GBApplication.removeFromAppsNotifBlacklist(appInfo.packageName);
-                }
+                Intent intentStartNotificationFilterActivity = new Intent(mContext, NotificationFilterActivity.class);
+                intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
+                mContext.startActivity(intentStartNotificationFilterActivity);
             }
         });
-
-        /*holder.btnConfigureApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (holder.blacklist_checkbox.isChecked()) {
-                    GB.toast(mContext, mContext.getString(R.string.toast_app_must_not_be_blacklisted), Toast.LENGTH_SHORT, GB.INFO);
-                } else {
-                    Intent intentStartNotificationFilterActivity = new Intent(mContext, NotificationFilterActivity.class);
-                    intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
-                    mContext.startActivity(intentStartNotificationFilterActivity);
-                }
-            }
-        });*/
-    }
-
-    public void blacklistAllNotif() {
-        Set<String> apps_blacklist = new HashSet<>();
-        List<ApplicationInfo> allApps = mPm.getInstalledApplications(PackageManager.GET_META_DATA);
-        for (ApplicationInfo ai : allApps) {
-            apps_blacklist.add(ai.packageName);
-        }
-        GBApplication.setAppsNotifBlackList(apps_blacklist);
-        notifyDataSetChanged();
-    }
-
-    public void whitelistAllNotif() {
-        Set<String> apps_blacklist = new HashSet<>();
-        GBApplication.setAppsNotifBlackList(apps_blacklist);
-        notifyDataSetChanged();
     }
 
     @Override
@@ -158,9 +131,6 @@ public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapte
     }
 
     class AppBLViewHolder extends RecyclerView.ViewHolder {
-
-        final AppCompatCheckBox blacklist_checkbox;
-        //final CheckedTextView blacklist_pebble_checkbox;
         final ImageView deviceImageView;
         final TextView deviceAppVersionAuthorLabel;
         final TextView deviceAppNameLabel;
@@ -168,8 +138,6 @@ public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapte
         AppBLViewHolder(View itemView) {
             super(itemView);
 
-            blacklist_checkbox = itemView.findViewById(R.id.item_checkbox);
-            //blacklist_pebble_checkbox = itemView.findViewById(R.id.item_pebble_checkbox);
             deviceImageView = itemView.findViewById(R.id.item_image);
             deviceAppVersionAuthorLabel = itemView.findViewById(R.id.item_details);
             deviceAppNameLabel = itemView.findViewById(R.id.item_name);
@@ -179,11 +147,11 @@ public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapte
 
     private class ApplicationFilter extends Filter {
 
-        private final AppBlacklistAdapter adapter;
+        private final AppFiltersAdapter adapter;
         private final List<ApplicationInfo> originalList;
         private final List<ApplicationInfo> filteredList;
 
-        private ApplicationFilter(AppBlacklistAdapter adapter, List<ApplicationInfo> originalList) {
+        private ApplicationFilter(AppFiltersAdapter adapter, List<ApplicationInfo> originalList) {
             super();
             this.originalList = new ArrayList<>(originalList);
             this.filteredList = new ArrayList<>();

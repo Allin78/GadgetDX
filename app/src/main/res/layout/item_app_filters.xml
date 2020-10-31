@@ -6,19 +6,6 @@
     android:background="?android:attr/activatedBackgroundIndicator"
     android:minHeight="60dp">
 
-    <!--<androidx.appcompat.widget.AppCompatCheckedTextView
-        android:id="@+id/item_pebble_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_toEndOf="@+id/item_checkbox"
-        android:drawableTop="?android:attr/listChoiceIndicatorMultiple"
-        android:text="PEBBLE"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textColor="@color/blacklist_checkboxes" />-->
-
     <ImageView
         android:id="@+id/item_image"
         android:layout_width="48dp"
@@ -32,10 +19,9 @@
 
     <LinearLayout
         android:id="@+id/app_container"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/item_checkbox"
         android:layout_toEndOf="@id/item_image"
         android:orientation="vertical"
 
@@ -59,12 +45,5 @@
             android:ellipsize="end"
             android:textAppearance="@style/TextAppearance.AppCompat.Small" />
     </LinearLayout>
-
-    <androidx.appcompat.widget.AppCompatCheckBox
-        android:id="@+id/item_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true" />
 
 </RelativeLayout>

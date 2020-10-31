@@ -51,7 +51,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -125,6 +128,8 @@ public class GBApplication extends Application {
     public static final String ACTION_NEW_DATA = "nodomain.freeyourgadget.gadgetbridge.action.new_data";
 
     private static GBApplication app;
+
+    private static HashMap<ApplicationInfo, String> mAppLabels = new HashMap<ApplicationInfo, String>();
 
     private static Logging logging = new Logging() {
         @Override
@@ -1048,5 +1053,23 @@ public class GBApplication extends Application {
             GB.log("Unable to determine Gadgetbridge's name/version", GB.WARN, e);
             return "Gadgetbridge";
         }
+    }
+
+    public static List<ApplicationInfo> getInstalledApplications() {
+        PackageManager pm = context.getPackageManager();
+        List<ApplicationInfo> list = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        return list;
+    }
+
+    public static String getApplicationLabel(ApplicationInfo appInfo)
+    {
+        String label = mAppLabels.get(appInfo);
+        if (label == null) {
+            PackageManager pm = context.getPackageManager();
+            label = (String) pm.getApplicationLabel(appInfo);
+            mAppLabels.put(appInfo, label);
+        }
+
+        return label;
     }
 }

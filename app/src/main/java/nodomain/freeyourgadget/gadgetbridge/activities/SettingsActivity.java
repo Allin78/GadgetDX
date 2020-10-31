@@ -144,6 +144,14 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 return true;
             }
         });
+        pref = findPreference("pref_key_filters");
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent enableIntent = new Intent(SettingsActivity.this, AppFiltersActivity.class);
+                startActivity(enableIntent);
+                return true;
+            }
+        });
 
         pref = findPreference("pref_key_blacklist_calendars");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

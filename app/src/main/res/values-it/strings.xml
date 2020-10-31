@@ -40,6 +40,7 @@
     <string name="app_move_to_top">Sposta in cima</string>
     <!--Strings related to AppBlacklist-->
     <string name="title_activity_appblacklist">Blocco notifiche</string>
+    <string name="title_activity_appfilters">Filtri delle notifiche</string>
     <!--Strings related to CalBlacklist-->
     <string name="title_activity_calblacklist">Calendari ignorati</string>
     <!--Strings related to FwAppInstaller-->
