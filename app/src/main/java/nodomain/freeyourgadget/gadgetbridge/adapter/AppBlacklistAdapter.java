@@ -100,33 +100,19 @@ public class AppBlacklistAdapter extends RecyclerView.Adapter<AppBlacklistAdapte
         holder.deviceAppVersionAuthorLabel.setText(appInfo.packageName);
         holder.deviceAppNameLabel.setText(mNameMap.get(appInfo));
         holder.deviceImageView.setImageDrawable(appInfo.loadIcon(mPm));
-        holder.blacklist_checkbox.setChecked(GBApplication.appIsNotifBlacklisted(appInfo.packageName));
+        holder.blacklist_checkbox.setChecked(!GBApplication.appIsNotifBlacklisted(appInfo.packageName));
 
         holder.blacklist_checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //holder.blacklist_checkbox.toggle();
+                //this has been inverted from blacklist to "apps that can send notifications", as in phone calls, sms, ...
                 if (holder.blacklist_checkbox.isChecked()) {
-                    GBApplication.addAppToNotifBlacklist(appInfo.packageName);
-                } else {
                     GBApplication.removeFromAppsNotifBlacklist(appInfo.packageName);
+                } else {
+                    GBApplication.addAppToNotifBlacklist(appInfo.packageName);
                 }
             }
         });
-
-        /*holder.btnConfigureApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (holder.blacklist_checkbox.isChecked()) {
-                    GB.toast(mContext, mContext.getString(R.string.toast_app_must_not_be_blacklisted), Toast.LENGTH_SHORT, GB.INFO);
-                } else {
-                    Intent intentStartNotificationFilterActivity = new Intent(mContext, NotificationFilterActivity.class);
-                    intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
-                    mContext.startActivity(intentStartNotificationFilterActivity);
-                }
-            }
-        });*/
     }
 
     public void blacklistAllNotif() {

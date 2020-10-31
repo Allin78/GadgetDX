@@ -41,6 +41,7 @@
     <!--Strings related to AppBlacklist-->
     <string name="title_activity_appblacklist">Blocco notifiche</string>
     <string name="title_activity_appfilters">Filtri delle notifiche</string>
+    <string name="title_activity_appnotifications">Notifiche delle app</string>
     <!--Strings related to CalBlacklist-->
     <string name="title_activity_calblacklist">Calendari ignorati</string>
     <!--Strings related to FwAppInstaller-->
@@ -74,6 +75,7 @@
     <string name="pref_title_notifications_repetitions">Ripetute</string>
     <string name="pref_title_notifications_call">Chiamate telefoniche</string>
     <string name="pref_title_notifications_sms">SMS</string>
+    <string name="pref_title_notifications_apps">Applicazioni</string>
     <string name="pref_title_notifications_pebblemsg">Messaggi Pebble</string>
     <string name="pref_summary_notifications_pebblemsg">Supporto per applicazioni che inviano le notifiche a Pebble usando PebbleKit.</string>
     <string name="pref_title_notifications_generic">Accesso alle notifiche</string>
@@ -489,6 +491,8 @@
     <string name="on">Acceso</string>
     <string name="blacklist_all_for_notifications">Blocca tutte le notifiche</string>
     <string name="whitelist_all_for_notifications">Consenti le notifiche da tutte le applicazioni</string>
+    <string name="enable_all_for_notifications">Abilita tutte</string>
+    <string name="disable_all_for_notifications">Disabilita tutte</string>
     <string name="fw_upgrade_notice_miband3">Stai per installare il firmware %s sul Mi Band 3.
 \n
 \nSi prega di installare prima il file .fw e successivamente il file .res. La Miband3 si riavvierà dopo l\'installazione del file .fw.
@@ -639,7 +643,7 @@
     <string name="zetime_prefs_inactivity_fr">Venerdì</string>
     <string name="zetime_prefs_inactivity_sa">Sabato</string>
     <string name="zetime_prefs_inactivity_su">Domenica</string>
-    <string name="pref_title_support_voip_calls">Abilita chiamate VoIP</string>
+    <string name="pref_title_support_voip_calls">Chiamate VoIP</string>
     <string name="zetime_title_settings">Impostazioni ZeTime</string>
     <string name="zetime_title_heart_rate_alarm">Avviso frequenza cardiaca</string>
     <string name="zetime_heart_rate_alarm_enable">Abilita l\'avviso per la frequenza cardiaca</string>

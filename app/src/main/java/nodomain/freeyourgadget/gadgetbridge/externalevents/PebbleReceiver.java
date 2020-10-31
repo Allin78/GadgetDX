@@ -40,10 +40,10 @@ public class PebbleReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Prefs prefs = GBApplication.getPrefs();
-        if ("never".equals(prefs.getString("notification_mode_pebblemsg", "when_screen_off"))) {
+        if (!prefs.getBoolean("notification_mode_pebblemsg_bool", true)) {
             return;
         }
-        if ("when_screen_off".equals(prefs.getString("notification_mode_pebblemsg", "when_screen_off"))) {
+        if (!prefs.getBoolean("notifications_generic_whenscreenon", false)) {
             PowerManager powermanager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
             if (powermanager.isScreenOn()) {
                 return;

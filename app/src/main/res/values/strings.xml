@@ -49,8 +49,11 @@
     <!-- Strings related to AppBlacklist -->
     <string name="title_activity_appblacklist">Notification blacklist</string>
     <string name="title_activity_appfilters">Notification filters</string>
+    <string name="title_activity_appnotifications">Apps notifications</string>
     <string name="blacklist_all_for_notifications">Blacklist all for notifications</string>
     <string name="whitelist_all_for_notifications">Whitelist all for notifications</string>
+    <string name="enable_all_for_notifications">Enable all apps</string>
+    <string name="disable_all_for_notifications">Disable all apps</string>
     <!-- Strings related to CalBlacklist -->
     <string name="title_activity_calblacklist">Blacklisted Calendars</string>
     <!-- Strings related to FwAppInstaller -->
@@ -100,8 +103,9 @@
     <string name="pref_header_notifications">Notifications</string>
     <string name="pref_title_notifications_repetitions">Repetitions</string>
     <string name="pref_title_notifications_call">Phone Calls</string>
-    <string name="pref_title_support_voip_calls">Enable VoIP app calls</string>
+    <string name="pref_title_support_voip_calls">VoIP Calls</string>
     <string name="pref_title_notifications_sms">SMS</string>
+    <string name="pref_title_notifications_apps">Apps</string>
     <string name="pref_title_notifications_timeout">Minimum time between notifications</string>
     <string name="pref_title_notifications_pebblemsg">Pebble Messages</string>
     <string name="pref_summary_notifications_pebblemsg">Support for apps that send notifications to the Pebble via PebbleKit.</string>

@@ -281,7 +281,7 @@ public class NotificationListener extends NotificationListenerService {
         Prefs prefs = GBApplication.getPrefs();
         if (GBApplication.isRunningLollipopOrLater()) {
             if (NotificationCompat.CATEGORY_CALL.equals(sbn.getNotification().category)
-                    && prefs.getBoolean("notification_support_voip_calls", false)
+                    && prefs.getBoolean("notification_support_voip_calls_bool", true)
                     && sbn.isOngoing()) {
                 handleCallNotification(sbn);
                 return;
@@ -789,7 +789,7 @@ public class NotificationListener extends NotificationListenerService {
                 source.equals("com.sonyericsson.conversations") ||
                 source.equals("com.android.messaging") ||
                 source.equals("org.smssecure.smssecure")) {
-            if (!"never".equals(prefs.getString("notification_mode_sms", "when_screen_off"))) {
+            if (!prefs.getBoolean("notification_mode_sms_bool", true)) {
                 return true;
             }
         }

@@ -24,6 +24,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.os.PowerManager;
 import android.telephony.TelephonyManager;
 
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+
+import static android.content.Context.POWER_SERVICE;
 
 
 public class PhoneCallReceiver extends BroadcastReceiver {
@@ -104,8 +107,14 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         }
         if (callCommand != CallSpec.CALL_UNDEFINED) {
             Prefs prefs = GBApplication.getPrefs();
-            if ("never".equals(prefs.getString("notification_mode_calls", "always"))) {
+            if (!prefs.getBoolean("notification_mode_calls_bool", true)) {
                 return;
+            }
+            if (!prefs.getBoolean("notifications_generic_whenscreenon", false)) {
+                PowerManager powermanager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+                if (powermanager != null && powermanager.isScreenOn()) {
+                    return;
+                }
             }
             switch (GBApplication.getGrantedInterruptionFilter()) {
                 case NotificationManager.INTERRUPTION_FILTER_ALL:

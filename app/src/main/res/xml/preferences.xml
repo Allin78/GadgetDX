@@ -191,37 +191,36 @@
             android:summary="@string/pref_summary_datetime_syctimeonconnect"
             android:title="@string/pref_title_datetime_syctimeonconnect" />
     </PreferenceCategory>
+
     <PreferenceCategory
         android:key="pref_key_notifications"
         android:title="@string/pref_header_notifications">
 
-        <ListPreference
-            android:defaultValue="always"
-            android:entries="@array/notification_mode_toggle"
-            android:entryValues="@array/notification_mode_values_toggle"
-            android:key="notification_mode_calls"
-            android:title="@string/pref_title_notifications_call"
-            android:summary="%s" />
         <CheckBoxPreference
             android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="notification_support_voip_calls"
+            android:defaultValue="true"
+            android:key="notification_mode_calls_bool"
+            android:title="@string/pref_title_notifications_call" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="notification_support_voip_calls_bool"
             android:title="@string/pref_title_support_voip_calls" />
 
-        <ListPreference
-            android:defaultValue="when_screen_off"
-            android:entries="@array/notification_mode"
-            android:entryValues="@array/notification_mode_values"
-            android:key="notification_mode_sms"
-            android:title="@string/pref_title_notifications_sms"
-            android:summary="%s" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="notification_mode_sms_bool"
+            android:title="@string/pref_title_notifications_sms"/>
 
-        <ListPreference
-            android:defaultValue="when_screen_off"
-            android:entries="@array/notification_mode"
-            android:entryValues="@array/notification_mode_values"
-            android:key="notification_mode_pebblemsg"
-            android:summary="@string/pref_summary_notifications_pebblemsg"
+        <Preference
+            android:key="pref_key_blacklist"
+            android:title="@string/pref_title_notifications_apps" />
+
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="notification_mode_pebblemsg_bool"
             android:title="@string/pref_title_notifications_pebblemsg" />
 
         <CheckBoxPreference
@@ -244,10 +243,6 @@
             android:key="notification_filter"
             android:summary="@string/pref_summary_notification_filter"
             android:title="@string/pref_title_notification_filter" />
-
-        <Preference
-            android:key="pref_key_blacklist"
-            android:title="@string/pref_blacklist" />
 
         <Preference
             android:key="pref_key_filters"

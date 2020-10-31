@@ -107,7 +107,7 @@
             android:parentActivityName=".activities.ControlCenterv2" />
         <activity
             android:name=".activities.AppBlacklistActivity"
-            android:label="@string/title_activity_appblacklist"
+            android:label="@string/title_activity_appnotifications"
             android:parentActivityName=".activities.SettingsActivity" />
         <activity
             android:name=".activities.AppFiltersActivity"
