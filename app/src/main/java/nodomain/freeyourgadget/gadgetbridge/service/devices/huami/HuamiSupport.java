@@ -153,15 +153,6 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_WEARLOCATION;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_FELL_SLEEP_BROADCAST;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_FELL_SLEEP_SELECTION;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_SELECTION_BROADCAST;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_SELECTION_HTTPREQUEST;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_SELECTION_OFF;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_START_NON_WEAR_BROADCAST;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_START_NON_WEAR_SELECTION;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_WOKE_UP_BROADCAST;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DEVICE_ACTION_WOKE_UP_SELECTION;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.DEFAULT_VALUE_VIBRATION_COUNT;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.DEFAULT_VALUE_VIBRATION_PROFILE;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.VIBRATION_COUNT;
@@ -1156,88 +1147,31 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         }
 
         //handle user events settings. 0 is long press, rest are button_id 1-3
-        String buttonAction = null;
+        boolean triggered = false;
         switch (currentButtonActionId) {
             case 0:
-                buttonAction = prefs.getString("button_long_press_action_selection","UNKNOWN");
+                triggered = processAction("long_press");
                 break;
             case 1:
-                buttonAction = prefs.getString("button_single_press_action_selection", "UNKNOWN");
+                triggered = processAction("single_press");
                 break;
             case 2:
-                buttonAction = prefs.getString("button_double_press_action_selection", "UNKNOWN");
+                triggered = processAction("double_press");
                 break;
             case 3:
-                buttonAction = prefs.getString("button_triple_press_action_selection", "UNKNOWN");
+                triggered = processAction("triple_press");
                 break;
             default:
                 break;
         }
 
-        if (buttonAction.equals(PREF_DEVICE_ACTION_SELECTION_BROADCAST)) {
-            String deviceActionBroadcastMessage = prefs.getString(HuamiConst.PREF_BUTTON_ACTION_BROADCAST,
-                this.getContext().getString(R.string.mi2_prefs_button_press_broadcast_default_value));
-
-        Intent in = new Intent();
-            in.setAction(deviceActionBroadcastMessage);
-        in.putExtra("button_id", currentButtonActionId);
-            LOG.info("Sending " + deviceActionBroadcastMessage + " with button_id " + currentButtonActionId);
-        this.getContext().getApplicationContext().sendBroadcast(in);
-        }
-        else if (buttonAction.equals(PREF_DEVICE_ACTION_SELECTION_HTTPREQUEST)) {
-            String url = prefs.getString(HuamiConst.PREF_BUTTON_ACTION_HTTPREQUEST,
-                    this.getContext().getString(R.string.mi2_prefs_button_press_httprequest_default_value));
-
-            try {
-                URL obj = new URL(url);
-                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                con.setRequestMethod("GET");
-                //con.setRequestProperty("User-Agent", USER_AGENT);
-                int responseCode = con.getResponseCode();
-                System.out.println("GET Response Code :: " + responseCode);
-                if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                    BufferedReader in = new BufferedReader(new InputStreamReader(
-                            con.getInputStream()));
-                    String inputLine;
-                    StringBuffer response = new StringBuffer();
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    in.close();
-
-                    // print result
-                    System.out.println(response.toString());
-                } else {
-                    System.out.println("GET request not worked");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if (GBDeviceEventMusicControl.isMediaEvent(buttonAction)) {
-            handleMediaButton(buttonAction);
-        }
-
-        if (prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_VIBRATE, false)) {
+        if (triggered && prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_VIBRATE, false)) {
             vibrateOnce();
         }
 
         currentButtonActionId = 0;
         currentButtonPressCount = 0;
         currentButtonPressTime = System.currentTimeMillis();
-    }
-
-    private void handleDeviceAction(String deviceAction, String message) {
-        if (deviceAction.equals(PREF_DEVICE_ACTION_SELECTION_OFF)) {
-            return;
-        }
-        if (deviceAction.equals(PREF_DEVICE_ACTION_SELECTION_BROADCAST)) {
-            sendSystemBroadcast(message);
-        }else {
-            handleMediaButton(deviceAction);
-        }
     }
 
     private void sendSystemBroadcast(String message){
@@ -1247,14 +1181,6 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             LOG.info("Sending broadcast " + message);
             this.getContext().getApplicationContext().sendBroadcast(in);
         }
-    }
-    private void handleMediaButton(String MediaAction) {
-        if (MediaAction.equals(PREF_DEVICE_ACTION_SELECTION_OFF)) {
-            return;
-        }
-        GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
-        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(MediaAction);
-        evaluateGBDeviceEvent(deviceEventMusicControl);
     }
 
     private void handleDeviceEvent(byte[] value) {
@@ -1404,42 +1330,128 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
 
     private void processDeviceEvent(int event){
         LOG.debug("Handling device event: " + event);
-        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-        String deviceActionBroadcastMessage=null;
 
         switch (event) {
             case HuamiDeviceEvent.WOKE_UP:
-                String wakeupAction = prefs.getString(PREF_DEVICE_ACTION_WOKE_UP_SELECTION,PREF_DEVICE_ACTION_SELECTION_OFF);
-                if (wakeupAction.equals(PREF_DEVICE_ACTION_SELECTION_OFF)) return;
-                deviceActionBroadcastMessage= prefs.getString(PREF_DEVICE_ACTION_WOKE_UP_BROADCAST,
-                        this.getContext().getString(R.string.prefs_events_forwarding_wokeup_broadcast_default_value));
-                handleDeviceAction(wakeupAction, deviceActionBroadcastMessage);
+                processAction("wokeup");
                 break;
             case HuamiDeviceEvent.FELL_ASLEEP:
-                String fellsleepAction = prefs.getString(PREF_DEVICE_ACTION_FELL_SLEEP_SELECTION,PREF_DEVICE_ACTION_SELECTION_OFF);
-                if (fellsleepAction.equals(PREF_DEVICE_ACTION_SELECTION_OFF)) return;
-                deviceActionBroadcastMessage= prefs.getString(PREF_DEVICE_ACTION_FELL_SLEEP_BROADCAST,
-                        this.getContext().getString(R.string.prefs_events_forwarding_fellsleep_broadcast_default_value));
-                handleDeviceAction(fellsleepAction, deviceActionBroadcastMessage);
+                processAction("fellsleep");
                 break;
             case HuamiDeviceEvent.START_NONWEAR:
-                String nonwearAction = prefs.getString(PREF_DEVICE_ACTION_START_NON_WEAR_SELECTION,PREF_DEVICE_ACTION_SELECTION_OFF);
-                if (nonwearAction.equals(PREF_DEVICE_ACTION_SELECTION_OFF)) return;
-                deviceActionBroadcastMessage= prefs.getString(PREF_DEVICE_ACTION_START_NON_WEAR_BROADCAST,
-                        this.getContext().getString(R.string.prefs_events_forwarding_startnonwear_broadcast_default_value));
-                handleDeviceAction(nonwearAction, deviceActionBroadcastMessage);
+                processAction("startnowear");
                 break;
         }
 
     }
 
-    private void handleLongButtonEvent(){
+    private boolean processAction(String actionID)
+    {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
 
-        if (!prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_ENABLE, false)) {
-            return;
+        final String DisabledAction = GBApplication.getContext().getString(R.string.pref_action_disabled_value);
+        final String MediaAction = GBApplication.getContext().getString(R.string.pref_action_media_value);
+        final String BroadcastAction = GBApplication.getContext().getString(R.string.pref_action_broadcast_value);
+        final String HttpRequestAction = GBApplication.getContext().getString(R.string.pref_action_httprequest_value);
+        final String IftttAction = GBApplication.getContext().getString(R.string.pref_action_ifttt_value);
+
+        String action = prefs.getString("events_forwarding_action_selection_" + actionID, DisabledAction);
+        if (action.equals(DisabledAction)) return false;
+
+        if (action.equals(MediaAction)) {
+            String mediaAction = prefs.getString("prefs_events_forwarding_media_" + actionID, null);
+            if (mediaAction != null && !mediaAction.isEmpty())
+            {
+                GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
+                deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(mediaAction);
+                if (deviceEventMusicControl.event != GBDeviceEventMusicControl.Event.UNKNOWN)
+                {
+                    evaluateGBDeviceEvent(deviceEventMusicControl);
+                    return true;
+                }
+            }
+        }
+        else if (action.equals(BroadcastAction)) {
+            String deviceActionBroadcastMessage = prefs.getString("prefs_events_forwarding_broadcast_" + actionID, null);
+            if (deviceActionBroadcastMessage != null && !deviceActionBroadcastMessage.isEmpty())
+            {
+                Intent in = new Intent();
+                in.setAction(deviceActionBroadcastMessage);
+                in.putExtra("action_id", actionID);
+                LOG.info("Sending " + deviceActionBroadcastMessage + " with actionID " + actionID);
+                this.getContext().getApplicationContext().sendBroadcast(in);
+                return true;
+            }
+        }
+        else if (action.equals(HttpRequestAction)) {
+            String url = prefs.getString("prefs_events_forwarding_httprequest_" + actionID, null);
+            if (url != null && !url.isEmpty()) {
+                try {
+                    URL obj = new URL(url);
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                    con.setRequestMethod("GET");
+                    //con.setRequestProperty("User-Agent", USER_AGENT);
+                    int responseCode = con.getResponseCode();
+                    System.out.println("GET Response Code :: " + responseCode);
+                    if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                        BufferedReader in = new BufferedReader(new InputStreamReader(  con.getInputStream()));
+                        String inputLine;
+                        StringBuffer response = new StringBuffer();
+
+                        while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                        }
+                        in.close();
+
+                        // print result
+                        System.out.println(response.toString());
+                        return true;
+                    } else {
+                        System.out.println("GET request not worked");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else if (action.equals(IftttAction)) {
+            String event_name = prefs.getString("prefs_events_forwarding_ifttt_" + actionID, null);
+            String key =  GBApplication.getPrefs().getString("ifttt_webhooks_key", null);
+            if (event_name != null && !event_name.isEmpty() && key != null && !key.isEmpty()) {
+                try {
+                    String url = String.format("https://maker.ifttt.com/trigger/%s/with/key/%s", event_name, key);
+                    URL obj = new URL(url);
+                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                    con.setRequestMethod("GET");
+                    //con.setRequestProperty("User-Agent", USER_AGENT);
+                    int responseCode = con.getResponseCode();
+                    System.out.println("GET Response Code :: " + responseCode);
+                    if (responseCode == HttpURLConnection.HTTP_OK) { // success
+                        BufferedReader in = new BufferedReader(new InputStreamReader(  con.getInputStream()));
+                        String inputLine;
+                        StringBuffer response = new StringBuffer();
+
+                        while ((inputLine = in.readLine()) != null) {
+                            response.append(inputLine);
+                        }
+                        in.close();
+
+                        // print result
+                        System.out.println(response.toString());
+                        return true;
+                    } else {
+                        System.out.println("GET request not worked");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
+        return false;
+    }
+
+    private void handleLongButtonEvent(){
         currentButtonActionId = 0;
         currentButtonPressTime = System.currentTimeMillis();
         currentButtonTimerActivationTime = currentButtonPressTime;
@@ -1449,11 +1461,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
 
     private void handleButtonEvent() {
 
-        // If disabled we return from function immediately
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-        if (!prefs.getBoolean(HuamiConst.PREF_BUTTON_ACTION_ENABLE, false)) {
-            return;
-        }
 
         int buttonPressMaxDelay = prefs.getInt(HuamiConst.PREF_BUTTON_ACTION_PRESS_MAX_INTERVAL, 2000);
         int requiredButtonPressCount = prefs.getInt(HuamiConst.PREF_BUTTON_ACTION_PRESS_COUNT, 0);

@@ -293,6 +293,9 @@
     <string name="prefs_hr_alarm_activity">Heart rate alarm during sports activity</string>
     <string name="prefs_hr_alarm_low">Low limit</string>
     <string name="prefs_hr_alarm_high">High limit</string>
+    <!-- Service specific settings -->
+    <string name="pref_title_ifttt_settings">IFTTT</string>
+    <string name="pref_title_ifttt_webhooks_key">IFTTT webhooks key</string>
     <!-- Auto export preferences -->
     <string name="pref_header_auto_export">Auto export</string>
     <string name="pref_title_auto_export_enabled">Auto export enabled</string>
@@ -348,6 +351,7 @@
     <string name="pairing_already_bonded">"Already bonded with %1$s (%2$s), connecting…"</string>
     <string name="message_cannot_pair_no_mac">No MAC address passed, cannot pair.</string>
     <string name="preferences_category_device_specific_settings">Device specific settings</string>
+    <string name="preferences_category_service_specific_settings">Service settings</string>
     <string name="preferences_miband_settings">Mi Band / Amazfit settings</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
@@ -537,9 +541,6 @@
     <string name="mi2_prefs_button_press_broadcast">Broadcast message to send</string>
     <string name="mi2_prefs_button_press_broadcast_summary">Broadcast message sent with the event. Parameter `button_id` is added automatically to each message.</string>
     <string name="mi2_prefs_button_press_broadcast_default_value" translatable="false">nodomain.freeyourgadget.gadgetbridge.ButtonPressed</string>
-    <string name="mi2_prefs_button_press_httprequest">HTTP request</string>
-    <string name="mi2_prefs_button_press_httprequest_summary">HTTP request sent with GET protocol.</string>
-    <string name="mi2_prefs_button_press_httprequest_default_value" translatable="false"></string>
     <string name="mi2_prefs_button_action">Enable button action</string>
     <string name="mi2_prefs_button_action_summary">Enable action on specified number of button presses</string>
     <string name="mi2_prefs_button_action_vibrate">Enable band vibration</string>
@@ -1083,4 +1084,31 @@
         <item quantity="many">%d hours</item>
         <item quantity="other">%d hours</item>
     </plurals>
+    <!-- media actions -->
+    <string name="pref_media_unspecified">Unspecified</string>
+    <string name="pref_media_play">Play</string>
+    <string name="pref_media_pause">Pause</string>
+    <string name="pref_media_playpause">Toggle playback</string>
+    <string name="pref_media_next">Next Track</string>
+    <string name="pref_media_previous">Previous Track</string>
+    <string name="pref_media_volumeup">Volume Up</string>
+    <string name="pref_media_volumedown">Volume Down</string>
+    <string name="pref_media_forward">Skip forward</string>
+    <string name="pref_media_rewind">Skip back</string>
+    <!-- actions -->
+    <string name="pref_action_disabled">Disabled</string>
+    <string name="pref_action_media">Media</string>
+    <string name="pref_action_broadcast">Send Broadcast</string>
+    <string name="pref_action_httprequest">Send HTTP request</string>
+    <string name="pref_action_ifttt">Activate IFTTT trigger</string>
+
+    <string name="prefs_events_media_title">Media action</string>
+    <string name="prefs_events_httprequest_title">HTTP request action</string>
+    <string name="prefs_events_ifttt_title">IFTTT action</string>
+
+    <string name="prefs_events_forwarding_single_press">Single press</string>
+    <string name="prefs_events_forwarding_double_press">Double press</string>
+    <string name="prefs_events_forwarding_triple_press">Triple press</string>
+    <string name="prefs_events_forwarding_long_press">Long press</string>
+
 </resources>

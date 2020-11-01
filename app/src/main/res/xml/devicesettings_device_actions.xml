@@ -15,14 +15,31 @@
             <ListPreference
                 android:entries="@array/device_action_options"
                 android:entryValues="@array/device_action_values"
-                android:key="events_forwarding_fellsleep_action_selection"
+                android:key="events_forwarding_action_selection_fellsleep"
                 android:summary="%s"
-                android:defaultValue="@string/pref_button_action_disabled_value"
+                android:defaultValue="@string/pref_action_disabled_value"
                 android:title="@string/prefs_events_forwarding_action_title" />
+            <ListPreference
+                android:entries="@array/media_action_options"
+                android:entryValues="@array/media_action_values"
+                android:key="prefs_events_forwarding_media_fellsleep"
+                android:defaultValue="@string/pref_media_unspecified_value"
+                android:summary="%s"
+                android:title="@string/prefs_events_media_title" />
             <EditTextPreference
                 android:defaultValue="@string/prefs_events_forwarding_fellsleep_broadcast_default_value"
-                android:key="prefs_events_forwarding_fellsleep_broadcast"
+                android:key="prefs_events_forwarding_broadcast_fellsleep"
                 android:title="@string/prefs_events_forwarding_broadcast_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_httprequest_fellsleep"
+                android:title="@string/prefs_events_httprequest_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_ifttt_fellsleep"
+                android:title="@string/prefs_events_ifttt_title"
                 app:useSimpleSummaryProvider="true" />
         </PreferenceCategory>
 
@@ -33,35 +50,67 @@
             <ListPreference
                 android:entries="@array/device_action_options"
                 android:entryValues="@array/device_action_values"
-                android:key="events_forwarding_wokeup_action_selection"
+                android:key="events_forwarding_action_selection_wokeup"
                 android:summary="%s"
-                android:defaultValue="@string/pref_button_action_disabled_value"
+                android:defaultValue="@string/pref_action_disabled_value"
                 android:title="@string/prefs_events_forwarding_action_title" />
+            <ListPreference
+                android:entries="@array/media_action_options"
+                android:entryValues="@array/media_action_values"
+                android:key="prefs_events_forwarding_media_wokeup"
+                android:defaultValue="@string/pref_media_unspecified_value"
+                android:summary="%s"
+                android:title="@string/prefs_events_media_title" />
             <EditTextPreference
                 android:defaultValue="@string/prefs_events_forwarding_wokeup_broadcast_default_value"
-                android:key="prefs_events_forwarding_wokeup_broadcast"
+                android:key="prefs_events_forwarding_broadcast_wokeup"
                 android:title="@string/prefs_events_forwarding_broadcast_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_httprequest_wokeup"
+                android:title="@string/prefs_events_httprequest_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_ifttt_wokeup"
+                android:title="@string/prefs_events_ifttt_title"
                 app:useSimpleSummaryProvider="true" />
         </PreferenceCategory>
 
         <PreferenceCategory
             android:title="@string/prefs_events_forwarding_startnonwear"
-            android:icon="@drawable/ic_no_watch">
+            android:icon="@drawable/ic_wb_sunny">
 
             <ListPreference
                 android:entries="@array/device_action_options"
                 android:entryValues="@array/device_action_values"
-                android:key="events_forwarding_startnonwear_action_selection"
+                android:key="events_forwarding_action_selection_startnonwear"
                 android:summary="%s"
-                android:defaultValue="@string/pref_button_action_disabled_value"
+                android:defaultValue="@string/pref_action_disabled_value"
                 android:title="@string/prefs_events_forwarding_action_title" />
+            <ListPreference
+                android:entries="@array/media_action_options"
+                android:entryValues="@array/media_action_values"
+                android:key="prefs_events_forwarding_media_startnonwear"
+                android:defaultValue="@string/pref_media_unspecified_value"
+                android:summary="%s"
+                android:title="@string/prefs_events_media_title" />
             <EditTextPreference
                 android:defaultValue="@string/prefs_events_forwarding_startnonwear_broadcast_default_value"
-                android:key="prefs_events_forwarding_startnonwear_broadcast"
+                android:key="prefs_events_forwarding_broadcast_startnonwear"
                 android:title="@string/prefs_events_forwarding_broadcast_title"
                 app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_httprequest_startnonwear"
+                android:title="@string/prefs_events_httprequest_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_ifttt_startnonwear"
+                android:title="@string/prefs_events_ifttt_title"
+                app:useSimpleSummaryProvider="true" />
         </PreferenceCategory>
-
-
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

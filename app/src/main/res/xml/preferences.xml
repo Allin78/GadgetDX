@@ -484,6 +484,16 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/preferences_category_service_specific_settings">
+
+        <EditTextPreference
+                android:key="ifttt_webhooks_key"
+                android:title="@string/pref_title_ifttt_webhooks_key" />
+    </PreferenceCategory>
+
+
+
+    <PreferenceCategory
         android:title="@string/pref_header_auto_export">
         <CheckBoxPreference
             android:layout="@layout/preference_checkbox"

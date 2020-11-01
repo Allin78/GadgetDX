@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceScreen
         android:key="screen_button_actions"
         android:icon="@drawable/ic_smart_button"
@@ -7,77 +8,132 @@
         android:summary="@string/mi2_prefs_button_actions_summary"
         android:title="@string/mi2_prefs_button_actions">
 
-        <!-- workaround for missing toolbar -->
-        <PreferenceCategory android:title="@string/mi2_prefs_button_action" />
+       <PreferenceCategory
+            android:title="@string/prefs_events_forwarding_single_press"
+            android:icon="@drawable/ic_action_single_press">
 
-        public static final String PREF_BUTTON_ACTION_PRESS_DELAY = "button_action_press_count_delay";
+            <ListPreference
+                android:entries="@array/device_action_options"
+                android:entryValues="@array/device_action_values"
+                android:key="events_forwarding_action_selection_single_press"
+                android:summary="%s"
+                android:defaultValue="@string/pref_action_disabled_value"
+                android:title="@string/prefs_events_forwarding_action_title" />
+            <ListPreference
+                android:entries="@array/media_action_options"
+                android:entryValues="@array/media_action_values"
+                android:key="prefs_events_forwarding_media_single_press"
+                android:defaultValue="@string/pref_media_unspecified_value"
+                android:summary="%s"
+                android:title="@string/prefs_events_media_title" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_broadcast_single_press"
+                android:title="@string/prefs_events_forwarding_broadcast_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_httprequest_single_press"
+                android:title="@string/prefs_events_httprequest_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_ifttt_single_press"
+                android:title="@string/prefs_events_ifttt_title"
+                app:useSimpleSummaryProvider="true" />
+        </PreferenceCategory>
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="button_action_enable"
-            android:summary="@string/mi2_prefs_button_action_summary"
-            android:title="@string/mi2_prefs_button_action" />
+        <PreferenceCategory
+            android:title="@string/prefs_events_forwarding_double_press"
+            android:icon="@drawable/ic_action_double_press">
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:dependency="button_action_enable"
-            android:key="button_action_vibrate"
-            android:summary="@string/mi2_prefs_button_action_vibrate_summary"
-            android:title="@string/mi2_prefs_button_action_vibrate" />
+            <ListPreference
+                android:entries="@array/device_action_options"
+                android:entryValues="@array/device_action_values"
+                android:key="events_forwarding_action_selection_double_press"
+                android:summary="%s"
+                android:defaultValue="@string/pref_action_disabled_value"
+                android:title="@string/prefs_events_forwarding_action_title" />
+            <ListPreference
+                android:entries="@array/media_action_options"
+                android:entryValues="@array/media_action_values"
+                android:key="prefs_events_forwarding_media_double_press"
+                android:defaultValue="@string/pref_media_unspecified_value"
+                android:summary="%s"
+                android:title="@string/prefs_events_media_title" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_broadcast_double_press"
+                android:title="@string/prefs_events_forwarding_broadcast_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_httprequest_double_press"
+                android:title="@string/prefs_events_httprequest_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_ifttt_double_press"
+                android:title="@string/prefs_events_ifttt_title"
+                app:useSimpleSummaryProvider="true" />
+        </PreferenceCategory>
 
-        <ListPreference
-            android:dependency="button_action_enable"
-            android:entries="@array/button_action_options"
-            android:entryValues="@array/button_action_values"
-            android:key="button_single_press_action_selection"
-            android:defaultValue="@string/pref_button_action_disabled_value"
-            android:summary="%s"
-            android:title="@string/prefs_button_single_press_action_selection_title" />
+        <PreferenceCategory
+            android:title="@string/prefs_events_forwarding_triple_press"
+            android:icon="@drawable/ic_action_triple_press">
 
-        <ListPreference
-            android:dependency="button_action_enable"
-            android:entries="@array/button_action_options"
-            android:entryValues="@array/button_action_values"
-            android:key="button_double_press_action_selection"
-            android:summary="%s"
-            android:defaultValue="@string/pref_button_action_disabled_value"
-            android:title="@string/prefs_button_double_press_action_selection_title" />
-
-        <ListPreference
-            android:dependency="button_action_enable"
-            android:entries="@array/button_action_options"
-            android:entryValues="@array/button_action_values"
-            android:key="button_triple_press_action_selection"
-            android:summary="%s"
-            android:defaultValue="@string/pref_button_action_disabled_value"
-            android:title="@string/prefs_button_triple_press_action_selection_title" />
+            <ListPreference
+                android:entries="@array/device_action_options"
+                android:entryValues="@array/device_action_values"
+                android:key="events_forwarding_action_selection_triple_press"
+                android:summary="%s"
+                android:defaultValue="@string/pref_action_disabled_value"
+                android:title="@string/prefs_events_forwarding_action_title" />
+            <ListPreference
+                android:entries="@array/media_action_options"
+                android:entryValues="@array/media_action_values"
+                android:key="prefs_events_forwarding_media_triple_press"
+                android:defaultValue="@string/pref_media_unspecified_value"
+                android:summary="%s"
+                android:title="@string/prefs_events_media_title" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_broadcast_triple_press"
+                android:title="@string/prefs_events_forwarding_broadcast_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_httprequest_triple_press"
+                android:title="@string/prefs_events_httprequest_title"
+                app:useSimpleSummaryProvider="true" />
+            <EditTextPreference
+                android:defaultValue=""
+                android:key="prefs_events_forwarding_ifttt_triple_press"
+                android:title="@string/prefs_events_ifttt_title"
+                app:useSimpleSummaryProvider="true" />
+        </PreferenceCategory>
 
         <PreferenceCategory android:title="@string/prefs_button_variable_actions">
+            <SwitchPreference
+                android:defaultValue="false"
+                android:key="button_action_vibrate"
+                android:summary="@string/mi2_prefs_button_action_vibrate_summary"
+                android:title="@string/mi2_prefs_button_action_vibrate" />
 
             <EditTextPreference
-                android:defaultValue="6"
-                android:dependency="button_action_enable"
+                android:defaultValue="1"
                 android:inputType="number"
                 android:key="button_action_press_count"
                 android:summary="@string/mi2_prefs_button_press_count_summary"
                 android:title="@string/mi2_prefs_button_press_count" />
 
             <EditTextPreference
-                android:defaultValue="@string/mi2_prefs_button_press_broadcast_default_value"
-                android:dependency="button_action_enable"
-                android:key="button_action_broadcast"
-                android:summary="@string/mi2_prefs_button_press_broadcast_summary"
-                android:title="@string/mi2_prefs_button_press_broadcast" />
-
-            <EditTextPreference
                 android:defaultValue="2000"
-                android:dependency="button_action_enable"
                 android:inputType="number"
                 android:key="button_action_press_max_interval"
                 android:summary="@string/mi2_prefs_button_press_count_max_delay_summary"
                 android:title="@string/mi2_prefs_button_press_count_max_delay" />
 
         </PreferenceCategory>
-
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>
