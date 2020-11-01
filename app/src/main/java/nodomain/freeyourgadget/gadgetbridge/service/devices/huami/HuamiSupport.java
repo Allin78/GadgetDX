@@ -2481,7 +2481,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             byte[] data = HuamiService.COMMAND_ENABLE_INACTIVITY_WARNINGS.clone();
 
             int threshold = HuamiCoordinator.getInactivityWarningsThreshold();
-            data[HuamiService.INACTIVITY_WARNINGS_THRESHOLD] = (byte) threshold;
+            data[HuamiService.INACTIVITY_WARNINGS_THRESHOLD] = (byte) Math.max(threshold, Byte.MAX_VALUE);
 
             Calendar calendar = GregorianCalendar.getInstance();
 
