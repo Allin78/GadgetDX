@@ -570,78 +570,90 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
 
         //Pebble
         final Preference calendarBlacklist = findPreference("pref_key_blacklist_calendars");
-        calendarBlacklist.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                Intent enableIntent = new Intent(getActivity(), CalBlacklistActivity.class);
-                startActivity(enableIntent);
-                return true;
-            }
-        });
+        if (calendarBlacklist != null)
+        {
+            calendarBlacklist.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    Intent enableIntent = new Intent(getActivity(), CalBlacklistActivity.class);
+                    startActivity(enableIntent);
+                    return true;
+                }
+            });
+        }
         final Preference pebbleEmuAddress = findPreference("pebble_emu_addr");
-        pebbleEmuAddress.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newVal) {
-                Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
-                LocalBroadcastManager.getInstance(GBApplication.getContext()).sendBroadcast(refreshIntent);
-                preference.setSummary(newVal.toString());
-                return true;
-            }
+        if (pebbleEmuAddress != null)
+        {
+            pebbleEmuAddress.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newVal) {
+                    Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+                    LocalBroadcastManager.getInstance(GBApplication.getContext()).sendBroadcast(refreshIntent);
+                    preference.setSummary(newVal.toString());
+                    return true;
+                }
 
-        });
+            });
+        }
         final Preference pebbleEmuPort = findPreference("pebble_emu_port");
-        pebbleEmuPort.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newVal) {
-                Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
-                LocalBroadcastManager.getInstance(GBApplication.getContext()).sendBroadcast(refreshIntent);
-                preference.setSummary(newVal.toString());
-                return true;
-            }
-        });
+        if (pebbleEmuPort != null)
+        {
+            pebbleEmuPort.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newVal) {
+                    Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+                    LocalBroadcastManager.getInstance(GBApplication.getContext()).sendBroadcast(refreshIntent);
+                    preference.setSummary(newVal.toString());
+                    return true;
+                }
+            });
+        }
         final Preference pebbleLocationAcquire = findPreference("location_aquire");
-        pebbleLocationAcquire.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                if (ActivityCompat.checkSelfPermission(GBApplication.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-                }
-
-                LocationManager locationManager = (LocationManager) GBApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
-                Criteria criteria = new Criteria();
-                String provider = locationManager.getBestProvider(criteria, false);
-                if (provider != null) {
-                    Location location = locationManager.getLastKnownLocation(provider);
-                    if (location != null) {
-                        setLocationPreferences(location);
-                    } else {
-                        locationManager.requestSingleUpdate(provider, new LocationListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                setLocationPreferences(location);
-                            }
-
-                            @Override
-                            public void onStatusChanged(String provider, int status, Bundle extras) {
-                                LOG.info("provider status changed to " + status + " (" + provider + ")");
-                            }
-
-                            @Override
-                            public void onProviderEnabled(String provider) {
-                                LOG.info("provider enabled (" + provider + ")");
-                            }
-
-                            @Override
-                            public void onProviderDisabled(String provider) {
-                                LOG.info("provider disabled (" + provider + ")");
-                                GB.toast(getActivity(), getString(R.string.toast_enable_networklocationprovider), 3000, 0);
-                            }
-                        }, null);
+        if (pebbleLocationAcquire != null)
+        {
+            pebbleLocationAcquire.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                public boolean onPreferenceClick(Preference preference) {
+                    if (ActivityCompat.checkSelfPermission(GBApplication.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
                     }
-                } else {
-                    LOG.warn("No location provider found, did you deny location permission?");
+
+                    LocationManager locationManager = (LocationManager) GBApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
+                    Criteria criteria = new Criteria();
+                    String provider = locationManager.getBestProvider(criteria, false);
+                    if (provider != null) {
+                        Location location = locationManager.getLastKnownLocation(provider);
+                        if (location != null) {
+                            setLocationPreferences(location);
+                        } else {
+                            locationManager.requestSingleUpdate(provider, new LocationListener() {
+                                @Override
+                                public void onLocationChanged(Location location) {
+                                    setLocationPreferences(location);
+                                }
+
+                                @Override
+                                public void onStatusChanged(String provider, int status, Bundle extras) {
+                                    LOG.info("provider status changed to " + status + " (" + provider + ")");
+                                }
+
+                                @Override
+                                public void onProviderEnabled(String provider) {
+                                    LOG.info("provider enabled (" + provider + ")");
+                                }
+
+                                @Override
+                                public void onProviderDisabled(String provider) {
+                                    LOG.info("provider disabled (" + provider + ")");
+                                    GB.toast(getActivity(), getString(R.string.toast_enable_networklocationprovider), 3000, 0);
+                                }
+                            }, null);
+                        }
+                    } else {
+                        LOG.warn("No location provider found, did you deny location permission?");
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
+        }
 
         //MiBand/Amazfit/Huami/...
         final Preference enableHeartrateSleepSupport = findPreference(PREF_MIBAND_USE_HR_FOR_SLEEP_DETECTION);
