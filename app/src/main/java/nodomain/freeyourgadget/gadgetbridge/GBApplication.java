@@ -1066,7 +1066,7 @@ public class GBApplication extends Application {
         String label = mAppLabels.get(appInfo);
         if (label == null) {
             PackageManager pm = context.getPackageManager();
-            label = (String) pm.getApplicationLabel(appInfo);
+            label = (String)pm.getApplicationLabel(appInfo);
             mAppLabels.put(appInfo, label);
         }
 

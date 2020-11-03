@@ -246,7 +246,7 @@ public class NotificationListener extends NotificationListenerService {
         // determinate Source App Name ("Label")
         PackageManager pm = getPackageManager();
         try {
-            return (String)pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0));
+            return (String)GBApplication.getApplicationLabel(pm.getApplicationInfo(pkg, 0));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

@@ -56,7 +56,7 @@
     <!--Strings related to Settings-->
     <string name="title_activity_settings">Impostazioni</string>
     <string name="pref_header_general">Impostazioni</string>
-    <string name="pref_title_general_autoconnectonbluetooth">Collegati al dispositivo Gadgetbridge quando il Bluetooth viene acceso</string>
+    <string name="pref_title_general_autoconnectonbluetooth">Collegati quando il Bluetooth viene acceso</string>
     <string name="pref_title_general_autostartonboot">Avvio automatico</string>
     <string name="pref_title_general_autoreconnect">Riconnessione automatica</string>
     <string name="pref_title_audio_player">Riproduttore musicale preferito</string>
@@ -79,7 +79,7 @@
     <string name="pref_title_notifications_pebblemsg">Messaggi Pebble</string>
     <string name="pref_summary_notifications_pebblemsg">Supporto per applicazioni che inviano le notifiche a Pebble usando PebbleKit.</string>
     <string name="pref_title_notifications_generic">Accesso alle notifiche</string>
-    <string name="pref_title_whenscreenon">Visualizza con schermo acceso</string>
+    <string name="pref_title_whenscreenon">Visualizza anche con schermo acceso</string>
     <string name="pref_title_notification_filter">Non disturbare</string>
     <string name="pref_summary_notification_filter">Le notifiche indesiderate sono bloccate in questa modalità</string>
     <string name="pref_title_transliteration">Traslitterazione</string>
@@ -187,7 +187,7 @@
     <string name="pairing_in_progress">Bonding in corso: %1$s (%2$s)</string>
     <string name="pairing_already_bonded">Accoppiamento già effettuato con %1$s (%2$s), connessione in corso…</string>
     <string name="message_cannot_pair_no_mac">Indirizzo MAC mancante, impossibile completare l\'accoppiamento.</string>
-    <string name="preferences_category_device_specific_settings">Impostazioni specifiche dispositivo</string>
+    <string name="preferences_category_device_specific_settings">Impostazioni dispositivo</string>
     <string name="preferences_category_service_specific_settings">Impostazioni servizi</string>
     <string name="preferences_miband_settings">Impostazioni Mi Band / Amazfit</string>
     <string name="male">Uomo</string>
@@ -308,13 +308,14 @@
     <string name="miband_fwinstaller_incompatible_version">Firmware non compatibile</string>
     <string name="fwinstaller_firmware_not_compatible_to_device">Questo firmware non è compatibile con il dispositivo</string>
     <string name="miband_prefs_reserve_alarm_calendar">Sveglie da riservare per i prossimi eventi del calendario</string>
-    <string name="miband_prefs_hr_sleep_detection">Utilizza il sensore del battito cardiaco per migliorare il riconoscimento del sonno</string>
+    <string name="miband_prefs_hr_sleep_detection_title">Analisi del sonno</string>
+    <string name="miband_prefs_hr_sleep_detection">Utilizza il sensore del battito cardiaco per migliorare l\'analisi del sonno</string>
     <string name="miband_prefs_device_time_offset_hours">Sfasamento dell\'orario per il device (per consentire il rilevamento del sonno per chi lavora a turni)</string>
     <string name="miband2_prefs_dateformat">Formato Data</string>
     <string name="dateformat_time">Ora</string>
     <string name="dateformat_date_time">Ora e data</string>
-    <string name="mi2_prefs_goal_notification">Notifica raggiungimento obbiettivi</string>
-    <string name="mi2_prefs_goal_notification_summary">La band vibrerà una volta raggiunto l\'obbiettivo passi giornalieri</string>
+    <string name="mi2_prefs_goal_notification">Notifica obiettivo</string>
+    <string name="mi2_prefs_goal_notification_summary">La band vibrerà al raggiungimento dell\'obiettivo giornaliero</string>
     <string name="mi2_prefs_display_items">Elementi mostrati</string>
     <string name="mi2_prefs_display_items_summary">Scegli gli elementi da mostrare sullo schermo della band</string>
     <string name="mi2_prefs_activate_display_on_lift">Attiva il display quando sollevato</string>
@@ -329,7 +330,7 @@
     <string name="mi2_prefs_do_not_disturb_end">Ora fine</string>
     <string name="FetchActivityOperation_about_to_transfer_since">Vengono trasferiti dati a partire dal %1$s</string>
     <string name="waiting_for_reconnect">in attesa di riconnessione</string>
-    <string name="activity_prefs_about_you">Informazioni sull\'utilizzatore</string>
+    <string name="activity_prefs_about_you">Informazioni sull\'utente</string>
     <string name="activity_prefs_year_birth">Anno di nascita</string>
     <string name="activity_prefs_gender">Sesso</string>
     <string name="activity_prefs_height_cm">Altezza in cm</string>
@@ -393,7 +394,7 @@
     <string name="mi2_fw_installhandler_fw53_hint">È necessario installare la verione %1$s prima di installare questo firmware!</string>
     <string name="mi2_enable_text_notifications">Notifiche</string>
     <string name="mi2_enable_text_notifications_summary">Richiede firmware versione minima 1.9.1.28 e Mili_pro.ft* installati.</string>
-    <string name="off">spento</string>
+    <string name="off">Spento</string>
     <string name="mi2_dnd_off">Spento</string>
     <string name="mi2_dnd_automatic">Automatico (rilevamento del sonno)</string>
     <string name="discovery_attempting_to_pair">Tentativo di connessione a %1$s in corso</string>
@@ -431,11 +432,11 @@
     <string name="pref_summary_auto_export_interval">Esporta ogni %d ora/e</string>
     <string name="unknown_state">Stato sconosciuto</string>
     <string name="prefs_title_heartrate_measurement_interval">Misurazione battito continua</string>
-    <string name="interval_one_minute">ogni minuto</string>
-    <string name="interval_five_minutes">ogni 5 minuti</string>
-    <string name="interval_ten_minutes">ogni 10 minuti</string>
-    <string name="interval_thirty_minutes">ogni 30 minuti</string>
-    <string name="interval_one_hour">ogni ora</string>
+    <string name="interval_one_minute">Ogni minuto</string>
+    <string name="interval_five_minutes">Ogni 5 minuti</string>
+    <string name="interval_ten_minutes">Ogni 10 minuti</string>
+    <string name="interval_thirty_minutes">Ogni 30 minuti</string>
+    <string name="interval_one_hour">Ogni ora</string>
     <string name="notif_export_failed_title">Esportazione del database fallita! Per favore controlla le impostazioni.</string>
     <string name="mi2_prefs_button_actions">Azioni tasto</string>
     <string name="mi2_prefs_button_actions_summary">Specifica le azioni alla pressione del pulsante</string>
@@ -668,7 +669,7 @@
     <string name="zetime_signaling_beep_once">Beep singolo</string>
     <string name="zetime_signaling_beep_twice">Beep doppio</string>
     <string name="zetime_signaling_vibrate_beep_once">Vibrazione e beep singoli</string>
-    <string name="title_activity_device_specific_settings">Impostazioni specifiche del dispositivo</string>
+    <string name="title_activity_device_specific_settings">Impostazioni dispositivo</string>
     <string name="pref_title_authkey">Chiave di autenticazione</string>
     <string name="pref_summary_authkey">Cambia la chiave di autenticazione con una chiave comune a tutti i tuoi dispositivi Android dai quali vuoi connetterti. La chiave predefinita precedente per tutti i dispositivi è 0123456789@ABCDE</string>
     <string name="pref_screen_notification_profile_missed_call">Notifica chiamata persa</string>
@@ -788,7 +789,7 @@
     <string name="devicetype_mijia_lywsd02">Mijia Smart Clock</string>
     <string name="appwidget_sleep_alarm_widget_label">Sveglia</string>
     <string name="widget_listing_label">Stato e Sveglie</string>
-    <string name="pref_display_add_device_fab">Pulsante per connettere un nuovo dispositivo</string>
+    <string name="pref_display_add_device_fab">Pulsante aggiunta nuovo dispositivo</string>
     <string name="fw_upgrade_notice_amazfitbip_lite">Stai per installare il firmware %s sul tuo Amazfit Bip Lite.
 \n
 \nAssicurati di installare prima il file .fw e dopo il file .res. L\'orologio si riavvierà al termine del caricamento del file .fw.

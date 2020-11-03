@@ -440,7 +440,8 @@ public class LiveActivityFragment extends AbstractChartFragment {
     }
 
     private BarDataSet setupTotalStepsChart(CustomBarChart chart, BarEntry entry, String label) {
-        mTotalStepsChart.getAxisLeft().addLimitLine(new LimitLine(GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_STEPS_GOAL, ActivityUser.defaultUserStepsGoal), "ss")); // TODO: use daily goal - already reached steps
+        ActivityUser user = new ActivityUser();
+        mTotalStepsChart.getAxisLeft().addLimitLine(new LimitLine(user.getStepsGoal(), "ss")); // TODO: use daily goal - already reached steps
         mTotalStepsChart.getAxisLeft().setAxisMinimum(0);
         mTotalStepsChart.setAutoScaleMinMaxEnabled(true);
         return setupCommonChart(chart, entry, label); // at the moment, these look the same

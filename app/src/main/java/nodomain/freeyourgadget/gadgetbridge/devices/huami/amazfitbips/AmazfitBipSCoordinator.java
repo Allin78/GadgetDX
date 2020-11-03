@@ -85,6 +85,7 @@ public class AmazfitBipSCoordinator extends HuamiCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_mi_common,
                 R.xml.devicesettings_amazfitbips,
                 R.xml.devicesettings_timeformat,
                 R.xml.devicesettings_wearlocation,
@@ -92,9 +93,10 @@ public class AmazfitBipSCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
-                R.xml.devicesettings_high_mtu,
                 R.xml.devicesettings_device_actions,
-                R.xml.devicesettings_pairingkey
+                R.xml.devicesettings_mi_developer,
+                R.xml.devicesettings_pairingkey,
+                R.xml.devicesettings_high_mtu,
         };
     }
 

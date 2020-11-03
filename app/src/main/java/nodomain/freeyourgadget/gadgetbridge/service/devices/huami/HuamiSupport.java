@@ -396,7 +396,8 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
         LOG.info("Attempting to set Fitness Goal...");
         BluetoothGattCharacteristic characteristic = getCharacteristic(HuamiService.UUID_CHARACTERISTIC_8_USER_SETTINGS);
         if (characteristic != null) {
-            int fitnessGoal = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_STEPS_GOAL, ActivityUser.defaultUserStepsGoal);
+            ActivityUser user = new ActivityUser();
+            int fitnessGoal = user.getStepsGoal();
             byte[] bytes = ArrayUtils.addAll(
                     HuamiService.COMMAND_SET_FITNESS_GOAL_START,
                     BLETypeConversions.fromUint16(fitnessGoal));
@@ -422,9 +423,11 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
             return this;
         }
 
+        ActivityUser user = new ActivityUser();
+
         LOG.info("Attempting to set user info...");
         Prefs prefs = GBApplication.getPrefs();
-        String alias = prefs.getString(MiBandConst.PREF_USER_ALIAS, null);
+        String alias = user.getName();
         ActivityUser activityUser = new ActivityUser();
         int height = activityUser.getHeightCm();
         int weight = activityUser.getWeightKg();
@@ -674,7 +677,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                     }
 
                     if (ai != null) {
-                        appName = "\0" + pm.getApplicationLabel(ai) + "\0";
+                        appName = "\0" + GBApplication.getApplicationLabel(ai) + "\0";
                     } else {
                         appName = "\0" + "UNKNOWN" + "\0";
                     }
@@ -2295,7 +2298,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
     }
 
     private HuamiSupport setGoalNotification(TransactionBuilder builder) {
-        boolean enable = HuamiCoordinator.getGoalNotification();
+        boolean enable = HuamiCoordinator.getGoalNotification(gbDevice.getAddress());
         LOG.info("Setting goal notification to " + enable);
         if (enable) {
             builder.write(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_3_CONFIGURATION), HuamiService.COMMAND_ENABLE_GOAL_NOTIFICATION);

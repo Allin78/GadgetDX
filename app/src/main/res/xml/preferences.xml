@@ -1,43 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
     <PreferenceCategory
         android:key="pref_key_general"
         android:title="@string/pref_header_general">
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="true"
-            android:key="general_autostartonboot"
-            android:title="@string/pref_title_general_autostartonboot" />
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="general_autoconnectonbluetooth"
-            android:title="@string/pref_title_general_autoconnectonbluetooth" />
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="false"
-            android:key="general_autocreconnect"
-            android:title="@string/pref_title_general_autoreconnect" />
-        <CheckBoxPreference
-            android:layout="@layout/preference_checkbox"
-            android:defaultValue="true"
-            android:key="display_add_device_fab"
-            android:summaryOff="@string/pref_display_add_device_fab_off"
-            android:summaryOn="@string/pref_display_add_device_fab_on"
-            android:title="@string/pref_display_add_device_fab" />
 
-        <ListPreference
-            android:defaultValue="default"
-            android:key="audio_player"
-            android:title="@string/pref_title_audio_player"
-            android:summary="%s" />
-        <ListPreference
-            android:key="pref_key_theme"
-            android:title="@string/pref_title_theme"
-            android:entries="@array/pref_theme_options"
-            android:entryValues="@array/pref_theme_values"
-            android:defaultValue="@string/pref_theme_value_light"
-            android:summary="%s" />
+        <PreferenceScreen
+            android:key="pref_category_activity_personal"
+            android:title="@string/activity_prefs_about_you">
+
+            <EditTextPreference
+                android:inputType="number"
+                android:key="activity_user_year_of_birth"
+                android:maxLength="4"
+                android:title="@string/activity_prefs_year_birth" />
+
+            <ListPreference
+                android:defaultValue="2"
+                android:entries="@array/gender"
+                android:entryValues="@array/gender_values"
+                android:key="activity_user_gender"
+                android:title="@string/activity_prefs_gender"
+                android:summary="%s" />
+
+            <!--TODO: support localized heights and weights -->
+            <EditTextPreference
+                android:inputType="number"
+                android:key="activity_user_height_cm"
+                android:maxLength="3"
+                android:title="@string/activity_prefs_height_cm" />
+
+            <EditTextPreference
+                android:inputType="number"
+                android:key="activity_user_weight_kg"
+                android:maxLength="3"
+                android:title="@string/activity_prefs_weight_kg" />
+
+            <EditTextPreference
+                android:inputType="number"
+                android:key="activity_user_step_length_cm"
+                android:maxLength="3"
+                android:title="@string/activity_prefs_step_length_cm" />
+
+            <EditTextPreference
+                android:icon="@drawable/ic_goal"
+                android:defaultValue="10000"
+                android:inputType="number"
+                android:key="mi_fitness_goal"
+                android:maxLength="5"
+                android:title="@string/miband_prefs_fitness_goal" />
+
+            <EditTextPreference
+                android:inputType="number"
+                android:key="activity_user_sleep_duration"
+                android:maxLength="2"
+                android:title="@string/activity_prefs_sleep_duration" />
+
+            <EditTextPreference
+                android:defaultValue="2000"
+                android:inputType="number"
+                android:key="activity_user_calories_burnt"
+                android:maxLength="4"
+                android:title="@string/activity_prefs_calories_burnt" />
+
+            <EditTextPreference
+                android:defaultValue="5"
+                android:inputType="number"
+                android:key="activity_user_distance_meters"
+                android:maxLength="5"
+                android:title="@string/activity_prefs_distance_meters" />
+
+            <EditTextPreference
+                android:defaultValue="60"
+                android:inputType="number"
+                android:key="activity_user_activetime_minutes"
+                android:maxLength="3"
+                android:title="@string/activity_prefs_activetime_minutes" />
+        </PreferenceScreen>
 
         <PreferenceScreen
             android:key="language_category"
@@ -87,6 +127,42 @@
             </PreferenceScreen>
         </PreferenceScreen>
 
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="general_autostartonboot"
+            android:title="@string/pref_title_general_autostartonboot" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="false"
+            android:key="general_autocreconnect"
+            android:title="@string/pref_title_general_autoreconnect" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="false"
+            android:key="general_autoconnectonbluetooth"
+            android:title="@string/pref_title_general_autoconnectonbluetooth" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="display_add_device_fab"
+            android:summaryOff="@string/pref_display_add_device_fab_off"
+            android:summaryOn="@string/pref_display_add_device_fab_on"
+            android:title="@string/pref_display_add_device_fab" />
+
+        <ListPreference
+            android:defaultValue="default"
+            android:key="audio_player"
+            android:title="@string/pref_title_audio_player"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_key_theme"
+            android:title="@string/pref_title_theme"
+            android:entries="@array/pref_theme_options"
+            android:entryValues="@array/pref_theme_values"
+            android:defaultValue="@string/pref_theme_value_light"
+            android:summary="%s" />
+
         <PreferenceScreen
             android:title="@string/pref_title_weather"
             android:summary="@string/pref_title_weather_summary">
@@ -105,81 +181,12 @@
             android:summaryOn="@string/pref_summary_minimize_priority_on"
             android:title="@string/pref_title_minimize_priority" />
 
-        <PreferenceScreen
-            android:key="pref_category_activity_personal"
-            android:title="@string/activity_prefs_about_you">
 
-            <EditTextPreference
-                android:inputType="number"
-                android:key="activity_user_year_of_birth"
-                android:maxLength="4"
-                android:title="@string/activity_prefs_year_birth" />
-
-            <ListPreference
-                android:defaultValue="2"
-                android:entries="@array/gender"
-                android:entryValues="@array/gender_values"
-                android:key="activity_user_gender"
-                android:title="@string/activity_prefs_gender"
-                android:summary="%s" />
-
-            <!--TODO: support localized heights and weights -->
-            <EditTextPreference
-                android:inputType="number"
-                android:key="activity_user_height_cm"
-                android:maxLength="3"
-                android:title="@string/activity_prefs_height_cm" />
-
-            <EditTextPreference
-                android:inputType="number"
-                android:key="activity_user_weight_kg"
-                android:maxLength="3"
-                android:title="@string/activity_prefs_weight_kg" />
-
-            <EditTextPreference
-                android:inputType="number"
-                android:key="activity_user_step_length_cm"
-                android:maxLength="3"
-                android:title="@string/activity_prefs_step_length_cm" />
-
-            <EditTextPreference
-                android:defaultValue="10000"
-                android:inputType="number"
-                android:key="mi_fitness_goal"
-                android:maxLength="5"
-                android:title="@string/miband_prefs_fitness_goal" />
-
-            <EditTextPreference
-                android:inputType="number"
-                android:key="activity_user_sleep_duration"
-                android:maxLength="2"
-                android:title="@string/activity_prefs_sleep_duration" />
-
-            <EditTextPreference
-                android:defaultValue="2000"
-                android:inputType="number"
-                android:key="activity_user_calories_burnt"
-                android:maxLength="4"
-                android:title="@string/activity_prefs_calories_burnt" />
-
-            <EditTextPreference
-                android:defaultValue="5"
-                android:inputType="number"
-                android:key="activity_user_distance_meters"
-                android:maxLength="5"
-                android:title="@string/activity_prefs_distance_meters" />
-
-            <EditTextPreference
-                android:defaultValue="60"
-                android:inputType="number"
-                android:key="activity_user_activetime_minutes"
-                android:maxLength="3"
-                android:title="@string/activity_prefs_activetime_minutes" />
-        </PreferenceScreen>
     </PreferenceCategory>
-        <Preference
-            android:key="pref_charts"
-            android:title="@string/activity_prefs_charts"/>
+
+    <Preference
+        android:key="pref_charts"
+        android:title="@string/activity_prefs_charts"/>
 
     <PreferenceCategory
         android:key="pref_key_datetime"
@@ -274,10 +281,13 @@
             android:key="pref_key_qhybrid"
             android:title="@string/preferences_qhybrid_settings" />
 
-        <Preference
-            android:icon="@drawable/ic_device_miband"
-            android:key="pref_key_miband"
-            android:title="@string/preferences_miband_settings" />
+        <!-- *************************************************************  -->
+        <!-- *************************************************************  -->
+        <!-- *************************************************************  -->
+        <!-- *************************************************************  -->
+        <!-- *************************************************************  -->
+        <!-- *************************************************************  -->
+        <!-- *************************************************************  -->
 
         <PreferenceScreen
             android:icon="@drawable/ic_device_pebble"

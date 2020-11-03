@@ -42,6 +42,7 @@ import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.List;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
@@ -69,7 +70,7 @@ public class QHybridAppChoserActivity extends AbstractGBActivity {
             public void run() {
                 final IdentityHashMap<PackageInfo, String> nameMap = new IdentityHashMap(packages.size());
                 for(PackageInfo info : packages){
-                    CharSequence label = manager.getApplicationLabel(info.applicationInfo);
+                    CharSequence label = GBApplication.getApplicationLabel(info.applicationInfo);
                     if(label == null) label = info.packageName;
                     nameMap.put(info, label.toString());
                 }
@@ -189,7 +190,7 @@ public class QHybridAppChoserActivity extends AbstractGBActivity {
 
             ApplicationInfo info = getItem(position).applicationInfo;
             ((ImageView) view.findViewById(R.id.qhybrid_appChooserItemIcon)).setImageDrawable(manager.getApplicationIcon(info));
-            ((TextView) view.findViewById(R.id.qhybrid_appChooserItemText)).setText(manager.getApplicationLabel(info));
+            ((TextView) view.findViewById(R.id.qhybrid_appChooserItemText)).setText(GBApplication.getApplicationLabel(info));
 
             return view;
         }

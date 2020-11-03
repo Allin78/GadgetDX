@@ -218,7 +218,7 @@ public class MiBandCoordinator extends AbstractDeviceCoordinator {
 
         UserInfo info = UserInfo.create(
                 miBandAddress,
-                prefs.getString(MiBandConst.PREF_USER_ALIAS, null),
+                activityUser.getName(),
                 activityUser.getGender(),
                 activityUser.getAge(),
                 activityUser.getHeightCm(),
@@ -261,10 +261,13 @@ public class MiBandCoordinator extends AbstractDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_mi_common,
                 R.xml.devicesettings_wearlocation,
+                R.xml.devicesettings_mi_vibrations,
                 R.xml.devicesettings_lowlatency_fwupdate,
                 R.xml.devicesettings_reserve_alarms_calendar,
-                R.xml.devicesettings_fake_timeoffset
+                R.xml.devicesettings_fake_timeoffset,
+                R.xml.devicesettings_mi_developer
         };
     }
 

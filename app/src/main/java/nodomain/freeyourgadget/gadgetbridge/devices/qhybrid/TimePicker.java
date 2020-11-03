@@ -37,6 +37,8 @@ import android.widget.RadioGroup;
 import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.misfit.PlayNotificationRequest;
 
 public class TimePicker extends AlertDialog.Builder {
@@ -60,7 +62,7 @@ public class TimePicker extends AlertDialog.Builder {
     protected TimePicker(@NonNull Context context, PackageInfo info) {
         super(context);
 
-        settings = new NotificationConfiguration(info.packageName, context.getApplicationContext().getPackageManager().getApplicationLabel(info.applicationInfo).toString());
+        settings = new NotificationConfiguration(info.packageName, GBApplication.getApplicationLabel(info.applicationInfo).toString());
         initGraphics(context);
     }
 

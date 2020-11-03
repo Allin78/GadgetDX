@@ -102,6 +102,7 @@ public class MiBand3Coordinator extends HuamiCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_mi_common,
                 R.xml.devicesettings_miband3,
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_timeformat,
@@ -113,6 +114,7 @@ public class MiBand3Coordinator extends HuamiCoordinator {
                 R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
                 R.xml.devicesettings_device_actions,
+                R.xml.devicesettings_mi_developer,
                 R.xml.devicesettings_pairingkey
         };
     }

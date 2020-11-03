@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="mi2_goal_notification"
+            android:summary="@string/mi2_prefs_goal_notification_summary"
+            android:title="@string/mi2_prefs_goal_notification" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_activity_sleep"
+            android:key="mi_hr_sleep_detection"
+            android:title="@string/miband_prefs_hr_sleep_detection_title"
+            android:summary="@string/miband_prefs_hr_sleep_detection"/>
+
+        <ListPreference
+            android:defaultValue="0"
+            android:icon="@drawable/ic_heartrate"
+            android:entries="@array/prefs_heartrate_measurement_interval"
+            android:entryValues="@array/prefs_heartrate_measurement_interval_values"
+            android:key="heartrate_measurement_interval"
+            android:summary="%s"
+            android:title="@string/prefs_title_heartrate_measurement_interval" />
+
+        <PreferenceScreen
+            android:icon="@drawable/ic_inactivity"
+            android:key="mi2_inactivity_warning_key"
+            android:summary="@string/mi2_prefs_inactivity_warnings_summary"
+            android:title="@string/mi2_prefs_inactivity_warnings"
+            android:persistent="false">
+
+            <!-- workaround for missing toolbar -->
+            <PreferenceCategory android:title="@string/mi2_prefs_inactivity_warnings" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="mi2_inactivity_warnings"
+                android:summary="@string/mi2_prefs_inactivity_warnings_summary"
+                android:title="@string/mi2_prefs_inactivity_warnings" />
+
+            <EditTextPreference
+                android:defaultValue="60"
+                android:dependency="mi2_inactivity_warnings"
+                android:inputType="numberSigned"
+                android:key="mi2_inactivity_warnings_threshold"
+                android:maxLength="3"
+                android:title="@string/mi2_prefs_inactivity_warnings_threshold" />
+
+            <nodomain.freeyourgadget.gadgetbridge.util.XTimePreference
+                android:defaultValue="06:00"
+                android:dependency="mi2_inactivity_warnings"
+                android:key="mi2_inactivity_warnings_start"
+                android:title="@string/mi2_prefs_do_not_disturb_start" />
+
+            <nodomain.freeyourgadget.gadgetbridge.util.XTimePreference
+                android:defaultValue="22:00"
+                android:dependency="mi2_inactivity_warnings"
+                android:key="mi2_inactivity_warnings_end"
+                android:title="@string/mi2_prefs_do_not_disturb_end" />
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="mi2_inactivity_warnings"
+                android:key="mi2_inactivity_warnings_dnd"
+                android:summary="@string/mi2_prefs_inactivity_warnings_dnd_summary"
+                android:title="@string/mi2_prefs_do_not_disturb" />
+
+            <nodomain.freeyourgadget.gadgetbridge.util.XTimePreference
+                android:defaultValue="12:00"
+                android:dependency="mi2_inactivity_warnings_dnd"
+                android:key="mi2_inactivity_warnings_dnd_start"
+                android:title="@string/mi2_prefs_do_not_disturb_start" />
+
+            <nodomain.freeyourgadget.gadgetbridge.util.XTimePreference
+                android:defaultValue="14:00"
+                android:dependency="mi2_inactivity_warnings_dnd"
+                android:key="mi2_inactivity_warnings_dnd_end"
+                android:title="@string/mi2_prefs_do_not_disturb_end" />
+        </PreferenceScreen>
+
+</PreferenceScreen>

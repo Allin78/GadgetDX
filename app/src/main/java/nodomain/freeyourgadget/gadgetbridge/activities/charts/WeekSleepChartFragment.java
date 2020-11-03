@@ -52,7 +52,8 @@ public class WeekSleepChartFragment extends AbstractWeekChartFragment {
 
     @Override
     int getGoal() {
-        return GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_SLEEP_DURATION, 8) * 60;
+        ActivityUser user = new ActivityUser();
+        return user.getSleepDuration() * 60;
     }
 
     @Override

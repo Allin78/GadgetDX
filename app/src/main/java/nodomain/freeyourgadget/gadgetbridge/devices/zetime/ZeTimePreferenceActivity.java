@@ -85,9 +85,7 @@ public class ZeTimePreferenceActivity extends AbstractSettingsActivity {
         addPreferenceHandlerFor(ZeTimeConstants.PREF_ZETIME_MAX_HEARTRATE);
         addPreferenceHandlerFor(ZeTimeConstants.PREF_ZETIME_MIN_HEARTRATE);
 
-
-        addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_FITNESS_GOAL);
-        addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_SLEEP_GOAL);
+addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_SLEEP_GOAL);
         addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_CALORIES_GOAL);
         addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_DISTANCE_GOAL);
         addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_ACTIVETIME_GOAL);
