@@ -63,7 +63,6 @@ import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
 
 public class HPlusCoordinator extends AbstractDeviceCoordinator {
     protected static final Logger LOG = LoggerFactory.getLogger(HPlusCoordinator.class);
-    protected static Prefs prefs = GBApplication.getPrefs();
 
     @NonNull
     @Override
@@ -183,6 +182,7 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
     }
 
     public static byte getLanguage(String address) {
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
         String language = prefs.getString("language", "default");
         Locale locale;
 
@@ -212,6 +212,7 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
     }
 
     public static byte getUnit(String address) {
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
         String units = prefs.getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, getContext().getString(R.string.p_unit_metric));
 
         if (units.equals(getContext().getString(R.string.p_unit_metric))) {
@@ -255,10 +256,12 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
     }
 
     public static byte getScreenTime(String address) {
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
         return (byte) (prefs.getInt(HPlusConstants.PREF_HPLUS_SCREENTIME, 5) & 0xFF);
     }
 
     public static byte getAllDayHR(String address) {
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
         boolean value = (prefs.getBoolean(HPlusConstants.PREF_HPLUS_ALLDAYHR, true));
 
         if (value) {
@@ -287,46 +290,55 @@ public class HPlusCoordinator extends AbstractDeviceCoordinator {
     }
 
     public static int getSITStartTime(String address) {
-        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_START_TIME, 0);
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_START_TIME, 0); //TODO: PREF_HPLUS_SIT_START_TIME unreference pref
     }
 
     public static int getSITEndTime(String address) {
-        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_END_TIME, 0);
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        return prefs.getInt(HPlusConstants.PREF_HPLUS_SIT_END_TIME, 0); //TODO: PREF_HPLUS_SIT_END_TIME unreference pref
     }
 
     public static void setDisplayIncomingMessageIcon(String address, boolean state) {
-        SharedPreferences.Editor editor = prefs.getPreferences().edit();
-        editor.putBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, state);
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON, state);
         editor.apply();
     }
 
     public static boolean getDisplayIncomingMessageIcon(String address) {
-        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON + "_" + address, false));
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_DISPLAY_NOTIFICATION_ICON, false));
     }
 
     public static void setUnicodeSupport(String address, boolean state) {
-        SharedPreferences.Editor editor = prefs.getPreferences().edit();
-        editor.putBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, state);
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(HPlusConstants.PREF_HPLUS_UNICODE, state);
         editor.apply();
     }
 
     public static boolean getUnicodeSupport(String address) {
-        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_UNICODE + "_" + address, false));
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        return (prefs.getBoolean(HPlusConstants.PREF_HPLUS_UNICODE, false));
     }
 
     public static void setNotificationLinesNumber(String address, int lineNumber) {
-        SharedPreferences.Editor editor = prefs.getPreferences().edit();
-        editor.putInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, lineNumber);
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES, lineNumber);
         editor.apply();
     }
 
     public static int getNotificationLinesNumber(String address) {
-        return (prefs.getInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES + "_" + address, 5));
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(address);
+        return (prefs.getInt(HPlusConstants.PREF_HPLUS_NOTIFICATION_LINES, 5));
     }
 
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_hplus,
                 //R.xml.devicesettings_wearlocation, // disabled, since it is never used in code
                 R.xml.devicesettings_timeformat
         };
