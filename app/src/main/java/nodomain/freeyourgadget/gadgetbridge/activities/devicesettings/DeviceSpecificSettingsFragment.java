@@ -36,6 +36,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Constants;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.devices.zetime.ZeTimeConstants;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
@@ -499,8 +500,43 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
 
 
 
-
-
+        //ZeTime properties:
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_SCREENTIME);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_ANALOG_MODE);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_ACTIVITY_TRACKING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_HANDMOVE_DISPLAY);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_DO_NOT_DISTURB);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_DO_NOT_DISTURB_START);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_DO_NOT_DISTURB_END);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_CALORIES_TYPE);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_DATE_FORMAT);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_ENABLE);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_START);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_END);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_THRESHOLD);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_MO);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_TU);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_WE);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_TH);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_FR);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_SA);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_SU);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_SMS_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_ANTI_LOSS_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_CALENDAR_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_CALL_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_MISSED_CALL_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_EMAIL_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_INACTIVITY_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_LOW_POWER_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_SOCIAL_SIGNALING);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_ZETIME_HEARTRATE_ALARM);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_ZETIME_MAX_HEARTRATE);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_ZETIME_MIN_HEARTRATE);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_SLEEP_GOAL);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_CALORIES_GOAL);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_DISTANCE_GOAL);
+        addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_ACTIVETIME_GOAL);
 
 
 

@@ -1526,7 +1526,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void setScreenTime(TransactionBuilder builder) {
-        int value = GBApplication.getPrefs().getInt(ZeTimeConstants.PREF_SCREENTIME, 30);
+        int value = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).getInt(ZeTimeConstants.PREF_SCREENTIME, 30);
         if (value > ZeTimeConstants.MAX_SCREEN_ON_TIME) {
             GB.toast(getContext(), "Value for screen on time is greater than 18h! ", Toast.LENGTH_LONG, GB.ERROR);
             value = ZeTimeConstants.MAX_SCREEN_ON_TIME;
@@ -1900,7 +1900,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void setSignaling(TransactionBuilder builder, String signalingType) {
-        Prefs prefs = GBApplication.getPrefs();
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress());
         int signalType = prefs.getInt(signalingType, 0);
 
         byte[] signaling = {
@@ -2050,7 +2050,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getDateTimeFormat(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
 
         prefs.putString(ZeTimeConstants.PREF_DATE_FORMAT, Integer.toString(msg[5]));
         prefs.apply();
@@ -2067,7 +2067,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getSignaling(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
 
         prefs.putString(ZeTimeConstants.PREF_ANTI_LOSS_SIGNALING, Integer.toString(msg[5]));
         prefs.putString(ZeTimeConstants.PREF_CALL_SIGNALING, Integer.toString(msg[7]));
@@ -2082,7 +2082,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getDoNotDisturb(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
         String starttime = String.format("%02d:%02d", msg[6], msg[7]);
         String endtime = String.format("%02d:%02d", msg[8], msg[9]);
 
@@ -2097,14 +2097,14 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getAnalogMode(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
 
         prefs.putString(ZeTimeConstants.PREF_ANALOG_MODE, Integer.toString(msg[5]));
         prefs.apply();
     }
 
     private void getActivityTracking(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
 
         if (0x1 == msg[6]) {
             prefs.putBoolean(ZeTimeConstants.PREF_ACTIVITY_TRACKING, false);
@@ -2115,7 +2115,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getScreenTime(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
 
         prefs.putString(ZeTimeConstants.PREF_SCREENTIME, Integer.toString((msg[5] | (msg[6] << 8))));
         prefs.apply();
@@ -2133,18 +2133,18 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getHeartRateMeasurement(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
         prefs.putString(ZeTimeConstants.PREF_ZETIME_HEARTRATE_INTERVAL, Integer.toString((msg[5] * 60))); // multiply with 60 because of the conversion from minutes to seconds
         prefs.apply();
     }
 
     private void getHeartRateLimits(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
         prefs.apply();
     }
 
     private void getInactivityAlert(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
         String starttime = String.format("%02d:%02d", msg[7], msg[8]);
         String endtime = String.format("%02d:%02d", msg[9], msg[10]);
 
@@ -2193,7 +2193,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getCaloriesType(byte[] msg) {
-        SharedPreferences prefs = GBApplication.getPrefs().getPreferences();
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress());
         SharedPreferences.Editor myedit = prefs.edit();
 
         myedit.putString(ZeTimeConstants.PREF_CALORIES_TYPE, Integer.toString(msg[5]));
@@ -2201,7 +2201,7 @@ public class ZeTimeDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void getDisplayOnMovement(byte[] msg) {
-        SharedPreferences.Editor prefs = GBApplication.getPrefs().getPreferences().edit();
+        SharedPreferences.Editor prefs = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).edit();
         if (0 != (msg[6] & (1 << 6))) {
             prefs.putBoolean(ZeTimeConstants.PREF_HANDMOVE_DISPLAY, true);
         } else {
