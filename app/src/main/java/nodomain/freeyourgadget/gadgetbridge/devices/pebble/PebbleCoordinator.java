@@ -83,7 +83,7 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public SampleProvider<? extends AbstractActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
-        Prefs prefs = GBApplication.getPrefs();
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()));
         int activityTracker = prefs.getInt("pebble_activitytracker", SampleProvider.PROVIDER_PEBBLE_HEALTH);
         switch (activityTracker) {
             case SampleProvider.PROVIDER_PEBBLE_HEALTH:
@@ -181,6 +181,7 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_pebble,
                 R.xml.devicesettings_canned_reply_16,
                 R.xml.devicesettings_canned_dismisscall_16
         };

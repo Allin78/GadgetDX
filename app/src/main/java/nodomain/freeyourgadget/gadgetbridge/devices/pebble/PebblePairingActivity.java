@@ -102,7 +102,7 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
 
         GBDevice device;
         if (BondingUtil.isLePebble(btDevice)) {
-            if (!GBApplication.getPrefs().getBoolean("pebble_force_le", false)) {
+            if (!GBApplication.getDeviceSpecificSharedPrefs(btDevice.getAddress()).getBoolean("pebble_force_le", false)) {
                 GB.toast(this, "Please switch on \"Always prefer BLE\" option in Pebble settings before pairing you Pebble LE", Toast.LENGTH_LONG, GB.ERROR);
                 onBondingComplete(false);
                 return;

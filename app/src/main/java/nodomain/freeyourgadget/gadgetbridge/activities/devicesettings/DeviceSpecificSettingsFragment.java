@@ -16,12 +16,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities.devicesettings;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -30,17 +40,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.CalBlacklistActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Constants;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.ConfigActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.zetime.ZeTimeConstants;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.XTimePreference;
 import nodomain.freeyourgadget.gadgetbridge.util.XTimePreferenceFragment;
@@ -538,10 +555,95 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_DISTANCE_GOAL);
         addPreferenceHandlerFor(ZeTimeConstants.PREF_USER_ACTIVETIME_GOAL);
 
+        //QHybrid
+        final Preference qHybridPreferences = findPreference("pref_key_qhybrid");
+        if (qHybridPreferences != null)
+        {
+            qHybridPreferences.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    startActivity(new Intent(getActivity(), ConfigActivity.class));
+                    return true;
+                }
+            });
+        }
 
+        //Pebble
+        final Preference calendarBlacklist = findPreference("pref_key_blacklist_calendars");
+        calendarBlacklist.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent enableIntent = new Intent(getActivity(), CalBlacklistActivity.class);
+                startActivity(enableIntent);
+                return true;
+            }
+        });
+        final Preference pebbleEmuAddress = findPreference("pebble_emu_addr");
+        pebbleEmuAddress.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newVal) {
+                Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+                LocalBroadcastManager.getInstance(GBApplication.getContext()).sendBroadcast(refreshIntent);
+                preference.setSummary(newVal.toString());
+                return true;
+            }
 
+        });
+        final Preference pebbleEmuPort = findPreference("pebble_emu_port");
+        pebbleEmuPort.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newVal) {
+                Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
+                LocalBroadcastManager.getInstance(GBApplication.getContext()).sendBroadcast(refreshIntent);
+                preference.setSummary(newVal.toString());
+                return true;
+            }
+        });
+        final Preference pebbleLocationAcquire = findPreference("location_aquire");
+        pebbleLocationAcquire.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                if (ActivityCompat.checkSelfPermission(GBApplication.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
+                }
 
+                LocationManager locationManager = (LocationManager) GBApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
+                Criteria criteria = new Criteria();
+                String provider = locationManager.getBestProvider(criteria, false);
+                if (provider != null) {
+                    Location location = locationManager.getLastKnownLocation(provider);
+                    if (location != null) {
+                        setLocationPreferences(location);
+                    } else {
+                        locationManager.requestSingleUpdate(provider, new LocationListener() {
+                            @Override
+                            public void onLocationChanged(Location location) {
+                                setLocationPreferences(location);
+                            }
 
+                            @Override
+                            public void onStatusChanged(String provider, int status, Bundle extras) {
+                                LOG.info("provider status changed to " + status + " (" + provider + ")");
+                            }
+
+                            @Override
+                            public void onProviderEnabled(String provider) {
+                                LOG.info("provider enabled (" + provider + ")");
+                            }
+
+                            @Override
+                            public void onProviderDisabled(String provider) {
+                                LOG.info("provider disabled (" + provider + ")");
+                                GB.toast(getActivity(), getString(R.string.toast_enable_networklocationprovider), 3000, 0);
+                            }
+                        }, null);
+                    }
+                } else {
+                    LOG.warn("No location provider found, did you deny location permission?");
+                }
+                return true;
+            }
+        });
+
+        //MiBand/Amazfit/Huami/...
         final Preference enableHeartrateSleepSupport = findPreference(PREF_MIBAND_USE_HR_FOR_SLEEP_DETECTION);
         if (enableHeartrateSleepSupport != null) {
             enableHeartrateSleepSupport.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -757,5 +859,18 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 }
             });
         }
+    }
+
+    private void setLocationPreferences(Location location) {
+        String latitude = String.format(Locale.US, "%.6g", location.getLatitude());
+        String longitude = String.format(Locale.US, "%.6g", location.getLongitude());
+        LOG.info("got location. Lat: " + latitude + " Lng: " + longitude);
+        GB.toast(getActivity(), getString(R.string.toast_aqurired_networklocation), 2000, 0);
+        androidx.preference.EditTextPreference pref_latitude = (androidx.preference.EditTextPreference) findPreference("location_latitude");
+        androidx.preference.EditTextPreference pref_longitude = (androidx.preference.EditTextPreference) findPreference("location_longitude");
+        pref_latitude.setText(latitude);
+        pref_longitude.setText(longitude);
+        pref_latitude.setSummary(latitude);
+        pref_longitude.setSummary(longitude);
     }
 }

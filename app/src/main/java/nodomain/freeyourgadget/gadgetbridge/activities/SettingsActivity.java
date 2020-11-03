@@ -108,15 +108,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
             }
         });
 
-        pref = findPreference("pref_key_qhybrid");
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(SettingsActivity.this, ConfigActivity.class));
-                return true;
-            }
-        });
-
         pref = findPreference("pref_key_blacklist");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -132,39 +123,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 startActivity(enableIntent);
                 return true;
             }
-        });
-
-        pref = findPreference("pref_key_blacklist_calendars");
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                Intent enableIntent = new Intent(SettingsActivity.this, CalBlacklistActivity.class);
-                startActivity(enableIntent);
-                return true;
-            }
-        });
-
-        pref = findPreference("pebble_emu_addr");
-        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newVal) {
-                Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(refreshIntent);
-                preference.setSummary(newVal.toString());
-                return true;
-            }
-
-        });
-
-        pref = findPreference("pebble_emu_port");
-        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newVal) {
-                Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(refreshIntent);
-                preference.setSummary(newVal.toString());
-                return true;
-            }
-
         });
 
         pref = findPreference("log_to_file");
@@ -230,50 +188,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
             category.removePreference(pref);
         }
 
-        pref = findPreference("location_aquire");
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(SettingsActivity.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 0);
-                }
 
-                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                Criteria criteria = new Criteria();
-                String provider = locationManager.getBestProvider(criteria, false);
-                if (provider != null) {
-                    Location location = locationManager.getLastKnownLocation(provider);
-                    if (location != null) {
-                        setLocationPreferences(location);
-                    } else {
-                        locationManager.requestSingleUpdate(provider, new LocationListener() {
-                            @Override
-                            public void onLocationChanged(Location location) {
-                                setLocationPreferences(location);
-                            }
-
-                            @Override
-                            public void onStatusChanged(String provider, int status, Bundle extras) {
-                                LOG.info("provider status changed to " + status + " (" + provider + ")");
-                            }
-
-                            @Override
-                            public void onProviderEnabled(String provider) {
-                                LOG.info("provider enabled (" + provider + ")");
-                            }
-
-                            @Override
-                            public void onProviderDisabled(String provider) {
-                                LOG.info("provider disabled (" + provider + ")");
-                                GB.toast(SettingsActivity.this, getString(R.string.toast_enable_networklocationprovider), 3000, 0);
-                            }
-                        }, null);
-                    }
-                } else {
-                    LOG.warn("No location provider found, did you deny location permission?");
-                }
-                return true;
-            }
-        });
 
         pref = findPreference("weather_city");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -469,16 +384,5 @@ public class SettingsActivity extends AbstractSettingsActivity {
         };
     }
 
-    private void setLocationPreferences(Location location) {
-        String latitude = String.format(Locale.US, "%.6g", location.getLatitude());
-        String longitude = String.format(Locale.US, "%.6g", location.getLongitude());
-        LOG.info("got location. Lat: " + latitude + " Lng: " + longitude);
-        GB.toast(SettingsActivity.this, getString(R.string.toast_aqurired_networklocation), 2000, 0);
-        EditTextPreference pref_latitude = (EditTextPreference) findPreference("location_latitude");
-        EditTextPreference pref_longitude = (EditTextPreference) findPreference("location_longitude");
-        pref_latitude.setText(latitude);
-        pref_longitude.setText(longitude);
-        pref_latitude.setSummary(latitude);
-        pref_longitude.setSummary(longitude);
-    }
+
 }
