@@ -329,7 +329,7 @@
     <string name="mi2_prefs_do_not_disturb_start">Ora inizio</string>
     <string name="mi2_prefs_do_not_disturb_end">Ora fine</string>
     <string name="FetchActivityOperation_about_to_transfer_since">Vengono trasferiti dati a partire dal %1$s</string>
-    <string name="waiting_for_reconnect">in attesa di riconnessione</string>
+    <string name="waiting_for_reconnect">In attesa di riconnessione</string>
     <string name="activity_prefs_about_you">Informazioni sull\'utente</string>
     <string name="activity_prefs_year_birth">Anno di nascita</string>
     <string name="activity_prefs_gender">Sesso</string>
