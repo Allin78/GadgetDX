@@ -34,14 +34,7 @@ public class AmazfitGTR2Support extends AmazfitGTSSupport {
     }
 
     @Override
-    protected void handleDeviceInfo(nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfo info) {
-        super.handleDeviceInfo(info);
-        if (gbDevice.getFirmwareVersion() != null) {
-            Version version = new Version(gbDevice.getFirmwareVersion());
-            if (version.compareTo(new Version("1.3.5.79")) >= 0 || // For GTR 47mm
-                    (version.compareTo(new Version("1.0.0.00")) < 0 && version.compareTo(new Version("0.1.1.15")) >= 0)) { // for GTR 32mm with a different version scheme
-                mActivitySampleSize = 8;
-            }
-        }
+    public int getActivitySampleSize() {
+        return 8;
     }
 }
