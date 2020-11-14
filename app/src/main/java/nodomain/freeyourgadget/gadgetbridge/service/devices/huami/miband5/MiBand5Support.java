@@ -23,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
@@ -37,20 +35,13 @@ public class MiBand5Support extends MiBand4Support {
 
     @Override
     protected MiBand5Support setDisplayItems(TransactionBuilder builder) {
-        Map<String, Integer> keyIdMap = new LinkedHashMap<>();
-        keyIdMap.put("status", 0x01);
-        keyIdMap.put("pai", 0x19);
-        keyIdMap.put("hr", 0x02);
-        keyIdMap.put("notifications", 0x06);
-        keyIdMap.put("breathing", 0x33);
-        keyIdMap.put("eventreminder", 0x15);
-        keyIdMap.put("weather", 0x04);
-        keyIdMap.put("workout", 0x03);
-        keyIdMap.put("more", 0x07);
-        keyIdMap.put("stress", 0x1c);
-        keyIdMap.put("cycles", 0x1d);
+        setDisplayItemsNew(builder, false, R.array.pref_miband5_display_items_default);
+        return this;
+    }
 
-        setDisplayItemsNew(builder, false, R.array.pref_miband5_display_items_default, keyIdMap);
+    @Override
+    protected MiBand5Support setShortcuts(TransactionBuilder builder) {
+        setDisplayItemsNew(builder, true, R.array.pref_miband5_shortcuts_default);
         return this;
     }
 

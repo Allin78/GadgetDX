@@ -19,6 +19,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,13 +65,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
-import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_HEIGHT_CM;
-import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_SLEEP_DURATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_STEPS_GOAL;
-import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_WEIGHT_KG;
-import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_YEAR_OF_BIRTH;
-import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_STEP_LENGTH_CM;
-
 public class SettingsActivity extends AbstractSettingsActivity {
     private static final Logger LOG = LoggerFactory.getLogger(SettingsActivity.class);
 
@@ -98,6 +92,16 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 return true;
             }
         });
+
+        pref = findPreference("pref_category_activity_personal");
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                Intent enableIntent = new Intent(SettingsActivity.this, AboutUserPreferencesActivity.class);
+                startActivity(enableIntent);
+                return true;
+            }
+        });
+
 
         pref = findPreference("pref_charts");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -268,7 +272,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
 
         PackageManager pm = getPackageManager();
-        List<ResolveInfo> mediaReceivers = pm.queryBroadcastReceivers(mediaButtonIntent,
+        @SuppressLint("WrongConstant") List<ResolveInfo> mediaReceivers = pm.queryBroadcastReceivers(mediaButtonIntent,
                 PackageManager.GET_INTENT_FILTERS | PackageManager.GET_RESOLVED_FILTER);
 
 
@@ -294,21 +298,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
         audioPlayer.setEntries(newEntries);
         audioPlayer.setEntryValues(newValues);
         audioPlayer.setDefaultValue(newValues[0]);
-
-        pref = findPreference(ActivityUser.PREF_USER_STEPS_GOAL);
-        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newVal) {
-                invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        GBApplication.deviceService().onSendConfiguration(ActivityUser.PREF_USER_STEPS_GOAL);
-                    }
-                });
-                return true;
-            }
-            });
-
     }
 
     @Override
@@ -374,12 +363,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 "pebble_reconnect_attempts",
                 "location_latitude",
                 "location_longitude",
-                PREF_USER_YEAR_OF_BIRTH,
-                PREF_USER_HEIGHT_CM,
-                PREF_USER_WEIGHT_KG,
-                PREF_USER_SLEEP_DURATION,
-                PREF_USER_STEPS_GOAL,
-                PREF_USER_STEP_LENGTH_CM,
                 "weather_city",
         };
     }

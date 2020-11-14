@@ -36,6 +36,9 @@ import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
+import com.mobeta.android.dslv.DragSortListPreference;
+import com.mobeta.android.dslv.DragSortListPreferenceFragment;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,15 +68,15 @@ import nodomain.freeyourgadget.gadgetbridge.util.XTimePreferenceFragment;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALTITUDE_CALIBRATE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AMPM_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ANTILOST_ENABLED;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_SHORT;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_2_FUNCTION_SHORT;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_3_FUNCTION_SHORT;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_LONG;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_2_FUNCTION_LONG;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_3_FUNCTION_LONG;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_DOUBLE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_LONG;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_SHORT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_2_FUNCTION_DOUBLE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_2_FUNCTION_LONG;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_2_FUNCTION_SHORT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_3_FUNCTION_DOUBLE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_3_FUNCTION_LONG;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_3_FUNCTION_SHORT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_BP_CALIBRATE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DATEFORMAT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DISCONNECTNOTIF_NOSHED;
@@ -102,10 +105,12 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DISCONNECT_NOTIFICATION_END;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DISCONNECT_NOTIFICATION_START;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DISPLAY_ITEMS;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DISPLAY_ON_LIFT_END;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_DISPLAY_ON_LIFT_START;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_EXPOSE_HR_THIRDPARTY;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_SHORTCUTS;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_SHORTCUTS_SORTABLE;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_END;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_OFF;
@@ -371,7 +376,9 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(PREF_MI2_DATEFORMAT);
         addPreferenceHandlerFor(PREF_DATEFORMAT);
         addPreferenceHandlerFor(PREF_DISPLAY_ITEMS);
+        addPreferenceHandlerFor(PREF_DISPLAY_ITEMS_SORTABLE);
         addPreferenceHandlerFor(PREF_SHORTCUTS);
+        addPreferenceHandlerFor(PREF_SHORTCUTS_SORTABLE);
         addPreferenceHandlerFor(PREF_LANGUAGE);
         addPreferenceHandlerFor(PREF_EXPOSE_HR_THIRDPARTY);
         addPreferenceHandlerFor(PREF_WEARLOCATION);
@@ -832,6 +839,15 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         DialogFragment dialogFragment;
         if (preference instanceof XTimePreference) {
             dialogFragment = new XTimePreferenceFragment();
+            Bundle bundle = new Bundle(1);
+            bundle.putString("key", preference.getKey());
+            dialogFragment.setArguments(bundle);
+            dialogFragment.setTargetFragment(this, 0);
+            if (getFragmentManager() != null) {
+                dialogFragment.show(getFragmentManager(), "androidx.preference.PreferenceFragment.DIALOG");
+            }
+        } else if (preference instanceof DragSortListPreference) {
+            dialogFragment = new DragSortListPreferenceFragment();
             Bundle bundle = new Bundle(1);
             bundle.putString("key", preference.getKey());
             dialogFragment.setArguments(bundle);

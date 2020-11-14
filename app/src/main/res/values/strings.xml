@@ -8,6 +8,7 @@
     <string name="action_donate">Donate</string>
     <string name="controlcenter_fetch_activity_data">Synchronize</string>
     <string name="controlcenter_find_device">Find lost device</string>
+    <string name="find_lost_device_message">Search for %1$s?</string>
     <string name="controlcenter_take_screenshot">Take Screenshot</string>
     <string name="controlcenter_change_led_color">Change LED Color</string>
     <string name="controlcenter_change_fm_frequency">Change FM Frequency</string>
@@ -452,6 +453,11 @@
     <string name="weekstepschart_steps_a_week">Steps per week</string>
     <string name="activity_sleepchart_activity_and_sleep">Activity</string>
     <string name="charts_activity_list">Activity list</string>
+    <string name="activity_list_summary_active_steps">Active steps</string>
+    <string name="activity_list_summary_distance">Distance</string>
+    <string name="activity_list_summary_active_time">Active time</string>
+    <string name="activity_list_summary_intensity">Movement\nIntensity</string>
+    <string name="activity_list_summary_activities">Activities</string>
     <string name="lack_of_sleep">Lack of sleep: %1$s</string>
     <string name="overslept">Overslept: %1$s</string>
     <!-- Firmware updating -->
@@ -486,6 +492,7 @@
     <string name="distance">Distance</string>
     <string name="clock">Clock</string>
     <string name="heart_rate">Heart rate</string>
+    <string name="movement_intensity">Movement intensity</string>
     <string name="battery">Battery</string>
     <string name="no_limit">No limit</string>
     <string name="seconds_5">5 seconds</string>
@@ -518,6 +525,7 @@
     <string name="abstract_chart_fragment_kind_not_worn">Not worn</string>
     <string name="you_slept">You slept from %1$s to %2$s</string>
     <string name="you_did_not_sleep">You did not sleep</string>
+    <string name="charts_min_max_heartrate_popup">Lowest heart rate: %1$d \nHighest heart rate: %2$d \nMovement intensity: %3$s</string>
     <string name="device_not_connected">Not connected.</string>
     <string name="user_feedback_all_alarms_disabled">All alarms disabled</string>
     <string name="pref_title_keep_data_on_device">Keep activity data on device</string>
@@ -645,6 +653,7 @@
     <string name="updatefirmwareoperation_firmware_not_sent">Firmware not sent</string>
     <string name="charts_legend_heartrate">Heart rate</string>
     <string name="live_activity_heart_rate">Heart rate</string>
+    <string name="charts_legend_heartrate_average">Heart rate average</string>
     <string name="activity_prefs_calories_burnt">Daily target: calories burnt</string>
     <string name="activity_prefs_distance_meters">Daily target: distance in meters</string>
     <string name="activity_prefs_activetime_minutes">Daily target: active time in minutes</string>
@@ -786,6 +795,7 @@
     <string name="devicetype_amazfit_trex">Amazfit T-Rex</string>
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
+    <string name="devicetype_amazfit_gtr2">Amazfit GTR 2</string>
     <string name="devicetype_vibratissimo">Vibratissimo</string>
     <string name="devicetype_liveview">LiveView</string>
     <string name="devicetype_hplus">HPlus</string>
@@ -821,14 +831,12 @@
     <string name="devicetype_sg2">Lemfo SG2</string>
     <string name="devicetype_lefun">Lefun</string>
     <!-- Menus on the smart device -->
-    <string name="menuitem_shortcut_alipay">Alipay (Shortcut)</string>
-    <string name="menuitem_shortcut_weather">Weather (Shortcut)</string>
     <string name="menuitem_status">Status</string>
     <string name="menuitem_notifications">Notifications</string>
     <string name="menuitem_activity">Activity</string>
     <string name="menuitem_weather">Weather</string>
     <string name="menuitem_breathing">Breathing</string>
-    <string name="menuitem_cycles">Cycles</string>
+    <string name="menuitem_cycles">Period</string>
     <string name="menuitem_alarm">Alarm</string>
     <string name="menuitem_timer">Timer</string>
     <string name="menuitem_compass">Compass</string>
@@ -846,6 +854,12 @@
     <string name="menuitem_workout">Workout</string>
     <string name="menuitem_unknown">Unknown</string>
     <string name="menuitem_worldclock">World Clock</string>
+    <string name="menuitem_findphone">Find Phone</string>
+    <string name="menuitem_mutephone">Mute Phone</string>
+    <string name="menuitem_takephoto">Take a photo</string>
+    <string name="menuitem_alexa">Alexa</string>
+    <string name="menuitem_dnd">DND</string>
+    <string name="menuitem_stopwatch">Stopwatch</string>
     <string name="watch9_time_minutes">Minutes:</string>
     <string name="watch9_time_hours">Hours:</string>
     <string name="watch9_time_seconds">Seconds:</string>

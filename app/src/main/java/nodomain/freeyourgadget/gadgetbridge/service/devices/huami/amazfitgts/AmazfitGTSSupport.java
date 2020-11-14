@@ -23,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
@@ -32,6 +30,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts.AmazfitGTSF
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2020;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperationNew;
 import nodomain.freeyourgadget.gadgetbridge.util.Version;
 
@@ -60,27 +60,18 @@ public class AmazfitGTSSupport extends AmazfitBipSupport {
     }
 
     @Override
-    public UpdateFirmwareOperationNew createUpdateFirmwareOperation(Uri uri) {
+    public UpdateFirmwareOperation createUpdateFirmwareOperation(Uri uri) {
+        Version version = new Version(gbDevice.getFirmwareVersion());
+        if (version.compareTo(new Version("0.1.1.16")) >= 0) {
+            return new UpdateFirmwareOperation2020(uri, this);
+        }
+
         return new UpdateFirmwareOperationNew(uri, this);
     }
 
     @Override
     protected AmazfitGTSSupport setDisplayItems(TransactionBuilder builder) {
-        Map<String, Integer> keyIdMap = new LinkedHashMap<>();
-        keyIdMap.put("status", 0x01);
-        keyIdMap.put("pai", 0x19);
-        keyIdMap.put("hr", 0x02);
-        keyIdMap.put("workout", 0x03);
-        keyIdMap.put("activity", 0x14);
-        keyIdMap.put("weather", 0x04);
-        keyIdMap.put("music", 0x0b);
-        keyIdMap.put("notifications", 0x06);
-        keyIdMap.put("alarm", 0x09);
-        keyIdMap.put("eventreminder", 0x15);
-        keyIdMap.put("more", 0x07);
-        keyIdMap.put("settings", 0x13);
-
-        setDisplayItemsNew(builder, false, R.array.pref_gts_display_items_default, keyIdMap);
+        setDisplayItemsNew(builder, false, R.array.pref_gts_display_items_default);
         return this;
     }
 
