@@ -933,7 +933,7 @@
     <string name="require_location_provider">Lokalizacja musi być włączona</string>
     <string name="permission_granting_mandatory">Wszystkie te uprawnienia są wymagane, a ich brak może spowodować niestabilność</string>
     <string name="about_additional_device_support">Dodatkowe wsparcie dla urządzeń</string>
-    <string name="menuitem_cycles">Cykle</string>
+    <string name="menuitem_cycles">Okres</string>
     <string name="menuitem_breathing">Oddychanie</string>
     <string name="devicetype_pinetime_jf">PineTime (Firmware JF)</string>
     <string name="activity_summary_detail">Szczegóły aktywności sportowej</string>
@@ -1103,4 +1103,18 @@
     <string name="devicetype_lefun">Lefun</string>
     <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
+    <string name="flatSeconds">Płasko</string>
+    <string name="averageStride">Średni krok</string>
+    <string name="activity_filter_from_placeholder">odległa przeszłość</string>
+    <string name="activity_filter_individual_items">Indywidualnie wybrane elementy</string>
+    <string name="devicetype_amazfit_gtr2">Amazfit GTR 2</string>
+    <string name="activity_prefs_chart_max_idle_phase_length">Długość przerwy do oddzielenia aktywności (w minutach)</string>
+    <string name="devicestatus_upload_validating">Przesłany plik jest sprawdzany</string>
+    <string name="find_lost_device_message">Szukasz %1$s\?</string>
+    <string name="menuitem_stopwatch">Stoper</string>
+    <string name="menuitem_dnd">Nie przeszkadzać</string>
+    <string name="menuitem_alexa">Alexa</string>
+    <string name="menuitem_takephoto">Zrób zdjęcie</string>
+    <string name="menuitem_mutephone">Wycisz telefon</string>
+    <string name="menuitem_findphone">Znajdź telefon</string>
 </resources>
