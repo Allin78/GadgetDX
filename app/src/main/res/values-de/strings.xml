@@ -1131,5 +1131,6 @@
     <string name="activity_list_summary_active_time">Aktive Zeit</string>
     <string name="activity_list_summary_distance">Strecke</string>
     <string name="activity_list_summary_active_steps">Aktive Schritte</string>
+    <string name="devicetype_casiogbx100">Casio GBX-100</string>
     <string name="qhybrid_calibration_align_hint">Zeiger auf 12:00 ausrichten</string>
 </resources>
