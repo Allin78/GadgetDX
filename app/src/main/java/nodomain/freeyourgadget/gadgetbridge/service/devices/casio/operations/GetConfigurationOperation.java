@@ -83,7 +83,7 @@ public class GetConfigurationOperation extends AbstractBTLEOperation<CasioGBX100
                 int weight = BcdUtil.fromBcd8(compData[4]) + BcdUtil.fromBcd8(compData[5]) * 100;
                 int year = BcdUtil.fromBcd8(compData[6]) + BcdUtil.fromBcd8(compData[7]) * 100;
                 int month = BcdUtil.fromBcd8(compData[8]);
-                int day = BcdUtil.fromBcd8(compData[9]) - 1;
+                int day = BcdUtil.fromBcd8(compData[9]);
 
                 // Store only the device-specific settings on first-connect
                 SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());

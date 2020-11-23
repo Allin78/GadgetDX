@@ -103,7 +103,7 @@ public class SetConfigurationOperation  extends AbstractBTLEOperation<CasioGBX10
                     data[6] = BcdUtil.toBcd8(year % 100);
                     data[7] = BcdUtil.toBcd8((year - (year % 100)) / 100);
                     data[8] = BcdUtil.toBcd8(month);
-                    data[9] = BcdUtil.toBcd8(day + 1);
+                    data[9] = BcdUtil.toBcd8(day);
                 }
 
                 for(int i=2; i<data.length; i++) {
