@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -39,10 +40,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioConstants;
+import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioGBX100SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Constants;
+import nodomain.freeyourgadget.gadgetbridge.entities.CasioGBX100ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
+import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -53,6 +61,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.FetchStepCountDataOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.GetConfigurationOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.InitOperationGBX100;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.SetConfigurationOperation;
@@ -126,6 +135,69 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
             return true;
 
         return super.onCharacteristicRead(gatt, characteristic, status);
+    }
+
+    public CasioGBX100ActivitySample getSumWithinRange(int timestamp_from, int timestamp_to) {
+        int steps = 0;
+        int calories = 0;
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+
+            User user = DBHelper.getUser(dbHandler.getDaoSession());
+            Device device = DBHelper.getDevice(this.getDevice(), dbHandler.getDaoSession());
+
+            CasioGBX100SampleProvider provider = new CasioGBX100SampleProvider(this.getDevice(), dbHandler.getDaoSession());
+            List<CasioGBX100ActivitySample> samples = provider.getActivitySamples(timestamp_from, timestamp_to);
+            for(CasioGBX100ActivitySample sample : samples) {
+                if(sample.getDevice().equals(device) &&
+                        sample.getUser().equals(user)) {
+                    steps += sample.getSteps();
+                    calories += sample.getCalories();
+                }
+            }
+        } catch (Exception e) {
+            LOG.error("Error fetching activity data.");
+        }
+
+        CasioGBX100ActivitySample ret = new CasioGBX100ActivitySample();
+        ret.setCalories(calories);
+        ret.setSteps(steps);
+        LOG.debug("Fetched for today: " + calories + " cals and " + steps + " steps.");
+        return ret;
+    }
+
+    private void addGBActivitySamples(ArrayList<CasioGBX100ActivitySample> samples) {
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+
+            User user = DBHelper.getUser(dbHandler.getDaoSession());
+            Device device = DBHelper.getDevice(this.getDevice(), dbHandler.getDaoSession());
+
+            CasioGBX100SampleProvider provider = new CasioGBX100SampleProvider(this.getDevice(), dbHandler.getDaoSession());
+
+            for (CasioGBX100ActivitySample sample : samples) {
+                sample.setDevice(device);
+                sample.setUser(user);
+                sample.setProvider(provider);
+
+                sample.setRawIntensity(ActivitySample.NOT_MEASURED);
+
+                provider.addGBActivitySample(sample);
+            }
+
+        } catch (Exception ex) {
+            // Why is this a toast? The user doesn't care about the error.
+            GB.toast(getContext(), "Error saving samples: " + ex.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+            GB.updateTransferNotification(null, "Data transfer failed", false, 0, getContext());
+
+            LOG.error(ex.getMessage());
+        }
+    }
+
+    public void stepCountDataFetched(int totalCount, int totalCalories, ArrayList<CasioGBX100ActivitySample> data) {
+        LOG.info("Got the following step count data: ");
+        LOG.info("Total Count: " + totalCount);
+        LOG.info("Total Calories: " + totalCalories);
+
+        addGBActivitySamples(data);
     }
 
     @Override
@@ -358,7 +430,45 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
+        int alarmOffset = 4;
+        byte[] data1 = new byte[5];
+        byte[] data2 = new byte[17];
 
+        if(!isConnected())
+            return;
+
+        data1[0] = CasioConstants.characteristicToByte.get("CASIO_SETTING_FOR_ALM");
+        data2[0] = CasioConstants.characteristicToByte.get("CASIO_SETTING_FOR_ALM2");
+
+        for(int i=0; i<alarms.size(); i++)
+        {
+            byte[] settings = new byte[4];
+            Alarm alm = alarms.get(i);
+            if(alm.getEnabled()) {
+                settings[0] = 0x40;
+            } else {
+                settings[0] = 0;
+            }
+            if(alm.getRepetition(Alarm.ALARM_ONCE)) {
+                settings[i * alarmOffset] |= 0x20;
+            }
+            settings[1] = 0x40;
+            settings[2] = (byte)alm.getHour();
+            settings[3] = (byte)alm.getMinute();
+            if(i == 0) {
+                System.arraycopy(settings, 0, data1, 1, settings.length);
+            } else {
+                System.arraycopy(settings, 0, data2, 1 + (i-1)*4, settings.length);
+            }
+        }
+        try {
+            TransactionBuilder builder = performInitialized("setAlarm");
+            writeAllFeatures(builder, data1);
+            writeAllFeatures(builder, data2);
+            builder.queue(getQueue());
+        } catch(IOException e) {
+            LOG.error("Error setting alarm: " + e.getMessage());
+        }
     }
 
     @Override
@@ -440,7 +550,11 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onFetchRecordedData(int dataTypes) {
-
+        try {
+            new FetchStepCountDataOperation(this).perform();
+        } catch(IOException e) {
+            GB.toast(getContext(), "Error fetching data", Toast.LENGTH_SHORT, GB.ERROR, e);
+        }
     }
 
     @Override
@@ -519,7 +633,11 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onTestNewFunction() {
-
+        try {
+            new FetchStepCountDataOperation(this).perform();
+        } catch(IOException e) {
+            GB.toast(getContext(), "Error testing new functionality", Toast.LENGTH_SHORT, GB.ERROR, e);
+        }
     }
 
     @Override
