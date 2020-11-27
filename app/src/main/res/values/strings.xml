@@ -1098,4 +1098,8 @@
         <item quantity="many">%d hours</item>
         <item quantity="other">%d hours</item>
     </plurals>
+    <string name="prefs_autolight">Automatic light</string>
+    <string name="prefs_key_vibration">Key Vibration</string>
+    <string name="prefs_operating_sounds">Operating Sounds</string>
 </resources>
+>>>>>>> 88bc64d92 (Fix step counter and add some more settings)

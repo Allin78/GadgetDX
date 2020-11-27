@@ -129,6 +129,10 @@ public final class CasioConstants {
         OPTION_STEP_GOAL,
         OPTION_DISTANCE_GOAL,
         OPTION_ACTIVITY_GOAL,
+        OPTION_AUTOLIGHT,
+        OPTION_TIMEFORMAT,
+        OPTION_KEY_VIBRATION,
+        OPTION_OPERATING_SOUNDS,
         OPTION_ALL
     }
 
@@ -155,6 +159,8 @@ public final class CasioConstants {
             put("ALERT_LEVEL", (byte) 0x0a);
             put("CASIO_SETTING_FOR_ALM", (byte) 0x15);
             put("CASIO_SETTING_FOR_ALM2", (byte) 0x16);
+            put("CASIO_SETTING_FOR_BASIC", (byte) 0x13);
+            put("CASIO_CURRENT_TIME_MANAGER", (byte) 0x39);
         }
     };
 }

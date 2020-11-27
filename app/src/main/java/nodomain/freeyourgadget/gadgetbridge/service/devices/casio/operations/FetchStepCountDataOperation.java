@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioConstants;
 import nodomain.freeyourgadget.gadgetbridge.entities.CasioGBX100ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
@@ -18,6 +19,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGBX100DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miband.operations.OperationStatus;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX100DeviceSupport>  {
     private static final Logger LOG = LoggerFactory.getLogger(FetchStepCountDataOperation.class);
@@ -68,6 +70,13 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
     }
 
     @Override
+    protected void prePerform() throws IOException {
+        super.prePerform();
+        getDevice().setBusyTask("FetchStepCountDataOperation starting..."); // mark as busy quickly to avoid interruptions from the outside
+        GB.updateTransferNotification(null, getContext().getString(R.string.busy_task_fetch_activity_data), true, 0, getContext());
+    }
+
+    @Override
     protected void doPerform() throws IOException {
         enableRequiredNotifications(true);
         requestStepCountData();
@@ -76,6 +85,9 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
     @Override
     protected void operationFinished() {
         LOG.info("SetConfigurationOperation finished");
+        unsetBusy();
+        GB.updateTransferNotification(null, getContext().getString(R.string.busy_task_fetch_activity_data), false, 100, getContext());
+
 
         operationStatus = OperationStatus.FINISHED;
         if (getDevice() != null) {
@@ -105,6 +117,8 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                 length = (data[2] & 0xff) | ((data[3] & 0xff) << 8);
             }
             LOG.debug("Response is going to be " + length + " bytes long");
+            GB.updateTransferNotification(null, getContext().getString(R.string.busy_task_fetch_activity_data), true, 10, getContext());
+
             return true;
         } else if(characteristicUUID.equals(CasioConstants.CASIO_CONVOY_CHARACTERISTIC_UUID)) {
             if(data.length < 18) {
@@ -131,29 +145,27 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                 int minute = data[6];
 
                 int stepCount = ((data[7] & 0xff) | ((data[8] & 0xff) << 8) | ((data[9] & 0xff) << 16) | ((data[10] & 0xff) << 24));
-                LOG.info("Current step count value: " + stepCount);
-                // it reports 0xfffffffe if no steps have been recorded
-                if(stepCount < 0)
+                 // it reports 0xfffffffe if no steps have been recorded
+                if(stepCount == 0xfffffffe)
                     stepCount = 0;
-                // data[11] is not yet understood - could be calories burnt
-                // data[12] is not yet understood - could be calories burnt
+
                 int calories = ((data[11] & 0xff) | ((data[12] & 0xff) << 8));
-                if(calories < 0)
+                if(calories == 0xfffe)
                     calories = 0;
                 int yearOfBirth = ((data[13] & 0xff) | ((data[14] & 0xff) << 8));
                 int monthOfBirth = data[15];
                 int dayOfBirth = data[16];
-                LOG.info("Current step count value: " + stepCount);
-                LOG.info("Current calories: " + calories);
+                LOG.debug("Current step count value: " + stepCount);
+                LOG.debug("Current calories: " + calories);
                 // data[17]:
                 // 0x01 probably means finished.
                 // 0x00 probably means more data.
 
-                // Set timestamps for retrieving data so far.
+                // Set timestamps for retrieving recorded data for the current day
 
-                cal.set(year + 2000, month, day, hour-1, 30);
+                cal.set(year + 2000, month, day, hour, 30, 0);
                 int ts_to = (int)(cal.getTimeInMillis() / 1000);
-                cal.set(year + 2000, month, day, 0, 0);
+                cal.set(year + 2000, month, day, 0, 0, 0);
                 int ts_from = (int)(cal.getTimeInMillis() / 1000);
 
                 CasioGBX100ActivitySample sum = support.getSumWithinRange(ts_from, ts_to);
@@ -161,8 +173,8 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                 int caloriesToday = sum.getCalories();
                 int stepsToday = sum.getSteps();
 
-                // Set timestamp for fetching historic data
-                cal.set(year + 2000, month, day, hour, minute);
+                // Set timestamp to currently fetched data for fetching historic data
+                cal.set(year + 2000, month, day, hour, 30, 0);
 
                 if(data[17] == 0x00 && data.length > 18) {
                     LOG.info("We got historic step count data.");
@@ -178,57 +190,65 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                             packetIndex = 0;
                             inPacket = true;
                             index = index + 3;
-                            LOG.info("Decoding packet with type: " + type + " and length: " + packetLength);
+                            LOG.debug("Decoding packet with type: " + type + " and length: " + packetLength);
                         }
                         int count = ((data[index] & 0xff) | ((data[index + 1] & 0xff) << 8));
-                        if(count < 0)
+                        if(count == 0xfffe)
                             count = 0;
-                        LOG.info("Got count " + count);
+                        LOG.debug("Got count " + count);
 
                         index = index+2;
                         if(index >= data.length) {
-                            LOG.info("End of packet, discarding last step count value: " + count);
-                        } else {
-                            if(type == CasioConstants.CASIO_CONVOY_DATATYPE_STEPS) {
-                                cal.add(Calendar.HOUR, -1);
-                                int ts = (int)(cal.getTimeInMillis() / 1000);
-                                stepCountData.add(new CasioGBX100ActivitySample());
-                                stepCountData.get(packetIndex/2).setSteps(count);
-                                stepCountData.get(packetIndex/2).setTimestamp(ts);
-                                stepCountData.get(packetIndex/2).setRawKind(ActivityKind.TYPE_ACTIVITY);
-                                if(ts > ts_from && ts < ts_to) {
-                                    stepsToday += count;
-                                }
-                            } else if(type == CasioConstants.CASIO_CONVOY_DATATYPE_CALORIES) {
-                                stepCountData.get(packetIndex/2).setCalories(count);
-                                int ts = stepCountData.get(packetIndex/2).getTimestamp();
-                                if(ts > ts_from && ts < ts_to) {
-                                    caloriesToday += count;
-                                }
-                            }
-                            packetIndex = packetIndex + 2;
-                            if(packetIndex >= packetLength)
-                                inPacket = false;
+                            LOG.debug("End of packet.");
                         }
+                        if(type == CasioConstants.CASIO_CONVOY_DATATYPE_STEPS) {
+                            cal.add(Calendar.HOUR, -1);
+                            int ts = (int)(cal.getTimeInMillis() / 1000);
+                            stepCountData.add(new CasioGBX100ActivitySample());
+                            stepCountData.get(packetIndex/2).setSteps(count);
+                            stepCountData.get(packetIndex/2).setTimestamp(ts);
+                            if(count > 0) {
+                                stepCountData.get(packetIndex / 2).setRawKind(ActivityKind.TYPE_ACTIVITY);
+                            } else {
+                                stepCountData.get(packetIndex / 2).setRawKind(ActivityKind.TYPE_NOT_MEASURED);
+                            }
+                            if(ts > ts_from && ts < ts_to) {
+                                stepsToday += count;
+                            }
+                        } else if(type == CasioConstants.CASIO_CONVOY_DATATYPE_CALORIES) {
+                            stepCountData.get(packetIndex/2).setCalories(count);
+                            int ts = stepCountData.get(packetIndex/2).getTimestamp();
+                            if(ts > ts_from && ts < ts_to) {
+                                caloriesToday += count;
+                            }
+                        }
+                        packetIndex = packetIndex + 2;
+                        if(packetIndex >= packetLength)
+                            inPacket = false;
                     }
                 }
 
-                // This generates an artifical "now" timestamp for the current
-                // activity based on the existing data.
-                cal.set(year + 2000, month, day, hour, 0);
+                // This generates an artificial "now" timestamp for the current
+                // activity based on the existing data. This timestamp will be overwritten
+                // by the next fetch operation with the actual value.
+                cal.set(year + 2000, month, day, hour, 30, 0);
                 int ts = (int)(cal.getTimeInMillis() / 1000);
                 int steps = stepCount - stepsToday;
                 int cals = calories - caloriesToday;
-                LOG.debug("Artifical timestamp: " + cals + " calories and " + steps + " steps");
+                LOG.debug("Artificial timestamp: " + cals + " calories and " + steps + " steps");
                 CasioGBX100ActivitySample sample = new CasioGBX100ActivitySample();
                 sample.setSteps(steps);
                 sample.setCalories(cals);
                 sample.setTimestamp(ts);
-                sample.setRawKind(ActivityKind.TYPE_ACTIVITY);
+                if(steps > 0)
+                    sample.setRawKind(ActivityKind.TYPE_ACTIVITY);
+                else
+                    sample.setRawKind(ActivityKind.TYPE_NOT_MEASURED);
                 stepCountData.add(0, sample);
 
                 support.stepCountDataFetched(stepCount, calories, stepCountData);
             }
+            GB.updateTransferNotification(null, getContext().getString(R.string.busy_task_fetch_activity_data), true, 80, getContext());
 
             writeStepCountAck();
             return true;

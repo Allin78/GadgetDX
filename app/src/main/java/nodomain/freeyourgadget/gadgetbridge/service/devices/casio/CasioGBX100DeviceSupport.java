@@ -67,7 +67,11 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.Ini
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.SetConfigurationOperation;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOLIGHT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FIND_PHONE_ENABLED;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEY_VIBRATION;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_OPERATING_SOUNDS;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_ACTIVETIME_MINUTES;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_DISTANCE_METERS;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_GENDER;
@@ -216,7 +220,18 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                     onReverseFindDevice(false);
                 }
                 return true;
+            } else if(data[0] == CasioConstants.characteristicToByte.get("CASIO_CURRENT_TIME_MANAGER")) {
+                if(data[1] == 0x00) {
+                    try {
+                        TransactionBuilder builder = performInitialized("writeCurrentTime");
+                        writeCurrentTime(builder);
+                        builder.queue(getQueue());
+                    } catch (IOException e) {
+                        LOG.warn("writing current time failed: " + e.getMessage());
+                    }
+                }
             }
+
         }
 
         LOG.info("Unhandled characteristic change: " + characteristicUUID + " code: " + String.format("0x%1x ...", data[0]));
@@ -258,21 +273,22 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
         arr[5] = (byte) 0x01; // Set to 0x00 to not vibrate/ring for this notification
         arr[6] = icon;
         // These bytes contain a timestamp, not yet decoded / implemented
-        /*arr[7] = (byte) 0x32;
-        arr[8] = (byte) 0x30;
-        arr[9] = (byte) 0x32;
-        arr[10] = (byte) 0x30;
-        arr[11] = (byte) 0x31;
-        arr[12] = (byte) 0x31;
-        arr[13] = (byte) 0x31;
-        arr[14] = (byte) 0x33;
-        arr[15] = (byte) 0x54;
-        arr[16] = (byte) 0x30;
-        arr[17] = (byte) 0x39;
-        arr[18] = (byte) 0x33;
-        arr[19] = (byte) 0x31;
-        arr[20] = (byte) 0x35;
-        arr[21] = (byte) 0x33;*/
+        // ASCII Codes:
+        /*arr[7] = (byte) 0x32; // 2
+        arr[8] = (byte) 0x30;   // 0
+        arr[9] = (byte) 0x32;   // 2
+        arr[10] = (byte) 0x30;  // 0
+        arr[11] = (byte) 0x31;  // 1
+        arr[12] = (byte) 0x31;  // 1
+        arr[13] = (byte) 0x31;  // 1
+        arr[14] = (byte) 0x33;  // 3
+        arr[15] = (byte) 0x54;  // T
+        arr[16] = (byte) 0x30;  // 0
+        arr[17] = (byte) 0x39;  // 9
+        arr[18] = (byte) 0x33;  // 3
+        arr[19] = (byte) 0x31;  // 1
+        arr[20] = (byte) 0x35;  // 5
+        arr[21] = (byte) 0x33;*/// 3
         byte[] copy = Arrays.copyOf(arr, arr.length + 2);
         copy[copy.length-2] = 0;
         copy[copy.length-1] = 0;
@@ -633,10 +649,15 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onTestNewFunction() {
+        byte data[] = new byte[2];
+        data[0] = (byte)0x2e;
+        data[1] = (byte)0x03;
         try {
-            new FetchStepCountDataOperation(this).perform();
+            TransactionBuilder builder = performInitialized("onTestNewFunction");
+            writeAllFeaturesRequest(builder, data);
+            builder.queue(getQueue());
         } catch(IOException e) {
-            GB.toast(getContext(), "Error testing new functionality", Toast.LENGTH_SHORT, GB.ERROR, e);
+            LOG.error("Error setting alarm: " + e.getMessage());
         }
     }
 
@@ -674,6 +695,14 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                 new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WEIGHT).perform();
             } else if(key.equals(PREF_USER_YEAR_OF_BIRTH)) {
                 new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_BIRTHDAY).perform();
+            } else if(key.equals(PREF_TIMEFORMAT)) {
+                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_TIMEFORMAT).perform();
+            } else if(key.equals(PREF_KEY_VIBRATION)) {
+                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_KEY_VIBRATION).perform();
+            } else if(key.equals(PREF_AUTOLIGHT)) {
+                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_AUTOLIGHT).perform();
+            } else if(key.equals(PREF_OPERATING_SOUNDS)) {
+                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_OPERATING_SOUNDS).perform();
             } else if (key.equals(PREF_FIND_PHONE_ENABLED) ||
                     key.equals(MakibesHR3Constants.PREF_FIND_PHONE_DURATION)) {
                 // No action, we check the shared preferences when the device tries to ring the phone.

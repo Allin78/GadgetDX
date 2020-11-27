@@ -159,7 +159,11 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_find_phone,
-                R.xml.devicesettings_wearlocation
+                R.xml.devicesettings_wearlocation,
+                R.xml.devicesettings_timeformat,
+                R.xml.devicesettings_autolight,
+                R.xml.devicesettings_key_vibration,
+                R.xml.devicesettings_operating_sounds
         };
     }
 }

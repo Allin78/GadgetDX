@@ -48,6 +48,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AMPM_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ANTILOST_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BT_CONNECTED_ADVERTISEMENT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOLIGHT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_DOUBLE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_LONG;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BUTTON_1_FUNCTION_SHORT;
@@ -67,11 +68,13 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYBRID_HR_SAVE_RAW_ACTIVITY_FILES;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYDRATION_PERIOD;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYDRATION_SWITCH;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEY_VIBRATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LANGUAGE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LEFUN_INTERFACE_LANGUAGE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LIFTWRIST_NOSHED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LONGSIT_PERIOD;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LONGSIT_SWITCH;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_OPERATING_SOUNDS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_POWER_MODE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SCREEN_ORIENTATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONYSWR12_LOW_VIBRATION;
@@ -383,6 +386,9 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(PREF_LONGSIT_SWITCH);
         addPreferenceHandlerFor(PREF_DO_NOT_DISTURB_NOAUTO);
         addPreferenceHandlerFor(PREF_FIND_PHONE_ENABLED);
+        addPreferenceHandlerFor(PREF_AUTOLIGHT);
+        addPreferenceHandlerFor(PREF_KEY_VIBRATION);
+        addPreferenceHandlerFor(PREF_OPERATING_SOUNDS);
         addPreferenceHandlerFor(PREF_ANTILOST_ENABLED);
         addPreferenceHandlerFor(PREF_HYDRATION_SWITCH);
         addPreferenceHandlerFor(PREF_HYDRATION_PERIOD);
