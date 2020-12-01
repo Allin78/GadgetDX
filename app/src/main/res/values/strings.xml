@@ -756,7 +756,7 @@
     <string name="activity_type_treadmill">Treadmill</string>
     <string name="activity_type_exercise">Exercise</string>
     <string name="activity_error_no_app_for_gpx">Install any GPX app to view activity trace.</string>
-    <string name="activity_error_no_app_for_png">Intsall any image app to share this screenshot.</string>
+    <string name="activity_error_no_app_for_png">Install any image app to share this screenshot.</string>
     <string name="select_all">Select all</string>
     <string name="share">Share</string>
     <string name="reset_index">Reset fetch date</string>
