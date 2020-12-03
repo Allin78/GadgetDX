@@ -72,6 +72,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEY_VIBRATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_OPERATING_SOUNDS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_WEARLOCATION;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_ACTIVETIME_MINUTES;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_DISTANCE_METERS;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_GENDER;
@@ -124,6 +125,13 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
         SharedPreferences prefs = GBApplication.getPrefs().getPreferences();
         prefs.registerOnSharedPreferenceChangeListener(this);
+
+        if(mFirstConnect) {
+            SharedPreferences.Editor editor = preferences.edit();
+
+            editor.putString("charts_tabs", "activitylist,stepsweek");
+            editor.apply();
+        }
 
         return builder;
     }
