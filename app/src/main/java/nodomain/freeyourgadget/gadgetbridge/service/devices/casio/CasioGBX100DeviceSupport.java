@@ -85,7 +85,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     private boolean mFirstConnect = false;
     private boolean mGetConfigurationPending = false;
-    private ArrayList<Integer> mSyncedNotificationIDs = new ArrayList<>();
+    private final ArrayList<Integer> mSyncedNotificationIDs = new ArrayList<>();
     private int mLastCallId = 0;
     private final Handler mFindPhoneHandler = new Handler();
 
@@ -350,7 +350,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
         }
         LOG.info("onNotification id=" + notificationSpec.getId());
         showNotification(icon, notificationSpec.sender, notificationSpec.title, notificationSpec.body, notificationSpec.getId(), false);
-        mSyncedNotificationIDs.add(new Integer(notificationSpec.getId()));
+        mSyncedNotificationIDs.add(notificationSpec.getId());
         // The watch only holds up to 10 notifications. However, the user might have deleted
         // some notifications in the meantime, so to be sure, we keep the last 100 IDs.
         if(mSyncedNotificationIDs.size() > 100) {
@@ -361,7 +361,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     @Override
     public void onDeleteNotification(int id) {
         LOG.info("onDeleteNofication id=" + id);
-        Integer idInt = new Integer(id);
+        Integer idInt = id;
         if(mSyncedNotificationIDs.contains(idInt)) {
             showNotification(CasioConstants.CATEGORY_OTHER, null, null, null, id, true);
             mSyncedNotificationIDs.remove(idInt);
@@ -388,7 +388,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                     int iDuration;
 
                     try {
-                        iDuration = Integer.valueOf(duration);
+                        iDuration = Integer.parseInt(duration);
                     } catch (Exception ex) {
                         LOG.warn(ex.getMessage());
                         iDuration = 60;
@@ -419,7 +419,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
         int year = cal.get(Calendar.YEAR);
         arr[0] = CasioConstants.characteristicToByte.get("CASIO_CURRENT_TIME");
-        arr[1] = (byte)((year >>> 0) & 0xff);
+        arr[1] = (byte)(year & 0xff);
         arr[2] = (byte)((year >>> 8) & 0xff);
         arr[3] = (byte)(1 + cal.get(Calendar.MONTH));
         arr[4] = (byte)cal.get(Calendar.DAY_OF_MONTH);
@@ -649,7 +649,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     @Override
     public void onTestNewFunction() {
-        byte data[] = new byte[2];
+        byte[] data = new byte[2];
         data[0] = (byte)0x2e;
         data[1] = (byte)0x03;
         try {
@@ -679,35 +679,48 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
             return;
         }
         try {
-            if (key.equals(DeviceSettingsPreferenceConst.PREF_WEARLOCATION)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WRIST).perform();
-            } else if(key.equals(PREF_USER_STEPS_GOAL)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_STEP_GOAL).perform();
-            } else if(key.equals(PREF_USER_ACTIVETIME_MINUTES)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_ACTIVITY_GOAL).perform();
-            } else if(key.equals(PREF_USER_DISTANCE_METERS)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_DISTANCE_GOAL).perform();
-            } else if(key.equals(PREF_USER_GENDER)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_GENDER).perform();
-            } else if(key.equals(PREF_USER_HEIGHT_CM)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_HEIGHT).perform();
-            } else if(key.equals(PREF_USER_WEIGHT_KG)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WEIGHT).perform();
-            } else if(key.equals(PREF_USER_YEAR_OF_BIRTH)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_BIRTHDAY).perform();
-            } else if(key.equals(PREF_TIMEFORMAT)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_TIMEFORMAT).perform();
-            } else if(key.equals(PREF_KEY_VIBRATION)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_KEY_VIBRATION).perform();
-            } else if(key.equals(PREF_AUTOLIGHT)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_AUTOLIGHT).perform();
-            } else if(key.equals(PREF_OPERATING_SOUNDS)) {
-                new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_OPERATING_SOUNDS).perform();
-            } else if (key.equals(PREF_FIND_PHONE_ENABLED) ||
-                    key.equals(MakibesHR3Constants.PREF_FIND_PHONE_DURATION)) {
-                // No action, we check the shared preferences when the device tries to ring the phone.
-            } else {
-                return;
+            switch (key) {
+                case DeviceSettingsPreferenceConst.PREF_WEARLOCATION:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WRIST).perform();
+                    break;
+                case PREF_USER_STEPS_GOAL:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_STEP_GOAL).perform();
+                    break;
+                case PREF_USER_ACTIVETIME_MINUTES:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_ACTIVITY_GOAL).perform();
+                    break;
+                case PREF_USER_DISTANCE_METERS:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_DISTANCE_GOAL).perform();
+                    break;
+                case PREF_USER_GENDER:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_GENDER).perform();
+                    break;
+                case PREF_USER_HEIGHT_CM:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_HEIGHT).perform();
+                    break;
+                case PREF_USER_WEIGHT_KG:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_WEIGHT).perform();
+                    break;
+                case PREF_USER_YEAR_OF_BIRTH:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_BIRTHDAY).perform();
+                    break;
+                case PREF_TIMEFORMAT:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_TIMEFORMAT).perform();
+                    break;
+                case PREF_KEY_VIBRATION:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_KEY_VIBRATION).perform();
+                    break;
+                case PREF_AUTOLIGHT:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_AUTOLIGHT).perform();
+                    break;
+                case PREF_OPERATING_SOUNDS:
+                    new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_OPERATING_SOUNDS).perform();
+                    break;
+                case PREF_FIND_PHONE_ENABLED:
+                case MakibesHR3Constants.PREF_FIND_PHONE_DURATION:
+                    // No action, we check the shared preferences when the device tries to ring the phone.
+                    break;
+                default:
             }
         } catch (IOException e) {
             LOG.info("Error sending configuration change to watch");
