@@ -1101,5 +1101,5 @@
     <string name="prefs_autolight">Automatic light</string>
     <string name="prefs_key_vibration">Key Vibration</string>
     <string name="prefs_operating_sounds">Operating Sounds</string>
+    <string name="prefs_fake_ring_duration">Fake continuous ringing</string>
 </resources>
->>>>>>> 88bc64d92 (Fix step counter and add some more settings)

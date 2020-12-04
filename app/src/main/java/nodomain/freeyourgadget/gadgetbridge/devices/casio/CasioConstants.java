@@ -139,6 +139,9 @@ public final class CasioConstants {
     public static final int CASIO_CONVOY_DATATYPE_STEPS = 0x04;
     public static final int CASIO_CONVOY_DATATYPE_CALORIES = 0x05;
 
+    public static final int CASIO_FAKE_RING_SLEEP_DURATION = 3000;
+    public static final int CASIO_FAKE_RING_RETRIES = 10;
+
     public static Map<String, Byte> characteristicToByte = new HashMap<String, Byte>() {
         {
             put("CASIO_WATCH_NAME", (byte) 0x23);

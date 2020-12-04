@@ -163,7 +163,8 @@ public class CasioGBX100DeviceCoordinator extends AbstractDeviceCoordinator {
                 R.xml.devicesettings_timeformat,
                 R.xml.devicesettings_autolight,
                 R.xml.devicesettings_key_vibration,
-                R.xml.devicesettings_operating_sounds
+                R.xml.devicesettings_operating_sounds,
+                R.xml.devicesettings_fake_ring_duration
         };
     }
 }

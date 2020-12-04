@@ -68,6 +68,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.Set
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOLIGHT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FAKE_RING_DURATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FIND_PHONE_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEY_VIBRATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_OPERATING_SOUNDS;
@@ -86,9 +87,12 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
 
     private boolean mFirstConnect = false;
     private boolean mGetConfigurationPending = false;
+    private boolean mRingNotificationPending = false;
     private final ArrayList<Integer> mSyncedNotificationIDs = new ArrayList<>();
-    private int mLastCallId = 0;
+    private int mLastCallId = new AtomicInteger((int) (System.currentTimeMillis()/1000)).incrementAndGet();
+    private int mFakeRingDurationCounter = 0;
     private final Handler mFindPhoneHandler = new Handler();
+    private final Handler mFakeRingDurationHandler = new Handler();
 
     public CasioGBX100DeviceSupport() {
         super(LOG);
@@ -508,18 +512,33 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     }
 
     @Override
-    public void onSetCallState(CallSpec callSpec) {
+    public void onSetCallState(final CallSpec callSpec) {
         switch (callSpec.command) {
             case CallSpec.CALL_INCOMING:
-                final AtomicInteger c = new AtomicInteger((int) (System.currentTimeMillis()/1000));
-                mLastCallId = c.incrementAndGet();
                 showNotification(CasioConstants.CATEGORY_INCOMING_CALL, "Phone", callSpec.name, callSpec.number, mLastCallId, false);
+                SharedPreferences sharedPreferences = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
+                boolean fakeRingDuration = sharedPreferences.getBoolean(PREF_FAKE_RING_DURATION, false);
+                if(fakeRingDuration && mFakeRingDurationCounter < CasioConstants.CASIO_FAKE_RING_RETRIES) {
+                    mFakeRingDurationCounter++;
+                    mFakeRingDurationHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showNotification(CasioConstants.CATEGORY_INCOMING_CALL, null, null, null, mLastCallId, true);
+                            onSetCallState(callSpec);
+                        }
+                    }, CasioConstants.CASIO_FAKE_RING_SLEEP_DURATION);
+                } else {
+                    mFakeRingDurationCounter = 0;
+                }
+                mRingNotificationPending = true;
                 break;
-            case CallSpec.CALL_END:
-                showNotification(CasioConstants.CATEGORY_INCOMING_CALL, null, null, null, mLastCallId, true);
             default:
-                LOG.info("not sending CallSpec since only CALL_INCOMING is handled");
-                break;
+                if(mRingNotificationPending) {
+                    mFakeRingDurationHandler.removeCallbacksAndMessages(null);
+                    mFakeRingDurationCounter = 0;
+                    showNotification(CasioConstants.CATEGORY_INCOMING_CALL, null, null, null, mLastCallId, true);
+                    mLastCallId = new AtomicInteger((int) (System.currentTimeMillis() / 1000)).incrementAndGet();
+                }
         }
     }
 
@@ -724,6 +743,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                 case PREF_OPERATING_SOUNDS:
                     new SetConfigurationOperation(this, CasioConstants.ConfigurationOption.OPTION_OPERATING_SOUNDS).perform();
                     break;
+                case PREF_FAKE_RING_DURATION:
                 case PREF_FIND_PHONE_ENABLED:
                 case MakibesHR3Constants.PREF_FIND_PHONE_DURATION:
                     // No action, we check the shared preferences when the device tries to ring the phone.
