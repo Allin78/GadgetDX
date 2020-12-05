@@ -739,7 +739,7 @@
         <item>@string/menuitem_sleep</item>
         <item>@string/menuitem_weather</item>
         <item>@string/menuitem_alarm</item>
-				<item>@string/menuitem_stress</item>
+        <item>@string/menuitem_stress</item>
         <item>@string/menuitem_spo2</item>
         <item>@string/menuitem_breathing</item>
         <item>@string/menuitem_stopwatch</item>
