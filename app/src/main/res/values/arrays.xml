@@ -733,8 +733,10 @@
     <string-array name="pref_bipu_display_items">
         <item>@string/menuitem_hr</item>
         <item>@string/menuitem_pai</item>
+        <item>@string/menuitem_goal</item>
         <item>@string/menuitem_workout</item>
         <item>@string/menuitem_activity</item>
+        <item>@string/menuitem_sleep</item>
         <item>@string/menuitem_weather</item>
         <item>@string/menuitem_alarm</item>
 				<item>@string/menuitem_stress</item>
@@ -743,6 +745,7 @@
         <item>@string/menuitem_stopwatch</item>
         <item>@string/menuitem_timer</item>
         <item>@string/menuitem_worldclock</item>
+        <item>@string/menuitem_pomodoro</item>
         <item>@string/menuitem_music</item>
         <item>@string/menuitem_cycles</item>
         <item>@string/menuitem_settings</item>
@@ -754,8 +757,10 @@
     <string-array name="pref_bipu_display_items_values">
         <item>@string/p_menuitem_hr</item>
         <item>@string/p_menuitem_pai</item>
+        <item>@string/p_menuitem_goal</item>
         <item>@string/p_menuitem_workout</item>
         <item>@string/p_menuitem_activity</item>
+        <item>@string/p_menuitem_sleep</item>
         <item>@string/p_menuitem_weather</item>
         <item>@string/p_menuitem_alarm</item>
         <item>@string/p_menuitem_stress</item>
@@ -764,6 +769,7 @@
         <item>@string/p_menuitem_stopwatch</item>
         <item>@string/p_menuitem_timer</item>
         <item>@string/p_menuitem_worldclock</item>
+        <item>@string/p_menuitem_pomodoro</item>
         <item>@string/p_menuitem_music</item>
         <item>@string/p_menuitem_cycles</item>
         <item>@string/p_menuitem_settings</item>
