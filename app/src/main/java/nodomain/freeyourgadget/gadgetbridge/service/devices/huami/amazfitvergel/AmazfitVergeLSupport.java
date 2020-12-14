@@ -30,6 +30,9 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitvergel.AmazfitVergeLFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2020;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperationNew;
 
 public class AmazfitVergeLSupport extends AmazfitBipSupport {
     private static final Logger LOG = LoggerFactory.getLogger(AmazfitVergeLSupport.class);
@@ -46,7 +49,7 @@ public class AmazfitVergeLSupport extends AmazfitBipSupport {
 
     @Override
     protected AmazfitVergeLSupport setDisplayItems(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, false, R.array.pref_vergel_display_items);
+        setDisplayItemsNew(builder, false, R.array.pref_gts_display_items_values);
         return this;
     }
 
@@ -55,6 +58,10 @@ public class AmazfitVergeLSupport extends AmazfitBipSupport {
         super.sendNotificationNew(notificationSpec, true);
     }
 
+    @Override
+    public UpdateFirmwareOperation createUpdateFirmwareOperation(Uri uri) {
+        return new UpdateFirmwareOperation2020(uri, this);
+    }
 
     @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {

@@ -101,9 +101,7 @@ public class AmazfitVergeLCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_expose_hr_thirdparty,
                 R.xml.devicesettings_disconnectnotification,
                 R.xml.devicesettings_bt_connected_advertisement,
-                R.xml.devicesettings_device_actions,
-                R.xml.devicesettings_find_phone,
-                R.xml.devicesettings_longsit_noshed,
+                R.xml.devicesettings_buttonactions_only_longpress,
                 R.xml.devicesettings_pairingkey
         };
     }
