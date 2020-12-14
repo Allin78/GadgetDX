@@ -19,6 +19,9 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitvergel
 import android.content.Context;
 import android.net.Uri;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -27,9 +30,9 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitvergel.AmazfitVergeLFWHelper;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts.AmazfitGTSSupport;
 
 public class AmazfitVergeLSupport extends AmazfitBipSupport {
+    private static final Logger LOG = LoggerFactory.getLogger(AmazfitVergeLSupport.class);
 
     @Override
     public byte getCryptFlags() {
