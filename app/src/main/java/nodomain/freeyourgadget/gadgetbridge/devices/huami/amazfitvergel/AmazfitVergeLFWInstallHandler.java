@@ -34,7 +34,7 @@ class AmazfitVergeLFWInstallHandler extends AbstractMiBandFWInstallHandler {
 
     @Override
     protected String getFwUpgradeNotice() {
-        return mContext.getString(R.string.fw_upgrade_notice_amazfitgts, helper.getHumanFirmwareVersion());
+        return mContext.getString(R.string.fw_upgrade_notice_amazfitvergel, helper.getHumanFirmwareVersion());
     }
 
     @Override
@@ -44,6 +44,6 @@ class AmazfitVergeLFWInstallHandler extends AbstractMiBandFWInstallHandler {
 
     @Override
     protected boolean isSupportedDeviceType(GBDevice device) {
-        return device.getType() == DeviceType.AMAZFITGTS;
+        return device.getType() == DeviceType.AMAZFITVERGEL;
     }
 }

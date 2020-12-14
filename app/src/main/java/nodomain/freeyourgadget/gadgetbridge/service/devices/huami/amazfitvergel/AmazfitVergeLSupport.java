@@ -1,4 +1,4 @@
-/*  Copyright (C) 2019-2020 Andreas Shimokawa, Manuel Ruß
+/*  Copyright (C) 2017-2020 Andreas Shimokawa, Carsten Pfeiffer
 
     This file is part of Gadgetbridge.
 
@@ -19,24 +19,13 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitvergel
 import android.content.Context;
 import android.net.Uri;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 
-import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitvergel.AmazfitVergeLFWHelper;
-import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2020;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperationNew;
-import nodomain.freeyourgadget.gadgetbridge.util.Version;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitvergel.AmazfitVergeLFWHelper;
 
 public class AmazfitVergeLSupport extends AmazfitBipSupport {
-    private static final Logger LOG = LoggerFactory.getLogger(AmazfitVergeLSupport.class);
 
     @Override
     public byte getCryptFlags() {
@@ -49,40 +38,7 @@ public class AmazfitVergeLSupport extends AmazfitBipSupport {
     }
 
     @Override
-    public void onNotification(NotificationSpec notificationSpec) {
-        super.sendNotificationNew(notificationSpec, true);
-    }
-
-
-    @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
         return new AmazfitVergeLFWHelper(uri, context);
-    }
-
-    @Override
-    public UpdateFirmwareOperation createUpdateFirmwareOperation(Uri uri) {
-        Version version = new Version(gbDevice.getFirmwareVersion());
-        if (version.compareTo(new Version("0.1.1.16")) >= 0) {
-            return new UpdateFirmwareOperation2020(uri, this);
-        }
-
-        return new UpdateFirmwareOperationNew(uri, this);
-    }
-
-    @Override
-    protected AmazfitVergeLSupport setDisplayItems(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, false, R.array.pref_vergel_display_items);
-        return this;
-    }
-
-    @Override
-    protected void handleDeviceInfo(nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.DeviceInfo info) {
-        super.handleDeviceInfo(info);
-        if (gbDevice.getFirmwareVersion() != null) {
-            Version version = new Version(gbDevice.getFirmwareVersion());
-            if (version.compareTo(new Version("0.0.9.00")) > 0) {
-                mActivitySampleSize = 8;
-            }
-        }
     }
 }
