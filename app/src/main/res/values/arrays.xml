@@ -516,6 +516,21 @@
         <item>@string/menuitem_alipay</item>
     </string-array>
 
+    <string-array name="pref_vergel_display_items">
+        <item>@string/menuitem_status</item>
+        <item>@string/menuitem_pai</item>
+        <item>@string/menuitem_hr</item>
+        <item>@string/menuitem_workout</item>
+        <item>@string/menuitem_activity</item>
+        <item>@string/menuitem_weather</item>
+        <item>@string/menuitem_music</item>
+        <item>@string/menuitem_notifications</item>
+        <item>@string/menuitem_alarm</item>
+        <item>@string/menuitem_eventreminder</item>
+        <item>@string/menuitem_more</item>
+        <item>@string/menuitem_settings</item>
+    </string-array>
+
     <string-array name="pref_bip_display_items_values">
         <item>@string/p_menuitem_status</item>
         <item>@string/p_menuitem_activity</item>
