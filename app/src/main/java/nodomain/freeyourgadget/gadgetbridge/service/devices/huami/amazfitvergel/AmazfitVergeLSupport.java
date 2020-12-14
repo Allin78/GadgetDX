@@ -21,9 +21,13 @@ import android.net.Uri;
 
 import java.io.IOException;
 
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitvergel.AmazfitVergeLFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts.AmazfitGTSSupport;
 
 public class AmazfitVergeLSupport extends AmazfitBipSupport {
 
@@ -36,6 +40,18 @@ public class AmazfitVergeLSupport extends AmazfitBipSupport {
     protected byte getAuthFlags() {
         return 0x00;
     }
+
+    @Override
+    protected AmazfitVergeLSupport setDisplayItems(TransactionBuilder builder) {
+        setDisplayItemsNew(builder, false, R.array.pref_vergel_display_items);
+        return this;
+    }
+
+    @Override
+    public void onNotification(NotificationSpec notificationSpec) {
+        super.sendNotificationNew(notificationSpec, true);
+    }
+
 
     @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
