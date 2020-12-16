@@ -424,7 +424,7 @@ public class GBDaoGenerator {
     private static Entity addCasioGBX100Sample(Schema schema, Entity user, Entity device)  {
         Entity activitySample = addEntity(schema, "CasioGBX100ActivitySample");
         activitySample.implementsSerializable();
-        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        addCommonActivitySampleProperties("AbstractGBX100ActivitySample", activitySample, user, device);
         activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);
         activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
         activitySample.addIntProperty("calories").notNull();

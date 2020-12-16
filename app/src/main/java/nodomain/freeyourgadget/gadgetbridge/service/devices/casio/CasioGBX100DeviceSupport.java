@@ -68,6 +68,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.operations.Set
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOLIGHT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOREMOVE_MESSAGE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FAKE_RING_DURATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FIND_PHONE_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_KEY_VIBRATION;
@@ -93,6 +94,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     private int mFakeRingDurationCounter = 0;
     private final Handler mFindPhoneHandler = new Handler();
     private final Handler mFakeRingDurationHandler = new Handler();
+    private final Handler mAutoRemoveMessageHandler = new Handler();
 
     public CasioGBX100DeviceSupport() {
         super(LOG);
@@ -124,16 +126,17 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
         getDevice().setFirmwareVersion("N/A");
         getDevice().setFirmwareVersion2("N/A");
 
-        SharedPreferences preferences = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress());
-        preferences.registerOnSharedPreferenceChangeListener(this);
+
+        //preferences.registerOnSharedPreferenceChangeListener(this);
 
         SharedPreferences prefs = GBApplication.getPrefs().getPreferences();
         prefs.registerOnSharedPreferenceChangeListener(this);
 
         if(mFirstConnect) {
+            SharedPreferences preferences = GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress());
             SharedPreferences.Editor editor = preferences.edit();
 
-            editor.putString("charts_tabs", "activitylist,stepsweek");
+            editor.putString("charts_tabs", "activity,activitylist,stepsweek");
             editor.apply();
         }
 
@@ -193,8 +196,6 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
                 sample.setDevice(device);
                 sample.setUser(user);
                 sample.setProvider(provider);
-
-                sample.setRawIntensity(ActivitySample.NOT_MEASURED);
 
                 provider.addGBActivitySample(sample);
             }
@@ -347,14 +348,20 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     }
 
     @Override
-    public void onNotification(NotificationSpec notificationSpec) {
+    public void onNotification(final NotificationSpec notificationSpec) {
         byte icon;
+        boolean autoremove = false;
         switch (notificationSpec.type.getGenericType()) {
             case "generic_calendar":
                 icon = CasioConstants.CATEGORY_SCHEDULE_AND_ALARM;
                 break;
             case "generic_email":
                 icon = CasioConstants.CATEGORY_EMAIL;
+                break;
+            case "generic_sms":
+                icon = CasioConstants.CATEGORY_SNS;
+                SharedPreferences sharedPreferences = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
+                autoremove = sharedPreferences.getBoolean(PREF_AUTOREMOVE_MESSAGE, false);
                 break;
             default:
                 icon = CasioConstants.CATEGORY_SNS;
@@ -363,6 +370,14 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
         LOG.info("onNotification id=" + notificationSpec.getId());
         showNotification(icon, notificationSpec.sender, notificationSpec.title, notificationSpec.body, notificationSpec.getId(), false);
         mSyncedNotificationIDs.add(notificationSpec.getId());
+        if(autoremove) {
+            mAutoRemoveMessageHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onDeleteNotification(notificationSpec.getId());
+                }
+            }, CasioConstants.CASIO_AUTOREMOVE_MESSAGE_DELAY);
+        }
         // The watch only holds up to 10 notifications. However, the user might have deleted
         // some notifications in the meantime, so to be sure, we keep the last 100 IDs.
         if(mSyncedNotificationIDs.size() > 100) {
@@ -653,6 +668,7 @@ public class CasioGBX100DeviceSupport extends AbstractBTLEDeviceSupport implemen
     @Override
     public void onSendConfiguration(String config) {
         LOG.info("onSendConfiguration" + config);
+        onSharedPreferenceChanged(null, config);
     }
 
     public void onGetConfigurationFinished() {

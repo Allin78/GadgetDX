@@ -51,7 +51,9 @@ public class CasioGBX100SampleProvider extends AbstractSampleProvider<CasioGBX10
 
     @Override
     public float normalizeIntensity(int rawIntensity) {
-        return rawIntensity;
+        // The magic number 1500 is based on
+        // https://www.livestrong.com/article/474836-what-sport-burns-the-most-calories-per-hour/
+        return (rawIntensity / 1500f);
     }
 
     @Override

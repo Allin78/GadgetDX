@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -135,7 +136,7 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                     LOG.debug("Payload length and data length do not match: " + payloadLength + " vs. " + data.length);
                 }
 
-                Calendar cal = Calendar.getInstance();
+                Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 ArrayList<CasioGBX100ActivitySample> stepCountData = new ArrayList<>();
 
                 int year = data[2];
@@ -216,10 +217,14 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                                 stepsToday += count;
                             }
                         } else if(type == CasioConstants.CASIO_CONVOY_DATATYPE_CALORIES) {
-                            stepCountData.get(packetIndex/2).setCalories(count);
-                            int ts = stepCountData.get(packetIndex/2).getTimestamp();
-                            if(ts > ts_from && ts < ts_to) {
-                                caloriesToday += count;
+                            if(stepCountData.get(packetIndex/2).getSteps() > 0) {
+                                // The last packet might contain an invalid calory count
+                                // of 255, but only if the steps are also invalid.
+                                stepCountData.get(packetIndex / 2).setCalories(count);
+                                int ts = stepCountData.get(packetIndex / 2).getTimestamp();
+                                if (ts > ts_from && ts < ts_to) {
+                                    caloriesToday += count;
+                                }
                             }
                         }
                         packetIndex = packetIndex + 2;
@@ -231,20 +236,28 @@ public class FetchStepCountDataOperation  extends AbstractBTLEOperation<CasioGBX
                 // This generates an artificial "now" timestamp for the current
                 // activity based on the existing data. This timestamp will be overwritten
                 // by the next fetch operation with the actual value.
-                cal.set(year + 2000, month, day, hour, 30, 0);
-                int ts = (int)(cal.getTimeInMillis() / 1000);
                 int steps = stepCount - stepsToday;
                 int cals = calories - caloriesToday;
-                LOG.debug("Artificial timestamp: " + cals + " calories and " + steps + " steps");
-                CasioGBX100ActivitySample sample = new CasioGBX100ActivitySample();
-                sample.setSteps(steps);
-                sample.setCalories(cals);
-                sample.setTimestamp(ts);
-                if(steps > 0)
-                    sample.setRawKind(ActivityKind.TYPE_ACTIVITY);
-                else
-                    sample.setRawKind(ActivityKind.TYPE_NOT_MEASURED);
-                stepCountData.add(0, sample);
+
+                // For a yet unknown reason, the sum calculated by the watch is sometimes lower than
+                // the sum calculated by us. I suspect it is just refreshed at a later time!?
+
+                if(steps > 0 && cals > 0) {
+
+                    cal.set(year + 2000, month, day, hour, 30, 0);
+                    int ts = (int) (cal.getTimeInMillis() / 1000);
+
+                    LOG.debug("Artificial timestamp: " + cals + " calories and " + steps + " steps");
+                    CasioGBX100ActivitySample sample = new CasioGBX100ActivitySample();
+                    sample.setSteps(steps);
+                    sample.setCalories(cals);
+                    sample.setTimestamp(ts);
+                    if (steps > 0)
+                        sample.setRawKind(ActivityKind.TYPE_ACTIVITY);
+                    else
+                        sample.setRawKind(ActivityKind.TYPE_NOT_MEASURED);
+                    stepCountData.add(0, sample);
+                }
 
                 support.stepCountDataFetched(stepCount, calories, stepCountData);
             }
