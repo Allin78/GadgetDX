@@ -79,23 +79,18 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
         return true;
     }
 
-    @Override
-    public boolean supportsMusicInfo() {
-        return true;
-    }
+    //@Override
+    //public boolean supportsMusicInfo() {
+    //    return true;
+    //}
 
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_amazfitneo,
                 R.xml.devicesettings_wearlocation,
-                R.xml.devicesettings_custom_emoji_font,
                 R.xml.devicesettings_timeformat,
-                R.xml.devicesettings_dateformat,
-                R.xml.devicesettings_nightmode,
-                R.xml.devicesettings_liftwrist_display,
-                R.xml.devicesettings_swipeunlock,
-                R.xml.devicesettings_sync_calendar,
+                R.xml.devicesettings_disconnectnotification,
                 R.xml.devicesettings_expose_hr_thirdparty,
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
