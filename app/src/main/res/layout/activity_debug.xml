@@ -194,7 +194,13 @@
                 grid:layout_columnSpan="2"
                 grid:layout_gravity="fill_horizontal"
                 android:text="Delete app Widgets Preferences" />
-
+            <Button
+                android:id="@+id/exportCSV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Export DB as CSV" />
         </androidx.gridlayout.widget.GridLayout>
     </ScrollView>
 

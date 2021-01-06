@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
@@ -47,18 +48,27 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.RemoteInput;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.Widget;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -69,6 +79,8 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
+import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.WidgetPreferenceStorage;
 
@@ -77,6 +89,7 @@ import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_
 
 public class DebugActivity extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(DebugActivity.class);
+    ProgressDialog progress;
 
     private static final String EXTRA_REPLY = "reply";
     private static final String ACTION_REPLY
@@ -371,6 +384,103 @@ public class DebugActivity extends AbstractGBActivity {
             }
         });
 
+        Button exportCSV = findViewById(R.id.exportCSV);
+        exportCSV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progress = new ProgressDialog(DebugActivity.this);
+                progress.setTitle("Exporting activities to CSV");
+                progress.setIcon(R.drawable.ic_pageview);
+                progress.setMessage("Converting data");
+                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progress.show();
+                processInBackgroundThread();
+            }
+        });
+    }
+
+    private void processInBackgroundThread() {
+        LOG.debug("CSV background thread");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                exportActivityDataForDevices();
+            }
+        }).start();
+    }
+
+    private void exportActivityDataForDevices() {
+        LOG.debug("CSV Start");
+        DaoSession daoSession;
+        GBApplication gbApp = (GBApplication) getApplicationContext();
+        List<? extends GBDevice> devices = gbApp.getDeviceManager().getDevices();
+        Calendar date = Calendar.getInstance();
+
+        int to = (int) (date.getTimeInMillis() / 1000);
+        int from = 0;
+
+        try (DBHandler handler = GBApplication.acquireDB()) {
+            daoSession = handler.getDaoSession();
+            for (final GBDevice device : devices) {
+                LOG.debug("CSV: " + device.getName());
+                DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progress.setMessage("Processing " + device.getAliasOrName());
+                    }
+                });
+
+                SampleProvider<? extends ActivitySample> sampleProvider = coordinator.getSampleProvider(device, daoSession);
+                List<? extends ActivitySample> activitySamples = sampleProvider.getAllActivitySamples(from, to);
+                LOG.debug("CSV: " + device.getAliasOrName() + ", records: " + activitySamples.toArray().length);
+                File exportFolder = FileUtils.getExternalFilesDir();
+                File exportFile = new File(exportFolder, "Export_activity_" + device.getAddress() + ".csv");
+                saveActivitiesToCSV(activitySamples, exportFile);
+                LOG.debug("CSV device done");
+            }
+        } catch (Exception e) {
+            LOG.error("Error exporting data to csv: " + e);
+        }
+        LOG.debug("CSV all devices done");
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progress.setMessage("Done");
+            }
+        });
+    }
+
+    public static void saveActivitiesToCSV(List<? extends ActivitySample> activitySamples, File outFile) {
+        String separator = ",";
+        if (activitySamples.toArray().length < 1) {
+            return;
+        }
+        LOG.info("Exporting samples into csv file: " + outFile.getName());
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(outFile))) {
+            bw.write("TIMESTAMP" + separator + "STEPS" + separator + "HEART_RATE" + separator + "KIND" + separator + "INTENSITY" + "\n");
+            List<String> lines = new ArrayList<>();
+            for (ActivitySample sample : activitySamples) {
+                int timestamp = sample.getTimestamp();
+                int steps = sample.getSteps();
+                int hr = sample.getHeartRate();
+                int kind = sample.getKind();
+                float intensity = sample.getIntensity();
+                String line = timestamp + separator + steps + separator + hr + separator + kind + separator + intensity;
+                lines.add(line);
+                if (lines.toArray().length == 10000) {
+                    String joinedLines = StringUtils.join(lines, '\n');
+                    bw.write(joinedLines);
+                    lines = new ArrayList<>();
+                }
+            }
+            String joinedLines = StringUtils.join(lines, '\n');
+            bw.write(joinedLines);
+            bw.flush();
+        } catch (IOException e) {
+            LOG.error("Error related to " + outFile.getName() + " file: " + e.getMessage(), e);
+        }
     }
 
     private void deleteWidgetsPrefs() {
