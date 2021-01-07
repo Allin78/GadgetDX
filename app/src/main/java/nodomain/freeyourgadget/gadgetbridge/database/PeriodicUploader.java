@@ -75,6 +75,7 @@ public class PeriodicUploader extends BroadcastReceiver {
         LOG.info("Uploading DB");
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             DBHelper helper = new DBHelper(context);
+            // Server URI, E.G. http://localhost:8086
             String server = GBApplication.getPrefs().getString(GBPrefs.AUTO_UPLOAD_SERVER, null);
             String username = GBApplication.getPrefs().getString(GBPrefs.AUTO_UPLOAD_USERNAME, null);
             String password = GBApplication.getPrefs().getString(GBPrefs.AUTO_UPLOAD_PASSWORD, null);
@@ -96,6 +97,8 @@ public class PeriodicUploader extends BroadcastReceiver {
             // Potentially add a method to DBHelper to generate the InfluxDB line protocol messages.
 
             try {
+                // Connect to InfluxDB database and query version from header returned by /ping endpoint:
+                // curl -i http://localhost:8086/ping
                 // Check for and, if necessary, create gadgetbridge database
                 // curl -i -XPOST http://localhost:8086/query --data-urlencode "q=CREATE DATABASE gadgetbridge"
                 // For each set of 5k data points:
