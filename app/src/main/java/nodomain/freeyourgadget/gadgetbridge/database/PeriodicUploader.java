@@ -88,9 +88,9 @@ public class PeriodicUploader extends BroadcastReceiver {
             // Store timestamp of last data point in most recent upload
             // Convert to InfluxDB line protocol:
             // measurement,tags value_name=value epoch_time_seconds
-            // E.G.
-            // MI_BAND_ACTIVITY_SAMPLE DEVICE_ID=1 USER_ID=1 RAW_INTENSITY=1 STEPS=-1 RAW_KIND=1 HEART_RATE=-1 1610008597
-            // MI_BAND_ACTIVITY_SAMPLE DEVICE_ID=1 USER_ID=1 RAW_INTENSITY=1 STEPS=-1 RAW_KIND=1 HEART_RATE=-1 1610008598
+            // Example for measurement MI_BAND_ACTIVITY_SAMPLE with no tags.
+            // MI_BAND_ACTIVITY_SAMPLE DEVICE_ID=1,USER_ID=1,RAW_INTENSITY=1,STEPS=-1,RAW_KIND=1,HEART_RATE=-1 1610008597
+            // MI_BAND_ACTIVITY_SAMPLE DEVICE_ID=1,USER_ID=1,RAW_INTENSITY=1,STEPS=-1,RAW_KIND=1,HEART_RATE=-1 1610008598
             // etc...
 
             // Potentially add a method to DBHelper to generate the InfluxDB line protocol messages.
