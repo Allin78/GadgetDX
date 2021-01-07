@@ -36,7 +36,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 /**
- * Created by maufl on 1/4/18.
+ * Created by tjhowse on 2021-01-07.
  */
 
 public class PeriodicUploader extends BroadcastReceiver {
