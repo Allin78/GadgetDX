@@ -70,6 +70,7 @@ public class GB {
     public static final int NOTIFICATION_ID_TRANSFER = 4;
     public static final int NOTIFICATION_ID_EXPORT_FAILED = 5;
     public static final int NOTIFICATION_ID_PHONE_FIND = 6;
+    public static final int NOTIFICATION_ID_UPLOAD_FAILED = 5;
 
     private static final Logger LOG = LoggerFactory.getLogger(GB.class);
     public static final int INFO = 1;
@@ -508,6 +509,18 @@ public class GB {
 
     public static void removeExportFailedNotification(Context context) {
         removeNotification(NOTIFICATION_ID_EXPORT_FAILED, context);
+    }
+
+    public static void updateUploadFailedNotification(String text, Context context) {
+        if (GBEnvironment.env().isLocalTest()) {
+            return;
+        }
+        Notification notification = createUploadFailedNotification(text, context);
+        updateNotification(notification, NOTIFICATION_ID_UPLOAD_FAILED, context);
+    }
+
+    public static void removeUploadFailedNotification(Context context) {
+        removeNotification(NOTIFICATION_ID_UPLOAD_FAILED, context);
     }
 
 
