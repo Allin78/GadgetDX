@@ -1,8 +1,10 @@
-/*  Copyright (C) 2015-2020 0nse, Andreas Böhler, Andreas Shimokawa, Carsten
-    Pfeiffer, Cre3per, criogenic, Daniel Dakhno, Daniele Gobbetti, Gordon Williams,
-    Jean-François Greffier, João Paulo Barraca, José Rebelo, Kranz, ladbsoft,
-    Manuel Ruß, maxirnilian, Pavel Elagin, protomors, Quallenauge, Sami Alaoui,
-    Sergey Trofimov, Sophanimus, tiparega, Vadim Kaushan
+/*  Copyright (C) 2015-2021 0nse, 115ek, Andreas Böhler, Andreas Shimokawa,
+    angelpup, Carsten Pfeiffer, Cre3per, criogenic, DanialHanif, Daniel Dakhno,
+    Daniele Gobbetti, Dmytro Bielik, Gordon Williams, Jean-François Greffier,
+    João Paulo Barraca, José Rebelo, ladbsoft, Manuel Ruß, maxirnilian,
+    mkusnierz, odavo32nof, opavlov, pangwalla, Pavel Elagin, protomors,
+    Quallenauge, Sami Alaoui, Sebastian Kranz, Sergey Trofimov, Sophanimus,
+    Taavi Eomäe, tiparega, Vadim Kaushan, Yukai Li
 
     This file is part of Gadgetbridge.
 
@@ -42,6 +44,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.Ama
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSLiteSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbipu.AmazfitBipUSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbipupro.AmazfitBipUProSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitcor.AmazfitCorSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitcor2.AmazfitCor2Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr.AmazfitGTRLiteSupport;
@@ -176,6 +179,9 @@ public class DeviceSupportFactory {
                         break;
                     case AMAZFITBIPU:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitBipUSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case AMAZFITBIPUPRO:
+                        deviceSupport = new ServiceDeviceSupport(new AmazfitBipUProSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                     case AMAZFITGTR:
                         deviceSupport = new ServiceDeviceSupport(new AmazfitGTRSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));

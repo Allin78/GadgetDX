@@ -1,8 +1,10 @@
-/*  Copyright (C) 2015-2020 0nse, Andreas Böhler, Andreas Shimokawa,
-    Carsten Pfeiffer, Cre3per, Daniel Dakhno, Daniele Gobbetti, Gordon Williams,
-    Jean-François Greffier, João Paulo Barraca, José Rebelo, Kranz, ladbsoft,
-    Manuel Ruß, maxirnilian, Pavel Elagin, protomors, Quallenauge, Sami Alaoui,
-    Sophanimus, tiparega, Vadim Kaushan
+/*  Copyright (C) 2015-2021 0nse, 115ek, Andreas Böhler, Andreas Shimokawa,
+    angelpup, Carsten Pfeiffer, Cre3per, DanialHanif, Daniel Dakhno, Daniele
+    Gobbetti, Dmytro Bielik, Gordon Williams, Jean-François Greffier, João Paulo
+    Barraca, José Rebelo, ksiwczynski, ladbsoft, Lesur Frederic, Manuel Ruß,
+    maxirnilian, mkusnierz, odavo32nof, opavlov, pangwalla, Pavel Elagin,
+    protomors, Quallenauge, Sami Alaoui, Sebastian Kranz, Sophanimus, Taavi
+    Eomäe, tiparega, Vadim Kaushan, Yukai Li
 
     This file is part of Gadgetbridge.
 
@@ -55,12 +57,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbip.AmazfitBipC
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbip.AmazfitBipLiteCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbips.AmazfitBipSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbipu.AmazfitBipUCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbipupro.AmazfitBipUProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitcor.AmazfitCorCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitcor2.AmazfitCor2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr.AmazfitGTRCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr.AmazfitGTRLiteCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr2.AmazfitGTR2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts.AmazfitGTSCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts2.AmazfitGTS2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitvergel.AmazfitVergeLCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfittrex.AmazfitTRexCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband2.MiBand2Coordinator;
@@ -231,9 +235,11 @@ public class DeviceHelper {
         result.add(new AmazfitGTR2Coordinator());
         result.add(new AmazfitTRexCoordinator());
         result.add(new AmazfitGTSCoordinator());
+        result.add(new AmazfitGTS2Coordinator());
         result.add(new AmazfitVergeLCoordinator());
         result.add(new AmazfitBipSCoordinator());
         result.add(new AmazfitBipUCoordinator());
+        result.add(new AmazfitBipUProCoordinator());
         result.add(new AmazfitBand5Coordinator());
         result.add(new MiBand3Coordinator());
         result.add(new MiBand4Coordinator());

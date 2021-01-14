@@ -1,3 +1,19 @@
+/*  Copyright (C) 2019-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel Dakhno
+
+    This file is part of Gadgetbridge.
+
+    Gadgetbridge is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Gadgetbridge is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.adapter.fossil_hr;
 
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -786,6 +802,15 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         // super.setActivityHand(progress);
     }
 
+    private boolean isNotificationWidgetVisible() {
+        for (Widget widget : widgets) {
+            if (widget.getWidgetType() == Widget.WidgetType.LAST_NOTIFICATION) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean playRawNotification(NotificationSpec notificationSpec) {
         String sourceAppId = notificationSpec.sourceAppId;
 
@@ -803,16 +828,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             e.printStackTrace();
         }
 
-        boolean showNotificationIcon = false;
-
-        for(Widget widget : widgets){
-            if(widget.getWidgetType() == Widget.WidgetType.LAST_NOTIFICATION){
-                showNotificationIcon = true;
-                break;
-            }
-        }
-
-        if (showNotificationIcon && sourceAppId != null) {
+        if (isNotificationWidgetVisible() && sourceAppId != null) {
             if (!sourceAppId.equals(this.lastPostedApp)) {
                 if (appIconCache.get(sourceAppId) == null) {
                     try {
@@ -845,7 +861,10 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         }
 
         this.lastPostedApp = null;
-        renderWidgets();
+
+        if (isNotificationWidgetVisible()) {
+            renderWidgets();
+        }
     }
 
     @Override
