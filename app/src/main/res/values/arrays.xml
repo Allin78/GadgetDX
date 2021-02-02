@@ -1122,7 +1122,6 @@
         <item name="300">@string/interval_five_minutes</item>
         <item name="600">@string/interval_ten_minutes</item>
         <item name="1800">@string/interval_thirty_minutes</item>
-        <item name="3600">@string/interval_one_hour</item>
     </string-array>
 
     <string-array name="prefs_heartrate_measurement_interval_values">
@@ -1131,7 +1130,6 @@
         <item>300</item>
         <item>600</item>
         <item>1800</item>
-        <item>3600</item>
     </string-array>
 
     <string-array name="prefs_zetime_heartrate_measurement_interval">
