@@ -331,6 +331,7 @@ public class DeviceSupportFactory {
                         break;
                     case SONY_SWR12:
                         deviceSupport = new ServiceDeviceSupport(new SonySWR12DeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
                     case WASPOS:
                         deviceSupport = new ServiceDeviceSupport(new WaspOSDeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
