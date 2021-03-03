@@ -212,4 +212,9 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
         }
         return false;
     }
+
+    @Override
+    public int getBondingStyle() {
+        return BONDING_STYLE_REQUIRE_KEY;
+    }
 }
