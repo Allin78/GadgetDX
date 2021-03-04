@@ -88,6 +88,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fos
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.file.FileLookupRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.file.FilePutRawRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.file.FilePutRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.notification.DismissTextNotificationRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.notification.PlayCallNotificationRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil.notification.PlayTextNotificationRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.application.ApplicationInformation;
@@ -921,6 +922,13 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     @Override
     public void onDeleteNotification(int id) {
         super.onDeleteNotification(id);
+
+        // send notification dismissal message to watch
+        try {
+            queueWrite(new DismissTextNotificationRequest(id, this));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // only delete app icon when no notification of said app is present
         for (String app : NotificationListener.notificationStack) {
