@@ -725,6 +725,8 @@ public class NotificationListener extends NotificationListenerService {
         if (shouldIgnoreNotification(sbn, true)) return;
 
         Prefs prefs = GBApplication.getPrefs();
+        // Note: the autoremove_notifications global setting is currently disabled in preferences.xml,
+        // so this is always true:
         if (prefs.getBoolean("autoremove_notifications", true)) {
             LOG.info("notification removed, will ask device to delete it");
             Object o = mNotificationHandleLookup.lookupByValue(sbn.getPostTime());

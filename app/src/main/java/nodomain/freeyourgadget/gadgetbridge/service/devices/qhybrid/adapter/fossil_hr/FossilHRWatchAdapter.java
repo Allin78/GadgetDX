@@ -924,10 +924,13 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         super.onDeleteNotification(id);
 
         // send notification dismissal message to watch
-        try {
-            queueWrite(new DismissTextNotificationRequest(id, this));
-        } catch (Exception e) {
-            e.printStackTrace();
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDeviceSupport().getDevice().getAddress()));
+        if (prefs.getBoolean("autoremove_notifications", true)) {
+            try {
+                queueWrite(new DismissTextNotificationRequest(id, this));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         // only delete app icon when no notification of said app is present
