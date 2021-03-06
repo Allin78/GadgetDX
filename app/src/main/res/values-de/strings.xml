@@ -1063,7 +1063,7 @@
     <string name="activity_type_soccer">Fußball</string>
     <string name="activity_filter_to_placeholder">Heute</string>
     <string name="activity_filter_from_placeholder">Vergangenheit</string>
-    <string name="chart_no_active_data">Keine Aktivitäten gefunden.</string>
+    <string name="chart_no_active_data">Keine Aktivitäten festgestellt.</string>
     <string name="devicetype_sonyswr12">Sony SWR12</string>
     <string name="sonyswr12_settings_title">Sony SWR12 Einstellungen</string>
     <string name="sonyswr12_settings_low_vibration">Geringe Vibration aktiviert</string>
@@ -1192,4 +1192,18 @@
 \nHinweis: Die .res Datei muss nicht installiert werden, wenn es die gleiche Datei ist, die schon zuvor installiert wurde.
 \n
 \nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="calendar_year">Jahr</string>
+    <string name="calendar_six_months">6 Monate</string>
+    <string name="calendar_month">Monat</string>
+    <string name="calendar_two_weeks">Zwei Wochen</string>
+    <string name="calendar_week">Woche</string>
+    <string name="calendar_day">Tag</string>
+    <string name="battery_level">Akkustand</string>
+    <string name="show_ongoing_activity">Popup für laufende Aktivitäten anzeigen</string>
+    <string name="dialog_hide">Ausblenden</string>
+    <string name="calendar_three_months">3 Monate</string>
+    <string name="fossil_hr_auth_failed">Authentifizierung fehlgeschlagen, eingeschränkte Funktionalität</string>
+    <string name="fossil_hr_unavailable_unauthed">Im unauthentifizierten Modus nicht verfügbar</string>
+    <string name="fossil_hr_synced_activity_data">Synchronisierte Aktivitätsdaten</string>
+    <string name="fossil_hr_commute_processing">Anfrage wird verarbeitet...</string>
 </resources>
