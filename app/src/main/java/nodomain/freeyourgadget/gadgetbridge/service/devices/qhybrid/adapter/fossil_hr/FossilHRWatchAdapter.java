@@ -68,13 +68,11 @@ import nodomain.freeyourgadget.gadgetbridge.entities.HybridHRActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.NotificationListener;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.Transaction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.adapter.fossil.FossilWatchAdapter;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.file.FileHandle;
@@ -285,7 +283,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 try {
                     this.backGroundImage = AssetImageFactory.createAssetImage(whiteBitmap, true, 0, 1, 0);
                 } catch (IOException e2) {
-                    logger.error("Backgroundimage error", e2);
+                    LOG.error("Backgroundimage error", e2);
                 }
             }
         } catch (IOException | RuntimeException e) {
@@ -383,7 +381,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 widgets.add(widget);
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            LOG.error("Error while updating widgets", e);
         }
 
         for (Widget oldWidget : oldWidgets) {
@@ -509,12 +507,12 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                         File imageFile = new File(element.getValue());
 
                         if (!imageFile.exists() || !imageFile.isFile()) {
-                            logger.debug("Image file " + element.getValue() + " not found");
+                            LOG.debug("Image file " + element.getValue() + " not found");
                             continue;
                         }
                         Bitmap imageBitmap = BitmapFactory.decodeFile(element.getValue());
                         if (imageBitmap == null) {
-                            logger.debug("image file " + element.getValue() + " could not be decoded");
+                            LOG.debug("image file " + element.getValue() + " could not be decoded");
                             continue;
                         }
                         Bitmap scaledBitmap = Bitmap.createScaledBitmap(imageBitmap, 76, 76, false);
@@ -579,7 +577,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                     this
             ));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error while rendering widgets", e);
         }
     }
 
@@ -593,7 +591,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             resultIntent.putExtra("EXTRA_SUCCESS", true);
             resultIntent.putExtra("EXTRA_PATH", outputFile.getAbsolutePath());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error while downloading file", e);
             resultIntent.putExtra("EXTRA_SUCCESS", false);
         }
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(resultIntent);
@@ -610,7 +608,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             fis.read(fileData);
             fis.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Error while reading file", e);
             resultIntent.putExtra("EXTRA_SUCCESS", false);
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(resultIntent);
             return;
@@ -655,7 +653,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 listApplications();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error while uploading file", e);
             resultIntent.putExtra("EXTRA_SUCCESS", false);
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(resultIntent);
         }
@@ -667,7 +665,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             queueWrite((FileEncryptedInterface) new FileEncryptedGetRequest(handle, this) {
                 @Override
                 public void handleFileData(byte[] fileData) {
-                    logger.debug("downloaded encrypted file");
+                    LOG.debug("downloaded encrypted file");
                     handleFileDownload(handle, fileData);
                 }
             });
@@ -675,7 +673,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             queueWrite(new FileGetRawRequest(handle, this) {
                 @Override
                 public void handleFileRawData(byte[] fileData) {
-                    logger.debug("downloaded regular file");
+                    LOG.debug("downloaded regular file");
                     handleFileDownload(handle, fileData);
                 }
             });
@@ -893,7 +891,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             }
             queueWrite(new PlayTextNotificationRequest("generic", senderOrTitle, notificationSpec.body, notificationSpec.getId(), this));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error while forwarding notification", e);
         }
 
         if (isNotificationWidgetVisible() && sourceAppId != null) {
@@ -909,7 +907,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
                         appIconCache.put(sourceAppId, iconBitmap);
                     } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
+                        LOG.error("Error while updating notification widget", e);
                     }
                 }
                 this.lastPostedApp = sourceAppId;
@@ -929,7 +927,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             try {
                 queueWrite(new DismissTextNotificationRequest(id, this));
             } catch (Exception e) {
-                e.printStackTrace();
+                LOG.error("Error while dismissing notification", e);
             }
         }
 
@@ -1074,7 +1072,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             queueWrite(new JsonPutRequest(forecastResponseObject, this));
 
         } catch (JSONException e) {
-            logger.error("JSON exception: ", e);
+            LOG.error("JSON exception: ", e);
         }
     }
 
@@ -1211,7 +1209,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+            LOG.error("Error while configuring buttons", e);
         }
     }
 
@@ -1254,7 +1252,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
         int heartRate = value[1];
 
-        logger.debug("heart rate: " + heartRate);
+        LOG.debug("heart rate: " + heartRate);
     }
 
     @Override
@@ -1275,7 +1273,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             handleMusicRequest(value);
         } else if (requestType == (byte) 0x01) {
             int eventId = value[2];
-            logger.info("got event id " + eventId);
+            LOG.info("got event id " + eventId);
             try {
                 String jsonString = new String(value, 3, value.length - 3);
                 // logger.info(jsonString);
@@ -1286,7 +1284,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
                 if (request.has("ringMyPhone")) {
                     String action = request.getJSONObject("ringMyPhone").getString("action");
-                    logger.info("got ringMyPhone request; " + action);
+                    LOG.info("got ringMyPhone request; " + action);
                     GBDeviceEventFindPhone findPhoneEvent = new GBDeviceEventFindPhone();
 
                     JSONObject responseObject = new JSONObject()
@@ -1318,12 +1316,12 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                         queueWrite(new JsonPutRequest(responseObject, this));
                     }
                 } else if (request.has("weatherInfo") || request.has("weatherApp._.config.locations")) {
-                    logger.info("Got weatherInfo request");
+                    LOG.info("Got weatherInfo request");
                     WeatherSpec weatherSpec = Weather.getInstance().getWeatherSpec();
                     if (weatherSpec != null) {
                         onSendWeather(weatherSpec);
                     } else {
-                        logger.info("no weather data available  - ignoring request");
+                        LOG.info("no weather data available  - ignoring request");
                     }
                 } else if (request.has("commuteApp._.config.commute_info")) {
                     String action = request.getJSONObject("commuteApp._.config.commute_info")
@@ -1345,10 +1343,10 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 } else if (request.has("master._.config.app_status")) {
                     queueWrite(new ConfirmAppStatusRequest(requestId, this));
                 } else {
-                    logger.warn("Unhandled request from watch: " + requestJson.toString());
+                    LOG.warn("Unhandled request from watch: " + requestJson.toString());
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
+                LOG.error("Error while handling received characteristic", e);
             }
         }
     }
@@ -1376,7 +1374,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     private void handleMusicRequest(byte[] value) {
         byte command = value[3];
-        logger.info("got music command: " + command);
+        LOG.info("got music command: " + command);
         MUSIC_WATCH_REQUEST request = MUSIC_WATCH_REQUEST.fromCommandByte(command);
 
         GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
