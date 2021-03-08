@@ -72,6 +72,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilter;
 import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilterDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilterEntry;
 import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilterEntryDao;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.AppNotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
@@ -748,13 +749,15 @@ public class NotificationListener extends NotificationListenerService {
         // Clean up removed notifications from internal list
         notificationsActive.removeAll(notificationsToRemove);
 
-        Prefs prefs = GBApplication.getPrefs();
-        // Note: the autoremove_notifications global setting is currently disabled in preferences.xml,
-        // so this is always true:
-        if (prefs.getBoolean("autoremove_notifications", true)) {
-            for (int id : notificationsToRemove) {
-                LOG.info("Notification " + id + " removed, will ask device to delete it");
-                GBApplication.deviceService().onDeleteNotification(id);
+        // Send notification remove request to device
+        GBDevice connectedDevice = GBApplication.app().getDeviceManager().getSelectedDevice();
+        if (connectedDevice != null) {
+            Prefs prefs = new  Prefs(GBApplication.getDeviceSpecificSharedPrefs(connectedDevice.getAddress()));
+            if (prefs.getBoolean("autoremove_notifications", true)) {
+                for (int id : notificationsToRemove) {
+                    LOG.info("Notification " + id + " removed, will ask device to delete it");
+                    GBApplication.deviceService().onDeleteNotification(id);
+                }
             }
         }
     }
