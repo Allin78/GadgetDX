@@ -40,10 +40,14 @@ public class BFH240DeviceCoordinator extends AbstractDeviceCoordinator {
     @Override
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Collection<? extends ScanFilter> createBLEScanFilters() {
-        ParcelUuid bfhService1 = new ParcelUuid(BFH240Constants.BFH240_IDENTIFICATION_SERVICE);
+        ParcelUuid service1 = new ParcelUuid(BFH240Constants.BFH240_SERVICE1);
+        ParcelUuid service2 = new ParcelUuid(BFH240Constants.BFH240_SERVICE2);
+        ParcelUuid service3 = new ParcelUuid(BFH240Constants.BFH240_SERVICE3);
 
         ScanFilter filter = new ScanFilter.Builder()
-                .setServiceUuid(bfhService1)
+                .setServiceUuid(service1)
+                .setServiceUuid(service2)
+                .setServiceUuid(service3)
                 .build();
 
         return Collections.singletonList(filter);
@@ -53,6 +57,7 @@ public class BFH240DeviceCoordinator extends AbstractDeviceCoordinator {
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         String name = candidate.getDevice().getName();
+
         if (name != null) {
             if (name.startsWith("BFH-240")) {
                 return DeviceType.BFH240;

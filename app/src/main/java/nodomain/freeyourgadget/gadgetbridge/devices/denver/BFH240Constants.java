@@ -4,26 +4,25 @@ import java.util.UUID;
 
 public final class BFH240Constants {
 
+    public static final UUID BFH240_DEVICE_UUID = UUID.fromString("0F75D814-6585-DC0F-AC61-5BE055255E27");
+
     //Known Services
-    public static final UUID BFH240_GENERIC_ACCESS_SERVICE = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
-    public static final UUID BFH240_GENERIC_ATTRIBUTE_SERVICE = UUID.fromString("00001801-0000-1000-8000-00805f9b34fb");
+    public static final UUID BFH240_GENERIC_ACCESS_PROFILE = UUID.fromString("00001800-0000-1000-8000-00805f9b34fb");
+    public static final UUID BFH240_GENERIC_ATTRIBUTE_PROFILE = UUID.fromString("00001801-0000-1000-8000-00805f9b34fb");
 
-    public static final UUID BFH240_IDENTIFICATION_SERVICE = UUID.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
+    public static final UUID BFH240_SERVICE1 = UUID.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
+    public static final UUID BFH240_SERVICE2 = UUID.fromString("f000ffc0-0451-4000-b000-000000000000");
+    public static final UUID BFH240_SERVICE3 = UUID.fromString("c3e6fea0-e966-1000-8000-be99c223df6a");
+    /* FEE7 => FEA1 (READ Notify) => Pedometer
 
-    //c3e6fea0-e966-1000-8000-be99c223df6a Proprietary
-    //f000ffc0-0451-4000-b000-000000000000 Proprietary
+    public static final UUID BFH240_SERVICE0007_WRITE = UUID.fromString("c3e6fea1-e966-1000-8000-be99c223df6a");
+    public static final UUID BFH240_SERVICE0007_READ_NOTIFY = UUID.fromString("c3e6fea2-e966-1000-8000-be99c223df6a");
+
+    public static final UUID BFH240_SERVICE000D_WRITE_NOTIFY = UUID.fromString("f000ffc1-0451-4000-b000-000000000000");
+    public static final UUID BFH240_SERVICE000D_WRITE_NOTIFY = UUID.fromString("f000ffc2-0451-4000-b000-000000000000");
+
 
     /*
-    public static final UUID BFH16_SERVICE1         = UUID.fromString("000056ff-0000-1000-8000-00805f9b34fb");
-    public static final UUID BFH16_SERVICE1_WRITE   = UUID.fromString("000033f3-0000-1000-8000-00805f9b34fb");
-    public static final UUID BFH16_SERVICE1_NOTIFY  = UUID.fromString("000033f4-0000-1000-8000-00805f9b34fb");
-
-    public static final UUID BFH16_SERVICE2         = UUID.fromString("0000fee7-0000-1000-8000-00805f9b34fb");
-    public static final UUID BFH16_SERVICE2_WRITE   = UUID.fromString("0000fec7-0000-1000-8000-00805f9b34fb");
-    public static final UUID BFH16_SERVICE2_INDICATE= UUID.fromString("0000fec8-0000-1000-8000-00805f9b34fb");
-    public static final UUID BFH16_SERVICE2_READ    = UUID.fromString("0000fec9-0000-1000-8000-00805f9b34fb");
-
-
     //Verified command bytes
     public static final byte CMD_SET_ALARM_1 = (byte)0x09;
     public static final byte CMD_SET_ALARM_2 = (byte)0x22;
