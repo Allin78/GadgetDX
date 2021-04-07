@@ -51,7 +51,7 @@ public abstract class PlayNotificationRequest extends FilePutRequest {
     }
 
     private static byte[] createFile(int notificationType, int flags, String title, String sender, String message, int packageCrc, int messageId) {
-        byte headerLength = (byte) 12;
+        byte lengthBufferLength = (byte) 10;
         byte uidLength = (byte) 4;
         byte appBundleCRCLength = (byte) 4;
 
@@ -66,14 +66,14 @@ public abstract class PlayNotificationRequest extends FilePutRequest {
         if (messageBytes.length > 490) {
             messageBytes = Arrays.copyOf(messageBytes, 475);
         }
-        short mainBufferLength = (short) (headerLength + uidLength + appBundleCRCLength + titleBytes.length + senderBytes.length + messageBytes.length + 8);
+        short mainBufferLength = (short) (lengthBufferLength + uidLength + appBundleCRCLength + titleBytes.length + senderBytes.length + messageBytes.length);
 
         ByteBuffer mainBuffer = ByteBuffer.allocate(mainBufferLength);
         mainBuffer.order(ByteOrder.LITTLE_ENDIAN);
 
         mainBuffer.putShort(mainBufferLength);
 
-        mainBuffer.put(headerLength);
+        mainBuffer.put(lengthBufferLength);
         mainBuffer.put((byte) notificationType);
         mainBuffer.put((byte) flags);
         mainBuffer.put(uidLength);
@@ -82,21 +82,11 @@ public abstract class PlayNotificationRequest extends FilePutRequest {
         mainBuffer.put((byte) senderBytes.length);
         mainBuffer.put((byte) messageBytes.length);
 
-        mainBuffer.put((byte) 0x04);
-        mainBuffer.put((byte) 0x04);
-
         mainBuffer.putInt(messageId);
         mainBuffer.putInt(packageCrc);
         mainBuffer.put(titleBytes);
         mainBuffer.put(senderBytes);
         mainBuffer.put(messageBytes);
-        
-        mainBuffer.put((byte) 0xff);
-        mainBuffer.put((byte) 0xff);
-        mainBuffer.put((byte) 0xff);
-        mainBuffer.put((byte) 0xff);
-        mainBuffer.putInt((int) (System.currentTimeMillis() / 1000));
-
         return mainBuffer.array();
     }
 
