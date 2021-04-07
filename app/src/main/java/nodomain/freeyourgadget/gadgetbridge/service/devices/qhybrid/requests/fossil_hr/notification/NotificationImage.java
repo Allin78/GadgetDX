@@ -19,21 +19,26 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fo
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.file.AssetFile;
 
 public class NotificationImage extends AssetFile {
-    private String packageName;
+    private String fileName;
     private byte[] imageData;
+    private int imageWidth;
+    private int imageHeight;
 
-    public NotificationImage(String packageName, byte[] imageData) {
-        //TODO this is defo not functional
-        super(packageName, imageData);
-        this.packageName = packageName;
+    public NotificationImage(String fileName, byte[] imageData) {
+        super(fileName, imageData);
+        this.fileName = fileName;
         this.imageData = imageData;
-    }
-
-    public String getPackageName() {
-        return packageName;
+        this.imageWidth = 24;
+        this.imageHeight = 24;
     }
 
     public byte[] getImageData() {
         return imageData;
     }
+    
+    public String getFileName() { return fileName; }
+    
+    public int getImageWidth() { return imageWidth; }
+
+    public int getImageHeight() { return imageHeight; }
 }
