@@ -51,8 +51,8 @@ public class NotificationImagePutRequest extends FilePutRequest {
         buffer.putShort((short)(size));
         buffer.put(image.getFileName().getBytes());
         buffer.put((byte) 0x00);
-        buffer.put((byte) image.getImageWidth());
-        buffer.put((byte) image.getImageHeight());
+        buffer.put((byte) image.getWidth());
+        buffer.put((byte) image.getHeight());
         buffer.put(image.getImageData());
         buffer.put((byte) 0xff);
         buffer.put((byte) 0xff);
