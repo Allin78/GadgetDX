@@ -2203,7 +2203,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 TransactionBuilder builder;
                 builder = performInitialized("Sending wind/humidity");
 
-                String windString = weatherSpec.windSpeed + "km/h";
+                String windString = weatherSpec.windSpeedAsBeaufort() + ""; // cast to string
                 String humidityString = weatherSpec.currentHumidity + "%";
 
                 int length = 8 + windString.getBytes().length + humidityString.getBytes().length;
