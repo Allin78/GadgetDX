@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.adapter.fossil_hr;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -127,6 +128,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.Version;
 
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.music.MusicControlRequest.MUSIC_PHONE_REQUEST;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.music.MusicControlRequest.MUSIC_WATCH_REQUEST;
+import static nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil.convertDrawableToBitmap;
 
 public class FossilHRWatchAdapter extends FossilWatchAdapter {
     private byte[] phoneRandomNumber;
@@ -496,7 +498,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
                         if (this.lastPostedApp != null) {
 
-                            Bitmap icon = appIconCache.get(this.lastPostedApp);
+                            Bitmap icon = Bitmap.createScaledBitmap(appIconCache.get(this.lastPostedApp), 40, 40, true);
 
                             if (icon != null) {
 
@@ -917,14 +919,20 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         String sourceAppId = notificationSpec.sourceAppId;
         String senderOrTitle = StringUtils.getFirstOf(notificationSpec.sender, notificationSpec.title);
 
+        // Retrieve and store notification or app icon
         if (sourceAppId != null) {
             if (appIconCache.get(sourceAppId) == null) {
                 try {
-                    PackageManager pm = getContext().getPackageManager();
-                    Drawable icon = pm.getApplicationIcon(sourceAppId);
-                    Bitmap iconBitmap = Bitmap.createBitmap(40, 40, Bitmap.Config.ARGB_8888);
-                    icon.setBounds(0, 0, 40, 40);
-                    icon.draw(new Canvas(iconBitmap));
+                    Drawable icon = null;
+                    if (notificationSpec.iconId != 0) {
+                        Context sourcePackageContext = getContext().createPackageContext(sourceAppId, 0);
+                        icon = sourcePackageContext.getResources().getDrawable(notificationSpec.iconId);
+                    }
+                    if (icon == null) {
+                        PackageManager pm = getContext().getPackageManager();
+                        icon = pm.getApplicationIcon(sourceAppId);
+                    }
+                    Bitmap iconBitmap = convertDrawableToBitmap(icon);
                     appIconCache.put(sourceAppId, iconBitmap);
                     setNotificationConfigurations();
                 } catch (PackageManager.NameNotFoundException e) {
@@ -933,6 +941,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             }
         }
 
+        // Send notification to watch
         try {
             for (NotificationHRConfiguration configuration : this.notificationConfigurations) {
                 if (configuration.getPackageName().equals(sourceAppId)) {
@@ -947,6 +956,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             LOG.error("Error while forwarding notification", e);
         }
 
+        // Update notification icon custom widget
         if (isNotificationWidgetVisible() && sourceAppId != null) {
             if (!sourceAppId.equals(this.lastPostedApp)) {
                 this.lastPostedApp = sourceAppId;

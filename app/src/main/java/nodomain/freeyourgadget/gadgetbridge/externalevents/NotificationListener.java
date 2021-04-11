@@ -338,6 +338,9 @@ public class NotificationListener extends NotificationListenerService {
         // Get the app ID that generated this notification. For now only used by pebble color, but may be more useful later.
         notificationSpec.sourceAppId = source;
 
+        // Get the icon of the notification
+        notificationSpec.iconId = notification.icon;
+
         notificationSpec.type = AppNotificationType.getInstance().get(source);
 
         //FIXME: some quirks lookup table would be the minor evil here
@@ -429,6 +432,8 @@ public class NotificationListener extends NotificationListenerService {
             LOG.info("This app might show old/duplicate notifications. notification.when is 0 for " + source);
         }
         notificationsActive.add(notificationSpec.getId());
+        // NOTE for future developers: this call goes to implementations of DeviceService.onNotification(NotificationSpec), like in GBDeviceService
+        // this does NOT directly go to implementations of DeviceSupport.onNotification(NotificationSpec)!
         GBApplication.deviceService().onNotification(notificationSpec);
     }
 

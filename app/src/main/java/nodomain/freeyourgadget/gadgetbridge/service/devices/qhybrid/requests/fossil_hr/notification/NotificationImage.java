@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.file.AssetFile;
 
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.encoder.RLEEncoder.RLEEncode;
-import static nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil.changeBitmapContrastBrightness;
 import static nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil.convertDrawableToBitmap;
 
 public class NotificationImage extends AssetFile {
@@ -65,8 +64,6 @@ public class NotificationImage extends AssetFile {
         ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
         paint.setColorFilter(f);
         c.drawBitmap(bitmap, 0, 0, paint);
-        // Increase contrast
-        bitmap = changeBitmapContrastBrightness(bitmap, 1, -50);
         // Return result
         return bitmap;
     }
