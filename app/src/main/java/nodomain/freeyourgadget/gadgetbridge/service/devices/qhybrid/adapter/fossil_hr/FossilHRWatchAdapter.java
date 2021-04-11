@@ -129,6 +129,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.Version;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.music.MusicControlRequest.MUSIC_PHONE_REQUEST;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.music.MusicControlRequest.MUSIC_WATCH_REQUEST;
 import static nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil.convertDrawableToBitmap;
+import static nodomain.freeyourgadget.gadgetbridge.util.StringUtils.shortenPackageName;
 
 public class FossilHRWatchAdapter extends FossilWatchAdapter {
     private byte[] phoneRandomNumber;
@@ -272,8 +273,9 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         // Add icons and notification filters from cached past notifications
         Set<Map.Entry<String, Bitmap>> entrySet = this.appIconCache.entrySet();
         for (Map.Entry<String, Bitmap> entry : entrySet) {
-            images.add(new NotificationImage(entry.getKey()+".icon", entry.getValue()));
-            notificationFilters.add(new NotificationHRConfiguration(entry.getKey(), entry.getKey()+".icon"));
+            String iconName = shortenPackageName(entry.getKey()) + ".icon";
+            images.add(new NotificationImage(iconName, entry.getValue()));
+            notificationFilters.add(new NotificationHRConfiguration(entry.getKey(), iconName));
         }
 
         // Send notification icons
