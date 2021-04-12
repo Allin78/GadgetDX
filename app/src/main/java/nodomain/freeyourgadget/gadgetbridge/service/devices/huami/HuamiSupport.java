@@ -265,6 +265,20 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
     }
 
     /**
+     * Return the wind speed as sting in a format that is supported by the device.
+     *
+     * A lot of devices only support "levels", in GB we send the Beaufort speed.
+     * Override this in the device specific support class if other, more clear,
+     * formats are supported.
+     *
+     * @param weatherSpec
+     * @return
+     */
+    public String windSpeedString(WeatherSpec weatherSpec){
+        return weatherSpec.windSpeedAsBeaufort() + ""; // cast to string
+    }
+
+    /**
      * Returns the given date/time (calendar) as a byte sequence, suitable for sending to the
      * Mi Band 2 (or derivative). The band appears to not handle DST offsets, so we simply add this
      * to the timezone.
@@ -2203,7 +2217,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 TransactionBuilder builder;
                 builder = performInitialized("Sending wind/humidity");
 
-                String windString = weatherSpec.windSpeedAsBeaufort() + ""; // cast to string
+                String windString = this.windSpeedString(weatherSpec);
                 String humidityString = weatherSpec.currentHumidity + "%";
 
                 int length = 8 + windString.getBytes().length + humidityString.getBytes().length;
