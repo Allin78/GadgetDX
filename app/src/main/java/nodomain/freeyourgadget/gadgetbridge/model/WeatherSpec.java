@@ -57,17 +57,15 @@ public class WeatherSpec implements Parcelable {
 
     // Lower bounds of beaufort regions 1 to 12
     // Values from https://en.wikipedia.org/wiki/Beaufort_scale
-    static final float[] beaufort = new float[] {2,6,12,20,29,39,50,62,75,89,103,118};
-    //                                 level:   0 1 2  3  4  5  6  7  8  9  10  11  12
+    static final float[] beaufort = new float[] { 2, 6, 12, 20, 29, 39, 50, 62, 75, 89, 103, 118 };
+    //                                    level: 0 1  2   3   4   5   6   7   8   9   10   11   12
 
-    public int windSpeedAsBeaufort(){
-        int level = Arrays.binarySearch(WeatherSpec.beaufort, this.windSpeed);
-        // Bin search returns (-lowerBoundIndex) + 1 so take it out again
-        // unless there was an exact match (then we add one)
-        // 5.5 km/h -> -2 (=-1-1)  -> 1 BFT
-        // 6   km/h ->  1 (match)  -> 2 BFT
-        // 6.5 km/h -> -3 (=-2-1)  -> 2 BFT
-        return Math.abs(level) + (level < 0 ? -1 : +1);
+    public int windSpeedAsBeaufort() {
+        int l = 0;
+        while (l < beaufort.length && beaufort[l] < this.windSpeed) {
+            l++;
+        }
+        return l;
     }
 
     protected WeatherSpec(Parcel in) {
