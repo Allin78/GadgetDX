@@ -64,6 +64,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.HRConfigActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.HybridHRActivitySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.NotificationHRConfiguration;
@@ -114,6 +115,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fos
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.notification.NotificationFilterPutHRRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.notification.NotificationImage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.notification.NotificationImagePutRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.quickreply.QuickReplyConfigurationPutRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.quickreply.QuickReplyConfirmationPutRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.widget.CustomBackgroundWidgetElement;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.widget.CustomTextWidgetElement;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fossil_hr.widget.CustomWidget;
@@ -139,6 +142,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     private NotificationHRConfiguration[] notificationConfigurations;
 
+    private CallSpec currentCallSpec = null;
     private MusicSpec currentSpec = null;
 
     int imageNameIndex = 0;
@@ -201,6 +205,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             GB.toast(getContext().getString(R.string.fossil_hr_auth_failed), Toast.LENGTH_LONG, GB.ERROR);
 
         setNotificationConfigurations();
+        setQuickRepliesConfiguration();
 
         if (authenticated) {
             setVibrationStrength();
@@ -288,6 +293,18 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         // Send notification filters configuration
         this.notificationConfigurations = notificationFilters.toArray(new NotificationHRConfiguration[notificationFilters.size()]);
         queueWrite(new NotificationFilterPutHRRequest(this.notificationConfigurations, this));
+    }
+
+    public void setQuickRepliesConfiguration() {
+        Prefs prefs = new Prefs(getDeviceSpecificPreferences());
+        String quickReply1 = prefs.getString("canned_message_dismisscall_1", null);
+        String quickReply2 = prefs.getString("canned_message_dismisscall_2", null);
+        String quickReply3 = prefs.getString("canned_message_dismisscall_3", null);
+        if ((quickReply1 != null) && (quickReply2 != null) && (quickReply3 != null)) {
+            NotificationImage quickReplyIcon = new NotificationImage("icMessage.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_message_outline)), 24, 24);
+            queueWrite(new NotificationImagePutRequest(quickReplyIcon, this));
+            queueWrite(new QuickReplyConfigurationPutRequest(quickReply1, quickReply2, quickReply3, this));
+        }
     }
 
     private File getBackgroundFile() {
@@ -994,7 +1011,18 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     @Override
     public void onSetCallState(CallSpec callSpec) {
         super.onSetCallState(callSpec);
-        queueWrite(new PlayCallNotificationRequest(StringUtils.getFirstOf(callSpec.name, callSpec.number), callSpec.command == CallSpec.CALL_INCOMING, this));
+        Prefs prefs = new Prefs(getDeviceSpecificPreferences());
+        String quickReply1 = prefs.getString("canned_message_dismisscall_1", null);
+        String quickReply2 = prefs.getString("canned_message_dismisscall_2", null);
+        String quickReply3 = prefs.getString("canned_message_dismisscall_3", null);
+        boolean quickRepliesEnabled = quickReply1 != null && quickReply2 != null && quickReply3 != null;
+        if (callSpec.command == CallSpec.CALL_INCOMING) {
+            currentCallSpec = callSpec;
+            queueWrite(new PlayCallNotificationRequest(StringUtils.getFirstOf(callSpec.name, callSpec.number), true, quickRepliesEnabled, this));
+        } else {
+            currentCallSpec = null;
+            queueWrite(new PlayCallNotificationRequest(StringUtils.getFirstOf(callSpec.name, callSpec.number), false, quickRepliesEnabled, this));
+        }
     }
 
     // this method is based on the one from AppMessageHandlerYWeather.java
@@ -1314,6 +1342,8 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 handleCallRequest(value);
             } else if (value[7] == 0x02) {
                 handleDeleteNotification(value);
+            } else if (value[7] == 0x03) {
+                handleQuickReplyRequest(value);
             }
         } else if (requestType == (byte) 0x05) {
             handleMusicRequest(value);
@@ -1410,12 +1440,29 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     private void handleCallRequest(byte[] value) {
         boolean acceptCall = value[7] == (byte) 0x00;
-        queueWrite(new PlayCallNotificationRequest("", false, this));
+        queueWrite(new PlayCallNotificationRequest("", false, false, this));
 
         GBDeviceEventCallControl callControlEvent = new GBDeviceEventCallControl();
         callControlEvent.event = acceptCall ? GBDeviceEventCallControl.Event.START : GBDeviceEventCallControl.Event.REJECT;
 
         getDeviceSupport().evaluateGBDeviceEvent(callControlEvent);
+    }
+
+    private void handleQuickReplyRequest(byte[] value) {
+        if (currentCallSpec == null) {
+            return;
+        }
+        Prefs prefs = new Prefs(getDeviceSpecificPreferences());
+        byte callId = value[3];
+        byte replyChoice = value[8];
+        LOG.info("Quick reply chosen on watch: " + replyChoice);
+        GBDeviceEventNotificationControl devEvtNotificationControl = new GBDeviceEventNotificationControl();
+        devEvtNotificationControl.handle = callId;
+        devEvtNotificationControl.phoneNumber = currentCallSpec.number;
+        devEvtNotificationControl.reply = prefs.getString("canned_message_dismisscall_" + replyChoice, null);
+        devEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.REPLY;
+        getDeviceSupport().evaluateGBDeviceEvent(devEvtNotificationControl);
+        queueWrite(new QuickReplyConfirmationPutRequest(callId));
     }
 
     private void handleMusicRequest(byte[] value) {
