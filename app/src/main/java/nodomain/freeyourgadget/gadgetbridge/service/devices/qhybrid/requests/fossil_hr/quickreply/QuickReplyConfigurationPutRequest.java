@@ -26,36 +26,28 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.requests.fos
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class QuickReplyConfigurationPutRequest extends FilePutRequest {
-    public QuickReplyConfigurationPutRequest(String reply1, String reply2, String reply3, FossilHRWatchAdapter adapter) {
-        super(FileHandle.REPLY_MESSAGES, createFile(reply1, reply2, reply3), adapter);
+    public QuickReplyConfigurationPutRequest(String[] replies, FossilHRWatchAdapter adapter) {
+        super(FileHandle.REPLY_MESSAGES, createFile(replies), adapter);
     }
 
-    private static byte[] createFile(String reply1, String reply2, String reply3) {
+    private static byte[] createFile(String[] replies) {
+        String[] processedReplies = new String[replies.length];
+        int fileLength = 0;
+
         byte[] mysteryHeader = new byte[]{(byte) 0x02, (byte) 0x0b, (byte) 0x46, (byte) 0x00, (byte) 0x03, (byte) 0x19, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
         Charset charsetUTF8 = Charset.forName("UTF-8");
         String iconName = StringUtils.terminateNull("icMessage.icon");
         byte[] iconNameBytes = iconName.getBytes(charsetUTF8);
 
-        if (reply1.length() > 50) {
-            reply1 = reply1.substring(0, 50);
+        for (int index=0; index< replies.length; index++) {
+            String reply = replies[index];
+            if (reply.length() > 50) {
+                reply = reply.substring(0, 50);
+            }
+            processedReplies[index] = StringUtils.terminateNull(reply);
+            fileLength += 8 + processedReplies[index].length() + iconNameBytes.length;
         }
-        String message1 = StringUtils.terminateNull(reply1);
-        byte[] msg1Bytes = message1.getBytes(charsetUTF8);
-        if (reply2.length() > 50) {
-            reply2 = reply2.substring(0, 50);
-        }
-        String message2 = StringUtils.terminateNull(reply2);
-        byte[] msg2Bytes = message2.getBytes(charsetUTF8);
-        if (reply3.length() > 50) {
-            reply3 = reply3.substring(0, 50);
-        }
-        String message3 = StringUtils.terminateNull(reply3);
-        byte[] msg3Bytes = message3.getBytes(charsetUTF8);
-
-        int fileLength = 8 + msg1Bytes.length + iconNameBytes.length;
-        fileLength += 8 + msg2Bytes.length + iconNameBytes.length;
-        fileLength += 8 + msg3Bytes.length + iconNameBytes.length;
 
         ByteBuffer mainBuffer = ByteBuffer.allocate(mysteryHeader.length + 4 + fileLength);
         mainBuffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -63,29 +55,16 @@ public class QuickReplyConfigurationPutRequest extends FilePutRequest {
         mainBuffer.put(mysteryHeader);
         mainBuffer.putInt(fileLength);
 
-        mainBuffer.putShort((short) (8 + msg1Bytes.length + iconNameBytes.length));
-        mainBuffer.put((byte) 0x08);
-        mainBuffer.put((byte) 0x01);
-        mainBuffer.putShort((short) msg1Bytes.length);
-        mainBuffer.putShort((short) iconNameBytes.length);
-        mainBuffer.put(msg1Bytes);
-        mainBuffer.put(iconNameBytes);
-
-        mainBuffer.putShort((short) (8 + msg2Bytes.length + iconNameBytes.length));
-        mainBuffer.put((byte) 0x08);
-        mainBuffer.put((byte) 0x02);
-        mainBuffer.putShort((short) msg2Bytes.length);
-        mainBuffer.putShort((short) iconNameBytes.length);
-        mainBuffer.put(msg2Bytes);
-        mainBuffer.put(iconNameBytes);
-
-        mainBuffer.putShort((short) (8 + msg3Bytes.length + iconNameBytes.length));
-        mainBuffer.put((byte) 0x08);
-        mainBuffer.put((byte) 0x03);
-        mainBuffer.putShort((short) msg3Bytes.length);
-        mainBuffer.putShort((short) iconNameBytes.length);
-        mainBuffer.put(msg3Bytes);
-        mainBuffer.put(iconNameBytes);
+        for (int index=0; index < processedReplies.length; index++) {
+            byte[] msgBytes = processedReplies[index].getBytes(charsetUTF8);
+            mainBuffer.putShort((short) (8 + msgBytes.length + iconNameBytes.length));
+            mainBuffer.put((byte) 0x08);
+            mainBuffer.put((byte) index);
+            mainBuffer.putShort((short) msgBytes.length);
+            mainBuffer.putShort((short) iconNameBytes.length);
+            mainBuffer.put(msgBytes);
+            mainBuffer.put(iconNameBytes);
+        }
 
         return mainBuffer.array();
     }

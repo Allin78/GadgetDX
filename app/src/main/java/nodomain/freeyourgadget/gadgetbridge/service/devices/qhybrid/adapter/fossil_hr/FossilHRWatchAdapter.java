@@ -295,15 +295,24 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         queueWrite(new NotificationFilterPutHRRequest(this.notificationConfigurations, this));
     }
 
-    public void setQuickRepliesConfiguration() {
+    private String[] getQuickReplies() {
+        ArrayList<String> configuredReplies = new ArrayList<>();
         Prefs prefs = new Prefs(getDeviceSpecificPreferences());
-        String quickReply1 = prefs.getString("canned_message_dismisscall_1", null);
-        String quickReply2 = prefs.getString("canned_message_dismisscall_2", null);
-        String quickReply3 = prefs.getString("canned_message_dismisscall_3", null);
-        if ((quickReply1 != null) && (quickReply2 != null) && (quickReply3 != null)) {
+        for (int i=1; i<=16; i++) {
+            String quickReply = prefs.getString("canned_message_dismisscall_" + i, null);
+            if (quickReply != null) {
+                configuredReplies.add(quickReply);
+            }
+        }
+        return configuredReplies.toArray(new String[0]);
+    }
+
+    public void setQuickRepliesConfiguration() {
+        String[] quickReplies = getQuickReplies();
+        if (quickReplies.length > 0) {
             NotificationImage quickReplyIcon = new NotificationImage("icMessage.icon", NotificationImage.getEncodedIconFromDrawable(getContext().getResources().getDrawable(R.drawable.ic_message_outline)), 24, 24);
             queueWrite(new NotificationImagePutRequest(quickReplyIcon, this));
-            queueWrite(new QuickReplyConfigurationPutRequest(quickReply1, quickReply2, quickReply3, this));
+            queueWrite(new QuickReplyConfigurationPutRequest(quickReplies, this));
         }
     }
 
@@ -1011,11 +1020,8 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     @Override
     public void onSetCallState(CallSpec callSpec) {
         super.onSetCallState(callSpec);
-        Prefs prefs = new Prefs(getDeviceSpecificPreferences());
-        String quickReply1 = prefs.getString("canned_message_dismisscall_1", null);
-        String quickReply2 = prefs.getString("canned_message_dismisscall_2", null);
-        String quickReply3 = prefs.getString("canned_message_dismisscall_3", null);
-        boolean quickRepliesEnabled = quickReply1 != null && quickReply2 != null && quickReply3 != null;
+        String[] quickReplies = getQuickReplies();
+        boolean quickRepliesEnabled = quickReplies.length > 0 && callSpec.number != null && callSpec.number.matches("^\\+(?:[0-9] ?){6,14}[0-9]$");
         if (callSpec.command == CallSpec.CALL_INCOMING) {
             currentCallSpec = callSpec;
             queueWrite(new PlayCallNotificationRequest(StringUtils.getFirstOf(callSpec.name, callSpec.number), true, quickRepliesEnabled, this));
@@ -1452,14 +1458,16 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         if (currentCallSpec == null) {
             return;
         }
-        Prefs prefs = new Prefs(getDeviceSpecificPreferences());
+        String[] quickReplies = getQuickReplies();
         byte callId = value[3];
         byte replyChoice = value[8];
-        LOG.info("Quick reply chosen on watch: " + replyChoice);
+        if (replyChoice >= quickReplies.length) {
+            return;
+        }
         GBDeviceEventNotificationControl devEvtNotificationControl = new GBDeviceEventNotificationControl();
         devEvtNotificationControl.handle = callId;
         devEvtNotificationControl.phoneNumber = currentCallSpec.number;
-        devEvtNotificationControl.reply = prefs.getString("canned_message_dismisscall_" + replyChoice, null);
+        devEvtNotificationControl.reply = quickReplies[replyChoice];
         devEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.REPLY;
         getDeviceSupport().evaluateGBDeviceEvent(devEvtNotificationControl);
         queueWrite(new QuickReplyConfirmationPutRequest(callId));
