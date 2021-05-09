@@ -32,17 +32,17 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband5.MiBand5Support;
 
 public class MiBand6Support extends MiBand5Support {
-    private static final Logger LOG = LoggerFactory.getLogger(MiBand5Support.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MiBand6Support.class);
 
     @Override
     protected MiBand6Support setDisplayItems(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, false, true, R.array.pref_miband5_display_items_default);
+        setDisplayItemsNew(builder, false, true, R.array.pref_miband6_display_items_default);
         return this;
     }
 
     @Override
     protected MiBand6Support setShortcuts(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, true, true, R.array.pref_miband5_shortcuts_default);
+        setDisplayItemsNew(builder, true, true, R.array.pref_miband6_shortcuts_default);
         return this;
     }
 

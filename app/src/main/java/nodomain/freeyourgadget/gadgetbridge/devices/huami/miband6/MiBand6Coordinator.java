@@ -19,7 +19,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.R;
 public class MiBand6Coordinator extends HuamiCoordinator {
-    private static final Logger LOG = LoggerFactory.getLogger(MiBand5Coordinator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MiBand6Coordinator.class);
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
@@ -70,7 +70,7 @@ public class MiBand6Coordinator extends HuamiCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_miband5,
+                R.xml.devicesettings_miband6,
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_custom_emoji_font,
                 R.xml.devicesettings_timeformat,
