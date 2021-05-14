@@ -44,8 +44,11 @@ import android.provider.ContactsContract.PhoneLookup;
 import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import org.mozilla.deepspeech.libdeepspeech.DeepSpeechModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -89,6 +92,10 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND2;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND3;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.PEBBLE;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.fromKey;
+import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_BEAM_WIDTH;
+import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_ENABLE;
+import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_SCORER;
+import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_TFLITE;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_ID;
 
@@ -142,6 +149,8 @@ public class GBApplication extends Application {
 
     private DeviceManager deviceManager;
     private BluetoothStateChangeReceiver bluetoothStateChangeReceiver;
+
+    private DeepSpeechModel model = null;
 
     public static void quit() {
         GB.log("Quitting Gadgetbridge...", GB.INFO, null);
@@ -244,6 +253,8 @@ public class GBApplication extends Application {
                                 .build());
             }
         }
+        if (sharedPrefs.getBoolean(PREF_STT_ENABLE, false))
+            getModel();
     }
 
     @Override
@@ -254,6 +265,27 @@ public class GBApplication extends Application {
                 DBHelper.clearSession();
             }
         }
+        if (sharedPrefs.getBoolean(PREF_STT_ENABLE, false)) {
+            model.disableExternalScorer();
+            model.freeModel();
+        }
+    }
+
+    public DeepSpeechModel getModel() {
+        if (model == null && sharedPrefs.getBoolean(PREF_STT_ENABLE, false)) {
+            File tfliteModel = new File(sharedPrefs.getString(PREF_STT_TFLITE, null));
+            if (tfliteModel.exists()) {
+                model = new DeepSpeechModel(tfliteModel.getAbsolutePath());
+                File scorerPath = new File(sharedPrefs.getString(PREF_STT_SCORER, null));
+                if (scorerPath.exists()) {
+                    model.enableExternalScorer(scorerPath.getAbsolutePath());
+                }
+                long defaultBeamWidth = model.beamWidth();
+                String beamWidth = sharedPrefs.getString(PREF_STT_BEAM_WIDTH, String.valueOf(defaultBeamWidth));
+                model.setBeamWidth(Long.parseLong(beamWidth));
+            }
+        }
+        return model;
     }
 
     /**

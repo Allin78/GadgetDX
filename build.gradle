@@ -24,5 +24,6 @@ allprojects {
             url 'https://jitpack.io'
         }
         google()
+        jcenter()
     }
 }

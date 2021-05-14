@@ -178,6 +178,10 @@
         <Preference
             android:key="pref_key_blacklist"
             android:title="@string/pref_blacklist" />
+
+        <Preference
+            android:key="pref_stt"
+            android:title="@string/pref_header_stt" />
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -1,0 +1,29 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <PreferenceCategory android:title="@string/pref_header_stt">
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="stt_enable"
+                    android:title="@string/stt_enable" />
+                <Preference
+                    android:dependency="stt_enable"
+                    android:key="stt_tflite"
+                    android:title="@string/pref_stt_tflite"
+                    app:summary="@string/pref_summary_stt_tflite" />
+                <Preference
+                    android:dependency="stt_enable"
+                    android:key="stt_scorer"
+                    android:summary="@string/pref_summary_stt_scorer"
+                    android:title="@string/pref_stt_scorer" />
+                <ListPreference
+                    android:dependency="stt_enable"
+                    android:key="stt_beam_width"
+                    android:title="@string/pref_stt_beam_width"
+                    android:summary="@string/pref_summary_stt_beam_width"
+                    android:defaultValue="500"
+                    android:entryValues="@array/pref_stt_beam_width_values"
+                    android:entries="@array/pref_stt_beam_width_values"/>
+        </PreferenceCategory>
+
+</PreferenceScreen>

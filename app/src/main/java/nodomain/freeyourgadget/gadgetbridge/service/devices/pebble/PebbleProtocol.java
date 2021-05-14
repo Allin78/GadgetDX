@@ -18,18 +18,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.pebble;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Pair;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.mozilla.deepspeech.libdeepspeech.CandidateTranscript;
+import org.mozilla.deepspeech.libdeepspeech.TokenMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,10 +68,15 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec.Action;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
+import nodomain.freeyourgadget.gadgetbridge.model.SpeechToText;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
+
+import static nodomain.freeyourgadget.gadgetbridge.GBApplication.app;
+import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_ENABLE;
+import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_TFLITE;
 
 public class PebbleProtocol extends GBDeviceProtocol {
 
@@ -283,6 +294,7 @@ public class PebbleProtocol extends GBDeviceProtocol {
     private boolean mForceProtocol = false;
     private GBDeviceEventScreenshot mDevEventScreenshot = null;
     private int mScreenshotRemaining = -1;
+    private SpeechToText mSpeechToText;
 
     //monochrome black + white
     private static final byte[] clut_pebble = {
@@ -2325,7 +2337,11 @@ public class PebbleProtocol extends GBDeviceProtocol {
         GBDeviceEventSendBytes sendBytes = new GBDeviceEventSendBytes();
         if (command == 0x01) { //session setup
             int replLenght = 7;
-            byte replStatus = 5; // 5 = disabled,  change to 0 to send success
+            mSpeechToText = new SpeechToText(true, sample_rate);
+            byte replStatus = 5; // off
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(app());
+            if (preferences.getBoolean(PREF_STT_ENABLE, false))
+                replStatus = 0; // on
             ByteBuffer repl = ByteBuffer.allocate(LENGTH_PREFIX + replLenght);
             repl.order(ByteOrder.BIG_ENDIAN);
             repl.putShort((short) replLenght);
@@ -2337,15 +2353,83 @@ public class PebbleProtocol extends GBDeviceProtocol {
 
             sendBytes.encodedBytes = repl.array();
 
-        } else if (command == 0x02) { //dictation result (possibly it is something we send, not something we receive)
+        } else if (command == 0x02) { //dictation result (it is something we send, not something we receive)
             sendBytes.encodedBytes = null;
         }
         return sendBytes;
     }
 
     private GBDeviceEvent decodeAudioStream(ByteBuffer buf) {
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+        byte command = buf.get();
+        short session_id = buf.getShort();
+        GBDeviceEventSendBytes sendBytes = new GBDeviceEventSendBytes();
+        if (command == 0x02) { // frame data
+            byte count = buf.get();
+            for (int i = 0; i < count; i++) {
+                byte frame_length = buf.get();
+                byte[] frame_data = new byte[frame_length];
+                buf.get(frame_data);
+                mSpeechToText.addFrame(frame_data);
+            }
+            sendBytes.encodedBytes = null;
 
-        return null;
+        } else if (command == 0x03) { // stop, we can execute operations on frames here
+            CandidateTranscript[] results = mSpeechToText.getResults();
+            ByteBuffer data = ByteBuffer.allocate(2);
+            data.order(ByteOrder.LITTLE_ENDIAN);
+
+            data.put((byte) 0x01); // transcription type
+            data.put((byte) results.length); // sentence count
+            for (int i = 0; i < results.length; i++) {
+                CandidateTranscript transcript = results[i];
+                String[] words = new String[1];
+                words[0] = "";
+                for (int j = 0; j < transcript.getNumTokens(); j++) {
+                    String letter = transcript.getToken(j).getText();
+                    if (j == 0)
+                        letter = letter.toUpperCase();
+                    if (letter.isEmpty() || letter.equals(" ")) {
+                        words = Arrays.copyOf(words, words.length + 1);
+                        words[words.length - 1] = "";
+                    }
+                    else
+                        words[words.length - 1] += letter;
+                }
+                data = ByteBuffer.allocate(data.capacity() + 2).put(data.array());
+                data.order(ByteOrder.LITTLE_ENDIAN);
+                data.putShort((short) words.length); // word count
+                for (int j = 0; j < words.length; j++) {
+                    byte[] word = words[j].getBytes();
+                    int conf = (int) Math.floor(Math.abs(transcript.getConfidence()));
+                    data = ByteBuffer.allocate(data.capacity() + 3 + word.length).put(data.array());
+                    data.order(ByteOrder.LITTLE_ENDIAN);
+                    data.put((byte) conf); // word confidence
+                    data.putShort((short) word.length); // word length
+                    data.order(ByteOrder.BIG_ENDIAN);
+                    data.put(word); // word content
+
+                }
+            }
+            int replLenght = data.capacity() + 12;
+            ByteBuffer repl = ByteBuffer.allocate(LENGTH_PREFIX + replLenght);
+            repl.order(ByteOrder.BIG_ENDIAN);
+            repl.putShort((short) replLenght);
+            repl.putShort(ENDPOINT_VOICECONTROL);
+            repl.put((byte) 0x02); // dictation result command
+            repl.order(ByteOrder.LITTLE_ENDIAN);
+            repl.putInt(0); // flags
+            repl.putShort(session_id);
+            repl.put((byte) 0x00); // successful result
+            repl.put((byte) 1); // number of following attributes
+            repl.put((byte) 0x02); // attribute type: transcription
+
+            repl.putShort((short) data.capacity()); // attribute length
+            repl.put(data.array());
+
+            sendBytes.encodedBytes = repl.array();
+        }
+        return sendBytes;
     }
 
     @Override

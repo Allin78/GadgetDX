@@ -1174,4 +1174,12 @@
     <string name="qhybrid_summary_calibration">Calibrate the watch hands</string>
     <string name="pref_summary_canned_messages_set">Send the messages configured below to your device</string>
     <string name="pref_summary_canned_messages_dismisscall">Dismiss calls from the watch with an SMS message</string>
+    <string name="pref_header_stt">Speech to Text</string>
+    <string name="pref_stt_tflite">Tflite File</string>
+    <string name="pref_stt_scorer">Scorer File</string>
+    <string name="pref_summary_stt_tflite">An obligatory file for dictation support, you can find it on https://github.com/mozilla/DeepSpeech/releases</string>
+    <string name="pref_summary_stt_scorer">An optional file for dictation support, improving its quality (WARNING! it is around 1GB in size)</string>
+    <string name="pref_stt_beam_width">Beam Width</string>
+    <string name="pref_summary_stt_beam_width">The higher, the more accurate the results of speech recognition, at the cost of time</string>
+    <string name="stt_enable">Enable Speech To Text</string>
 </resources>
