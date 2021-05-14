@@ -265,7 +265,7 @@ public class GBApplication extends Application {
                 DBHelper.clearSession();
             }
         }
-        if (sharedPrefs.getBoolean(PREF_STT_ENABLE, false)) {
+        if (model != null) {
             model.disableExternalScorer();
             model.freeModel();
         }

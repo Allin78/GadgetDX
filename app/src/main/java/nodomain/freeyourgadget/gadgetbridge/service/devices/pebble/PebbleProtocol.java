@@ -2340,7 +2340,7 @@ public class PebbleProtocol extends GBDeviceProtocol {
             mSpeechToText = new SpeechToText(true, sample_rate);
             byte replStatus = 5; // off
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(app());
-            if (preferences.getBoolean(PREF_STT_ENABLE, false))
+            if (preferences.getBoolean(PREF_STT_ENABLE, false) && app().getModel() != null)
                 replStatus = 0; // on
             ByteBuffer repl = ByteBuffer.allocate(LENGTH_PREFIX + replLenght);
             repl.order(ByteOrder.BIG_ENDIAN);
