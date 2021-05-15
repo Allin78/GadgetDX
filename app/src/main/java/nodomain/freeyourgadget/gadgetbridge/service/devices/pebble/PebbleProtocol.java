@@ -27,11 +27,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mozilla.deepspeech.libdeepspeech.CandidateTranscript;
-import org.mozilla.deepspeech.libdeepspeech.TokenMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -75,8 +73,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 import static nodomain.freeyourgadget.gadgetbridge.GBApplication.app;
-import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_ENABLE;
-import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_TFLITE;
 
 public class PebbleProtocol extends GBDeviceProtocol {
 
@@ -2337,11 +2333,15 @@ public class PebbleProtocol extends GBDeviceProtocol {
         GBDeviceEventSendBytes sendBytes = new GBDeviceEventSendBytes();
         if (command == 0x01) { //session setup
             int replLenght = 7;
-            mSpeechToText = new SpeechToText(true, sample_rate);
+            mSpeechToText = new SpeechToText();
             byte replStatus = 5; // off
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(app());
-            if (preferences.getBoolean(PREF_STT_ENABLE, false) && app().getModel() != null)
+            if (mSpeechToText.getEnabled() && app().getModel() != null) {
                 replStatus = 0; // on
+                mSpeechToText.initModel();
+                mSpeechToText.setSampleRate(sample_rate);
+                mSpeechToText.setSpeex();
+            }
             ByteBuffer repl = ByteBuffer.allocate(LENGTH_PREFIX + replLenght);
             repl.order(ByteOrder.BIG_ENDIAN);
             repl.putShort((short) replLenght);
@@ -2370,12 +2370,15 @@ public class PebbleProtocol extends GBDeviceProtocol {
                 byte frame_length = buf.get();
                 byte[] frame_data = new byte[frame_length];
                 buf.get(frame_data);
+
                 mSpeechToText.addFrame(frame_data);
             }
             sendBytes.encodedBytes = null;
 
         } else if (command == 0x03) { // stop, we can execute operations on frames here
             CandidateTranscript[] results = mSpeechToText.getResults();
+            boolean empty = false;
+
             ByteBuffer data = ByteBuffer.allocate(2);
             data.order(ByteOrder.LITTLE_ENDIAN);
 
@@ -2383,6 +2386,8 @@ public class PebbleProtocol extends GBDeviceProtocol {
             data.put((byte) results.length); // sentence count
             for (int i = 0; i < results.length; i++) {
                 CandidateTranscript transcript = results[i];
+                if (transcript.getNumTokens() == 0)
+                    empty = true;
                 String[] words = new String[1];
                 words[0] = "";
                 for (int j = 0; j < transcript.getNumTokens(); j++) {
@@ -2411,7 +2416,10 @@ public class PebbleProtocol extends GBDeviceProtocol {
 
                 }
             }
+
             int replLenght = data.capacity() + 12;
+            if (empty)
+                replLenght = 9;
             ByteBuffer repl = ByteBuffer.allocate(LENGTH_PREFIX + replLenght);
             repl.order(ByteOrder.BIG_ENDIAN);
             repl.putShort((short) replLenght);
@@ -2420,12 +2428,18 @@ public class PebbleProtocol extends GBDeviceProtocol {
             repl.order(ByteOrder.LITTLE_ENDIAN);
             repl.putInt(0); // flags
             repl.putShort(session_id);
-            repl.put((byte) 0x00); // successful result
-            repl.put((byte) 1); // number of following attributes
-            repl.put((byte) 0x02); // attribute type: transcription
 
-            repl.putShort((short) data.capacity()); // attribute length
-            repl.put(data.array());
+            if (empty) {
+                repl.put((byte) 0x03); // recognizer error code result
+                repl.put((byte) 0); // number of following attributes
+            } else {
+                repl.put((byte) 0x00); // successful result
+                repl.put((byte) 1); // number of following attributes
+                repl.put((byte) 0x02); // attribute type: transcription
+
+                repl.putShort((short) data.capacity()); // attribute length
+                repl.put(data.array());
+            }
 
             sendBytes.encodedBytes = repl.array();
         }
