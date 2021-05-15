@@ -2392,7 +2392,7 @@ public class PebbleProtocol extends GBDeviceProtocol {
                 words[0] = "";
                 for (int j = 0; j < transcript.getNumTokens(); j++) {
                     String letter = transcript.getToken(j).getText();
-                    if (j == 0)
+                    if (j == 0 && mSpeechToText.getCapitalize())
                         letter = letter.toUpperCase();
                     if (letter.isEmpty() || letter.equals(" ")) {
                         words = Arrays.copyOf(words, words.length + 1);

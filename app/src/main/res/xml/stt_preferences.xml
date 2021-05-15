@@ -26,4 +26,12 @@
                     android:entries="@array/pref_stt_beam_width_values"/>
         </PreferenceCategory>
 
+        <PreferenceCategory android:title="@string/pref_header_stt_content">
+                <CheckBoxPreference
+                    android:dependency="stt_enable"
+                    android:defaultValue="true"
+                    android:key="stt_capitalize"
+                    android:title="@string/pref_stt_capitalize" />
+        </PreferenceCategory>
+
 </PreferenceScreen>

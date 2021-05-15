@@ -21,16 +21,19 @@ public class SpeechToText {
     public static final String defaultSttTflite = null;
     public static final String defaultSttScorer = null;
     public static final String defaultSttBeamWidth = "500";
+    public static final boolean defaultSttCapitalize = true;
 
     private boolean sttEnable;
     private String sttTflite;
     private String sttScorer;
     private String sttBeamWidth;
+    private boolean sttCapitalize;
 
     public static final String PREF_STT_ENABLE = "stt_enable";
     public static final String PREF_STT_TFLITE = "stt_tflite";
     public static final String PREF_STT_SCORER = "stt_scorer";
     public static final String PREF_STT_BEAM_WIDTH = "stt_beam_width";
+    public static final String PREF_STT_CAPITALIZE = "stt_capitalize";
 
     private int mSampleRate;
     private boolean mSpeex = false;
@@ -66,6 +69,7 @@ public class SpeechToText {
         sttTflite = prefs.getString(PREF_STT_TFLITE, defaultSttTflite);
         sttScorer = prefs.getString(PREF_STT_SCORER, defaultSttScorer);
         sttBeamWidth = prefs.getString(PREF_STT_BEAM_WIDTH, defaultSttBeamWidth);
+        sttCapitalize = prefs.getBoolean(PREF_STT_CAPITALIZE, defaultSttCapitalize);
     }
 
     public boolean getEnabled() {
@@ -82,6 +86,10 @@ public class SpeechToText {
 
     public long getBeamWidth() {
         return Long.parseLong(sttBeamWidth);
+    }
+
+    public boolean getCapitalize() {
+        return sttCapitalize;
     }
 
     public void addFrame(byte[] frame) {

@@ -2,6 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ import java.util.List;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 
+import static nodomain.freeyourgadget.gadgetbridge.GBApplication.app;
 import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_SCORER;
 import static nodomain.freeyourgadget.gadgetbridge.model.SpeechToText.PREF_STT_TFLITE;
 
@@ -73,5 +75,13 @@ public class SpeechToTextPreferencesActivity extends AbstractSettingsActivity {
                 }
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // Restart model
+        app().derefModel();
+        app().getModel();
     }
 }

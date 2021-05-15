@@ -263,11 +263,7 @@ public class GBApplication extends Application {
                 DBHelper.clearSession();
             }
         }
-        if (model != null) {
-            model.disableExternalScorer();
-            model.freeModel();
-            model = null;
-        }
+        derefModel();
     }
 
     public DeepSpeechModel getModel() {
@@ -283,6 +279,14 @@ public class GBApplication extends Application {
             }
         }
         return model;
+    }
+
+    public void derefModel() {
+        if (model != null) {
+            model.disableExternalScorer();
+            model.freeModel();
+            model = null;
+        }
     }
 
     /**
