@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -164,7 +165,7 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {
-        return isHybridHR() ? HRConfigActivity.class : ConfigActivity.class;
+        return isHybridHR() ? AppManagerActivity.class : ConfigActivity.class;
     }
 
     @Override
