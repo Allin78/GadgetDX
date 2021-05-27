@@ -22,7 +22,7 @@ import org.json.JSONObject;
 
 import java.util.UUID;
 
-public class GBDeviceApp {
+public class GBDeviceApp implements Comparable<GBDeviceApp> {
     private final String name;
     private final String creator;
     private final String version;
@@ -101,6 +101,11 @@ public class GBDeviceApp {
 
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public int compareTo(GBDeviceApp o) {
+        return this.name.toLowerCase().compareTo(o.getName().toLowerCase());
     }
 
     public enum Type {
