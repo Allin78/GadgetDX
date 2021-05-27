@@ -25,6 +25,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import androidx.annotation.NonNull;
@@ -241,6 +243,11 @@ public interface DeviceCoordinator {
      * @return
      */
     Class<? extends Activity> getAppsManagementActivity();
+
+    /**
+     * Returns the device app cache directory.
+     */
+    File getAppCacheDir() throws IOException;
 
     /**
      * Returns how/if the given device should be bonded before connecting to it.

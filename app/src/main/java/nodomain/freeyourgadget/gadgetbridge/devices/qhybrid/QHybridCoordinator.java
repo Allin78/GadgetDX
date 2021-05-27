@@ -31,6 +31,8 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
@@ -49,6 +51,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Version;
 
 public class QHybridCoordinator extends AbstractDeviceCoordinator {
@@ -167,6 +170,15 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
     public Class<? extends Activity> getAppsManagementActivity() {
         return isHybridHR() ? AppManagerActivity.class : ConfigActivity.class;
     }
+
+    /**
+     * Returns the directory containing the watch app cache.
+     * @throws IOException when the external files directory cannot be accessed
+     */
+    public File getAppCacheDir() throws IOException {
+        return new File(FileUtils.getExternalFilesDir(), "qhybrid-app-cache");
+    }
+
 
     @Override
     public boolean supportsCalendarEvents() {

@@ -19,6 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.activities.appmanager;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 public class AppManagerFragmentCache extends AbstractAppManagerFragment {
     @Override
@@ -39,7 +40,11 @@ public class AppManagerFragmentCache extends AbstractAppManagerFragment {
 
     @Override
     public String getSortFilename() {
-        return "pbwcacheorder.txt";
+        if (mGBDevice.getType() == DeviceType.PEBBLE) {
+            return "pbwcacheorder.txt";
+        } else {
+            return "appcacheorder.txt";
+        }
     }
 
     @Override

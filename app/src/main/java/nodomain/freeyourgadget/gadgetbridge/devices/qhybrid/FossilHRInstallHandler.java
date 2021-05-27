@@ -17,18 +17,36 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.qhybrid;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.InstallActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AbstractAppManagerFragment;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
+import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 
 public class FossilHRInstallHandler implements InstallHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(FossilHRInstallHandler.class);
+
     private final Uri mUri;
     private final Context mContext;
     private FossilFileReader fossilFile;
@@ -82,6 +100,48 @@ public class FossilHRInstallHandler implements InstallHandler {
 
     @Override
     public void onStartInstall(GBDevice device) {
+        if (fossilFile.isFirmware()) {
+            return;
+        }
+        GBDeviceApp app;
+        File destDir;
+        // write app file
+        try {
+            app = fossilFile.getGBDeviceApp();
+            destDir = DeviceHelper.getInstance().getCoordinator(device).getAppCacheDir();
+            destDir.mkdirs();
+            FileUtils.copyURItoFile(mContext, mUri, new File(destDir, app.getUUID().toString() + ".app"));
+        } catch (IOException e) {
+            LOG.error("Saving app in cache failed: " + e.getMessage(), e);
+            return;
+        }
+        // write app metadata
+        File outputFile = new File(destDir, app.getUUID().toString() + ".json");
+        Writer writer;
+        try {
+            writer = new BufferedWriter(new FileWriter(outputFile));
+        } catch (IOException e) {
+            LOG.error("Failed to open output file: " + e.getMessage(), e);
+            return;
+        }
+        try {
+            LOG.info(app.getJSON().toString());
+            JSONObject appJSON = app.getJSON();
+            JSONObject appKeysJSON = fossilFile.getAppKeysJSON();
+            if (appKeysJSON != null) {
+                appJSON.put("appKeys", appKeysJSON);
+            }
+            writer.write(appJSON.toString());
+
+            writer.close();
+        } catch (IOException e) {
+            LOG.error("Failed to write to output file: " + e.getMessage(), e);
+        } catch (JSONException e) {
+            LOG.error(e.getMessage(), e);
+        }
+        // refresh list
+        Intent refreshIntent = new Intent(AbstractAppManagerFragment.ACTION_REFRESH_APPLIST);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(refreshIntent);
     }
 
     @Override

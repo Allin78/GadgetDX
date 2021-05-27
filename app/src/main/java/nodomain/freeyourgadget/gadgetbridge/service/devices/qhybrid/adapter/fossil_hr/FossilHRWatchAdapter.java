@@ -1253,7 +1253,6 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 queueWrite(request);
             }
         });*/
-        queueWrite(new SelectedThemePutRequest(this, "Activity"));
     }
 
 
