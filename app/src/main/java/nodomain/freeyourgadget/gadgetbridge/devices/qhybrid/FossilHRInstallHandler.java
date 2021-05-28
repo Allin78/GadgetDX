@@ -43,6 +43,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class FossilHRInstallHandler implements InstallHandler {
     private static final Logger LOG = LoggerFactory.getLogger(FossilHRInstallHandler.class);
@@ -73,19 +74,15 @@ public class FossilHRInstallHandler implements InstallHandler {
             return;
         }
         GenericItem installItem = new GenericItem();
+        installItem.setName(fossilFile.getName());
+        installItem.setDetails(fossilFile.getVersion());
         if (fossilFile.isFirmware()) {
             installItem.setIcon(R.drawable.ic_firmware);
-            installItem.setName(fossilFile.getName());
-            installItem.setDetails(fossilFile.getVersion());
             installActivity.setInfoText(mContext.getString(R.string.firmware_install_warning, "(unknown)"));
         } else if (fossilFile.isApp()) {
-            installItem.setName(fossilFile.getName());
-            installItem.setDetails(fossilFile.getVersion());
             installItem.setIcon(R.drawable.ic_watchapp);
             installActivity.setInfoText(mContext.getString(R.string.app_install_info, installItem.getName(), fossilFile.getVersion(), "(unknown)"));
         } else if (fossilFile.isWatchface()) {
-            installItem.setName(fossilFile.getName());
-            installItem.setDetails(fossilFile.getVersion());
             installItem.setIcon(R.drawable.ic_watchface);
             installActivity.setInfoText(mContext.getString(R.string.watchface_install_info, installItem.getName(), fossilFile.getVersion(), "(unknown)"));
         } else {
@@ -100,6 +97,8 @@ public class FossilHRInstallHandler implements InstallHandler {
 
     @Override
     public void onStartInstall(GBDevice device) {
+        LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
+        manager.sendBroadcast(new Intent(GB.ACTION_SET_PROGRESS_BAR).putExtra(GB.PROGRESS_BAR_INDETERMINATE, true));
         if (fossilFile.isFirmware()) {
             return;
         }
@@ -140,8 +139,7 @@ public class FossilHRInstallHandler implements InstallHandler {
             LOG.error(e.getMessage(), e);
         }
         // refresh list
-        Intent refreshIntent = new Intent(AbstractAppManagerFragment.ACTION_REFRESH_APPLIST);
-        LocalBroadcastManager.getInstance(mContext).sendBroadcast(refreshIntent);
+        manager.sendBroadcast(new Intent(AbstractAppManagerFragment.ACTION_REFRESH_APPLIST));
     }
 
     @Override

@@ -29,8 +29,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -810,7 +808,6 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     @Override
     public void onInstallApp(Uri uri) {
-        final Intent resultIntent = new Intent(QHybridSupport.QHYBRID_ACTION_UPLOADED_FILE);
         FossilFileReader fossilFile;
         try {
             fossilFile = new FossilFileReader(uri, getContext());
@@ -841,15 +838,6 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             GB.toast("error getting key: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
             this.handleAuthenticationResult(false);
         }
-    }
-
-    private void toast(final String data) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), data, Toast.LENGTH_LONG).show();
-            }
-        });
     }
 
     @Override
