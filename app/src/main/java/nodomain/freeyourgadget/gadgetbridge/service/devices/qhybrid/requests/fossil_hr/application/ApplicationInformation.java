@@ -26,6 +26,6 @@ public class ApplicationInformation implements Comparable<ApplicationInformation
 
     @Override
     public int compareTo(ApplicationInformation o) {
-        return this.appName.compareTo(o.getAppName());
+        return this.appName.toLowerCase().compareTo(o.getAppName().toLowerCase());
     }
 }
