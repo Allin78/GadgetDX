@@ -260,6 +260,11 @@ public interface DeviceCoordinator {
     String getAppFileExtension();
 
     /**
+     * Indicates whether the device supports reordering of apps.
+     */
+    boolean supportsAppReordering();
+
+    /**
      * Returns how/if the given device should be bonded before connecting to it.
      */
     int getBondingStyle();

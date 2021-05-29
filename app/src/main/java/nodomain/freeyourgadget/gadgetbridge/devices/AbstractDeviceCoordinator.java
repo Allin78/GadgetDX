@@ -162,6 +162,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppReordering() {
+        return false;
+    }
+
+    @Override
     public int getBondingStyle() {
         return BONDING_STYLE_ASK;
     }

@@ -151,7 +151,6 @@ public abstract class AbstractAppManagerFragment extends Fragment {
     };
 
     protected List<GBDeviceApp> getCachedApps(List<UUID> uuids) {
-        mCoordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
         List<GBDeviceApp> cachedAppList = new ArrayList<>();
         File cachePath;
         try {
@@ -251,6 +250,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mGBDevice = ((AppManagerActivity) getActivity()).getGBDevice();
+        mCoordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_REFRESH_APPLIST);
@@ -465,12 +465,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            //app reordering is not possible on old firmwares
-            if ((mGBDevice.getType() == DeviceType.PEBBLE) && (PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) < 3 && !isCacheManager())) {
-                return 0;
-            }
-            //app reordering is not possible on the Fossil Hybrid HR
-            if (mGBDevice.getType() == DeviceType.FOSSILQHYBRID && !isCacheManager()) {
+            if (!mCoordinator.supportsAppReordering() && !isCacheManager()) {
                 return 0;
             }
             //we only support up and down movement and only for moving, not for swiping apps away
