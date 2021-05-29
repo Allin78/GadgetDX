@@ -162,6 +162,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppListFetching() {
+        return false;
+    }
+
+    @Override
     public boolean supportsAppReordering() {
         return false;
     }

@@ -260,6 +260,11 @@ public interface DeviceCoordinator {
     String getAppFileExtension();
 
     /**
+     * Indicated whether the device supports fetching a list of its apps.
+     */
+    boolean supportsAppListFetching();
+
+    /**
      * Indicates whether the device supports reordering of apps.
      */
     boolean supportsAppReordering();

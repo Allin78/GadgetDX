@@ -140,7 +140,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
                         LOG.info("will refresh list based on data from device");
                         refreshListFromDevice(intent);
                     }
-                } else if ((mGBDevice.getType() == DeviceType.PEBBLE) && (PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) >= 3)) {
+                } else if (mCoordinator.supportsAppListFetching()) {
                     refreshList();
                 } else if (isCacheManager()) {
                     refreshList();
@@ -257,8 +257,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
 
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mReceiver, filter);
 
-        if (((mGBDevice.getType() == DeviceType.PEBBLE) && (PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) < 3)) ||
-                (mGBDevice.getType() == DeviceType.FOSSILQHYBRID)) {
+        if (mCoordinator.supportsAppListFetching()) {
             GBApplication.deviceService().onAppInfoReq();
             if (isCacheManager()) {
                 refreshList();
@@ -400,7 +399,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
                 LocalBroadcastManager.getInstance(getContext()).sendBroadcast(refreshIntent);
                 // fall through
             case R.id.appmanager_app_delete:
-                if ((mGBDevice.getType() == DeviceType.PEBBLE) && (PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) >= 3)) {
+                if (mCoordinator.supportsAppReordering()) {
                     AppManagerActivity.deleteFromAppOrderFile(mGBDevice.getAddress() + ".watchapps", selectedApp.getUUID()); // FIXME: only if successful
                     AppManagerActivity.deleteFromAppOrderFile(mGBDevice.getAddress() + ".watchfaces", selectedApp.getUUID()); // FIXME: only if successful
                     refreshIntent = new Intent(AbstractAppManagerFragment.ACTION_REFRESH_APPLIST);

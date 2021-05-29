@@ -167,6 +167,11 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppListFetching() {
+        return true;
+    }
+
+    @Override
     public Class<? extends Activity> getAppsManagementActivity() {
         return isHybridHR() ? AppManagerActivity.class : ConfigActivity.class;
     }

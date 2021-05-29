@@ -167,6 +167,15 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsAppListFetching() {
+        GBDevice mGBDevice = GBApplication.app().getDeviceManager().getSelectedDevice();
+        if (mGBDevice != null && mGBDevice.getFirmwareVersion() != null) {
+            return PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) >= 3;
+        }
+        return false;
+    }
+
+    @Override
     public boolean supportsAppReordering() {
         GBDevice mGBDevice = GBApplication.app().getDeviceManager().getSelectedDevice();
         if (mGBDevice != null && mGBDevice.getFirmwareVersion() != null) {
