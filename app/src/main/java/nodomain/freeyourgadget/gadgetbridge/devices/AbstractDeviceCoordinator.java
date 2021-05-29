@@ -152,6 +152,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public String getAppFileExtension() {
+        return null;
+    }
+
+    @Override
     public int getBondingStyle() {
         return BONDING_STYLE_ASK;
     }

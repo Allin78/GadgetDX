@@ -179,6 +179,13 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
         return new File(FileUtils.getExternalFilesDir(), "qhybrid-app-cache");
     }
 
+    /**
+     * Returns a String containing the file extension for watch apps.
+     */
+    @Override
+    public String getAppFileExtension() {
+        return ".wapp";
+    }
 
     @Override
     public boolean supportsCalendarEvents() {

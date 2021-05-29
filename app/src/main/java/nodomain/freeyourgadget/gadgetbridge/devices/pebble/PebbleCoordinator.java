@@ -157,6 +157,11 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public String getAppFileExtension() {
+        return ".pbw";
+    }
+
+    @Override
     public boolean supportsCalendarEvents() {
         return true;
     }

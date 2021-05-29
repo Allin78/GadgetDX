@@ -53,6 +53,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.ExternalPebbleJSActivity;
 import nodomain.freeyourgadget.gadgetbridge.adapter.GBDeviceAppAdapter;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
@@ -149,19 +150,12 @@ public abstract class AbstractAppManagerFragment extends Fragment {
     private GBDeviceAppAdapter mGBDeviceAppAdapter;
     protected GBDevice mGBDevice = null;
 
-    private String getAppFileExtension() {
-        if (mGBDevice.getType() == DeviceType.PEBBLE) {
-            return ".pbw";
-        } else {
-            return ".app";
-        }
-    }
-
     protected List<GBDeviceApp> getCachedApps(List<UUID> uuids) {
+        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
         List<GBDeviceApp> cachedAppList = new ArrayList<>();
         File cachePath;
         try {
-            cachePath = DeviceHelper.getInstance().getCoordinator(mGBDevice).getAppCacheDir();
+            cachePath = coordinator.getAppCacheDir();
         } catch (IOException e) {
             LOG.warn("could not get external dir while reading app cache.");
             return cachedAppList;
@@ -174,12 +168,12 @@ public abstract class AbstractAppManagerFragment extends Fragment {
             files = new File[uuids.size()];
             int index = 0;
             for (UUID uuid : uuids) {
-                files[index++] = new File(uuid.toString() + getAppFileExtension());
+                files[index++] = new File(uuid.toString() + coordinator.getAppFileExtension());
             }
         }
         if (files != null) {
             for (File file : files) {
-                if (file.getName().endsWith(getAppFileExtension())) {
+                if (file.getName().endsWith(coordinator.getAppFileExtension())) {
                     String baseName = file.getName().substring(0, file.getName().length() - 4);
                     //metadata
                     File jsonFile = new File(cachePath, baseName + ".json");
@@ -382,9 +376,10 @@ public abstract class AbstractAppManagerFragment extends Fragment {
     }
 
     private boolean onContextItemSelected(MenuItem item, GBDeviceApp selectedApp) {
+        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
         File appCacheDir;
         try {
-            appCacheDir = DeviceHelper.getInstance().getCoordinator(mGBDevice).getAppCacheDir();
+            appCacheDir = coordinator.getAppCacheDir();
         } catch (IOException e) {
             LOG.warn("could not get external dir while trying to access app cache.");
             return true;
@@ -393,7 +388,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.appmanager_app_delete_cache:
                 String baseName = selectedApp.getUUID().toString();
-                String[] suffixToDelete = new String[]{getAppFileExtension(), ".json", "_config.js", "_preset.json"};
+                String[] suffixToDelete = new String[]{coordinator.getAppFileExtension(), ".json", "_config.js", "_preset.json"};
                 for (String suffix : suffixToDelete) {
                     File fileToDelete = new File(appCacheDir,baseName + suffix);
                     if (!fileToDelete.delete()) {
@@ -416,7 +411,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
                 GBApplication.deviceService().onAppDelete(selectedApp.getUUID());
                 return true;
             case R.id.appmanager_app_reinstall:
-                File cachePath = new File(appCacheDir, selectedApp.getUUID() + getAppFileExtension());
+                File cachePath = new File(appCacheDir, selectedApp.getUUID() + coordinator.getAppFileExtension());
                 GBApplication.deviceService().onInstallApp(Uri.fromFile(cachePath));
                 return true;
             case R.id.appmanager_health_activate:

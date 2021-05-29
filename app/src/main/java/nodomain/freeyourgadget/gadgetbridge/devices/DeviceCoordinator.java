@@ -250,6 +250,11 @@ public interface DeviceCoordinator {
     File getAppCacheDir() throws IOException;
 
     /**
+     * Returns a String containing the file extension for watch apps.
+     */
+    String getAppFileExtension();
+
+    /**
      * Returns how/if the given device should be bonded before connecting to it.
      */
     int getBondingStyle();
