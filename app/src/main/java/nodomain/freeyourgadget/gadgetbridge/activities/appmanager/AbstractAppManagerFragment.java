@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -175,7 +174,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
         if (files != null) {
             for (File file : files) {
                 if (file.getName().endsWith(mCoordinator.getAppFileExtension())) {
-                    String baseName = file.getName().substring(0, file.getName().length() - 4);
+                    String baseName = file.getName().substring(0, file.getName().length() - mCoordinator.getAppFileExtension().length());
                     //metadata
                     File jsonFile = new File(cachePath, baseName + ".json");
                     //configuration
@@ -245,7 +244,6 @@ public abstract class AbstractAppManagerFragment extends Fragment {
                 }
             }
         }
-        Collections.sort(cachedAppList);
         return cachedAppList;
     }
 
@@ -472,7 +470,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
                 return 0;
             }
             //app reordering is not possible on the Fossil Hybrid HR
-            if (mGBDevice.getType() == DeviceType.FOSSILQHYBRID) {
+            if (mGBDevice.getType() == DeviceType.FOSSILQHYBRID && !isCacheManager()) {
                 return 0;
             }
             //we only support up and down movement and only for moving, not for swiping apps away
