@@ -180,6 +180,14 @@ public class QHybridCoordinator extends AbstractDeviceCoordinator {
     }
 
     /**
+     * Returns a String containing the device app sort order filename.
+     */
+    @Override
+    public String getAppCacheSortFilename() {
+        return "wappcacheorder.txt";
+    }
+
+    /**
      * Returns a String containing the file extension for watch apps.
      */
     @Override

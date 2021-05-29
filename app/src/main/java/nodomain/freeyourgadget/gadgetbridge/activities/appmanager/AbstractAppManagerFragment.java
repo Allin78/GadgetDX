@@ -71,6 +71,11 @@ public abstract class AbstractAppManagerFragment extends Fragment {
 
     private ItemTouchHelper appManagementTouchHelper;
 
+    protected final List<GBDeviceApp> appList = new ArrayList<>();
+    private GBDeviceAppAdapter mGBDeviceAppAdapter;
+    protected GBDevice mGBDevice = null;
+    protected DeviceCoordinator mCoordinator = null;
+
     protected abstract List<GBDeviceApp> getSystemAppsInCategory();
 
     protected abstract String getSortFilename();
@@ -146,16 +151,12 @@ public abstract class AbstractAppManagerFragment extends Fragment {
         }
     };
 
-    protected final List<GBDeviceApp> appList = new ArrayList<>();
-    private GBDeviceAppAdapter mGBDeviceAppAdapter;
-    protected GBDevice mGBDevice = null;
-
     protected List<GBDeviceApp> getCachedApps(List<UUID> uuids) {
-        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
+        mCoordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
         List<GBDeviceApp> cachedAppList = new ArrayList<>();
         File cachePath;
         try {
-            cachePath = coordinator.getAppCacheDir();
+            cachePath = mCoordinator.getAppCacheDir();
         } catch (IOException e) {
             LOG.warn("could not get external dir while reading app cache.");
             return cachedAppList;
@@ -168,12 +169,12 @@ public abstract class AbstractAppManagerFragment extends Fragment {
             files = new File[uuids.size()];
             int index = 0;
             for (UUID uuid : uuids) {
-                files[index++] = new File(uuid.toString() + coordinator.getAppFileExtension());
+                files[index++] = new File(uuid.toString() + mCoordinator.getAppFileExtension());
             }
         }
         if (files != null) {
             for (File file : files) {
-                if (file.getName().endsWith(coordinator.getAppFileExtension())) {
+                if (file.getName().endsWith(mCoordinator.getAppFileExtension())) {
                     String baseName = file.getName().substring(0, file.getName().length() - 4);
                     //metadata
                     File jsonFile = new File(cachePath, baseName + ".json");
@@ -376,10 +377,9 @@ public abstract class AbstractAppManagerFragment extends Fragment {
     }
 
     private boolean onContextItemSelected(MenuItem item, GBDeviceApp selectedApp) {
-        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
         File appCacheDir;
         try {
-            appCacheDir = coordinator.getAppCacheDir();
+            appCacheDir = mCoordinator.getAppCacheDir();
         } catch (IOException e) {
             LOG.warn("could not get external dir while trying to access app cache.");
             return true;
@@ -388,7 +388,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.appmanager_app_delete_cache:
                 String baseName = selectedApp.getUUID().toString();
-                String[] suffixToDelete = new String[]{coordinator.getAppFileExtension(), ".json", "_config.js", "_preset.json"};
+                String[] suffixToDelete = new String[]{mCoordinator.getAppFileExtension(), ".json", "_config.js", "_preset.json"};
                 for (String suffix : suffixToDelete) {
                     File fileToDelete = new File(appCacheDir,baseName + suffix);
                     if (!fileToDelete.delete()) {
@@ -411,7 +411,7 @@ public abstract class AbstractAppManagerFragment extends Fragment {
                 GBApplication.deviceService().onAppDelete(selectedApp.getUUID());
                 return true;
             case R.id.appmanager_app_reinstall:
-                File cachePath = new File(appCacheDir, selectedApp.getUUID() + coordinator.getAppFileExtension());
+                File cachePath = new File(appCacheDir, selectedApp.getUUID() + mCoordinator.getAppFileExtension());
                 GBApplication.deviceService().onInstallApp(Uri.fromFile(cachePath));
                 return true;
             case R.id.appmanager_health_activate:

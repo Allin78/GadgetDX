@@ -152,6 +152,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public String getAppCacheSortFilename() {
+        return null;
+    }
+
+    @Override
     public String getAppFileExtension() {
         return null;
     }

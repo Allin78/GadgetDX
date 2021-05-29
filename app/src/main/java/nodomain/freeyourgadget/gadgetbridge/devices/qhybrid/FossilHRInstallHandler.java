@@ -36,6 +36,7 @@ import java.io.Writer;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.InstallActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AbstractAppManagerFragment;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
@@ -97,6 +98,7 @@ public class FossilHRInstallHandler implements InstallHandler {
 
     @Override
     public void onStartInstall(GBDevice device) {
+        DeviceCoordinator mCoordinator = DeviceHelper.getInstance().getCoordinator(device);
         LocalBroadcastManager manager = LocalBroadcastManager.getInstance(mContext);
         manager.sendBroadcast(new Intent(GB.ACTION_SET_PROGRESS_BAR).putExtra(GB.PROGRESS_BAR_INDETERMINATE, true));
         if (fossilFile.isFirmware()) {
@@ -107,9 +109,9 @@ public class FossilHRInstallHandler implements InstallHandler {
         // write app file
         try {
             app = fossilFile.getGBDeviceApp();
-            destDir = DeviceHelper.getInstance().getCoordinator(device).getAppCacheDir();
+            destDir = mCoordinator.getAppCacheDir();
             destDir.mkdirs();
-            FileUtils.copyURItoFile(mContext, mUri, new File(destDir, app.getUUID().toString() + ".app"));
+            FileUtils.copyURItoFile(mContext, mUri, new File(destDir, app.getUUID().toString() + mCoordinator.getAppFileExtension()));
         } catch (IOException e) {
             LOG.error("Saving app in cache failed: " + e.getMessage(), e);
             return;

@@ -250,6 +250,11 @@ public interface DeviceCoordinator {
     File getAppCacheDir() throws IOException;
 
     /**
+     * Returns a String containing the device app sort order filename.
+     */
+    String getAppCacheSortFilename();
+
+    /**
      * Returns a String containing the file extension for watch apps.
      */
     String getAppFileExtension();

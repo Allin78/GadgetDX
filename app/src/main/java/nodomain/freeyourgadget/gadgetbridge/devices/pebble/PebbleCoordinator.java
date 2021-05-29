@@ -157,6 +157,11 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public String getAppCacheSortFilename() {
+        return "pbwcacheorder.txt";
+    }
+
+    @Override
     public String getAppFileExtension() {
         return ".pbw";
     }
