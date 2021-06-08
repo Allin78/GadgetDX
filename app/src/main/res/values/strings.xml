@@ -1189,4 +1189,10 @@
     <string name="qhybrid_calibration_10_steps">10 steps</string>
     <string name="qhybrid_calibration_100_steps">100 steps</string>
     <string name="qhybrid_watchface_configuration_old_firmware">Watchface configuration screen for watches with firmware version DN1.0.2.19r and lower</string>
+    <string name="qhybrid_pref_title_actions">Actions</string>
+    <string name="qhybrid_pref_summary_actions">Actions for the Commute app</string>
+    <string name="pref_title_developer_settings">Developer settings</string>
+    <string name="pref_summary_developer_settings">Settings and functionality used by developers</string>
+    <string name="qhybrid_pref_title_external_intents">Allow dangerous external intents</string>
+    <string name="qhybrid_pref_summary_external_intents">Enable to allow other Android apps to upload/overwrite files</string>
 </resources>

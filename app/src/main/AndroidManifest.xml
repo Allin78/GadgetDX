@@ -616,7 +616,7 @@
             android:parentActivityName=".devices.qhybrid.HRConfigActivity" />
         <activity
             android:name=".devices.qhybrid.CommuteActionsActivity"
-            android:label="Actions"
+            android:label="@string/qhybrid_pref_title_actions"
             android:parentActivityName=".devices.qhybrid.HRConfigActivity" />
         <activity
             android:name=".devices.um25.Activity.DataActivity"
