@@ -462,8 +462,8 @@
     <string name="notif_battery_low_percent">%1$s pil kaldı: %2$s%%</string>
     <string name="notif_battery_low_title">Aygıt pili düşük!</string>
     <string name="notif_export_failed_title">Veri tabanını dışa aktarma başarısız oldu! Lütfen ayarlarınızı gözden geçirin.</string>
-    <string name="notification_channel_high_priority_name">Gadgetbridge bildirimlerine yüksek öncelik</string>
-    <string name="notification_channel_name">Gadgetbridge bildirimleri</string>
+    <string name="notification_channel_high_priority_name">Yüksek öncelik</string>
+    <string name="notification_channel_name">Genel</string>
     <string name="off">Kapalı</string>
     <string name="ok">Tamam</string>
     <string name="on">Açık</string>
@@ -1269,4 +1269,14 @@
 \n%1$s
 \nSürüm %2$s, %3$s tarafından
 \n</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">DN1.0.2.19r ve daha düşük ürün yazılımı sürümüne sahip saatler için saat arayüzü yapılandırma ekranı</string>
+    <string name="qhybrid_title_watchface">Saat arayüzü yapılandırması</string>
+    <string name="notification_channel_low_battery_name">Düşük pil</string>
+    <string name="notification_channel_transfer_name">Veri aktarımı</string>
+    <string name="qhybrid_pref_summary_external_intents">Diğer Android uygulamalarının dosya yüklemesine/üzerine yazmasına izin vermek için etkinleştirin</string>
+    <string name="qhybrid_pref_title_external_intents">Tehlikeli harici amaçlara izin ver</string>
+    <string name="pref_summary_developer_settings">Geliştiriciler tarafından kullanılan ayarlar ve işlevler</string>
+    <string name="pref_title_developer_settings">Geliştirici ayarları</string>
+    <string name="qhybrid_pref_summary_actions">İşe Gidip Gelme uygulaması için eylemler</string>
+    <string name="qhybrid_pref_title_actions">Eylemler</string>
 </resources>
