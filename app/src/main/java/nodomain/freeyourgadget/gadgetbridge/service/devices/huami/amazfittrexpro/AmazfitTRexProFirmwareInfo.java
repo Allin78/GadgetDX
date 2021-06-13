@@ -33,7 +33,7 @@ public class AmazfitTRexProFirmwareInfo extends HuamiFirmwareInfo {
     };
 
     private static final byte[] WATCHFACE_HEADER = new byte[]{
-            0x3F, 0x00, 0x00, 0x53, 0x00, (byte) 0xB0
+            0x55, 0x49, 0x48, 0x48, 0x02, 0x00
     };
 
 
