@@ -92,6 +92,8 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.fromKey;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_ID;
 
+import androidx.multidex.MultiDex;
+
 /**
  * Main Application class that initializes and provides access to certain things like
  * logging and DB access.
@@ -153,6 +155,12 @@ public class GBApplication extends Application {
     public GBApplication() {
         context = this;
         // don't do anything here, add it to onCreate instead
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     public static Logging getLogging() {
