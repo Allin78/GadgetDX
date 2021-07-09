@@ -29,6 +29,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbips.AmazfitBipSFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
@@ -62,6 +63,11 @@ public class AmazfitBipSSupport extends AmazfitBipSupport {
     }
 
     @Override
+    public String windSpeedString(WeatherSpec weatherSpec){
+        return weatherSpec.windSpeed + "km/h";
+    }
+
+    @Override
     public void onSetCallState(CallSpec callSpec) {
         onSetCallStateNew(callSpec);
     }
@@ -83,13 +89,13 @@ public class AmazfitBipSSupport extends AmazfitBipSupport {
 
     @Override
     protected AmazfitBipSSupport setDisplayItems(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, false, R.array.pref_bips_display_items_default);
+        setDisplayItemsNew(builder, false, true, R.array.pref_bips_display_items_default);
         return this;
     }
 
     @Override
     protected AmazfitBipSSupport setShortcuts(TransactionBuilder builder) {
-        setDisplayItemsNew(builder, true, R.array.pref_bips_display_items_default);
+        setDisplayItemsNew(builder, true, true, R.array.pref_bips_display_items_default);
         return this;
     }
 

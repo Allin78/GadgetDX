@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.pebble;
 
+import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -54,8 +56,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
-import static nodomain.freeyourgadget.gadgetbridge.util.BondingUtil.STATE_DEVICE_CANDIDATE;
-
 
 public class PebblePairingActivity extends AbstractGBActivity implements BondingInterface {
     private static final Logger LOG = LoggerFactory.getLogger(PebblePairingActivity.class);
@@ -73,7 +73,9 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
         setContentView(R.layout.activity_pebble_pairing);
 
         message = findViewById(R.id.pebble_pair_message);
-        deviceCandidate = getIntent().getParcelableExtra(DeviceCoordinator.EXTRA_DEVICE_CANDIDATE);
+        Intent intent = getIntent();
+        intent.setExtrasClassLoader(GBDeviceCandidate.class.getClassLoader());
+        deviceCandidate = intent.getParcelableExtra(DeviceCoordinator.EXTRA_DEVICE_CANDIDATE);
 
         String macAddress = null;
         if (deviceCandidate != null) {
@@ -174,15 +176,15 @@ public class PebblePairingActivity extends AbstractGBActivity implements Bonding
         }
 
         // If it's not a LE Pebble, initiate a connection when bonding is complete
-        if (!BondingUtil.isLePebble(getCurrentTarget()) && success) {
-            BondingUtil.attemptToFirstConnect(getCurrentTarget());
+        if (!BondingUtil.isLePebble(getCurrentTarget().getDevice()) && success) {
+            BondingUtil.attemptToFirstConnect(getCurrentTarget().getDevice());
         }
         finish();
     }
 
     @Override
-    public BluetoothDevice getCurrentTarget() {
-        return this.deviceCandidate.getDevice();
+    public GBDeviceCandidate getCurrentTarget() {
+        return this.deviceCandidate;
     }
 
     @Override

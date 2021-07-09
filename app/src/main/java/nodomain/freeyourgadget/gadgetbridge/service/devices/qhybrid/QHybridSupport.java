@@ -18,7 +18,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -58,6 +57,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
@@ -367,7 +367,9 @@ public class QHybridSupport extends QHybridBaseSupport {
                         break;
                     }
                     case QHYBRID_COMMAND_UPLOAD_FILE:{
-                        handleFileUploadIntent(intent);
+                        if (GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS, true)) {
+                            handleFileUploadIntent(intent);
+                        }
                         break;
                     }
                 }
@@ -708,7 +710,7 @@ public class QHybridSupport extends QHybridBaseSupport {
             notificationBuilder.addAction(0, "report", intent);
         }
 
-        ((NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE)).notify((int) System.currentTimeMillis(), notificationBuilder.build());
+        GB.notify((int) System.currentTimeMillis(), notificationBuilder.build(), getContext());
     }
 
     @Override
@@ -767,4 +769,37 @@ public class QHybridSupport extends QHybridBaseSupport {
         return watchAdapter.onCharacteristicChanged(gatt, characteristic);
     }
 
+    @Override
+    public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter){
+            ((FossilHRWatchAdapter) watchAdapter).setQuickRepliesConfiguration();
+        }
+    }
+
+    @Override
+    public void onAppInfoReq() {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter){
+            ((FossilHRWatchAdapter) watchAdapter).listApplications();
+        }
+    }
+
+    @Override
+    public void onAppStart(UUID uuid, boolean start) {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter) {
+            String appName = ((FossilHRWatchAdapter) watchAdapter).getInstalledAppNameFromUUID(uuid);
+            if (appName != null) {
+                ((FossilHRWatchAdapter) watchAdapter).activateWatchface(appName);
+            }
+        }
+    }
+
+    @Override
+    public void onAppDelete(UUID uuid) {
+        if(this.watchAdapter instanceof FossilHRWatchAdapter) {
+            String appName = ((FossilHRWatchAdapter) watchAdapter).getInstalledAppNameFromUUID(uuid);
+            if (appName != null) {
+                watchAdapter.uninstallApp(appName);
+            }
+        }
+    }
 }

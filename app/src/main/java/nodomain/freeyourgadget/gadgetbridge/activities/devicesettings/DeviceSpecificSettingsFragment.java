@@ -39,6 +39,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Constants;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.XTimePreference;
@@ -47,6 +48,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.XTimePreferenceFragment;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALTITUDE_CALIBRATE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AMPM_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ANTILOST_ENABLED;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOREMOVE_NOTIFICATIONS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BT_CONNECTED_ADVERTISEMENT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOLIGHT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_AUTOREMOVE_MESSAGE;
@@ -65,6 +67,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FAKE_RING_DURATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_FIND_PHONE_ENABLED;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYBRID_HR_DRAW_WIDGET_CIRCLES;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYBRID_HR_FORCE_WHITE_COLOR;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HYBRID_HR_SAVE_RAW_ACTIVITY_FILES;
@@ -82,7 +85,9 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONYSWR12_LOW_VIBRATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONYSWR12_SMART_INTERVAL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONYSWR12_STAMINA;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SOUNDS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TRANSLITERATION_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_VIBRATION_STRENGH_PERCENTAGE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_WEARLOCATION;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_ACTIVATE_DISPLAY_ON_LIFT;
@@ -390,6 +395,7 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(PREF_FIND_PHONE_ENABLED);
         addPreferenceHandlerFor(PREF_AUTOLIGHT);
         addPreferenceHandlerFor(PREF_AUTOREMOVE_MESSAGE);
+        addPreferenceHandlerFor(PREF_AUTOREMOVE_NOTIFICATIONS);
         addPreferenceHandlerFor(PREF_KEY_VIBRATION);
         addPreferenceHandlerFor(PREF_OPERATING_SOUNDS);
         addPreferenceHandlerFor(PREF_FAKE_RING_DURATION);
@@ -398,10 +404,12 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(PREF_HYDRATION_PERIOD);
         addPreferenceHandlerFor(PREF_AMPM_ENABLED);
         addPreferenceHandlerFor(PREF_LEFUN_INTERFACE_LANGUAGE);
+        addPreferenceHandlerFor(PREF_SOUNDS);
 
         addPreferenceHandlerFor(PREF_HYBRID_HR_DRAW_WIDGET_CIRCLES);
         addPreferenceHandlerFor(PREF_HYBRID_HR_FORCE_WHITE_COLOR);
         addPreferenceHandlerFor(PREF_HYBRID_HR_SAVE_RAW_ACTIVITY_FILES);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS);
 
         addPreferenceHandlerFor(PREF_SONYSWR12_STAMINA);
         addPreferenceHandlerFor(PREF_SONYSWR12_LOW_VIBRATION);

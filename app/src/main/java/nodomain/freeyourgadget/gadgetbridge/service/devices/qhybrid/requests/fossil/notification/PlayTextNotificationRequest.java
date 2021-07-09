@@ -20,10 +20,10 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.adapter.foss
 
 public class PlayTextNotificationRequest extends PlayNotificationRequest {
     public PlayTextNotificationRequest(String packageName, String sender, String message, int messageId, FossilWatchAdapter adapter) {
-        super(3, 2, packageName, sender, message, messageId, adapter);
+        super(NotificationType.NOTIFICATION, 2, packageName, sender, message, messageId, adapter);
     }
 
     public PlayTextNotificationRequest(String packageName, FossilWatchAdapter adapter) {
-        super(3, 2, packageName, adapter);
+        super(NotificationType.NOTIFICATION, 2, packageName, adapter);
     }
 }

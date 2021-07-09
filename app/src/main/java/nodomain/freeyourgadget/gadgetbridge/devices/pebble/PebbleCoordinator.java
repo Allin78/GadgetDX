@@ -23,6 +23,9 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
+import java.io.IOException;
+
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
@@ -149,6 +152,39 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
     }
 
     @Override
+    public File getAppCacheDir() throws IOException {
+        return PebbleUtils.getPbwCacheDir();
+    }
+
+    @Override
+    public String getAppCacheSortFilename() {
+        return "pbwcacheorder.txt";
+    }
+
+    @Override
+    public String getAppFileExtension() {
+        return ".pbw";
+    }
+
+    @Override
+    public boolean supportsAppListFetching() {
+        GBDevice mGBDevice = GBApplication.app().getDeviceManager().getSelectedDevice();
+        if (mGBDevice != null && mGBDevice.getFirmwareVersion() != null) {
+            return PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) < 3;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean supportsAppReordering() {
+        GBDevice mGBDevice = GBApplication.app().getDeviceManager().getSelectedDevice();
+        if (mGBDevice != null && mGBDevice.getFirmwareVersion() != null) {
+            return PebbleUtils.getFwMajor(mGBDevice.getFirmwareVersion()) >= 3;
+        }
+        return false;
+    }
+
+    @Override
     public boolean supportsCalendarEvents() {
         return true;
     }
@@ -181,6 +217,7 @@ public class PebbleCoordinator extends AbstractDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_autoremove_notifications,
                 R.xml.devicesettings_canned_reply_16,
                 R.xml.devicesettings_canned_dismisscall_16
         };

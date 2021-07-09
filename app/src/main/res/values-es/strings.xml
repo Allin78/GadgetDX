@@ -96,7 +96,7 @@
     <string name="pref_title_canned_replies">Respuestas</string>
     <string name="pref_title_canned_reply_suffix">Sufijo habitual</string>
     <string name="pref_title_canned_messages_dismisscall">Rechazar llamada</string>
-    <string name="pref_title_canned_messages_set">Actualizar en Pebble</string>
+    <string name="pref_title_canned_messages_set">Actualizar en el dispositivo</string>
     <string name="pref_header_development">Opciones de desarrollador</string>
     <string name="pref_title_development_miaddr">Dirección de MiBand</string>
     <string name="pref_title_pebble_settings">Ajustes de Pebble</string>
@@ -115,7 +115,7 @@
     <string name="pref_title_enable_calendar_sync">Sincronizar calendario</string>
     <string name="pref_summary_enable_calendar_sync">Enviar los eventos del calendario a la timeline</string>
     <string name="pref_title_autoremove_notifications">Eliminar automáticamente las notificaciones rechazadas</string>
-    <string name="pref_summary_autoremove_notifications">Las notificaciones se borran automáticamente de Pebble cuando son rechazadas en Android</string>
+    <string name="pref_summary_autoremove_notifications">Las notificaciones se borran automáticamente del dispositivo cuando se rechazan en el teléfono</string>
     <string name="pref_title_pebble_privacy_mode">Modo privado</string>
     <string name="pref_pebble_privacy_mode_off">Notificación normal</string>
     <string name="pref_pebble_privacy_mode_content">Desplaza la notificación fuera de la pantalla</string>
@@ -450,7 +450,7 @@
 \n
 \nNota: no es necesario instalar el archivo .res si es idéntico al instalado previamente.
 \n
-\nPROCEDA BAJO SU PROPIA CUENTA Y RIESGO.</string>
+\n¡PROCEDA BAJO SU PROPIA CUENTA Y RIESGO!</string>
     <string name="pref_title_charts_swipe">Permitir deslizar hacia izquierda/derecha en los gráficos de actividad</string>
     <string name="automatic">Automático</string>
     <string name="simplified_chinese">Chino simplificado</string>
@@ -494,7 +494,7 @@
     <string name="notif_export_failed_title">¡La exportación de la base de datos ha fallado! Por favor, revisa los ajustes.</string>
     <string name="choose_auto_export_location">Elija la ubicación para exportación</string>
     <string name="spanish">Español</string>
-    <string name="notification_channel_name">Notificaciones de Gadgetbridge</string>
+    <string name="notification_channel_name">General</string>
     <string name="devicetype_xwatch">XWatch</string>
     <string name="controlcenter_change_led_color">Cambiar color del LED</string>
     <string name="controlcenter_change_fm_frequency">Cambiar frecuencia de FM</string>
@@ -529,7 +529,7 @@
 \n
 \nNota: no es necesario instalar el archivo .res si es idéntico al instalado previamente.
 \n
-\nPROCEDA BAJO SU PROPIA CUENTA Y RIESGO.</string>
+\n¡PROCEDA BAJO SU PROPIA CUENTA Y RIESGO!</string>
     <string name="pref_title_notifications_timeout">Tiempo mínimo entre notificaciones</string>
     <string name="pref_title_rtl">Derecha a Izquierda</string>
     <string name="pref_summary_rtl">Habilite esto si su dispositivo no puede mostrar idiomas de derecha a izquierda</string>
@@ -538,7 +538,7 @@
     <string name="pref_title_pebble_gatt_clientonly">Sólo cliente GATT</string>
     <string name="pref_summary_pebble_gatt_clientonly">Esto es solo para Pebble 2 y experimental, intente esto si tiene problemas de conectividad</string>
     <string name="prefs_screen_orientation">Orientación de pamtalla</string>
-    <string name="pref_auto_fetch_summary">La recuperación funciona luego de desbloquear la pantalla, y solo si se ha definido un mecanismo de bloqueo.</string>
+    <string name="pref_auto_fetch_summary">La recuperación funciona luego de desbloquear la pantalla. ¡Sólo funciona si se ha definido un mecanismo de bloqueo!</string>
     <string name="horizontal">Horizontal</string>
     <string name="vertical">Vertical</string>
     <string name="notif_battery_low">%1$s batería baja</string>
@@ -688,8 +688,8 @@
 \n
 \nNota: no es necesario instalar el archivo .res si es idéntico al instalado previamente.
 \n
-\nPROCEDA BAJO SU PROPIA CUENTA Y RIESGO.</string>
-    <string name="prefs_hr_alarm_activity">Alarma de frecuencia cardíaca durante actividad deportiva.</string>
+\n¡PROCEDA BAJO SU PROPIA CUENTA Y RIESGO!</string>
+    <string name="prefs_hr_alarm_activity">Alarma de frecuencia cardíaca durante actividad deportiva</string>
     <string name="prefs_hr_alarm_low">Límite bajo</string>
     <string name="prefs_hr_alarm_high">Límite alto</string>
     <string name="pref_screen_notification_profile_missed_call">Notificación de llamada perdida</string>
@@ -770,14 +770,14 @@
 \n
 \nNota: no es necesario instalar el archivo .res si es idéntico al instalado previamente.
 \n
-\nPROCEDA BAJO SU PROPIA CUENTA Y RIESGO.</string>
+\n¡PROCEDA BAJO SU PROPIA CUENTA Y RIESGO!</string>
     <string name="fw_upgrade_notice_amazfitgtr">Está a punto de instalar el «firmware» %s en su Amazfit GTR.
 \n
 \nAsegúrese de instalar el archivo .fw y, a continuación, el archivo .res. Se reiniciará el reloj tras instalar el archivo .fw.
 \n
 \nNota: no es necesario instalar los archivos .res y .gps si son idénticos a los instalados previamente.
 \n
-\nPROCEDA BAJO SU PROPIA CUENTA Y RIESGO.</string>
+\n¡PROCEDA BAJO SU PROPIA CUENTA Y RIESGO!</string>
     <string name="pref_chart_heartrate_color_red">Rojo</string>
     <string name="pref_chart_heartrate_color_orange">Naranja</string>
     <string name="pref_title_chart_heartrate_color">Color de frecuencia cardíaca</string>
@@ -961,7 +961,7 @@
     <string name="ascentMeters">Cuesta arriba</string>
     <string name="averageHR">Ritmo cardíaco</string>
     <string name="totalStride">Avance total</string>
-    <string name="qhybrid_calibration_align_hint">alinear las manos a las 12:00</string>
+    <string name="qhybrid_calibration_align_hint">Utiliza los botones de abajo para alinear las manecillas del reloj a las 12:00.</string>
     <string name="devicetype_nut_mini">Nut Mini</string>
     <string name="medley">Medley</string>
     <string name="backstroke">Estilo espalda</string>
@@ -1009,7 +1009,7 @@
     <string name="Elevation">Elevación</string>
     <string name="Distance">Distancia</string>
     <string name="companiondevice_pairing_details">Habilita el nuevo soporte de la API de CompanionDevice (sólo tiene efecto en Android 8 o superior) que aumentará la fiabilidad si el servicio necesita ser reiniciado en segundo plano, requiere un re-emparejamiento usando Gadgetbridge paraque surja efecto</string>
-    <string name="notification_channel_high_priority_name">Notificaciones de Gadgetbridge con alta prioridad</string>
+    <string name="notification_channel_high_priority_name">Alta prioridad</string>
     <string name="activity_error_no_app_for_png">Para compartir esta captura de pantalla, instale una aplicación que pueda manejar archivos de imagen.</string>
     <string name="activity_summary_yesterday">Ayer</string>
     <string name="activity_summary_today">Hoy</string>
@@ -1165,4 +1165,90 @@
 \nNota: No es necesario instalar los archivos .res y .gps si estos archivos son exactamente los mismos que los instalados anteriormente.
 \n
 \n¡PROCEDE BAJO TU PROPIO RIESGO!</string>
+    <string name="minutes_mi">min/mi</string>
+    <string name="ft">ft</string>
+    <string name="fossil_hr_auth_failed">Autenticación fallida, funcionalidad limitada</string>
+    <string name="fossil_hr_unavailable_unauthed">No está disponible en modo no autenticado</string>
+    <string name="fossil_hr_synced_activity_data">Datos de actividad sincronizados</string>
+    <string name="fossil_hr_commute_processing">Procesando la solicitud...</string>
+    <string name="mi">mi</string>
+    <string name="mi_h">mi/h</string>
+    <string name="devicetype_waspos">Wasp-os</string>
+    <string name="devicetype_zepp_e">Zepp E</string>
+    <string name="devicetype_amazfit_x">Amazfit X</string>
+    <string name="devicetype_amazfit_gts2e">Amazfit GTS 2e</string>
+    <string name="devicetype_amazfit_gts2_mini">Amazfit GTS 2 Mini</string>
+    <string name="devicetype_amazfit_gtr2e">Amazfit GTR 2e</string>
+    <string name="activity_type_strength_training">Entrenamiento de fuerza</string>
+    <string name="show_ongoing_activity">Mostrar ventana emergente de actividad en curso</string>
+    <string name="dialog_hide">Ocultar</string>
+    <string name="fw_upgrade_notice_amazfitx">Estás a punto de instalar el firmware %s en tu Amazfit X.
+\n
+\nPor favor, asegúrese de instalar el archivo .fw, y después el archivo .res. Su banda se reiniciará después de instalar el archivo .fw.
+\n
+\nNota: No es necesario instalar .res si es exactamente el mismo que el instalado anteriormente.
+\n
+\n¡PROCEDA BAJO SU PROPIO RIESGO!</string>
+    <string name="calendar_year">Año</string>
+    <string name="calendar_six_months">6 meses</string>
+    <string name="calendar_three_months">3 meses</string>
+    <string name="calendar_month">Mes</string>
+    <string name="calendar_two_weeks">Dos semanas</string>
+    <string name="calendar_week">Semana</string>
+    <string name="calendar_day">Día</string>
+    <string name="battery_level">Nivel de la batería</string>
+    <string name="battery_detail_activity_title">Información de la batería</string>
+    <string name="pref_summary_canned_messages_dismisscall">Descartar llamadas desde el reloj con un mensaje SMS</string>
+    <string name="pref_summary_canned_messages_set">Envíe los mensajes configurados a continuación a su dispositivo</string>
+    <string name="qhybrid_summary_calibration">Calibrar las agujas del reloj</string>
+    <string name="qhybrid_summary_file_management">Subir y descargar archivos</string>
+    <string name="pref_summary_physical_buttons">Configurar la funcionalidad de los botones físicos del reloj</string>
+    <string name="pref_title_physical_buttons">Botones físicos</string>
+    <string name="fossil_hr_warning_firmware_too_new">Algunas funciones están deshabilitadas porque el firmware del reloj es demasiado nuevo</string>
+    <string name="qhybrid_title_calibration">Calibración</string>
+    <string name="qhybrid_title_apps_management">Administración de aplicaciones</string>
+    <string name="qhybrid_title_file_management">Administración de archivos</string>
+    <string name="qhybrid_title_background_image">Imagen de fondo</string>
+    <string name="qhybrid_title_apps">Aplicaciones</string>
+    <string name="qhybrid_title_watchface_apps">Esfera y aplicaciones</string>
+    <string name="menuitem_temperature">Temperatura</string>
+    <string name="menuitem_widgets">Widgets</string>
+    <string name="menuitem_events">Eventos</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="kind_agps_bundle">Paquete AGPS</string>
+    <string name="prefs_sounds_summary">Configurar cuándo el dispositivo emitirá un pitido</string>
+    <string name="prefs_sounds">Sonidos</string>
+    <string name="fw_upgrade_notice_amazfitneo">Está a punto de instalar el firmware %s en su Amazfit Neo.
+\n
+\nSu banda se reiniciará después de instalar el archivo .fw.
+\n
+\n¡PROCEDA BAJO SU PROPIO RIESGO!</string>
+    <string name="fw_upgrade_notice_miband6">Está a punto de instalar el «firmware» %s en su Mi Band 6.
+\n
+\nAsegúrese de instalar el archivo .fw y, a continuación, el archivo .res. Se reiniciará la pulsera tras instalar el archivo .fw.
+\n
+\nNota: no es necesario instalar el archivo .res si es idéntico al instalado previamente.
+\n
+\n¡PROCEDA BAJO SU PROPIA CUENTA Y RIESGO!</string>
+    <string name="qhybrid_pref_title_external_intents">Permitir intenciones externas peligrosas</string>
+    <string name="pref_summary_developer_settings">Ajustes y funcionalidades utilizadas por los desarrolladores</string>
+    <string name="pref_title_developer_settings">Configuración de los desarrolladores</string>
+    <string name="qhybrid_pref_title_actions">Acciones</string>
+    <string name="qhybrid_calibration_100_steps">100 pasos</string>
+    <string name="qhybrid_calibration_10_steps">10 pasos</string>
+    <string name="qhybrid_pref_summary_external_intents">Habilitar para permitir que otras aplicaciones de Android suban/sobreescriban archivos</string>
+    <string name="fossil_hr_new_action">Nueva acción</string>
+    <string name="fossil_hr_new_action_cancel">cancelar</string>
+    <string name="fossil_hr_edit_action">Editar acción</string>
+    <string name="fossil_hr_edit_action_delete">borrar</string>
+    <string name="fossil_hr_commute_actions_explanation">Las acciones configuradas aquí aparecerán en la aplicación Commute de su reloj. Lea la wiki para obtener información sobre cómo manejar los intentos producidos por estas acciones.</string>
+    <string name="qhybrid_title_watchface">Configuración de Watchface</string>
+    <string name="notification_channel_low_battery_name">Batería baja</string>
+    <string name="notification_channel_transfer_name">Transferencia de datos</string>
+    <string name="watchface_install_info">Está a punto de instalar el siguiente watchface:
+\n
+\n%1$s
+\nVersión %2$s por %3$s
+\n</string>
 </resources>

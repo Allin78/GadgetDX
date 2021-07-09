@@ -63,7 +63,7 @@ public class BLETypeConversions {
     /**
      * Similar to calendarToRawBytes, but only up to (and including) the MINUTES.
      * @param timestamp
-     * @return
+     * @return byte array of 6 bytes
      */
     public static byte[] shortCalendarToRawBytes(Calendar timestamp) {
         // MiBand2:
@@ -230,8 +230,8 @@ public class BLETypeConversions {
         if (false && timezoneFlags == TZ_FLAG_INCLUDE_DST_IN_TZ) {
             offsetMillis += timeZone.getDSTSavings();
         }
-        int utcOffsetInHours =  (offsetMillis / (1000 * 60 * 60));
-        return (byte) (utcOffsetInHours * 4);
+        int utcOffsetInQuarterHours = (offsetMillis / (1000 * 60 * 15));
+        return (byte) utcOffsetInQuarterHours;
     }
 
     /**

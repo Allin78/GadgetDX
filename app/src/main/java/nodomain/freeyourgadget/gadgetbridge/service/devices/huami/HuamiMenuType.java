@@ -37,6 +37,7 @@ class HuamiMenuType {
         put("mutephone", 0x0f);
         put("nfc", 0x10);
         put("alipay", 0x11);
+        put("watchface", 0x12);
         put("settings", 0x13);
         put("activity", 0x14);
         put("eventreminder", 0x15);
@@ -49,8 +50,16 @@ class HuamiMenuType {
         put("goal", 0x21);
         put("sleep", 0x23);
         put("spo2", 0x24);
+        put("events", 0x26);
+        put("widgets", 0x28);
         put("breathing",0x33);
+        put("steps",0x34);
+        put("distance",0x35);
+        put("calories",0x36);
         put("pomodoro", 0x38);
         put("alexa", 0x39);
+        put("battery", 0x3a);
+        put("temperature", 0x40);
+        put("barometer", 0x41);
     }};
 }

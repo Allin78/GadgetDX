@@ -96,7 +96,7 @@
     <string name="pref_title_canned_replies">Réponses</string>
     <string name="pref_title_canned_reply_suffix">Suffixe fréquent</string>
     <string name="pref_title_canned_messages_dismisscall">Raccrocher</string>
-    <string name="pref_title_canned_messages_set">Mise à jour Pebble</string>
+    <string name="pref_title_canned_messages_set">Mise à jour sur l\'appareil</string>
     <string name="pref_header_development">Options développeur</string>
     <string name="pref_title_development_miaddr">Adresse Mi Band</string>
     <string name="pref_title_pebble_settings">Paramètres Pebble</string>
@@ -115,7 +115,7 @@
     <string name="pref_title_enable_calendar_sync">Synchroniser le calendrier</string>
     <string name="pref_summary_enable_calendar_sync">Envoyer les événements du calendrier sur la timeline</string>
     <string name="pref_title_autoremove_notifications">Effacer automatiquement les notifications rejetées</string>
-    <string name="pref_summary_autoremove_notifications">Les notifications sont automatiquement effacées de la Pebble lorsqu\'elles sont rejetées sur l\'appareil Android</string>
+    <string name="pref_summary_autoremove_notifications">Les notifications sont automatiquement effacées de l\'appareil lorsqu\'elles sont rejetées sur le téléphone</string>
     <string name="pref_title_pebble_privacy_mode">Mode privé</string>
     <string name="pref_pebble_privacy_mode_off">Notifications normales</string>
     <string name="pref_pebble_privacy_mode_content">Déplace les notifications hors de l\'écran</string>
@@ -166,7 +166,11 @@
     <string name="installation_failed_">Échec de l\'installation</string>
     <string name="installation_successful">Installé</string>
     <string name="firmware_install_warning">VOUS TENTEZ D\'INSTALLER UN MICROLOGICIEL, PROCÉDEZ À VOS RISQUES ET PÉRILS.\n\n\nCe micrologiciel est pour la version de matériel : %s</string>
-    <string name="app_install_info">Vous êtes sur le point d\'installer l\'application suivante :\n\n\n%1$s Version %2$s par %3$s\n</string>
+    <string name="app_install_info">Vous êtes sur le point d\'installer l\'application suivante :
+\n
+\n%1$s-
+\nVersion %2$s par %3$s
+\n</string>
     <string name="n_a">N.D.</string>
     <string name="initialized">Initialisé</string>
     <string name="appversion_by_creator">%1$s par %2$s</string>
@@ -472,7 +476,7 @@ Temps de sommeil préféré en heures</string>
     <string name="devicetype_amazfit_bip">Amazfit Bip</string>
     <string name="devicetype_amazfit_cor">Amazfit Cor</string>
     <string name="devicetype_vibratissimo">Vibratissimo</string>
-    <string name="devicetype_liveview">LiveView</string>
+    <string name="devicetype_liveview">Vue en directe</string>
     <string name="devicetype_hplus">HPlus</string>
     <string name="devicetype_makibes_f68">Makibes F68</string>
     <string name="devicetype_exrizu_k8">Exrizu K8</string>
@@ -486,7 +490,7 @@ Temps de sommeil préféré en heures</string>
     <string name="notif_export_failed_title">L\'exportation de la base de données a échoué ! Veuillez vérifier vos paramètres.</string>
     <string name="choose_auto_export_location">Choisissez l\'emplacement d\'exportation</string>
     <string name="spanish">Espagnol</string>
-    <string name="notification_channel_name">Notifications de Gadgetbridge</string>
+    <string name="notification_channel_name">Général</string>
     <string name="devicetype_xwatch">XWatch</string>
     <string name="on">Actif</string>
     <string name="activity_type_not_measured">Non mesurée</string>
@@ -839,7 +843,7 @@ Temps de sommeil préféré en heures</string>
     <string name="hr_appname_stopwatch">Chronomètre</string>
     <string name="hr_appname_workout">Entraînement</string>
     <string name="hr_appname_wellness">Bien-être</string>
-    <string name="notification_channel_high_priority_name">Priorité haute des notifications Gadgetbridge</string>
+    <string name="notification_channel_high_priority_name">Haute priorité</string>
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="find_my_phone_notification">Trouver mon téléphone</string>
     <string name="pref_title_vibration_strength">Puissance du vibreur</string>
@@ -968,7 +972,7 @@ Temps de sommeil préféré en heures</string>
     <string name="flatSeconds">Plat</string>
     <string name="ascentSeconds">Ascendant</string>
     <string name="swimStyle">Type de nage</string>
-    <string name="swolfIndex">swolfIndex</string>
+    <string name="swolfIndex">index swolf</string>
     <string name="averageLapPace">Moyenne de pause</string>
     <string name="averageStrokesPerSecond">Foulées moyennes</string>
     <string name="averageStrokeDistance">Distance moyenne de foulée</string>
@@ -1098,7 +1102,7 @@ Temps de sommeil préféré en heures</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
     <string name="activity_prefs_step_length_cm">Longueur de pas en cm</string>
     <string name="menuitem_spo2">SpO2</string>
-    <string name="qhybrid_calibration_align_hint">aligner les mains à midi</string>
+    <string name="qhybrid_calibration_align_hint">Utiliser les boutons ci-dessous pour aligner les mains du bracelet à midi.</string>
     <string name="gps_track">Trace GPS</string>
     <string name="about_version">Version %s</string>
     <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
@@ -1166,7 +1170,87 @@ Temps de sommeil préféré en heures</string>
     <string name="devicetype_amazfit_gts2_mini">Amazfit GTS 2 Mini</string>
     <string name="devicetype_zepp_e">Zepp E</string>
     <string name="devicetype_amazfit_gtr2e">Amazfit GTR 2e</string>
-    <string name="devicetype_waspos">Wasp OS</string>
+    <string name="devicetype_waspos">Wasp-os</string>
     <string name="battery_detail_activity_title">Info. Batterie</string>
     <string name="devicetype_amazfit_gts2e">Amazfit GTS 2e</string>
+    <string name="devicetype_amazfit_x">Amazfit X</string>
+    <string name="fw_upgrade_notice_amazfitx">Vous allez installer le microcode %s dans votre Amazfit X.
+\n
+\nAssurez-vous d\'abord d\'installer le fichier .fw, puis ensuite le fichier .res. Votre bracelet va redémarrer après l\'installation du fichier .fw.
+\n
+\nRemarque : Vous n\'avez pas à réinstaller le fichiers .res si c\'est exactement le même que vous avez précédemment installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="calendar_year">Année</string>
+    <string name="calendar_six_months">Semestre</string>
+    <string name="calendar_month">Mois</string>
+    <string name="calendar_two_weeks">Deux semaines</string>
+    <string name="calendar_week">Semaine</string>
+    <string name="calendar_day">Jour</string>
+    <string name="battery_level">Niveau de batterie</string>
+    <string name="show_ongoing_activity">Afficher une popup pour l\'activité en cours</string>
+    <string name="dialog_hide">Cacher</string>
+    <string name="calendar_three_months">3 mois</string>
+    <string name="fossil_hr_auth_failed">AUthentification ratée, fonctionnalités limitées</string>
+    <string name="fossil_hr_unavailable_unauthed">Indisponible en mode non authentifié</string>
+    <string name="fossil_hr_synced_activity_data">Données d\'activité synchronisées</string>
+    <string name="fossil_hr_commute_processing">En cours de traitement...</string>
+    <string name="qhybrid_title_calibration">Calibration</string>
+    <string name="qhybrid_title_apps_management">Gestion des apps</string>
+    <string name="qhybrid_title_file_management">Gestion de fichiers</string>
+    <string name="qhybrid_title_background_image">Image de fond</string>
+    <string name="qhybrid_title_apps">Apps</string>
+    <string name="qhybrid_title_watchface_apps">Écran et apps</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="fossil_hr_warning_firmware_too_new">Certaines fonctions sont désactivées en raison de la version trop récente du micrologiciel du bracelet</string>
+    <string name="prefs_sounds_summary">Configurer une fois que l\'appareil a bipé</string>
+    <string name="prefs_sounds">Sons</string>
+    <string name="fw_upgrade_notice_amazfitneo">Vous êtes sur le point d\'installer le micrologiciel %s dans votre Amazfit Neo.
+\n
+\n- Votre bracelet va redémarrer après l\'installation du micrologiciel.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="menuitem_temperature">Température</string>
+    <string name="menuitem_widgets">Widgets</string>
+    <string name="menuitem_events">Évènements</string>
+    <string name="pref_summary_canned_messages_dismisscall">Refuser les appels depuis la montre avec un message SMS</string>
+    <string name="pref_summary_canned_messages_set">Envoyer le message saisi ci-dessous vers votre bracelet</string>
+    <string name="qhybrid_summary_calibration">Choisir la main du bracelet</string>
+    <string name="qhybrid_summary_file_management">Envoyer et recevoir des fichiers</string>
+    <string name="pref_summary_physical_buttons">Configurer les fonctions des boutons physiques du bracelet</string>
+    <string name="pref_title_physical_buttons">Boutons physiques</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="kind_agps_bundle">Bundle AGPS</string>
+    <string name="fw_upgrade_notice_miband6">Vous êtes sur le point d\'installer le micro-logiciel %s dans votre Mi Band 6.
+\n
+\nAssurez-vous d\'installer le fichier .fw, et puis ensuite le fichier .res. Votre bracelet redémarrera après l\'installation du fichier .fw.
+\n
+\nRemarque. Vous n\'avez pas besoin d\'installer le fichier .res si c\'est exactement le même que celui précédemment installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="watchface_install_info">Vous êtes sur le point d\'installer la facade suivante:
+\n
+\n%1$s
+\nVersion %2$s par %3$s
+\n</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Configuration de la façade pour les bracelets dont le micro-logiciel est en version DN1.0.2.19r ou inférieur</string>
+    <string name="qhybrid_calibration_100_steps">100 pas</string>
+    <string name="qhybrid_calibration_10_steps">10 pas</string>
+    <string name="qhybrid_calibration_1_step">1 pas</string>
+    <string name="qhybrid_calibration_clockwise">Dans le sens horaire</string>
+    <string name="qhybrid_calibration_counterclockwise">Dans le sens anti-horaire</string>
+    <string name="fossil_hr_new_action">Nouvelle action</string>
+    <string name="fossil_hr_new_action_cancel">annuler</string>
+    <string name="fossil_hr_edit_action">Modifier l\'action</string>
+    <string name="fossil_hr_edit_action_delete">supprimer</string>
+    <string name="fossil_hr_commute_actions_explanation">Les actions configurées ici apparaitront dans l\'app Commute dans votre bracelet. Consulter le wiki pour plus d\'informations sur la gestion des intentions générés par ces actions.</string>
+    <string name="qhybrid_title_watchface">Configuration de la facade</string>
+    <string name="notification_channel_low_battery_name">Batterie faible</string>
+    <string name="notification_channel_transfer_name">Transfert de données</string>
+    <string name="qhybrid_pref_summary_external_intents">Autorise d\'autres apps Android à envoyer/écraser des fichiers</string>
+    <string name="qhybrid_pref_title_external_intents">Autorise des intentions externes dangereux</string>
+    <string name="pref_summary_developer_settings">Réglages et fonctionnalités utilisés par les développeurs</string>
+    <string name="pref_title_developer_settings">Réglages Développeurs</string>
+    <string name="qhybrid_pref_summary_actions">Actions pour l\'app Commute</string>
+    <string name="qhybrid_pref_title_actions">Actions</string>
 </resources>

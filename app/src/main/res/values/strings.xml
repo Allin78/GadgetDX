@@ -85,7 +85,13 @@
     <string name="fw_upgrade_notice_miband3">You are about to install the %s firmware on your Mi Band 3.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband4">You are about to install the %s firmware on your Mi Band 4.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband5">You are about to install the %s firmware on your Mi Band 5.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_miband6">You are about to install the %s firmware on your Mi Band 6.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfitx">You are about to install the %s firmware on your Amazfit X.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfitneo">You are about to install the %s firmware on your Amazfit Neo.
+\n
+\nYour band will reboot after installing the .fw file.
+\n
+\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_multi_upgrade_notice">You are about to install the %1$s and %2$s firmware, instead of the ones currently on your Mi Band.</string>
     <string name="miband_firmware_known">This firmware has been tested and is known to be compatible with Gadgetbridge.</string>
     <string name="miband_firmware_unknown_warning">"This firmware is untested and may not be compatible with Gadgetbridge.\n\nYou are DISCOURAGED from flashing it!"</string>
@@ -105,6 +111,7 @@
     <string name="pref_theme_light">Light</string>
     <string name="pref_theme_dark">Dark</string>
     <string name="pref_theme_system">System</string>
+    <string name="pref_theme_black_background">Use black background in Dark Theme</string>
     <string name="pref_title_language">Language</string>
     <string name="pref_title_minimize_priority">Hide the Gadgetbridge notification</string>
     <string name="pref_summary_minimize_priority_off">The icon in the status bar and the notification in the lockscreen are shown</string>
@@ -145,7 +152,7 @@
     <string name="pref_title_canned_replies">Replies</string>
     <string name="pref_title_canned_reply_suffix">Common suffix</string>
     <string name="pref_title_canned_messages_dismisscall">Call Dismissal</string>
-    <string name="pref_title_canned_messages_set">Update on Pebble</string>
+    <string name="pref_title_canned_messages_set">Update on device</string>
     <string name="pref_header_development">Developer options</string>
     <string name="pref_title_development_miaddr">Mi Band address</string>
     <string name="pref_title_pebble_settings">Pebble settings</string>
@@ -166,7 +173,7 @@
     <string name="pref_title_custom_deviceicon">Show device specific notification icon</string>
     <string name="pref_summary_custom_deviceicon">Show a device specific Android notification icon instead the Gadgetbridge icon when connected</string>
     <string name="pref_title_autoremove_notifications">Autoremove dismissed notifications</string>
-    <string name="pref_summary_autoremove_notifications">Notifications are automatically removed from the Pebble when dismissed from the Android device</string>
+    <string name="pref_summary_autoremove_notifications">Notifications are automatically removed from the device when dismissed from the phone</string>
     <string name="pref_title_pebble_privacy_mode">Privacy mode</string>
     <string name="pref_pebble_privacy_mode_off">Normal notifications</string>
     <string name="pref_pebble_privacy_mode_content">Shift the notification text off-screen</string>
@@ -338,7 +345,8 @@
     <string name="installation_failed_">Installation failed</string>
     <string name="installation_successful">Installed</string>
     <string name="firmware_install_warning">YOU ARE TRYING TO INSTALL A FIRMWARE, PROCEED AT YOUR OWN RISK.\n\n\n This firmware is for HW Revision: %s</string>
-    <string name="app_install_info">You are about to install the following app:\n\n\n%1$s Version %2$s by %3$s\n</string>
+    <string name="app_install_info">You are about to install the following app:\n\n%1$s\nVersion %2$s by %3$s\n</string>
+    <string name="watchface_install_info">You are about to install the following watchface:\n\n%1$s\nVersion %2$s by %3$s\n</string>
     <string name="n_a">N/A</string>
     <string name="initialized">initialized</string>
     <string name="appversion_by_creator">%1$s by %2$s</string>
@@ -469,6 +477,8 @@
     <string name="show_ongoing_activity">Show ongoing activity popup</string>
     <string name="lack_of_sleep">Lack of sleep: %1$s</string>
     <string name="overslept">Overslept: %1$s</string>
+    <string name="prefs_sounds">Sounds</string>
+    <string name="prefs_sounds_summary">Configure when the device will beep</string>
     <!-- Firmware updating -->
     <string name="devicestatus_connecting">Device is connecting</string>
     <string name="devicestatus_connected">Device is connected</string>
@@ -794,6 +804,7 @@
     <string name="kind_gps">GPS Firmware</string>
     <string name="kind_gps_almanac">GPS Almanac</string>
     <string name="kind_gps_cep">GPS Error Correction</string>
+    <string name="kind_agps_bundle">AGPS Bundle</string>
     <string name="kind_resources">Resources</string>
     <string name="kind_watchface">Watchface</string>
     <string name="devicetype_unknown">Unknown Device</string>
@@ -804,6 +815,7 @@
     <string name="devicetype_miband3">Mi Band 3</string>
     <string name="devicetype_miband4">Mi Band 4</string>
     <string name="devicetype_miband5">Mi Band 5</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
     <string name="devicetype_amazfit_neo">Amazfit Neo</string>
     <string name="devicetype_amazfit_bip">Amazfit Bip</string>
@@ -824,6 +836,7 @@
     <string name="devicetype_amazfit_x">Amazfit X</string>
     <string name="devicetype_zepp_e">Zepp E</string>
     <string name="devicetype_vibratissimo">Vibratissimo</string>
+    <string name="devicetype_um25">UM-25</string>
     <string name="devicetype_liveview">LiveView</string>
     <string name="devicetype_hplus">HPlus</string>
     <string name="devicetype_makibes_f68">Makibes F68</string>
@@ -854,9 +867,12 @@
     <string name="devicetype_sonyswr12" translatable="false">Sony SWR12</string>
     <string name="devicetype_waspos">Wasp-os</string>
     <string name="devicetype_smaq2oss">SMA-Q2 OSS</string>
+    <string name="devicetype_domyos_t540"></string>
     <string name="choose_auto_export_location">Choose export location</string>
-    <string name="notification_channel_name">Gadgetbridge notifications</string>
-    <string name="notification_channel_high_priority_name">Gadgetbridge notifications high priority</string>
+    <string name="notification_channel_name">General</string>
+    <string name="notification_channel_high_priority_name">High-priority</string>
+    <string name="notification_channel_transfer_name">Data transfer</string>
+    <string name="notification_channel_low_battery_name">Low battery</string>
     <string name="devicetype_amazfit_gts">Amazfit GTS</string>
     <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
@@ -894,6 +910,10 @@
     <string name="menuitem_goal">Activity Goal</string>
     <string name="menuitem_sleep">Sleep</string>
     <string name="menuitem_pomodoro">Pomodoro Tracker</string>
+    <string name="menuitem_events">Events</string>
+    <string name="menuitem_widgets">Widgets</string>
+    <string name="menuitem_temperature">Temperature</string>
+    <string name="menuitem_barometer">Barometer</string>
     <string name="watch9_time_minutes">Minutes:</string>
     <string name="watch9_time_hours">Hours:</string>
     <string name="watch9_time_seconds">Seconds:</string>
@@ -1129,8 +1149,9 @@
     <string name="backstroke">Backstroke</string>
     <string name="medley">Medley</string>
     <string name="devicetype_nut_mini">Nut mini</string>
-    <string name="qhybrid_calibration_align_hint">align hands to 12:00</string>
+    <string name="qhybrid_calibration_align_hint">Use the buttons below to align the watch hands to 12:00.</string>
     <string translatable="false" name="lorem_ipsum">Lorem Ipsum</string>
+
     <plurals name="widget_alarm_target_hours">
         <item quantity="one">%d hour</item>
         <item quantity="two">%d hours</item>
@@ -1143,4 +1164,39 @@
     <string name="prefs_operating_sounds">Operating Sounds</string>
     <string name="prefs_fake_ring_duration">Fake continuous ringing</string>
     <string name="prefs_autoremove_message">Automatically remove SMS notifications</string>
+    <string name="fossil_hr_commute_processing">Processing request...</string>
+    <string name="fossil_hr_synced_activity_data">Synchronised activity data</string>
+    <string name="fossil_hr_unavailable_unauthed">Not available in unauthenticated mode</string>
+    <string name="fossil_hr_auth_failed">Authentication failed, limited functionality</string>
+    <string name="qhybrid_title_watchface">Watchface configuration</string>
+    <string name="qhybrid_title_apps">Apps</string>
+    <string name="qhybrid_title_background_image">Background image</string>
+    <string name="qhybrid_title_file_management">File management</string>
+    <string name="qhybrid_title_apps_management">Apps management</string>
+    <string name="qhybrid_title_calibration">Calibration</string>
+    <string name="fossil_hr_warning_firmware_too_new">Some functions are disabled because the firmware of the watch is too new</string>
+    <string name="pref_title_physical_buttons">Physical buttons</string>
+    <string name="pref_summary_physical_buttons">Configure the functionality of the physical buttons on the watch</string>
+    <string name="qhybrid_summary_file_management">Upload and download files</string>
+    <string name="qhybrid_summary_calibration">Calibrate the watch hands</string>
+    <string name="pref_summary_canned_messages_set">Send the messages configured below to your device</string>
+    <string name="pref_summary_canned_messages_dismisscall">Dismiss calls from the watch with an SMS message</string>
+    <string name="fossil_hr_commute_actions_explanation">The actions configured here will appear in the Commute app on your watch. Read the wiki for information on how to handle the intents produced by these actions.</string>
+    <string name="fossil_hr_edit_action_delete">delete</string>
+    <string name="fossil_hr_edit_action">Edit action</string>
+    <string name="fossil_hr_new_action_cancel">cancel</string>
+    <string name="fossil_hr_new_action">New action</string>
+    <string name="qhybrid_calibration_counterclockwise">Counterclockwise</string>
+    <string name="qhybrid_calibration_clockwise">Clockwise</string>
+    <string name="qhybrid_calibration_1_step">1 step</string>
+    <string name="qhybrid_calibration_10_steps">10 steps</string>
+    <string name="qhybrid_calibration_100_steps">100 steps</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Watchface configuration screen for watches with firmware version DN1.0.2.19r and lower</string>
+    <string name="qhybrid_pref_title_actions">Actions</string>
+    <string name="qhybrid_pref_summary_actions">Actions for the Commute app</string>
+    <string name="pref_title_developer_settings">Developer settings</string>
+    <string name="pref_summary_developer_settings">Settings and functionality used by developers</string>
+    <string name="qhybrid_pref_title_external_intents">Allow dangerous external intents</string>
+    <string name="qhybrid_pref_summary_external_intents">Enable to allow other Android apps to upload/overwrite files</string>
+    <string name="devicetype_amazfit_trex_pro">Amazfit T-Rex Pro</string>
 </resources>

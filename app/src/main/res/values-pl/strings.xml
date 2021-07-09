@@ -66,7 +66,7 @@
     <string name="pref_blacklist">Czarna lista aplikacji</string>
     <string name="pref_header_cannned_messages">Szablonowe odpowiedzi</string>
     <string name="pref_title_canned_replies">Odpowiedzi</string>
-    <string name="pref_title_canned_messages_set">Uaktualnij na Pebble</string>
+    <string name="pref_title_canned_messages_set">Uaktualnij na urządzeniu</string>
     <string name="pref_header_development">Ustawienia programisty</string>
     <string name="pref_title_development_miaddr">Adres Mi Band</string>
     <string name="pref_title_pebble_settings">Ustawienia Pebble</string>
@@ -118,8 +118,8 @@
 \n Ten firmware jest przeznaczony dla wersji HW: %s</string>
     <string name="app_install_info">Zamierzasz zainstalować poniższą aplikację:
 \n
-\n
-\n%1$s wersja %2$s przez %3$s
+\n%1$s
+\nWersja %2$s od %3$s
 \n</string>
     <string name="n_a">Niedostępne</string>
     <string name="initialized">rozpoczęty</string>
@@ -382,7 +382,7 @@
     <string name="pref_title_call_privacy_mode">Tryb prywatności połączeń telefonicznych</string>
     <string name="pref_title_weather_location">Lokalizacja pogody (dla dostawcy pogody LineageOS)</string>
     <string name="pref_summary_enable_outgoing_call">Wyłączenie tej opcji spowoduje również, że Pebble 2/LE przestanie wibrować przy połączeniach wychodzących</string>
-    <string name="pref_summary_autoremove_notifications">Powiadomienia są automatycznie usuwane z Pebble po usunięciu z urządzenia Android</string>
+    <string name="pref_summary_autoremove_notifications">Powiadomienia są automatycznie usuwane z urządzenia po usunięciu z telefonu</string>
     <string name="pref_pebble_privacy_mode_content">Przesuń tekst powiadomienia poza ekran</string>
     <string name="pref_summary_location_keep_uptodate">Spróbuj uzyskać lokalizację w czasie uruchomienia, używa przechowywanych lokalizacji jako pomocy</string>
     <string name="controlcenter_change_led_color">Zmień kolor LED</string>
@@ -516,7 +516,7 @@
     <string name="kind_watchface">Tarcza zegarka</string>
     <string name="devicetype_unknown">Nieznane urządzenie</string>
     <string name="choose_auto_export_location">Wybierz ścieżkę do eksportu</string>
-    <string name="notification_channel_name">Powiadomienia Gadgetbridge</string>
+    <string name="notification_channel_name">Ogólne</string>
     <string name="menuitem_shortcut_alipay">Alipay (Skrót)</string>
     <string name="menuitem_shortcut_weather">Pogoda (Skrót)</string>
     <string name="menuitem_more">Więcej</string>
@@ -848,7 +848,7 @@
     <string name="hr_widget_active_minutes">Minuty aktywności</string>
     <string name="pref_title_force_white_color_scheme">Wymuś schemat kolorów czarno na białym</string>
     <string name="pref_summary_force_white_color_scheme">Użyteczne, jeśli twój zegarek ma ciemne wskazówki</string>
-    <string name="notification_channel_high_priority_name">Powiadomienia Gadgetbridge o wysokim priorytecie</string>
+    <string name="notification_channel_high_priority_name">Wysoki priorytet</string>
     <string name="pref_summary_custom_deviceicon">Pokaż specyficzną dla urządzenia ikonę powiadomienia zamiast ikony Gadgetbridge, gdy połączono</string>
     <string name="hr_appname_workout">Trening</string>
     <string name="hr_appname_stopwatch">Stoper</string>
@@ -1046,7 +1046,7 @@
     <string name="gps_track">Ścieżka GPS</string>
     <string name="descentSeconds">Czas zejścia</string>
     <string name="chart_no_active_data">Brak aktywności.</string>
-    <string name="qhybrid_calibration_align_hint">ustaw wskazówki na 12:00</string>
+    <string name="qhybrid_calibration_align_hint">Użyj poniższych przycisków, aby ustawić wskazówki zegara na 12:00.</string>
     <string name="sports_activity_quick_filter_select">Okres czasu</string>
     <string name="addto_filter">Dodaj do filtru</string>
     <string name="activity_filter_name_contains">Etykieta</string>
@@ -1138,7 +1138,7 @@
     <string name="devicetype_amazfit_bipu">Amazfit Bip U</string>
     <string name="menuitem_pomodoro">Minutnik Pomodoro</string>
     <string name="menuitem_sleep">Sen</string>
-    <string name="baseAltitude">Wysokość podstawowa</string>
+    <string name="baseAltitude">Bazowa wysokość</string>
     <string name="menuitem_goal">Cel dotyczący aktywności</string>
     <string name="pref_title_connected_advertisement">Widoczne po podłączeniu</string>
     <string name="pref_summary_connected_advertisement">Sprawia, że urządzenie jest wykrywalne przez Bluetooth, nawet po połączeniu</string>
@@ -1157,8 +1157,8 @@
     <string name="activity_DB_ShowContentButton">Pokaż zawartość katalogu eksportu/importu</string>
     <string name="activity_data_management_directory_content_title">Eksportuj/Importuj zawartość katalogu</string>
     <string name="prefs_fake_ring_duration">Fałszywe ciągłe dzwonienie</string>
-    <string name="prefs_operating_sounds">Dźwięki operacyjne</string>
-    <string name="prefs_key_vibration">Wibracje klawiszy</string>
+    <string name="prefs_operating_sounds">Dźwięki funkcjonowania</string>
+    <string name="prefs_key_vibration">Wibracja przycisków</string>
     <string name="prefs_autolight">Automatyczne podświetlenie</string>
     <string name="widget_settings_select_device_title">Wybierz urządzenie</string>
     <string name="devicetype_amazfit_bipupro">Amazfit Bip U Pro</string>
@@ -1190,4 +1190,70 @@
 \nUwaga: Nie musisz instalować pliku .res, jeśli jest dokładnie taki sam jak poprzednio zainstalowany.
 \n
 \nROBISZ TO NA WŁASNE RYZYKO!</string>
+    <string name="calendar_year">Rok</string>
+    <string name="calendar_six_months">6 miesięcy</string>
+    <string name="calendar_month">Miesiąc</string>
+    <string name="calendar_two_weeks">Dwa tygodnie</string>
+    <string name="calendar_week">Tydzień</string>
+    <string name="calendar_day">Dzień</string>
+    <string name="battery_level">Poziom baterii</string>
+    <string name="show_ongoing_activity">Pokaż wyskakujące okienko aktywności</string>
+    <string name="dialog_hide">Ukryj</string>
+    <string name="calendar_three_months">3 miesiące</string>
+    <string name="fossil_hr_auth_failed">Uwierzytelnianie nie powiodło się, ograniczona funkcjonalność</string>
+    <string name="fossil_hr_unavailable_unauthed">Niedostępne w trybie bez uwierzytelnienia</string>
+    <string name="fossil_hr_synced_activity_data">Zsynchronizowane dane dotyczące aktywności</string>
+    <string name="fossil_hr_commute_processing">Przetwarzanie żądania…</string>
+    <string name="qhybrid_title_watchface_apps">Tarcze zegara i aplikacje</string>
+    <string name="qhybrid_title_calibration">Kalibracja</string>
+    <string name="qhybrid_title_apps_management">Zarządzanie aplikacjami</string>
+    <string name="qhybrid_title_file_management">Zarządzanie plikami</string>
+    <string name="qhybrid_title_background_image">Obraz tła</string>
+    <string name="qhybrid_title_apps">Aplikacje</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="fossil_hr_warning_firmware_too_new">Niektóre funkcje są wyłączone, ponieważ oprogramowanie zegarka jest zbyt nowe</string>
+    <string name="prefs_sounds_summary">Skonfiguruj, kiedy urządzenie będzie emitować sygnał dźwiękowy</string>
+    <string name="prefs_sounds">Dźwięki</string>
+    <string name="fw_upgrade_notice_amazfitneo">Zamierzasz zainstalować firmware %s na Amazfit Neo.
+\n
+\nOpaska uruchomi się ponownie po instalacji pliku .fw.
+\n
+\nROBISZ TO NA WŁASNE RYZYKO!</string>
+    <string name="menuitem_events">Wydarzenia</string>
+    <string name="menuitem_widgets">Widżety</string>
+    <string name="menuitem_temperature">Temperatura</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="fw_upgrade_notice_miband6">Właśnie instalujesz oprogramowanie sprzętowe %s na swojej opasce Mi Band 6.
+\n
+\nPamiętaj, aby najpierw zainstalować plik .fw, a następnie .res. Twoja opaska uruchomi się ponownie po zainstalowaniu pliku .fw.
+\n
+\nUwaga: Nie musisz instalować pliku .res, jeśli jest on dokładnie taki sam, jak poprzednio zainstalowany.
+\n
+\nROBISZ TO NA WŁASNE RYZYKO!</string>
+    <string name="qhybrid_summary_calibration">Kalibracja wskazówek zegarka</string>
+    <string name="pref_title_physical_buttons">Przyciski fizyczne</string>
+    <string name="pref_summary_canned_messages_set">Wyślij skonfigurowane poniżej wiadomości na swoje urządzenie</string>
+    <string name="pref_summary_canned_messages_dismisscall">Odrzucaj połączenia na zegarku z wiadomością SMS</string>
+    <string name="qhybrid_summary_file_management">Przesyłanie i pobieranie plików</string>
+    <string name="pref_summary_physical_buttons">Konfiguracja funkcji przycisków fizycznych zegarka</string>
+    <string name="kind_agps_bundle">AGPS Bundle</string>
+    <string name="qhybrid_calibration_100_steps">100 kroków</string>
+    <string name="qhybrid_calibration_10_steps">10 kroków</string>
+    <string name="qhybrid_calibration_1_step">1 krok</string>
+    <string name="qhybrid_calibration_clockwise">Zgodnie z ruchem wskazówek zegara</string>
+    <string name="qhybrid_calibration_counterclockwise">Przeciwnie do ruchu wskazówek zegara</string>
+    <string name="fossil_hr_new_action">Nowe działanie</string>
+    <string name="fossil_hr_new_action_cancel">anuluj</string>
+    <string name="fossil_hr_edit_action">Edytuj działanie</string>
+    <string name="fossil_hr_edit_action_delete">usuń</string>
+    <string name="watchface_install_info">Zamierzasz zainstalować następującą tarczę zegarka:
+\n
+\n%1$s
+\nWersja %2$s od %3$s
+\n</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Ekran konfiguracji tarczy zegarka dla zegarków z oprogramowaniem układowym w wersji DN1.0.2.19r i niższym</string>
+    <string name="fossil_hr_commute_actions_explanation">Akcje skonfigurowane w tym miejscu będą wyświetlane w aplikacji Commute na Twoim zegarku. Przeczytaj wiki, aby dowiedzieć się, jak obsługiwać intencje generowane przez te akcje.</string>
+    <string name="qhybrid_title_watchface">Konfiguracja tarczy zegarka</string>
+    <string name="notification_channel_low_battery_name">Niski poziom baterii</string>
+    <string name="notification_channel_transfer_name">Transfer danych</string>
 </resources>

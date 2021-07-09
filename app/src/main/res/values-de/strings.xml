@@ -96,7 +96,7 @@
     <string name="pref_title_canned_replies">Antworten</string>
     <string name="pref_title_canned_reply_suffix">Gemeinsame Endung</string>
     <string name="pref_title_canned_messages_dismisscall">Anrufabweisung</string>
-    <string name="pref_title_canned_messages_set">Aktualisierung auf Pebble</string>
+    <string name="pref_title_canned_messages_set">Aktualisierung auf dem Gerät</string>
     <string name="pref_header_development">Entwickleroptionen</string>
     <string name="pref_title_development_miaddr">Mi Band-Adresse</string>
     <string name="pref_title_pebble_settings">Pebble-Einstellungen</string>
@@ -115,7 +115,7 @@
     <string name="pref_title_enable_calendar_sync">Kalender synchronisieren</string>
     <string name="pref_summary_enable_calendar_sync">Kalenderereignisse an die Zeitleiste senden</string>
     <string name="pref_title_autoremove_notifications">Abgewiesene Benachrichtigungen automatisch entfernen</string>
-    <string name="pref_summary_autoremove_notifications">Wenn Benachrichtigungen vom Android-Gerät entfernt werden, geschieht das auch automatisch auf der Pebble</string>
+    <string name="pref_summary_autoremove_notifications">Benachrichtigungen werden automatisch vom Gerät entfernt, wenn sie vom Telefon entfernt werden</string>
     <string name="pref_title_pebble_privacy_mode">Datenschutzmodus</string>
     <string name="pref_pebble_privacy_mode_off">Normale Benachrichtigungen</string>
     <string name="pref_pebble_privacy_mode_content">Benachrichtigungstext außerhalb des Bildschirms verschieben</string>
@@ -169,10 +169,10 @@
 \n
 \n
 \nDiese Firmware ist für HW Revision: %s</string>
-    <string name="app_install_info">Du bist dabei die folgende App zu installieren: 
-\n 
-\n 
-\n%1$s Version %2$s von %3$s
+    <string name="app_install_info">Du bist dabei, die folgende App zu installieren:
+\n
+\n%1$s
+\nVersion %2$s von %3$s
 \n</string>
     <string name="n_a">N/A</string>
     <string name="initialized">initialisiert</string>
@@ -389,13 +389,13 @@
     <!--Strings related to Pebble Pairing Activity-->
     <string name="title_activity_pebble_pairing">Pebble koppeln</string>
     <string name="pebble_pairing_hint">Auf deinem Android-Gerät erscheint ein Koppeln-Dialog. Wenn nicht, schaue in die Benachrichtigungsübersicht und akzeptiere die Kopplungsanforderung. Akzeptiere es auch danach auf deiner Pebble.</string>
-    <string name="weather_notification_label">Stelle sicher, dass dieser Skin in der App \"Weather Notification\" aktiviert ist, damit du Wetterdaten auf deiner Pebble erhältst. 
-\n 
-\nHier ist keine Konfiguration nötig. 
-\n 
-\nDu kannst die Systemwetter-App deiner Pebble in App-Verwaltung aktivieren. 
-\n 
-\nUnterstützte Ziffernblätter zeigen das Wetter automatisch an.</string>
+    <string name="weather_notification_label">Stelle sicher, dass dieser Skin in der App \"Weather Notification\" aktiviert ist, damit du Wetterdaten auf deiner Pebble erhältst.
+\n
+\nHier ist keine Konfiguration nötig.
+\n
+\nDu kannst die Systemwetter-App deiner Pebble in App-Verwaltung aktivieren.
+\n
+\nUnterstützte Zifferblätter zeigen das Wetter automatisch an.</string>
     <string name="pref_title_setup_bt_pairing">Bluetooth-Kopplung aktivieren</string>
     <string name="pref_summary_setup_bt_pairing">Hier deaktivieren, wenn du Probleme beim Verbinden hast</string>
     <string name="unit_metric">Metrisch</string>
@@ -457,7 +457,7 @@
 \nINSTALLATION AUF EIGENE GEFAHR!</string>
     <string name="mi2_prefs_button_press_count">Anzahl der Tastendrücke</string>
     <string name="pref_title_charts_swipe">Streichen nach links/rechts im Diagrammbetrieb aktivieren</string>
-    <string name="pref_summary_pebble_enable_bgjs">Befähigt Zifferblätter Informationen zu Wetter, Akku usw. anzuzeigen</string>
+    <string name="pref_summary_pebble_enable_bgjs">Wenn aktiviert, können Zifferblätter Wetter, Akkuinfos, usw. anzeigen</string>
     <string name="prefs_title_heartrate_measurement_interval">Ganztägige Messung der Herzfrequenz</string>
     <string name="interval_one_minute">einmal pro Minute</string>
     <string name="interval_five_minutes">alle 5 Minuten</string>
@@ -518,7 +518,7 @@
     <string name="kind_watchface">Zifferblatt</string>
     <string name="devicetype_xwatch">XWatch</string>
     <string name="choose_auto_export_location">Speicherort für Export auswählen</string>
-    <string name="notification_channel_name">Benachrichtigungen von Gadgetbridge</string>
+    <string name="notification_channel_name">Allgemein</string>
     <string name="menuitem_status">Status</string>
     <string name="menuitem_activity">Aktivität</string>
     <string name="menuitem_weather">Wetter</string>
@@ -848,7 +848,7 @@
     <string name="pref_title_force_white_color_scheme">Schwarz-Weiß-Farbschema erzwingen</string>
     <string name="pref_summary_force_white_color_scheme">Nützlich, wenn deine Uhr dunkle Zeiger hat</string>
     <string name="find_my_phone_notification">Mein Telefon finden</string>
-    <string name="notification_channel_high_priority_name">Gadgetbridge-Benachrichtigungen mit hoher Priorität</string>
+    <string name="notification_channel_high_priority_name">Hohe Priorität</string>
     <string name="pref_title_custom_deviceicon">Gerätespezifisches Benachrichtigungssymbol anzeigen</string>
     <string name="pref_summary_custom_deviceicon">Zeige ein gerätespezifisches Android-Benachrichtigungssymbol anstelle des Gadgetbridge-Symbols, wenn eine Verbindung besteht</string>
     <string name="hr_appname_wellness">Wellness</string>
@@ -1063,7 +1063,7 @@
     <string name="activity_type_soccer">Fußball</string>
     <string name="activity_filter_to_placeholder">Heute</string>
     <string name="activity_filter_from_placeholder">Vergangenheit</string>
-    <string name="chart_no_active_data">Keine Aktivitäten gefunden.</string>
+    <string name="chart_no_active_data">Keine Aktivitäten festgestellt.</string>
     <string name="devicetype_sonyswr12">Sony SWR12</string>
     <string name="sonyswr12_settings_title">Sony SWR12 Einstellungen</string>
     <string name="sonyswr12_settings_low_vibration">Geringe Vibration aktiviert</string>
@@ -1111,7 +1111,7 @@
     <string name="pref_title_middle_button_function_short">Mittlere Taste kurz</string>
     <string name="pref_title_upper_button_function_short">Obere Taste kurz</string>
     <string name="activity_prefs_step_length_cm">Schrittlänge in cm</string>
-    <string name="qhybrid_calibration_align_hint">Zeiger auf 12:00 ausrichten</string>
+    <string name="qhybrid_calibration_align_hint">Verwende die Tasten unten, um die Uhrzeiger auf 12:00 Uhr auszurichten.</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
     <string name="charts_min_max_heartrate_popup">Niedrigste Herzfrequenz: %1$d
 \nHöchste Herzfrequenz: %2$d
@@ -1192,4 +1192,76 @@
 \nHinweis: Die .res Datei muss nicht installiert werden, wenn es die gleiche Datei ist, die schon zuvor installiert wurde.
 \n
 \nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="calendar_year">Jahr</string>
+    <string name="calendar_six_months">6 Monate</string>
+    <string name="calendar_month">Monat</string>
+    <string name="calendar_two_weeks">Zwei Wochen</string>
+    <string name="calendar_week">Woche</string>
+    <string name="calendar_day">Tag</string>
+    <string name="battery_level">Akkustand</string>
+    <string name="show_ongoing_activity">Popup für laufende Aktivitäten anzeigen</string>
+    <string name="dialog_hide">Ausblenden</string>
+    <string name="calendar_three_months">3 Monate</string>
+    <string name="fossil_hr_auth_failed">Authentifizierung fehlgeschlagen, eingeschränkte Funktionalität</string>
+    <string name="fossil_hr_unavailable_unauthed">Im unauthentifizierten Modus nicht verfügbar</string>
+    <string name="fossil_hr_synced_activity_data">Synchronisierte Aktivitätsdaten</string>
+    <string name="fossil_hr_commute_processing">Anfrage wird verarbeitet...</string>
+    <string name="qhybrid_title_watchface_apps">Zifferblatt und Apps</string>
+    <string name="fossil_hr_warning_firmware_too_new">Einige Funktionen sind deaktiviert, weil die Firmware der Uhr zu neu ist</string>
+    <string name="qhybrid_title_calibration">Kalibrierung</string>
+    <string name="qhybrid_title_apps_management">App-Verwaltung</string>
+    <string name="qhybrid_title_file_management">Dateiverwaltung</string>
+    <string name="qhybrid_title_background_image">Hintergrundbild</string>
+    <string name="qhybrid_title_apps">Apps</string>
+    <string name="devicetype_um25">UM-25</string>
+    <string name="prefs_sounds_summary">Festlegen, wann das Gerät einen Signalton abgibt</string>
+    <string name="prefs_sounds">Töne</string>
+    <string name="fw_upgrade_notice_amazfitneo">Du bist dabei, die Firmware %s auf dein Amazfit Neo zu installieren.
+\n
+\nDein Band wird nach der Installation der .fw Datei neu starten.
+\n
+\nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="menuitem_temperature">Temperatur</string>
+    <string name="menuitem_widgets">Widgets</string>
+    <string name="menuitem_events">Ereignisse</string>
+    <string name="devicetype_miband6">Mi Band 6</string>
+    <string name="fw_upgrade_notice_miband6">Du bist dabei, die Firmware %s auf dein Mi Band 6 zu installieren.
+\n
+\nBitte stelle sicher, dass du die .fw Datei und die .res Datei installierst. Dein Band wird nach der Installation der .fw Datei neu gestartet.
+\n
+\nHinweis: Du musst .res nicht installieren, wenn es genau die gleiche ist, wie die zuvor installierte.
+\n
+\nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="fossil_hr_commute_actions_explanation">Die hier konfigurierten Aktionen werden in der Commute-App auf deiner Uhr angezeigt. Lies das Wiki, um Informationen zum Umgang mit den durch diese Aktionen erzeugten Vorgaben zu erhalten.</string>
+    <string name="kind_agps_bundle">AGPS-Bundle</string>
+    <string name="qhybrid_calibration_100_steps">100 Schritte</string>
+    <string name="qhybrid_calibration_10_steps">10 Schritte</string>
+    <string name="qhybrid_calibration_1_step">1 Schritt</string>
+    <string name="qhybrid_calibration_clockwise">Im Uhrzeigersinn</string>
+    <string name="qhybrid_calibration_counterclockwise">Gegen den Uhrzeigersinn</string>
+    <string name="fossil_hr_new_action">Neue Aktion</string>
+    <string name="fossil_hr_new_action_cancel">abbrechen</string>
+    <string name="fossil_hr_edit_action">Aktion bearbeiten</string>
+    <string name="fossil_hr_edit_action_delete">löschen</string>
+    <string name="pref_summary_canned_messages_dismisscall">Abgewiesene Anrufe von der Uhr mit einer SMS-Nachricht beantworten</string>
+    <string name="pref_summary_canned_messages_set">Sende die unten konfigurierten Nachrichten an dein Gerät</string>
+    <string name="qhybrid_summary_calibration">Kalibrieren der Uhrzeiger</string>
+    <string name="qhybrid_summary_file_management">Hochladen und Herunterladen von Dateien</string>
+    <string name="pref_summary_physical_buttons">Konfiguriere die Funktionalität der physischen Tasten an der Uhr</string>
+    <string name="pref_title_physical_buttons">Physische Tasten</string>
+    <string name="watchface_install_info">Du bist dabei, das folgende Zifferblatt zu installieren:
+\n
+\n%1$s
+\nVersion %2$s von %3$s
+\n</string>
+    <string name="qhybrid_watchface_configuration_old_firmware">Zifferblattkonfiguration für Uhren mit Firmware-Version DN1.0.2.19r und niedriger</string>
+    <string name="qhybrid_title_watchface">Zifferblattkonfiguration</string>
+    <string name="qhybrid_pref_title_external_intents">Gefährliche externe Eingriffe zulassen</string>
+    <string name="qhybrid_pref_summary_external_intents">Aktivieren, um anderen Android-Apps das Hochladen/Überschreiben von Dateien zu erlauben</string>
+    <string name="pref_summary_developer_settings">Von Entwicklern verwendete Einstellungen und Funktionen</string>
+    <string name="pref_title_developer_settings">Entwicklereinstellungen</string>
+    <string name="qhybrid_pref_summary_actions">Aktionen für die Commute-App</string>
+    <string name="qhybrid_pref_title_actions">Aktionen</string>
+    <string name="notification_channel_low_battery_name">Geringer Akkustand</string>
+    <string name="notification_channel_transfer_name">Datentransfer</string>
 </resources>

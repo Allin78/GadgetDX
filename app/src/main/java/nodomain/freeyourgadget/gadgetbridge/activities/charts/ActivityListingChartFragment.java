@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -64,6 +65,19 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
         ListView stepsList = rootView.findViewById(R.id.itemListView);
         stepListAdapter = new ActivityListingAdapter(getContext());
         stepsList.setAdapter(stepListAdapter);
+
+        stepsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ActivitySession item = stepListAdapter.getItem(i);
+                if (item.getSessionType() != ActivitySession.SESSION_SUMMARY) {
+                    int tsFrom = (int) (item.getStartTime().getTime() / 1000);
+                    int tsTo = (int) (item.getEndTime().getTime() / 1000);
+                    showDetail(tsFrom, tsTo, item, getChartsHost().getDevice());
+                }
+            }
+        });
+
         stepsDateView = rootView.findViewById(R.id.stepsDateView);
         FloatingActionButton fab;
         fab = rootView.findViewById(R.id.fab);
@@ -124,6 +138,14 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
     @Override
     protected void updateChartsnUIThread(ChartsData chartsData) {
         MyChartsData mcd = (MyChartsData) chartsData;
+
+        if (mcd == null) {
+            return;
+        }
+        if (mcd.getStepSessions() == null) {
+            return;
+        }
+        
         if (mcd.getStepSessions().toArray().length == 0) {
             getChartsHost().enableSwipeRefresh(true); //enable pull to refresh, might be needed
         } else {
@@ -169,7 +191,6 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
         String activityName = stepListAdapter.getActivityName(ongoingSession);
         int icon = stepListAdapter.getIcon(ongoingSession);
 
-
         String text = String.format("%s:\u00A0%s, %s:\u00A0%s, %s:\u00A0%s, %s:\u00A0%s", activityName, durationLabel, getString(R.string.heart_rate), hrLabel, getString(R.string.steps), stepLabel, getString(R.string.distance), distanceLabel);
 
         final Snackbar snackbar = Snackbar.make(rootView, text, 1000 * 8);
@@ -181,7 +202,6 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
                     @Override
                     public void onClick(View view) {
                         snackbar.dismiss();
-
                     }
                 }
         );
@@ -189,11 +209,15 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
     }
 
     private void showDashboard(int date, GBDevice device) {
-
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        ActivityListingDashboard editNameDialogFragment = ActivityListingDashboard.newInstance(date, device);
-        editNameDialogFragment.show(fm, "activity_list_total_dashboard");
+        ActivityListingDashboard listingDashboardFragment = ActivityListingDashboard.newInstance(date, device);
+        listingDashboardFragment.show(fm, "activity_list_total_dashboard");
+    }
 
+    private void showDetail(int tsFrom, int tsTo, ActivitySession item, GBDevice device) {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        ActivityListingDetail listingDetailFragment = ActivityListingDetail.newInstance(tsFrom, tsTo, item, device);
+        listingDetailFragment.show(fm, "activity_list_detail");
     }
 
     private static class MyChartsData extends ChartsData {
@@ -203,7 +227,6 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
         MyChartsData(List<ActivitySession> stepSessions, ActivitySession ongoingSession) {
             this.stepSessions = stepSessions;
             this.ongoingSession = ongoingSession;
-
         }
 
         public List<ActivitySession> getStepSessions() {
@@ -213,8 +236,5 @@ public class ActivityListingChartFragment extends AbstractChartFragment {
         public ActivitySession getOngoingSession() {
             return this.ongoingSession;
         }
-
     }
-
-
 }

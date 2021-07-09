@@ -61,6 +61,8 @@ public enum DeviceType {
     AMAZFITGTR2E(34, R.drawable.ic_device_zetime, R.drawable.ic_device_zetime_disabled, R.string.devicetype_amazfit_gtr2e),
     AMAZFITGTS2E(35, R.drawable.ic_device_amazfit_bip, R.drawable.ic_device_amazfit_bip_disabled,R.string .devicetype_amazfit_gts2e),
     AMAZFITX(36, R.drawable.ic_device_miband2, R.drawable.ic_device_miband2_disabled, R.string.devicetype_amazfit_x),
+    MIBAND6(37, R.drawable.ic_device_miband2, R.drawable.ic_device_miband2_disabled, R.string.devicetype_miband6),
+    AMAZFITTREXPRO(38, R.drawable.ic_device_zetime, R.drawable.ic_device_zetime_disabled, R.string.devicetype_amazfit_trex_pro),
     HPLUS(40, R.drawable.ic_device_hplus, R.drawable.ic_device_hplus_disabled, R.string.devicetype_hplus),
     MAKIBESF68(41, R.drawable.ic_device_hplus, R.drawable.ic_device_hplus_disabled, R.string.devicetype_makibes_f68),
     EXRIZUK8(42, R.drawable.ic_device_hplus, R.drawable.ic_device_hplus_disabled, R.string.devicetype_exrizu_k8),
@@ -95,6 +97,8 @@ public enum DeviceType {
     SONY_SWR12(310, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_sonyswr12),
     LIVEVIEW(320, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_liveview),
     WASPOS(330, R.drawable.ic_device_pebble, R.drawable.ic_device_pebble_disabled, R.string.devicetype_waspos),
+    UM25(350, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_um25),
+    DOMYOS_T540(400, R.drawable.ic_device_lovetoy, R.drawable.ic_device_lovetoy_disabled, R.string.devicetype_domyos_t540),
     TEST(1000, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_test);
 
     private final int key;
