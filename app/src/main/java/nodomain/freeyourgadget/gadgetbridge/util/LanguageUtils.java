@@ -53,6 +53,12 @@ public class LanguageUtils {
             put('Ä',"Ae"); put('Ö',"Oe"); put('Ü',"Üe");
             put('ß',"ss"); put('ẞ',"SS");
 
+            // French characters
+            put('à',"a"); put('â',"a");
+            put('é',"e"); put('è',"e"); put('ê',"e"); put('ë',"e");
+            put('ù',"u");
+            put('ÿ', "y"); put('ç',"c");
+
             // Russian chars
             put('а', "a"); put('б', "b"); put('в', "v");  put('г', "g"); put('д', "d"); put('е', "e"); put('ё', "jo"); put('ж', "zh");
             put('з', "z"); put('и', "i"); put('й', "jj"); put('к', "k"); put('л', "l"); put('м', "m"); put('н', "n");  put('о', "o");
