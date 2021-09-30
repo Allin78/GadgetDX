@@ -30,7 +30,7 @@ public class NothingIOThread extends BtClassicIoThread {
     }
 
     public NothingIOThread(GBDevice device, Context context, NothingProtocol deviceProtocol, Ear1Support ear1Support, BluetoothAdapter bluetoothAdapter) {
-        super(device,context,deviceProtocol,ear1Support,bluetoothAdapter);
+        super(device, context, deviceProtocol, ear1Support, bluetoothAdapter);
         mNothingProtocol = deviceProtocol;
     }
 
@@ -38,7 +38,7 @@ public class NothingIOThread extends BtClassicIoThread {
     protected byte[] parseIncoming(InputStream inStream) throws IOException {
         byte[] buffer = new byte[1048576]; //HUGE read
         int bytes = inStream.read(buffer);
-        LOG.debug("read " + bytes + " bytes. " + hexdump(buffer,0,bytes));
+        LOG.debug("read " + bytes + " bytes. " + hexdump(buffer, 0, bytes));
         return Arrays.copyOf(buffer, bytes);
     }
 

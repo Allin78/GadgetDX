@@ -42,14 +42,14 @@ public class NothingProtocol extends GBDeviceProtocol {
 
 
     //incoming
-    final short battery_status = (short) 0xe001;
-    final short battery_status2 = (short) 0xc007;
+    private static final short battery_status = (short) 0xe001;
+    private static final short battery_status2 = (short) 0xc007;
 
-    final short unk_maybe_ack = (short) 0xf002;
-    final short unk_close_case = (short) 0xe002; //sent twice when the case is closed with earphones in
+    private static final short unk_maybe_ack = (short) 0xf002;
+    private static final short unk_close_case = (short) 0xe002; //sent twice when the case is closed with earphones in
 
     //outgoing
-    final short in_ear_detection = (short) 0xf004;
+    private static final short in_ear_detection = (short) 0xf004;
 
     @Override
     public GBDeviceEvent[] decodeResponse(byte[] responseData) {
@@ -58,24 +58,24 @@ public class NothingProtocol extends GBDeviceProtocol {
 
         byte sof = incoming.get();
         if (sof != 0x55) {
-            LOG.error("Error in message, wrong start of frame: "+ hexdump(responseData));
+            LOG.error("Error in message, wrong start of frame: " + hexdump(responseData));
             return null;
         }
 
         short control = incoming.getShort();
         if (!isSupportedDevice(control)) {
-            LOG.error("Unsupported device specified in message: "+ hexdump(responseData));
+            LOG.error("Unsupported device specified in message: " + hexdump(responseData));
             return null;
         }
         if (!isOk(control)) {
-            LOG.error("Message is not ok: "+ hexdump(responseData));
+            LOG.error("Message is not ok: " + hexdump(responseData));
             return null;
         }
         short command = incoming.getShort();
         short length = incoming.getShort();
-        byte fsn = incoming.get();
+        incoming.get();
 
-        byte[] payload = Arrays.copyOfRange(responseData,incoming.position(), incoming.position()+length);
+        byte[] payload = Arrays.copyOfRange(responseData, incoming.position(), incoming.position() + length);
 
 
         switch (getRequestCommand(command)) {
@@ -91,7 +91,7 @@ public class NothingProtocol extends GBDeviceProtocol {
                 break;
 
             default:
-                LOG.debug("Incoming message - control:" + control +" requestCommand: " + (getRequestCommand(command) & 0xffff) + "length: " + length + " dump: " + hexdump(responseData));
+                LOG.debug("Incoming message - control:" + control + " requestCommand: " + (getRequestCommand(command) & 0xffff) + "length: " + length + " dump: " + hexdump(responseData));
 
         }
         return null;
@@ -103,7 +103,7 @@ public class NothingProtocol extends GBDeviceProtocol {
 
     private byte[] encodeMessage(short control, short command, byte[] payload) {
 
-        ByteBuffer msgBuf = ByteBuffer.allocate( 8 + payload.length);
+        ByteBuffer msgBuf = ByteBuffer.allocate(8 + payload.length);
         msgBuf.order(ByteOrder.LITTLE_ENDIAN);
         msgBuf.put((byte) 0x55); //sof
         msgBuf.putShort(control);
@@ -114,10 +114,10 @@ public class NothingProtocol extends GBDeviceProtocol {
 
         if (isCrcNeeded(control)) {
             msgBuf.position(0);
-            ByteBuffer crcBuf = ByteBuffer.allocate(msgBuf.capacity()+2);
+            ByteBuffer crcBuf = ByteBuffer.allocate(msgBuf.capacity() + 2);
             crcBuf.order(ByteOrder.LITTLE_ENDIAN);
             crcBuf.put(msgBuf);
-            crcBuf.putShort((short)getCRC16ansi(msgBuf.array()));
+            crcBuf.putShort((short) getCRC16ansi(msgBuf.array()));
             return crcBuf.array();
         }
 
@@ -125,11 +125,11 @@ public class NothingProtocol extends GBDeviceProtocol {
     }
 
     byte[] encodeBatteryStatusReq() {
-        return encodeMessage((short) 0x120, (short) 0xc007, new byte[]{} );
+        return encodeMessage((short) 0x120, (short) 0xc007, new byte[]{});
     }
 
     byte[] encodeAudioMode(String desired) {
-        byte[] payload = new byte[] { 0x01, 0x05, 0x00};
+        byte[] payload = new byte[]{0x01, 0x05, 0x00};
 
         switch (desired) {
             case "anc":
@@ -143,10 +143,11 @@ public class NothingProtocol extends GBDeviceProtocol {
         }
         return encodeMessage((short) 0x120, (short) 0xf00f, payload);
     }
+
     @Override
     public byte[] encodeFindDevice(boolean start) {
         byte payload = (byte) (start ? 0x01 : 0x00);
-        return encodeMessage((short) 0x120, (short) 0xf002, new byte[] {payload} );
+        return encodeMessage((short) 0x120, (short) 0xf002, new byte[]{payload});
     }
 
     @Override
@@ -157,11 +158,11 @@ public class NothingProtocol extends GBDeviceProtocol {
         switch (config) {
             case DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_INEAR:
                 byte enabled = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_INEAR, true) ? 0x01 : 0x00);
-                return encodeMessage((short) 0x120, in_ear_detection, new byte[]{0x01,0x01,enabled});
-                // response: 55 20 01 04 70 00 00 00
+                return encodeMessage((short) 0x120, in_ear_detection, new byte[]{0x01, 0x01, enabled});
+            // response: 55 20 01 04 70 00 00 00
             case DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE:
                 return encodeAudioMode(prefs.getString(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE, "off"));
-                // response: 55 20 01 0F 70 00 00 00
+            // response: 55 20 01 0F 70 00 00 00
 
             default:
                 LOG.debug("CONFIG: " + config);
@@ -198,15 +199,15 @@ public class NothingProtocol extends GBDeviceProtocol {
         boolean batteryCharging = false;
 
         int numBatteries = payload[0];
-        for (int i = 0; i<numBatteries; i++) {
-            evBattery.level += (short) ((payload[2+2*i] & MASK_BATTERY) / numBatteries) ;
+        for (int i = 0; i < numBatteries; i++) {
+            evBattery.level += (short) ((payload[2 + 2 * i] & MASK_BATTERY) / numBatteries);
             if (!batteryCharging)
-                batteryCharging = ((payload[2+2*i]) & MASK_BATTERY_CHARGING) == 1;
+                batteryCharging = ((payload[2 + 2 * i]) & MASK_BATTERY_CHARGING) == 1;
             //LOG.debug("single battery level: " + hexdump(payload, 2+2*i,1) +"-"+ ((payload[2+2*i] & 0xff))+":" + evBattery.level);
         }
 
         evBattery.state = BatteryState.UNKNOWN;
-        evBattery.state = batteryCharging? BatteryState.BATTERY_CHARGING : evBattery.state;
+        evBattery.state = batteryCharging ? BatteryState.BATTERY_CHARGING : evBattery.state;
 
         return new GBDeviceEvent[]{evBattery};
     }
