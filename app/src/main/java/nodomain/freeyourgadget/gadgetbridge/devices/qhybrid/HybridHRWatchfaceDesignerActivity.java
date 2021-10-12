@@ -241,13 +241,13 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         }
         else if (v.getId() == R.id.watchface_rotate_left) {
             if (selectedBackgroundImage != null) {
-                selectedBackgroundImage = rotateImage(selectedBackgroundImage, -90);
+                selectedBackgroundImage = BitmapUtil.rotateImage(selectedBackgroundImage, -90);
                 renderWatchfacePreview();
             }
         }
         else if (v.getId() == R.id.watchface_rotate_right) {
             if (selectedBackgroundImage != null) {
-                selectedBackgroundImage = rotateImage(selectedBackgroundImage, 90);
+                selectedBackgroundImage = BitmapUtil.rotateImage(selectedBackgroundImage, 90);
                 renderWatchfacePreview();
             }
         }
@@ -694,11 +694,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         displayImageSize = (int) Math.round(displayMetrics.widthPixels * 0.75);
         scaleFactor = displayImageSize / 240f;
     }
-    private Bitmap rotateImage(Bitmap bitmap, int degree) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate(degree);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-    }
+
     private Bitmap createImageFromURI(Uri imageUri) throws IOException, RuntimeException {
         if (imageUri == null) {
             throw new RuntimeException("No image selected");
