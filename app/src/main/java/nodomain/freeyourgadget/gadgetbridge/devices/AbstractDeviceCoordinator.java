@@ -246,4 +246,9 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     public Class<? extends Activity> getCalibrationActivity() {
         return null;
     }
+
+    @Override
+    public int getBatteryCount() {
+        return 1;
+    }
 }

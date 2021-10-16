@@ -348,4 +348,9 @@ public interface DeviceCoordinator {
      */
     String[] getSupportedLanguageSettings(GBDevice device);
 
+    /**
+     * Indicates how many batteries the device has. 1 is default, 3 is maximum at the moment (as per UI layout)
+     */
+    int getBatteryCount();
+
 }

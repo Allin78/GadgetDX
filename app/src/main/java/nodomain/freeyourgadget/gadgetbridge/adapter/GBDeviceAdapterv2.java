@@ -145,6 +145,8 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         //begin of action row
         //battery
         holder.batteryStatusBox.setVisibility(View.VISIBLE);
+        holder.batteryStatusBox1.setVisibility(View.GONE);
+        holder.batteryStatusBox2.setVisibility(View.GONE);
         short batteryLevel = device.getBatteryLevel();
         float batteryVoltage = device.getBatteryVoltage();
         BatteryState batteryState = device.getBatteryState();
@@ -593,6 +595,12 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         LinearLayout batteryStatusBox;
         TextView batteryStatusLabel;
         ImageView batteryIcon;
+        LinearLayout batteryStatusBox1;
+        TextView batteryStatusLabel1;
+        ImageView batteryIcon1;
+        LinearLayout batteryStatusBox2;
+        TextView batteryStatusLabel2;
+        ImageView batteryIcon2;
         ImageView deviceSpecificSettingsView;
         LinearLayout fetchActivityDataBox;
         ImageView fetchActivityData;
@@ -631,6 +639,15 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
             batteryStatusBox = view.findViewById(R.id.device_battery_status_box);
             batteryStatusLabel = view.findViewById(R.id.battery_status);
             batteryIcon = view.findViewById(R.id.device_battery_status);
+            batteryStatusBox1 = view.findViewById(R.id.device_battery_status_box1);
+            batteryStatusLabel1 = view.findViewById(R.id.battery_status1);
+            batteryIcon1 = view.findViewById(R.id.device_battery_status1);
+            batteryStatusBox2 = view.findViewById(R.id.device_battery_status_box2);
+            batteryStatusLabel2 = view.findViewById(R.id.battery_status2);
+            batteryIcon2 = view.findViewById(R.id.device_battery_status2);
+
+
+
             deviceSpecificSettingsView = view.findViewById(R.id.device_specific_settings);
             fetchActivityDataBox = view.findViewById(R.id.device_action_fetch_activity_box);
             fetchActivityData = view.findViewById(R.id.device_action_fetch_activity);
