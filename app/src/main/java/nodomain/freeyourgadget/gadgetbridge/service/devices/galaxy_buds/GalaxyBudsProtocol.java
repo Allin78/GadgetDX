@@ -19,6 +19,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
@@ -27,30 +28,15 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
     private static final Logger LOG = LoggerFactory.getLogger(GalaxyBudsProtocol.class);
 
     final UUID UUID_DEVICE_CTRL = UUID.fromString("00001102-0000-1000-8000-00805f9b34fd");
-
-    private boolean isFirstExchange = true;
-
-    private static final byte CONTROL_DEVICE_TYPE_TWS_HEADSET = 1;
-
-    private static final int CONTROL_CRC = 0x20;
-
-    private static final byte MASK_RSP_CODE = 0x1f;
-    private static final short MASK_DEVICE_TYPE = 0x0F00;
-
-
-    private static final short MASK_REQUEST_CMD = (short) 0x8000;
+    private static final byte PREAMBLE = (byte) 0xFE;
 
     private static final byte MASK_BATTERY = 0x7f;
     private static final byte MASK_BATTERY_CHARGING = (byte) 0x80;
 
-
     //incoming
-    private static final short battery_status = (short) 0xe001;
-    private static final short battery_status2 = (short) 0xc007;
+    private static final byte battery_status = (byte) 0x60;
+    private static final byte battery_status2 = (byte) 0x61;
     private static final short audio_mode_status = (short) 0xc01e;
-
-    private static final short unk_maybe_ack = (short) 0xf002;
-    private static final short unk_close_case = (short) 0xe002; //sent twice when the case is closed with earphones in
 
     //outgoing
     private static final short find_device = (short) 0xf002;
@@ -60,22 +46,38 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
     @Override
     public GBDeviceEvent[] decodeResponse(byte[] responseData) {
         List<GBDeviceEvent> devEvts = new ArrayList<>();
+        LOG.debug("received data: " + hexdump(responseData));
 
         ByteBuffer incoming = ByteBuffer.wrap(responseData);
         incoming.order(ByteOrder.LITTLE_ENDIAN);
 
         byte sof = incoming.get();
-        if (sof != 0x55) {
+        if (sof != PREAMBLE) {
             LOG.error("Error in message, wrong start of frame: " + hexdump(responseData));
             return null;
         }
+        byte type = incoming.get();
+        byte length = incoming.get();
+        byte message_id = incoming.get();
 
-        return null;
+        byte[] payload = Arrays.copyOfRange(responseData, incoming.position(), incoming.position() + length);
+        LOG.debug("message id: "+ message_id);
+        LOG.debug("payload: "+ hexdump(payload));
+
+        switch (message_id) {
+            case battery_status:
+                devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,2,4)));
+            case battery_status2:
+                devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,2,4)));
+                break;
+            default:
+                LOG.debug("Unhandled: " + hexdump(responseData));
+
+        }
+        return devEvts.toArray(new GBDeviceEvent[devEvts.size()]);
     }
 
-    boolean isCrcNeeded(short control) {
-        return (control & CONTROL_CRC) != 0;
-    }
+
 
     byte[] encodeMessage(short control, short command, byte[] payload) {
 
@@ -88,63 +90,12 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         msgBuf.put((byte) 0x00); //fsn TODO: is this always 0?
         msgBuf.put(payload);
 
-        if (isCrcNeeded(control)) {
-            msgBuf.position(0);
-            ByteBuffer crcBuf = ByteBuffer.allocate(msgBuf.capacity() + 2);
-            crcBuf.order(ByteOrder.LITTLE_ENDIAN);
-            crcBuf.put(msgBuf);
-            crcBuf.putShort((short) getCRC16ansi(msgBuf.array()));
-            return crcBuf.array();
-        }
 
         return msgBuf.array();
     }
 
-    byte[] encodeBatteryStatusReq() {
-        return encodeMessage((short) 0x5120, battery_status2, new byte[]{});
-    }
 
-    byte[] encodeAudioModeStatusReq() {
-        return encodeMessage((short) 0x120, audio_mode_status, new byte[]{});
-    }
 
-    //TODO: unify mapping between bytes and strings in the following two functions
-    private GBDeviceEvent handleAudioModeStatus(byte[] payload) {
-        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
-        SharedPreferences.Editor editor = prefs.edit();
-
-        if (Arrays.equals(payload, new byte[]{0x01, 0x01, 0x00})) {
-            editor.putString(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE, "anc").apply();
-        } else if (Arrays.equals(payload, new byte[]{0x01, 0x03, 0x00})) {
-            editor.putString(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE, "anc-light").apply();
-        } else if (Arrays.equals(payload, new byte[]{0x01, 0x05, 0x00})) {
-            editor.putString(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE, "off").apply();
-        } else if (Arrays.equals(payload, new byte[]{0x01, 0x07, 0x00})) {
-            editor.putString(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE, "transparency").apply();
-        } else {
-            LOG.warn("Unknown audio mode. Payload: " + hexdump(payload));
-        }
-        return null;
-    }
-
-    byte[] encodeAudioMode(String desired) {
-        byte[] payload = new byte[]{0x01, 0x05, 0x00};
-
-        switch (desired) {
-            case "anc":
-                payload[1] = 0x01;
-                break;
-            case "anc-light":
-                payload[1] = 0x03;
-                break;
-            case "transparency":
-                payload[1] = 0x07;
-                break;
-            case "off":
-            default:
-        }
-        return encodeMessage((short) 0x120, audio_mode, payload);
-    }
 
 
     @Override
@@ -155,22 +106,6 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
 
     @Override
     public byte[] encodeSendConfiguration(String config) {
-
-        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
-
-        switch (config) {
-            case DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_INEAR:
-                byte enabled = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_INEAR, true) ? 0x01 : 0x00);
-                return encodeMessage((short) 0x120, in_ear_detection, new byte[]{0x01, 0x01, enabled});
-            // response: 55 20 01 04 70 00 00 00
-            case DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE:
-                return encodeAudioMode(prefs.getString(DeviceSettingsPreferenceConst.PREF_NOTHING_EAR1_AUDIOMODE, "off"));
-            // response: 55 20 01 0F 70 00 00 00
-
-            default:
-                LOG.debug("CONFIG: " + config);
-        }
-
         return super.encodeSendConfiguration(config);
     }
 
@@ -179,12 +114,14 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         // This are earphones, there is no time to set here. However this method gets called soon
         // after connecting, hence we use it to perform some initializations.
         // TODO: Find a way to send more requests during the first connection
-        return encodeAudioModeStatusReq();
+        return new byte[0];
     }
 
     private GBDeviceEvent handleBatteryInfo(byte[] payload) {
-        //LOG.debug("Battery payload: " + hexdump(payload));
-
+        LOG.debug("Battery payload: " + hexdump(payload));
+        LOG.debug("pl: " + payload.length);
+        LOG.debug("p0: " + payload[0]);
+        LOG.debug("p1: " + payload[1]);
         /* payload:
         1st byte is number of batteries, then $number pairs follow:
         {idx, value}
@@ -202,34 +139,19 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         evBattery.level = 0;
         boolean batteryCharging = false;
 
-        int numBatteries = payload[0];
-        for (int i = 0; i < numBatteries; i++) {
-            evBattery.level += (short) ((payload[2 + 2 * i] & MASK_BATTERY) / numBatteries);
-            if (!batteryCharging)
-                batteryCharging = ((payload[2 + 2 * i] & MASK_BATTERY_CHARGING) == MASK_BATTERY_CHARGING);
+        int numBatteries = payload.length;
+        evBattery.level = (short) payload[0];
+        //for (int i = 0; i < numBatteries; i++) {
+          //  evBattery.level = (short) payload[0];
+            //if (!batteryCharging)
+            //    batteryCharging = ((payload[2 + 2 * i] & MASK_BATTERY_CHARGING) == MASK_BATTERY_CHARGING);
             //LOG.debug("single battery level: " + hexdump(payload, 2+2*i,1) +"-"+ ((payload[2+2*i] & 0xff))+":" + evBattery.level);
-        }
+        //}
 
         evBattery.state = BatteryState.UNKNOWN;
-        evBattery.state = batteryCharging ? BatteryState.BATTERY_CHARGING : evBattery.state;
+        //evBattery.state = batteryCharging ? BatteryState.BATTERY_CHARGING : evBattery.state;
 
         return evBattery;
-    }
-
-    private short getRequestCommand(short command) {
-        return (short) (command | MASK_REQUEST_CMD);
-    }
-
-    private boolean isOk(short control) {
-        return (control & MASK_RSP_CODE) == 0;
-    }
-
-    private boolean isSupportedDevice(short control) {
-        return getDeviceType(control) == CONTROL_DEVICE_TYPE_TWS_HEADSET;
-    }
-
-    private byte getDeviceType(short control) {
-        return (byte) ((control & MASK_DEVICE_TYPE) >> 8);
     }
 
     protected GalaxyBudsProtocol(GBDevice device) {
