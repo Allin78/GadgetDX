@@ -9,15 +9,18 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.nothing.Ear1Support;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.nothing.NothingIOThread;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.nothing.NothingProtocol;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.AbstractSerialDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceIoThread;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 
 public class GalaxyBudsDeviceSupport extends AbstractSerialDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(GalaxyBudsDeviceSupport.class);
+
+
+    @Override
+    public void onSendConfiguration(String config) {
+        super.onSendConfiguration(config);
+    }
 
     @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
@@ -55,14 +58,14 @@ public class GalaxyBudsDeviceSupport extends AbstractSerialDeviceSupport {
     }
 
     @Override
-    public boolean connect() {
-        getDeviceIOThread().start();
-        return true;
+    public void onTestNewFunction() {
+        //getDeviceIOThread().write(((NothingProtocol) getDeviceProtocol()).encodeBatteryStatusReq());
     }
 
     @Override
-    public boolean useAutoConnect() {
-        return false;
+    public boolean connect() {
+        getDeviceIOThread().start();
+        return true;
     }
 
     @Override
@@ -70,14 +73,18 @@ public class GalaxyBudsDeviceSupport extends AbstractSerialDeviceSupport {
         return (GalaxyBudsIOThread) super.getDeviceIOThread();
     }
 
-
     @Override
+    public boolean useAutoConnect() {
+        return false;
+    }
+
     protected GBDeviceProtocol createDeviceProtocol() {
         return new GalaxyBudsProtocol(getDevice());
     }
 
     @Override
     protected GBDeviceIoThread createDeviceIOThread() {
-        return new GalaxyBudsIOThread(getDevice(), getContext(), (GalaxyBudsProtocol) getDeviceProtocol(), GalaxyBudsDeviceSupport.this, getBluetoothAdapter());
+        return new GalaxyBudsIOThread(getDevice(), getContext(), (GalaxyBudsProtocol) getDeviceProtocol(),
+                GalaxyBudsDeviceSupport.this, getBluetoothAdapter());
     }
 }

@@ -29,7 +29,8 @@ public class NothingIOThread extends BtClassicIoThread {
         return mNothingProtocol.UUID_DEVICE_CTRL;
     }
 
-    public NothingIOThread(GBDevice device, Context context, NothingProtocol deviceProtocol, Ear1Support ear1Support, BluetoothAdapter bluetoothAdapter) {
+    public NothingIOThread(GBDevice device, Context context, NothingProtocol deviceProtocol,
+                           Ear1Support ear1Support, BluetoothAdapter bluetoothAdapter) {
         super(device, context, deviceProtocol, ear1Support, bluetoothAdapter);
         mNothingProtocol = deviceProtocol;
     }

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -20,18 +21,12 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 public class GalaxyBudsDeviceCoordinator extends AbstractDeviceCoordinator {
 
-    @Override
-    protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
-
-    }
-
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        if(candidate.getName().equals("Galaxy Buds"))
+        if (candidate.getName().startsWith("Galaxy Buds"))
             return DeviceType.GALAXY_BUDS;
         return DeviceType.UNKNOWN;
-
     }
 
     @Override
@@ -117,6 +112,17 @@ public class GalaxyBudsDeviceCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsFindDevice() {
-        return false;
+        return true;
     }
+
+    @Override
+    protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
+
+    }
+
+    @Override
+    public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
+        return null;
+    }
+
 }
