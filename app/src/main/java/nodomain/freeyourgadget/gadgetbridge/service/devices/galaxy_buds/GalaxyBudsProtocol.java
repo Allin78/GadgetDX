@@ -29,6 +29,7 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
 
     final UUID UUID_DEVICE_CTRL = UUID.fromString("00001102-0000-1000-8000-00805f9b34fd");
     private static final byte PREAMBLE = (byte) 0xFE;
+    private boolean isFirstExchange = true;
 
     private static final byte MASK_BATTERY = 0x7f;
     private static final byte MASK_BATTERY_CHARGING = (byte) 0x80;
@@ -48,6 +49,11 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         List<GBDeviceEvent> devEvts = new ArrayList<>();
         LOG.debug("received data: " + hexdump(responseData));
 
+        if (isFirstExchange) {
+            isFirstExchange = false;
+            devEvts.add(new GBDeviceEventVersionInfo()); //TODO: this is a weird hack to make the DBHelper happy. Replace with proper + detection
+        }
+
         ByteBuffer incoming = ByteBuffer.wrap(responseData);
         incoming.order(ByteOrder.LITTLE_ENDIAN);
 
@@ -66,7 +72,8 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
 
         switch (message_id) {
             case battery_status:
-                devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,2,4)));
+                devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,1,3)));
+                break;
             case battery_status2:
                 devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,2,4)));
                 break;
