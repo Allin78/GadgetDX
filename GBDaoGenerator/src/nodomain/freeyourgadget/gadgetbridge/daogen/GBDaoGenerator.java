@@ -613,7 +613,7 @@ public class GBDaoGenerator {
         Property deviceId = batteryLevel.addLongProperty("deviceId").primaryKey().notNull().getProperty();
         batteryLevel.addToOne(device, deviceId);
         batteryLevel.addIntProperty("level").notNull();
-        batteryLevel.addIntProperty("batteryIndex").notNull();
+        batteryLevel.addIntProperty("batteryIndex").notNull().primaryKey();;
         return batteryLevel;
     }
 

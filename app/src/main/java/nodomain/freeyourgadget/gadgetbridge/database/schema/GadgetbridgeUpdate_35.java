@@ -27,9 +27,24 @@ public class GadgetbridgeUpdate_35 implements DBUpdateScript {
     @Override
     public void upgradeSchema(SQLiteDatabase db) {
         if (!DBHelper.existsColumn(BatteryLevelDao.TABLENAME, BatteryLevelDao.Properties.BatteryIndex.columnName, db)) {
-            String ADD_COLUMN_BATTERY_INDEX = "ALTER TABLE " + BatteryLevelDao.TABLENAME + " ADD COLUMN "
-                    + BatteryLevelDao.Properties.BatteryIndex.columnName + " INTEGER NOT NULL DEFAULT 0;";
-            db.execSQL(ADD_COLUMN_BATTERY_INDEX);
+            String MOVE_DATA_TO_TEMP_TABLE = "ALTER TABLE battery_level RENAME TO battery_levels_temp;";
+            db.execSQL(MOVE_DATA_TO_TEMP_TABLE);
+
+            String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS \"BATTERY_LEVEL\" (\"TIMESTAMP\" INTEGER  NOT NULL ," +
+                    "\"DEVICE_ID\" INTEGER  NOT NULL ,\"LEVEL\" INTEGER NOT NULL ,\"BATTERY_INDEX\" INTEGER  NOT NULL ," +
+                    "PRIMARY KEY (\"TIMESTAMP\" ,\"DEVICE_ID\" ,\"BATTERY_INDEX\" ) ON CONFLICT REPLACE) WITHOUT ROWID;";
+            db.execSQL(CREATE_TABLE);
+
+            String MIGATE_DATA = "insert into " + BatteryLevelDao.TABLENAME
+                    + " (" + BatteryLevelDao.Properties.Timestamp.columnName + ","
+                    + BatteryLevelDao.Properties.DeviceId.columnName + ","
+                    + BatteryLevelDao.Properties.BatteryIndex.columnName + ","
+                    + BatteryLevelDao.Properties.Level.columnName + ") "
+                    + " select Timestamp, Device_ID, 0, Level from battery_levels_temp;";
+            db.execSQL(MIGATE_DATA);
+
+            String DROP_TEMP_TABLE = "drop table if exists battery_levels_temp";
+            db.execSQL(DROP_TEMP_TABLE);
         }
     }
 
