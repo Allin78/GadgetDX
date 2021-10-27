@@ -67,8 +67,6 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         byte message_id = incoming.get();
 
         byte[] payload = Arrays.copyOfRange(responseData, incoming.position(), incoming.position() + length);
-        LOG.debug("message id: " + message_id);
-        LOG.debug("payload: " + hexdump(payload));
 
         switch (message_id) {
             case battery_status:
@@ -85,6 +83,7 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
     }
 
 
+
     byte[] encodeMessage(short control, short command, byte[] payload) {
 
         ByteBuffer msgBuf = ByteBuffer.allocate(8 + payload.length);
@@ -99,6 +98,9 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
 
         return msgBuf.array();
     }
+
+
+
 
 
     @Override
@@ -125,6 +127,7 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         LOG.debug("pl: " + payload.length);
         LOG.debug("p0: " + payload[0]);
         LOG.debug("p1: " + payload[1]);
+        
 
         GBDeviceEventBatteryInfo evBattery1 = new GBDeviceEventBatteryInfo();
         evBattery1.batteryIndex = 0;

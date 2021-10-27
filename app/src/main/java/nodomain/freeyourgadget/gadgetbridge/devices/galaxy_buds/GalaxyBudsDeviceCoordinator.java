@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
-import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -32,6 +31,11 @@ public class GalaxyBudsDeviceCoordinator extends AbstractDeviceCoordinator {
     @Override
     public DeviceType getDeviceType() {
         return DeviceType.GALAXY_BUDS;
+    }
+
+    @Override
+    public int getBatteryCount() {
+        return 2;
     }
 
     @Nullable
