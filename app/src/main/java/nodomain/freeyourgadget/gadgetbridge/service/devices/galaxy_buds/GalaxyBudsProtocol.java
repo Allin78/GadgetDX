@@ -67,15 +67,15 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         byte message_id = incoming.get();
 
         byte[] payload = Arrays.copyOfRange(responseData, incoming.position(), incoming.position() + length);
-        LOG.debug("message id: "+ message_id);
-        LOG.debug("payload: "+ hexdump(payload));
+        LOG.debug("message id: " + message_id);
+        LOG.debug("payload: " + hexdump(payload));
 
         switch (message_id) {
             case battery_status:
-                devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,1,3)));
+                devEvts.addAll(Arrays.asList(handleBatteryInfo(Arrays.copyOfRange(payload, 1, 3))));
                 break;
             case battery_status2:
-                devEvts.add(handleBatteryInfo(Arrays.copyOfRange(payload,2,4)));
+                devEvts.addAll(Arrays.asList(handleBatteryInfo(Arrays.copyOfRange(payload, 2, 4))));
                 break;
             default:
                 LOG.debug("Unhandled: " + hexdump(responseData));
@@ -83,7 +83,6 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         }
         return devEvts.toArray(new GBDeviceEvent[devEvts.size()]);
     }
-
 
 
     byte[] encodeMessage(short control, short command, byte[] payload) {
@@ -100,9 +99,6 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
 
         return msgBuf.array();
     }
-
-
-
 
 
     @Override
@@ -124,41 +120,25 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
         return new byte[0];
     }
 
-    private GBDeviceEvent handleBatteryInfo(byte[] payload) {
+    private GBDeviceEvent[] handleBatteryInfo(byte[] payload) {
         LOG.debug("Battery payload: " + hexdump(payload));
         LOG.debug("pl: " + payload.length);
         LOG.debug("p0: " + payload[0]);
         LOG.debug("p1: " + payload[1]);
-        /* payload:
-        1st byte is number of batteries, then $number pairs follow:
-        {idx, value}
 
-        idx is 0x02 for left ear, 0x03 for right ear, 0x04 for case
-        value goes from 0-64 (equivalent of 0-100 in hexadecimal)
+        GBDeviceEventBatteryInfo evBattery1 = new GBDeviceEventBatteryInfo();
+        evBattery1.batteryIndex = 0;
+        evBattery1.level = 0;
+        evBattery1.level = payload[0];
+        evBattery1.state = BatteryState.UNKNOWN;
 
+        GBDeviceEventBatteryInfo evBattery2 = new GBDeviceEventBatteryInfo();
+        evBattery2.batteryIndex = 1;
+        evBattery2.level = 0;
+        evBattery2.level = payload[1];
+        evBattery2.state = BatteryState.UNKNOWN;
 
-        Since Gadgetbridge supports only one battery, we use an average of the levels for the
-        battery level.
-        If one of the batteries is recharging, we consider the battery as recharging.
-         */
-
-        GBDeviceEventBatteryInfo evBattery = new GBDeviceEventBatteryInfo();
-        evBattery.level = 0;
-        boolean batteryCharging = false;
-
-        int numBatteries = payload.length;
-        evBattery.level = (short) payload[0];
-        //for (int i = 0; i < numBatteries; i++) {
-          //  evBattery.level = (short) payload[0];
-            //if (!batteryCharging)
-            //    batteryCharging = ((payload[2 + 2 * i] & MASK_BATTERY_CHARGING) == MASK_BATTERY_CHARGING);
-            //LOG.debug("single battery level: " + hexdump(payload, 2+2*i,1) +"-"+ ((payload[2+2*i] & 0xff))+":" + evBattery.level);
-        //}
-
-        evBattery.state = BatteryState.UNKNOWN;
-        //evBattery.state = batteryCharging ? BatteryState.BATTERY_CHARGING : evBattery.state;
-
-        return evBattery;
+        return new GBDeviceEvent[]{evBattery1, evBattery2};
     }
 
     protected GalaxyBudsProtocol(GBDevice device) {
