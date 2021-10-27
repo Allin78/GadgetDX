@@ -75,10 +75,12 @@ public class GBDevice implements Parcelable {
     private String mFirmwareVersion2;
     private String mModel;
     private State mState = State.NOT_CONNECTED;
-    private short mBatteryLevel = BATTERY_UNKNOWN;
-    private float mBatteryVoltage = BATTERY_UNKNOWN;
+
+    private int[] mBatteryLevel = {BATTERY_UNKNOWN, BATTERY_UNKNOWN, BATTERY_UNKNOWN};
+    private float[] mBatteryVoltage = {BATTERY_UNKNOWN, BATTERY_UNKNOWN, BATTERY_UNKNOWN};
     private short mBatteryThresholdPercent = BATTERY_THRESHOLD_PERCENT;
     private BatteryState mBatteryState;
+
     private short mRssi = RSSI_UNKNOWN;
     private String mBusyTask;
     private List<ItemWithDetails> mDeviceInfos;
@@ -111,7 +113,7 @@ public class GBDevice implements Parcelable {
         mFirmwareVersion2 = in.readString();
         mModel = in.readString();
         mState = State.values()[in.readInt()];
-        mBatteryLevel = (short) in.readInt();
+        mBatteryLevel = in.createIntArray();
         mBatteryThresholdPercent = (short) in.readInt();
         mBatteryState = (BatteryState) in.readSerializable();
         mRssi = (short) in.readInt();
@@ -136,9 +138,11 @@ public class GBDevice implements Parcelable {
         dest.writeString(mFirmwareVersion2);
         dest.writeString(mModel);
         dest.writeInt(mState.ordinal());
-        dest.writeInt(mBatteryLevel);
+
+        dest.writeIntArray(mBatteryLevel);
         dest.writeInt(mBatteryThresholdPercent);
         dest.writeSerializable(mBatteryState);
+
         dest.writeInt(mRssi);
         dest.writeString(mBusyTask);
         dest.writeList(mDeviceInfos);
@@ -471,21 +475,35 @@ public class GBDevice implements Parcelable {
      *
      * @return the battery level in range 0-100, or -1 if unknown
      */
-    public short getBatteryLevel() {
-        return mBatteryLevel;
+    public int getBatteryLevel() {
+        return getBatteryLevel(0);
     }
 
-    public void setBatteryLevel(short batteryLevel) {
+    public int getBatteryLevel(int index) {
+        return mBatteryLevel[index];
+    }
+
+
+    public void setBatteryLevel(int batteryLevel) {
+        setBatteryLevel(batteryLevel, 0);
+    }
+
+    public void setBatteryLevel(int batteryLevel, int index) {
         if ((batteryLevel >= 0 && batteryLevel <= 100) || batteryLevel == BATTERY_UNKNOWN) {
-            mBatteryLevel = batteryLevel;
+            mBatteryLevel[index] = batteryLevel;
         } else {
             LOG.error("Battery level musts be within range 0-100: " + batteryLevel);
         }
     }
 
     public void setBatteryVoltage(float batteryVoltage) {
+        setBatteryVoltage(0);
+    }
+
+
+    public void setBatteryVoltage(float batteryVoltage, int index) {
         if (batteryVoltage >= 0 || batteryVoltage == BATTERY_UNKNOWN) {
-            mBatteryVoltage = batteryVoltage;
+            mBatteryVoltage[index] = batteryVoltage;
         } else {
             LOG.error("Battery voltage must be > 0: " + batteryVoltage);
         }
@@ -497,7 +515,11 @@ public class GBDevice implements Parcelable {
      * @return the battery voltage, or -1 if unknown
      */
     public float getBatteryVoltage() {
-        return mBatteryVoltage;
+        return getBatteryVoltage(0);
+    }
+
+    public float getBatteryVoltage(int index) {
+        return mBatteryVoltage[index];
     }
 
     public BatteryState getBatteryState() {
