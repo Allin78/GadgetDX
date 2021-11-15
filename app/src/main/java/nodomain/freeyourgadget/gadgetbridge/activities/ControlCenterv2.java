@@ -100,12 +100,12 @@ public class ControlCenterv2 extends AppCompatActivity
                     finish();
                     break;
                 case DeviceManager.ACTION_DEVICES_CHANGED:
+                case GBApplication.ACTION_NEW_DATA:
                     refreshPairedDevices();
                     break;
                 case DeviceService.ACTION_REALTIME_SAMPLES:
                     handleRealtimeSample(intent.getSerializableExtra(DeviceService.EXTRA_REALTIME_SAMPLE));
                     break;
-
             }
         }
     };
@@ -210,6 +210,7 @@ public class ControlCenterv2 extends AppCompatActivity
         IntentFilter filterLocal = new IntentFilter();
         filterLocal.addAction(GBApplication.ACTION_LANGUAGE_CHANGE);
         filterLocal.addAction(GBApplication.ACTION_QUIT);
+        filterLocal.addAction(GBApplication.ACTION_NEW_DATA);
         filterLocal.addAction(DeviceManager.ACTION_DEVICES_CHANGED);
         filterLocal.addAction(DeviceService.ACTION_REALTIME_SAMPLES);
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filterLocal);
