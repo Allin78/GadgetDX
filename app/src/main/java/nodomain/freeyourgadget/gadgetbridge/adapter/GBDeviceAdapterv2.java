@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.fragment.app.FragmentActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -68,9 +69,11 @@ import nodomain.freeyourgadget.gadgetbridge.activities.ControlCenterv2;
 import nodomain.freeyourgadget.gadgetbridge.activities.HeartRateDialog;
 import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.VibrationActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.charts.ActivityListingDashboard;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.ChartsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.database.DBAccess;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
@@ -98,10 +101,12 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
     private List<GBDevice> deviceList;
     private int expandedDevicePosition = RecyclerView.NO_POSITION;
     private ViewGroup parent;
+    private HashMap<String, long[]> deviceActivityMap = new HashMap();
 
-    public GBDeviceAdapterv2(Context context, List<GBDevice> deviceList) {
+    public GBDeviceAdapterv2(Context context, List<GBDevice> deviceList, HashMap<String,long[]> deviceMap) {
         this.context = context;
         this.deviceList = deviceList;
+        this.deviceActivityMap = deviceMap;
     }
 
     @NonNull
@@ -115,6 +120,11 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         final GBDevice device = deviceList.get(position);
+        long[] dailyTotals = new long[]{0, 0};
+        if (deviceActivityMap.containsKey(device.getAddress())) {
+            dailyTotals = deviceActivityMap.get(device.getAddress());
+        }
+
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
 
         holder.container.setOnClickListener(new View.OnClickListener() {
@@ -621,8 +631,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
                                                              }
         );
         if (coordinator.supportsActivityDataFetching()) {
-            LOG.debug("fill activity: " + device.getName());
-            setActivityCard(holder, device);
+            setActivityCard(holder, device, dailyTotals);
         }
     }
 
@@ -810,8 +819,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         snackbar.show();
     }
 
-    private void setActivityCard(ViewHolder holder, GBDevice device) {
-        long[] dailyTotals = getSteps(device);
+    private void setActivityCard(ViewHolder holder, GBDevice device, long[] dailyTotals) {
         int steps = (int) dailyTotals[0];
         int sleep = (int) dailyTotals[1];
         ActivityUser activityUser = new ActivityUser();
@@ -871,12 +879,5 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
 
     private String getHM(long value) {
         return DateTimeUtils.formatDurationHoursMinutes(value, TimeUnit.MINUTES);
-    }
-
-    private long[] getSteps(GBDevice device) {
-        Calendar day = GregorianCalendar.getInstance();
-
-        DailyTotals ds = new DailyTotals();
-        return ds.getDailyTotalsForDevice(device, day);
     }
 }
