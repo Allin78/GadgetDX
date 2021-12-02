@@ -19,6 +19,9 @@ package nodomain.freeyourgadget.gadgetbridge.devices.hplus;
 
 import androidx.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
@@ -26,6 +29,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 /**
  * Pseudo Coordinator for the  Lemfo SG2, a sub type of the HPLUS devices
  */
+@AutoService(DeviceCoordinator.class)
 public class SG2Coordinator extends HPlusCoordinator {
 
     @NonNull

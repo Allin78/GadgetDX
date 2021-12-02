@@ -23,13 +23,17 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
+@AutoService(DeviceCoordinator.class)
 public class AmazfitBipSLiteCoordinator extends AmazfitBipSCoordinator {
     private static final Logger LOG = LoggerFactory.getLogger(AmazfitBipSLiteCoordinator.class);
 

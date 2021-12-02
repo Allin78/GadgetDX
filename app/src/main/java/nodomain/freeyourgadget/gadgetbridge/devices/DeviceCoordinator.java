@@ -104,6 +104,13 @@ public interface DeviceCoordinator {
     boolean supports(GBDevice device);
 
     /**
+     * The loading order, for device detection, used by the service loader {@link nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper}.
+     *
+     * @return the loading order, for device detection
+     */
+    int order();
+
+    /**
      * Returns a list of scan filters that shall be used to discover devices supported
      * by this coordinator.
      * @return the list of scan filters, may be empty
@@ -309,7 +316,7 @@ public interface DeviceCoordinator {
     boolean supportsWeather();
 
     /**
-     * Indicates whether the device supports being found by vibrating, 
+     * Indicates whether the device supports being found by vibrating,
      * making some sound or lighting up
      */
     boolean supportsFindDevice();

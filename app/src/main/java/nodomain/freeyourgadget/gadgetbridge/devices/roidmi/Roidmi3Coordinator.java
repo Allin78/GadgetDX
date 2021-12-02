@@ -23,9 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
+
+import com.google.auto.service.AutoService;
+
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
+@AutoService(DeviceCoordinator.class)
 public class Roidmi3Coordinator extends RoidmiCoordinator {
     private static final Logger LOG = LoggerFactory.getLogger(Roidmi3Coordinator.class);
 

@@ -22,12 +22,17 @@ package nodomain.freeyourgadget.gadgetbridge.devices.hplus;
 
 
 import androidx.annotation.NonNull;
+
+import com.google.auto.service.AutoService;
+
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 /**
  * Pseudo Coordinator for the EXRIZU K8, a sub type of the HPLUS devices
  */
+@AutoService(DeviceCoordinator.class)
 public class EXRIZUK8Coordinator extends HPlusCoordinator {
 
     @NonNull

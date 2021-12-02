@@ -18,12 +18,16 @@ package nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.wh1000xm3;
 
 import androidx.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
+@AutoService(DeviceCoordinator.class)
 public class SonyWh1000Xm3Coordinator extends SonyHeadphonesCoordinator {
     @NonNull
     @Override

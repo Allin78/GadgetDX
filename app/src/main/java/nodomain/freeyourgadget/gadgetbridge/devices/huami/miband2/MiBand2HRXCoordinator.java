@@ -26,7 +26,10 @@ import org.slf4j.LoggerFactory;
 
 import androidx.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
@@ -34,6 +37,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
+@AutoService(DeviceCoordinator.class)
 public class MiBand2HRXCoordinator extends HuamiCoordinator {
     private static final Logger LOG = LoggerFactory.getLogger(MiBand2HRXCoordinator.class);
 

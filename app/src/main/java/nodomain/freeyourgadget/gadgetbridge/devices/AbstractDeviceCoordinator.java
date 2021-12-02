@@ -65,6 +65,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
         return getDeviceType().equals(device.getType());
     }
 
+    @Override
+    public int order() {
+        return 0;
+    }
+
     @NonNull
     @Override
     public Collection<? extends ScanFilter> createBLEScanFilters() {

@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
@@ -40,9 +41,12 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.lefun.LefunConstants.
 import static nodomain.freeyourgadget.gadgetbridge.devices.lefun.LefunConstants.MANUFACTURER_NAME;
 import static nodomain.freeyourgadget.gadgetbridge.devices.lefun.LefunConstants.NUM_ALARM_SLOTS;
 
+import com.google.auto.service.AutoService;
+
 /**
  * Device coordinator for Lefun band
  */
+@AutoService(DeviceCoordinator.class)
 public class LefunDeviceCoordinator extends AbstractDeviceCoordinator {
     @Override
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {

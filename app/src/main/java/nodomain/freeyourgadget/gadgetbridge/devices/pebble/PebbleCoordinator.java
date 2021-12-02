@@ -23,6 +23,8 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import com.google.auto.service.AutoService;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -32,6 +34,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
@@ -47,6 +50,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.util.PebbleUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
+@AutoService(DeviceCoordinator.class)
 public class PebbleCoordinator extends AbstractDeviceCoordinator {
     public PebbleCoordinator() {
     }
