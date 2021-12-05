@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.InputType;
 import android.transition.TransitionManager;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,8 +64,10 @@ import org.slf4j.LoggerFactory;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -704,16 +707,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
 
         holder.cardViewActivityCardLayout.setVisibility(coordinator.supportsActivityTracking() ? View.VISIBLE : View.GONE);
         holder.cardViewActivityCardLayout.setMinimumWidth(coordinator.supportsActivityTracking() ? View.VISIBLE : View.GONE);
-        holder.cardViewActivityCardLayout.setOnClickListener(new View.OnClickListener() {
-                                                                 @Override
-                                                                 public void onClick(View v) {
-                                                                     Intent startIntent;
-                                                                     startIntent = new Intent(context, ChartsActivity.class);
-                                                                     startIntent.putExtra(GBDevice.EXTRA_DEVICE, device);
-                                                                     context.startActivity(startIntent);
-                                                                 }
-                                                             }
-        );
+
         if (coordinator.supportsActivityTracking()) {
             setActivityCard(holder, device, dailyTotals);
         }
@@ -891,7 +885,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         snackbar.show();
     }
 
-    private void setActivityCard(ViewHolder holder, GBDevice device, long[] dailyTotals) {
+    private void setActivityCard(ViewHolder holder, final GBDevice device, long[] dailyTotals) {
         int steps = (int) dailyTotals[0];
         int sleep = (int) dailyTotals[1];
         ActivityUser activityUser = new ActivityUser();
@@ -934,13 +928,31 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         holder.cardViewActivityCardLayout.setVisibility(showActivityCard ? View.VISIBLE : View.GONE);
 
         boolean showActivitySteps = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREFS_ACTIVITY_IN_DEVICE_CARD_STEPS, true);
-        holder.TotalStepsChart.setVisibility((showActivitySteps && steps > 0) ? View.VISIBLE : View.GONE);
-
         boolean showActivitySleep = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREFS_ACTIVITY_IN_DEVICE_CARD_SLEEP, true);
-        holder.SleepTimeChart.setVisibility((showActivitySleep && sleep > 0) ? View.VISIBLE : View.GONE);
-
         boolean showActivityDistance = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREFS_ACTIVITY_IN_DEVICE_CARD_DISTANCE, true);
-        holder.TotalDistanceChart.setVisibility((showActivityDistance && steps > 0) ? View.VISIBLE : View.GONE);
+
+        //do the multiple mini-charts for activities in a loop
+        Hashtable<PieChart, Pair<Boolean, Integer>> activitiesStatusMiniCharts = new Hashtable<>();
+        activitiesStatusMiniCharts.put(holder.TotalStepsChart, new Pair<>(showActivitySteps && steps > 0, ChartsActivity.getChartsTabIndex("stepsweek", device, context)));
+        activitiesStatusMiniCharts.put(holder.SleepTimeChart, new Pair<>(showActivitySleep && sleep > 0, ChartsActivity.getChartsTabIndex("sleep", device, context)));
+        activitiesStatusMiniCharts.put(holder.TotalDistanceChart, new Pair<>(showActivityDistance && steps > 0, ChartsActivity.getChartsTabIndex("activity", device, context)));
+
+        for (Map.Entry<PieChart, Pair<Boolean, Integer>> miniCharts : activitiesStatusMiniCharts.entrySet()) {
+            PieChart miniChart = miniCharts.getKey();
+            final Pair<Boolean, Integer> parameters = miniCharts.getValue();
+            miniChart.setVisibility(parameters.first ? View.VISIBLE : View.GONE);
+            miniChart.setOnClickListener(new View.OnClickListener() {
+                                             @Override
+                                             public void onClick(View v) {
+                                                 Intent startIntent;
+                                                 startIntent = new Intent(context, ChartsActivity.class);
+                                                 startIntent.putExtra(GBDevice.EXTRA_DEVICE, device);
+                                                 startIntent.putExtra(ChartsActivity.EXTRA_FRAGMENT_ID, parameters.second);
+                                                 context.startActivity(startIntent);
+                                             }
+                                         }
+            );
+        }
     }
 
     private String getHM(long value) {
