@@ -1,10 +1,15 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.vesc;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.function.BinaryOperator;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
@@ -14,6 +19,12 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.Sony
 public class VescDeviceSupport extends VescBaseDeviceSupport{
     BluetoothGattCharacteristic serialWriteCharacteristic;
 
+    public static final String COMMAND_SET_RPM = "nodomain.freeyourgadget.gadgetbridge.vesc.command.SET_RPM";
+    public static final String COMMAND_SET_CURRENT = "nodomain.freeyourgadget.gadgetbridge.vesc.command.SET_CURRENT";
+    public static final String COMMAND_SET_BREAK_CURRENT = "nodomain.freeyourgadget.gadgetbridge.vesc.command.SET_BREAK_CURRENT";
+    public static final String EXTRA_RPM = "EXTRA_RPM";
+    public static final String EXTRA_CURRENT = "EXTRA_CURRENT";
+
     public VescDeviceSupport(){
         super();
         this.serialWriteCharacteristic = null;
@@ -21,9 +32,41 @@ public class VescDeviceSupport extends VescBaseDeviceSupport{
 
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
+        initBroadcast();
+
         return builder
                 .add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
     }
+
+    private void initBroadcast() {
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getContext());
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(COMMAND_SET_RPM);
+        filter.addAction(COMMAND_SET_CURRENT);
+        filter.addAction(COMMAND_SET_BREAK_CURRENT);
+
+        broadcastManager.registerReceiver(commandReceiver, filter);
+    }
+
+    BroadcastReceiver commandReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(COMMAND_SET_RPM)){
+                VescDeviceSupport.this.setRPM(
+                        intent.getIntExtra(EXTRA_RPM, 0)
+                );
+            }else if(intent.getAction().equals(COMMAND_SET_BREAK_CURRENT)){
+                VescDeviceSupport.this.setBreakCurrent(
+                        intent.getIntExtra(EXTRA_CURRENT, 0)
+                );
+            }else if(intent.getAction().equals(COMMAND_SET_CURRENT)){
+                VescDeviceSupport.this.setCurrent(
+                        intent.getIntExtra(EXTRA_CURRENT, 0)
+                );
+            }
+        }
+    };
 
     public void setCurrent(int currentMillisAmperes){
         buildAndQueryPacket(CommandType.SET_CURRENT, currentMillisAmperes);
