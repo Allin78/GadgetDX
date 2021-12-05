@@ -4,7 +4,8 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
@@ -16,11 +17,13 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.AbstractDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.SonyHeadphonesSupport;
 
 public class VescBaseDeviceSupport extends AbstractBTLEDeviceSupport {
+    private static final Logger LOG = LoggerFactory.getLogger(VescBaseDeviceSupport.class);
 
-    public VescBaseDeviceSupport(Logger logger) {
-        super(logger);
+    public VescBaseDeviceSupport() {
+        super(LOG);
     }
 
     @Override

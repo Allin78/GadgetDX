@@ -5,21 +5,18 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.function.BinaryOperator;
-import java.util.logging.Logger;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.SonyHeadphonesSupport;
 
 public class VescDeviceSupport extends VescBaseDeviceSupport{
     BluetoothGattCharacteristic serialWriteCharacteristic;
-    public VescDeviceSupport(Logger logger) {
-        super(logger);
-    }
 
-    public VescDeviceSupport(Logger logger, BluetoothGattCharacteristic serialWriteCharacteristic){
-        super(logger);
-        this.serialWriteCharacteristic = serialWriteCharacteristic;
+    public VescDeviceSupport(){
+        super();
+        this.serialWriteCharacteristic = null;
     }
 
     @Override
