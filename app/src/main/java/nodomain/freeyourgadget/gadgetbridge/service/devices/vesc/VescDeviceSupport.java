@@ -9,12 +9,13 @@ import android.content.IntentFilter;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.devices.vesc.VescCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.SonyHeadphonesSupport;
 
 public class VescDeviceSupport extends VescBaseDeviceSupport{
     BluetoothGattCharacteristic serialWriteCharacteristic;
@@ -33,6 +34,14 @@ public class VescDeviceSupport extends VescBaseDeviceSupport{
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         initBroadcast();
+
+        DeviceType type = getDevice().getType();
+
+        if(type == DeviceType.VESC_NRF){
+            this.serialWriteCharacteristic = getCharacteristic(UUID.fromString(VescCoordinator.UUID_SERIAL_NRF));
+        }else if(type == DeviceType.VESC_HM10){
+            this.serialWriteCharacteristic = getCharacteristic(UUID.fromString(VescCoordinator.UUID_SERIAL_HM10));
+        }
 
         return builder
                 .add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));

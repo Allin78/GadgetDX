@@ -17,7 +17,10 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 public class VescCoordinator extends AbstractDeviceCoordinator {
-    private final String UUID_NRF_SERIAL = "*-*-*-*";
+    public final static String UUID_SERIAL_NRF = "*-*-*-*";
+    public final static String UUID_SERIAL_HM10 = "*-*-*-*";
+
+
     @Override
     protected void deleteDevice(GBDevice gbDevice, Device device, DaoSession session) throws GBException {
 
@@ -27,8 +30,10 @@ public class VescCoordinator extends AbstractDeviceCoordinator {
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         ParcelUuid[] uuids = candidate.getServiceUuids();
         for(ParcelUuid uuid : uuids){
-            if(uuid.getUuid().toString().equals(UUID_NRF_SERIAL)){
-                return DeviceType.VESC;
+            if(uuid.getUuid().toString().equals(UUID_SERIAL_NRF)){
+                return DeviceType.VESC_NRF;
+            }else if(uuid.getUuid().toString().equals(UUID_SERIAL_HM10)){
+                return DeviceType.VESC_HM10;
             }
         }
         return DeviceType.UNKNOWN;
@@ -36,7 +41,7 @@ public class VescCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public DeviceType getDeviceType() {
-        return DeviceType.VESC;
+        return DeviceType.VESC_NRF; // TODO: this limits this coordinator to NRF serial service
     }
 
     @Override
