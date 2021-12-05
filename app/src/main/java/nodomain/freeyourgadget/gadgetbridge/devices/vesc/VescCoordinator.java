@@ -91,12 +91,12 @@ public class VescCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsAppsManagement() {
-        return false;
+        return true;
     }
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {
-        return null;
+        return VescControlActivity.class;
     }
 
     @Override
