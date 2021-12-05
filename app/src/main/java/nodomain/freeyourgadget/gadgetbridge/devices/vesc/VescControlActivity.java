@@ -62,7 +62,7 @@ public class VescControlActivity extends AbstractGBActivity {
 
         logger.debug("volume " + (keyCode == 25 ? "down" : "up") + (isPressed ? " pressed" : " released"));
         if(!isPressed){
-            setRPM(0);
+            setCurrent(0);
             return true;
         }
         if(keyCode == 24){
@@ -101,6 +101,10 @@ public class VescControlActivity extends AbstractGBActivity {
                     @Override
                     public void afterTextChanged(Editable s) {
                         String text = s.toString();
+                        if(text.isEmpty()){
+                            currentRPM = 0;
+                            return;
+                        }
                         VescControlActivity.this.currentRPM = Integer.parseInt(text);
                     }
                 });
@@ -120,6 +124,10 @@ public class VescControlActivity extends AbstractGBActivity {
                     @Override
                     public void afterTextChanged(Editable s) {
                         String text = s.toString();
+                        if(text.isEmpty()){
+                            currentBreakCurrentMa = 0;
+                            return;
+                        }
                         VescControlActivity.this.currentBreakCurrentMa = Integer.parseInt(text) * 1000;
                     }
                 });

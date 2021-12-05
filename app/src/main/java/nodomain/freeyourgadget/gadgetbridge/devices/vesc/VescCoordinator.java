@@ -5,6 +5,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.ParcelUuid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
@@ -17,8 +20,11 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 public class VescCoordinator extends AbstractDeviceCoordinator {
-    public final static String UUID_SERIAL_NRF = "*-*-*-*";
-    public final static String UUID_SERIAL_HM10 = "*-*-*-*";
+    public final static String UUID_SERVICE_SERIAL_HM10 = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    public final static String UUID_CHARACTERISTIC_SERIAL_TX_HM10 = "0000ffe1-0000-1000-8000-00805f9b34fb";
+
+    public final static String UUID_SERVICE_SERIAL_NRF = "0000ffe0-0000-1000-8000-00805f9b34fb";
+    public final static String UUID_CHARACTERISTIC_SERIAL_TX_NRF = "0000ffe0-0000-1000-8000-00805f9b34fb";
 
 
     @Override
@@ -29,10 +35,14 @@ public class VescCoordinator extends AbstractDeviceCoordinator {
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         ParcelUuid[] uuids = candidate.getServiceUuids();
+        Logger logger = LoggerFactory.getLogger(getClass());
+        for(ParcelUuid uuid: uuids){
+            logger.debug("service: {}", uuid.toString());
+        }
         for(ParcelUuid uuid : uuids){
-            if(uuid.getUuid().toString().equals(UUID_SERIAL_NRF)){
+            if(uuid.getUuid().toString().equals(UUID_SERVICE_SERIAL_NRF)){
                 return DeviceType.VESC_NRF;
-            }else if(uuid.getUuid().toString().equals(UUID_SERIAL_HM10)){
+            }else if(uuid.getUuid().toString().equals(UUID_SERVICE_SERIAL_HM10)){
                 return DeviceType.VESC_HM10;
             }
         }
@@ -41,7 +51,7 @@ public class VescCoordinator extends AbstractDeviceCoordinator {
 
     @Override
     public DeviceType getDeviceType() {
-        return DeviceType.VESC_NRF; // TODO: this limits this coordinator to NRF serial service
+        return DeviceType.VESC_HM10; // TODO: this limits this coordinator to NRF serial service
     }
 
     @Override
@@ -52,6 +62,11 @@ public class VescCoordinator extends AbstractDeviceCoordinator {
     @Override
     public boolean supportsActivityDataFetching() {
         return false;
+    }
+
+    @Override
+    public int getBondingStyle() {
+        return BONDING_STYLE_NONE;
     }
 
     @Override

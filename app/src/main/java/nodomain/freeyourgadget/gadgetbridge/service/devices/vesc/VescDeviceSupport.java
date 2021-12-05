@@ -5,13 +5,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.vesc.VescCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
@@ -26,25 +31,38 @@ public class VescDeviceSupport extends VescBaseDeviceSupport{
     public static final String EXTRA_RPM = "EXTRA_RPM";
     public static final String EXTRA_CURRENT = "EXTRA_CURRENT";
 
-    public VescDeviceSupport(){
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    private DeviceType deviceType;
+
+    public VescDeviceSupport(DeviceType type){
         super();
-        this.serialWriteCharacteristic = null;
+        logger.debug("VescDeviceSupport() {}", type);
+
+        deviceType = type;
+
+        if(type == DeviceType.VESC_NRF){
+            addSupportedService(UUID.fromString(VescCoordinator.UUID_SERVICE_SERIAL_NRF));
+        }else if(type == DeviceType.VESC_HM10){
+            addSupportedService(UUID.fromString(VescCoordinator.UUID_SERVICE_SERIAL_HM10));
+        }
     }
 
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
+        logger.debug("initializing device");
+
+        builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
+
         initBroadcast();
 
-        DeviceType type = getDevice().getType();
-
-        if(type == DeviceType.VESC_NRF){
-            this.serialWriteCharacteristic = getCharacteristic(UUID.fromString(VescCoordinator.UUID_SERIAL_NRF));
-        }else if(type == DeviceType.VESC_HM10){
-            this.serialWriteCharacteristic = getCharacteristic(UUID.fromString(VescCoordinator.UUID_SERIAL_HM10));
+        if(deviceType == DeviceType.VESC_NRF){
+            this.serialWriteCharacteristic = getCharacteristic(UUID.fromString(VescCoordinator.UUID_CHARACTERISTIC_SERIAL_TX_NRF));
+        }else if(deviceType == DeviceType.VESC_HM10){
+            this.serialWriteCharacteristic = getCharacteristic(UUID.fromString(VescCoordinator.UUID_CHARACTERISTIC_SERIAL_TX_HM10));
         }
 
-        return builder
-                .add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
+        return builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
     }
 
     private void initBroadcast() {
@@ -129,7 +147,7 @@ public class VescDeviceSupport extends VescBaseDeviceSupport{
 
     private byte[] buildPacket(byte[] contents){
         int dataLength = contents.length;
-        ByteBuffer buffer = ByteBuffer.allocate(dataLength + dataLength < 256 ? 3: 4);
+        ByteBuffer buffer = ByteBuffer.allocate(dataLength + (dataLength < 256 ? 5 : 6));
         if(dataLength < 256){
             buffer.put((byte)0x02);
             buffer.put((byte)dataLength);

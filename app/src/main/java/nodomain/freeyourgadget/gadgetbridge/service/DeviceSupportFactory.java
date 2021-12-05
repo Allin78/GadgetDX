@@ -374,8 +374,9 @@ public class DeviceSupportFactory {
                     case SONY_WH_1000XM3:
                         deviceSupport = new ServiceDeviceSupport(new SonyHeadphonesSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
-                    case VESC:
-                        deviceSupport = new ServiceDeviceSupport(new VescDeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                    case VESC_NRF:
+                    case VESC_HM10:
+                        deviceSupport = new ServiceDeviceSupport(new VescDeviceSupport(gbDevice.getType()), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
                 }
                 if (deviceSupport != null) {

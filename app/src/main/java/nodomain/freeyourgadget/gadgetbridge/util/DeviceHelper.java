@@ -110,6 +110,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.smaq2oss.SMAQ2OSSCoordinator
 import nodomain.freeyourgadget.gadgetbridge.devices.sonyswr12.SonySWR12DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.tlw64.TLW64Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.um25.Coordinator.UM25Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.vesc.VescCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.vibratissimo.VibratissimoCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.waspos.WaspOSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.watch9.Watch9DeviceCoordinator;
@@ -315,6 +316,7 @@ public class DeviceHelper {
         result.add(new GalaxyBudsDeviceCoordinator());
 	    result.add(new GalaxyBudsLiveDeviceCoordinator());
         result.add(new SonyWh1000Xm3Coordinator());
+        result.add(new VescCoordinator());
 
         return result;
     }

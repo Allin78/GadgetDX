@@ -26,6 +26,7 @@ public class VescBaseDeviceSupport extends AbstractBTLEDeviceSupport {
         super(LOG);
     }
 
+
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
 
@@ -173,26 +174,6 @@ public class VescBaseDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onSendWeather(WeatherSpec weatherSpec) {
-
-    }
-
-    @Override
-    public void onSetFmFrequency(float frequency) {
-
-    }
-
-    @Override
-    public void onSetLedColor(int color) {
-
-    }
-
-    @Override
-    public boolean connect() {
-        return false;
-    }
-
-    @Override
-    public void dispose() {
 
     }
 
