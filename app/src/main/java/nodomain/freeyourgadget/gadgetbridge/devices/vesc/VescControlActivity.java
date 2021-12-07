@@ -16,9 +16,11 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.vesc.VescDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class VescControlActivity extends AbstractGBActivity {
     private static final String TAG = "VescControlActivity";
@@ -30,6 +32,15 @@ public class VescControlActivity extends AbstractGBActivity {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    EditText rpmEditText, breakCurrentEditText;
+
+    private final int DELAY_SAVE = 1000;
+
+    Prefs preferences;
+
+    final String PREFS_KEY_LAST_RPM = "VESC_LAST_RPM";
+    final String PREFS_KEY_LAST_BREAK_CURRENT = "VESC_LAST_BREAK_CURRENT";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +48,16 @@ public class VescControlActivity extends AbstractGBActivity {
 
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
 
+        preferences = GBApplication.getPrefs();
+
         initViews();
+
+        restoreValues();
+    }
+
+    private void restoreValues(){
+        rpmEditText.setText(preferences.getInt(PREFS_KEY_LAST_RPM, 0));
+        breakCurrentEditText.setText(preferences.getInt(PREFS_KEY_LAST_BREAK_CURRENT, 0));
     }
 
     @Override
@@ -46,104 +66,124 @@ public class VescControlActivity extends AbstractGBActivity {
         setCurrent(0);
     }
 
-    private boolean handleKeyPress(int keyCode, boolean isPressed){
-        if(!volumeKeysControl){
+    private boolean handleKeyPress(int keyCode, boolean isPressed) {
+        if (!volumeKeysControl) {
             return false;
         }
 
-        if(keyCode != 24 && keyCode != 25){
+        if (keyCode != 24 && keyCode != 25) {
             return false;
         }
 
-        if(volumeKeyPressed == isPressed){
+        if (volumeKeyPressed == isPressed) {
             return true;
         }
         volumeKeyPressed = isPressed;
 
         logger.debug("volume " + (keyCode == 25 ? "down" : "up") + (isPressed ? " pressed" : " released"));
-        if(!isPressed){
+        if (!isPressed) {
             setCurrent(0);
             return true;
         }
-        if(keyCode == 24){
+        if (keyCode == 24) {
             setRPM(currentRPM);
-        }else{
+        } else {
             setBreakCurrent(VescControlActivity.this.currentBreakCurrentMa);
         }
 
         return true;
     }
 
-    private void initViews(){
-        ((CheckBox)findViewById(R.id.vesc_control_checkbox_volume_keys))
+    Runnable rpmSaveRunnable = new Runnable() {
+        @Override
+        public void run() {
+            preferences.getPreferences().edit().putInt(PREFS_KEY_LAST_RPM, currentRPM).apply();
+        }
+    };
+
+    Runnable breakCurrentSaveRunnable = new Runnable() {
+        @Override
+        public void run() {
+            preferences.getPreferences().edit().putInt(PREFS_KEY_LAST_BREAK_CURRENT, currentBreakCurrentMa).apply();
+        }
+    };
+
+    private void initViews() {
+        ((CheckBox) findViewById(R.id.vesc_control_checkbox_volume_keys))
                 .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                         VescControlActivity.this.volumeKeysControl = isChecked;
-                        if(!isChecked){
+                        if (!isChecked) {
                             setRPM(0);
                         }
                     }
                 });
 
-        ((EditText) findViewById(R.id.vesc_control_input_rpm))
-                .addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        rpmEditText = ((EditText) findViewById(R.id.vesc_control_input_rpm));
+        rpmEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    }
+            }
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                    }
+            }
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        String text = s.toString();
-                        if(text.isEmpty()){
-                            currentRPM = 0;
-                            return;
-                        }
-                        VescControlActivity.this.currentRPM = Integer.parseInt(text);
-                    }
-                });
+            @Override
+            public void afterTextChanged(Editable s) {
+                rpmEditText.removeCallbacks(rpmSaveRunnable);
+                rpmEditText.postDelayed(rpmSaveRunnable, DELAY_SAVE);
 
-        ((EditText) findViewById(R.id.vesc_control_input_break_current))
-                .addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                String text = s.toString();
+                if (text.isEmpty()) {
+                    currentRPM = 0;
+                    return;
+                }
+                VescControlActivity.this.currentRPM = Integer.parseInt(text);
+            }
+        });
 
-                    }
+        breakCurrentEditText = ((EditText) findViewById(R.id.vesc_control_input_break_current));
+        breakCurrentEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
-                    }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        String text = s.toString();
-                        if(text.isEmpty()){
-                            currentBreakCurrentMa = 0;
-                            return;
-                        }
-                        VescControlActivity.this.currentBreakCurrentMa = Integer.parseInt(text) * 1000;
-                    }
-                });
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                breakCurrentEditText.removeCallbacks(breakCurrentSaveRunnable);
+                breakCurrentEditText.postDelayed(breakCurrentSaveRunnable, DELAY_SAVE);
+
+                String text = s.toString();
+                if (text.isEmpty()) {
+                    currentBreakCurrentMa = 0;
+                    return;
+                }
+                VescControlActivity.this.currentBreakCurrentMa = Integer.parseInt(text) * 1000;
+            }
+        });
 
         View.OnTouchListener controlTouchListener = new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    if(v.getId() == R.id.vesc_control_button_fwd){
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (v.getId() == R.id.vesc_control_button_fwd) {
                         setRPM(VescControlActivity.this.currentRPM);
-                    }else{
+                    } else {
                         setBreakCurrent(VescControlActivity.this.currentBreakCurrentMa);
                     }
-                }else if(event.getAction() == MotionEvent.ACTION_UP){
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     setCurrent(0);
-                }else{
+                } else {
                     return false;
                 }
                 return true;
@@ -154,28 +194,28 @@ public class VescControlActivity extends AbstractGBActivity {
         findViewById(R.id.vesc_control_button_break).setOnTouchListener(controlTouchListener);
     }
 
-    private void setBreakCurrent(int breakCurrentMa){
+    private void setBreakCurrent(int breakCurrentMa) {
         logger.debug("setting break current to {}", breakCurrentMa);
         Intent intent = new Intent(VescDeviceSupport.COMMAND_SET_BREAK_CURRENT);
         intent.putExtra(VescDeviceSupport.EXTRA_CURRENT, breakCurrentMa);
         sendLocalBroadcast(intent);
     }
 
-    private void setCurrent(int currentMa){
+    private void setCurrent(int currentMa) {
         logger.debug("setting current to {}", currentMa);
         Intent intent = new Intent(VescDeviceSupport.COMMAND_SET_CURRENT);
         intent.putExtra(VescDeviceSupport.EXTRA_CURRENT, currentMa);
         sendLocalBroadcast(intent);
     }
 
-    private void setRPM(int rpm){
+    private void setRPM(int rpm) {
         logger.debug("setting rpm to {}", rpm);
         Intent intent = new Intent(VescDeviceSupport.COMMAND_SET_RPM);
         intent.putExtra(VescDeviceSupport.EXTRA_RPM, rpm);
         sendLocalBroadcast(intent);
     }
 
-    private void sendLocalBroadcast(Intent intent){
+    private void sendLocalBroadcast(Intent intent) {
         localBroadcastManager.sendBroadcast(intent);
     }
 
