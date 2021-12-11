@@ -2117,6 +2117,7 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 case MiBandConst.PREF_DO_NOT_DISTURB:
                 case MiBandConst.PREF_DO_NOT_DISTURB_START:
                 case MiBandConst.PREF_DO_NOT_DISTURB_END:
+                case MiBandConst.PREF_DO_NOT_DISTURB_LIFT_WRIST:
                     setDoNotDisturb(builder);
                     break;
                 case MiBandConst.PREF_MI2_INACTIVITY_WARNINGS:
@@ -2713,16 +2714,19 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
 
     private HuamiSupport setDoNotDisturb(TransactionBuilder builder) {
         DoNotDisturb doNotDisturb = HuamiCoordinator.getDoNotDisturb(gbDevice.getAddress());
-        LOG.info("Setting do not disturb to " + doNotDisturb);
+        boolean doNotDisturbLiftWrist = HuamiCoordinator.getDoNotDisturbLiftWrist(gbDevice.getAddress());
+        LOG.info("Setting do not disturb to {}, wake on lift wrist {}", doNotDisturb, doNotDisturbLiftWrist);
+        byte[] data = null;
+
         switch (doNotDisturb) {
             case OFF:
-                writeToConfiguration(builder,  HuamiService.COMMAND_DO_NOT_DISTURB_OFF);
+                data = HuamiService.COMMAND_DO_NOT_DISTURB_OFF.clone();
                 break;
             case AUTOMATIC:
-                writeToConfiguration(builder,  HuamiService.COMMAND_DO_NOT_DISTURB_AUTOMATIC);
+                data = HuamiService.COMMAND_DO_NOT_DISTURB_AUTOMATIC.clone();
                 break;
             case SCHEDULED:
-                byte[] data = HuamiService.COMMAND_DO_NOT_DISTURB_SCHEDULED.clone();
+                data = HuamiService.COMMAND_DO_NOT_DISTURB_SCHEDULED.clone();
 
                 Calendar calendar = GregorianCalendar.getInstance();
 
@@ -2736,9 +2740,15 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 data[HuamiService.DND_BYTE_END_HOURS] = (byte) calendar.get(Calendar.HOUR_OF_DAY);
                 data[HuamiService.DND_BYTE_END_MINUTES] = (byte) calendar.get(Calendar.MINUTE);
 
-                writeToConfiguration(builder,  data);
-
                 break;
+        }
+
+        if (data != null) {
+            if (doNotDisturbLiftWrist && doNotDisturb != DoNotDisturb.OFF) {
+                data[1] &= ~0x80;
+            }
+
+            writeToConfiguration(builder,  data);
         }
 
         return this;
