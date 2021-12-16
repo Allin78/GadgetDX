@@ -103,6 +103,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.nothing.Ear1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nut.NutCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeJFCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.qc35.QC35Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.QHybridCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.roidmi.Roidmi1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.roidmi.Roidmi3Coordinator;
@@ -315,6 +316,7 @@ public class DeviceHelper {
         result.add(new GalaxyBudsDeviceCoordinator());
 	    result.add(new GalaxyBudsLiveDeviceCoordinator());
         result.add(new SonyWh1000Xm3Coordinator());
+        result.add(new QC35Coordinator());
 
         return result;
     }
