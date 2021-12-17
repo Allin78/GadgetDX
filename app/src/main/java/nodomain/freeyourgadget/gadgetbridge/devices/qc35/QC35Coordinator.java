@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -42,6 +43,13 @@ public class QC35Coordinator extends AbstractDeviceCoordinator {
     @Override
     public Class<? extends Activity> getPairingActivity() {
         return null;
+    }
+
+    @Override
+    public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
+        return new int[]{
+            R.xml.devicesettings_qc35
+        };
     }
 
     @Override

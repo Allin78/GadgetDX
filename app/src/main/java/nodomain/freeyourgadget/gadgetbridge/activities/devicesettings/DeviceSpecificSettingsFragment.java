@@ -563,6 +563,8 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_SONY_AUTOMATIC_POWER_OFF);
         addPreferenceHandlerFor(PREF_SONY_NOTIFICATION_VOICE_GUIDE);
 
+        addPreferenceHandlerFor(PREF_QC35_NOISE_CANCELLING_LEVEL);
+
         String sleepTimeState = prefs.getString(PREF_SLEEP_TIME, PREF_DO_NOT_DISTURB_OFF);
         boolean sleepTimeScheduled = sleepTimeState.equals(PREF_DO_NOT_DISTURB_SCHEDULED);
 

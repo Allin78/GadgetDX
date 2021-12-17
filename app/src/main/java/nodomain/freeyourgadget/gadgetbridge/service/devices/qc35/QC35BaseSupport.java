@@ -11,6 +11,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceIoThread;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 
 public class QC35BaseSupport extends AbstractSerialDeviceSupport {
+
     @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
 
@@ -46,8 +47,11 @@ public class QC35BaseSupport extends AbstractSerialDeviceSupport {
 
     }
 
+
+
     @Override
     public boolean connect() {
+        getDeviceProtocol();
         getDeviceIOThread().start();
         return true;
     }

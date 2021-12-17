@@ -17,6 +17,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.serial.AbstractSerialDeviceS
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 
 public class QC35IOThread extends BtClassicIoThread {
+    private boolean shouldProcessData = false;
+    private long processDataTimeout;
+
     public QC35IOThread(GBDevice gbDevice, Context context, GBDeviceProtocol deviceProtocol, AbstractSerialDeviceSupport deviceSupport, BluetoothAdapter btAdapter) {
         super(gbDevice, context, deviceProtocol, deviceSupport, btAdapter);
     }
@@ -27,8 +30,25 @@ public class QC35IOThread extends BtClassicIoThread {
         return UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     }
 
+    public void processData(){
+        shouldProcessData = true;
+        processDataTimeout = System.currentTimeMillis() + 5000;
+        interrupt();
+    }
+
     @Override
     protected byte[] parseIncoming(InputStream inStream) throws IOException {
+        if(!shouldProcessData) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }else{
+            if(System.currentTimeMillis() > processDataTimeout){
+                shouldProcessData = false;
+            }
+        }
         byte[] buffer = new byte[inStream.available()];
         inStream.read(buffer);
         return buffer;
