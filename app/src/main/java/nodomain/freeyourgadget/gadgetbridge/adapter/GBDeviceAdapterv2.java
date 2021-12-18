@@ -107,7 +107,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
 
     private final Context context;
     private List<GBDevice> deviceList;
-    private int expandedDevicePosition = RecyclerView.NO_POSITION;
+    private String expandedDeviceAddress = "";
     private ViewGroup parent;
     private HashMap<String, long[]> deviceActivityMap = new HashMap();
 
@@ -371,7 +371,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         justifyListViewHeightBasedOnChildren(holder.deviceInfoList);
         holder.deviceInfoList.setFocusable(false);
 
-        final boolean detailsShown = position == expandedDevicePosition;
+        final boolean detailsShown = expandedDeviceAddress.equals(device.getAddress());
         boolean showInfoIcon = device.hasDeviceInfos() && !device.isBusy();
         holder.deviceInfoView.setVisibility(showInfoIcon ? View.VISIBLE : View.GONE);
         holder.deviceInfoBox.setActivated(detailsShown);
@@ -379,7 +379,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         holder.deviceInfoView.setOnClickListener(new View.OnClickListener() {
                                                      @Override
                                                      public void onClick(View v) {
-                                                         expandedDevicePosition = detailsShown ? -1 : position;
+                                                         expandedDeviceAddress = detailsShown ? "" : device.getAddress();
                                                          TransitionManager.beginDelayedTransition(parent);
                                                          notifyDataSetChanged();
                                                      }
