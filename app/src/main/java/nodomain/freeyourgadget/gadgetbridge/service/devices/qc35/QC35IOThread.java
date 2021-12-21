@@ -42,7 +42,17 @@ public class QC35IOThread extends BtClassicIoThread {
     protected void initialize() {
         super.initialize();
 
-        write(protocol.encodeSendConfiguration(DeviceSettingsPreferenceConst.PREF_QC35_NOISE_CANCELLING_LEVEL));
+        byte[] connectPayload = new byte[]{0x00, 0x01, 0x01, 0x00};
+        byte[] ncPayload = protocol.encodeSendConfiguration(DeviceSettingsPreferenceConst.PREF_QC35_NOISE_CANCELLING_LEVEL);
+        byte[] batteryPayload = new byte[]{0x02, 0x02, 0x01, 0x00};
+        byte[] packet = new byte[connectPayload.length + ncPayload.length + batteryPayload.length];
+        System.arraycopy(connectPayload, 0, packet, 0, connectPayload.length);
+        System.arraycopy(ncPayload, 0, packet, connectPayload.length, ncPayload.length);
+        System.arraycopy(batteryPayload, 0, packet, ncPayload.length + connectPayload.length, batteryPayload.length);
+
+        getDevice().setFirmwareVersion("0");
+
+        write(packet);
     }
     @Override
     protected byte[] parseIncoming(InputStream inStream) throws IOException {
