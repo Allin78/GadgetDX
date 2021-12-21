@@ -220,6 +220,11 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             initializeAfterWatchConfirmation(false);
             return;
         }
+        boolean versionSupportsConfirmation = getCleanFWVersion().compareTo(new Version("1.0.2.22")) != -1;
+        if(!versionSupportsConfirmation){
+            initializeAfterWatchConfirmation(true);
+            return;
+        }
         boolean shouldAuthenticateOnWatch = getDeviceSpecificPreferences().getBoolean("enable_on_device_confirmation", true);
         if (!shouldAuthenticateOnWatch) {
             GB.toast("Skipping on-device confirmation", Toast.LENGTH_SHORT, GB.INFO);
@@ -1541,6 +1546,14 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     @Override
     public void onFindDevice(boolean start) {
         super.onFindDevice(start);
+
+        boolean versionSupportsConfirmation = getCleanFWVersion().compareTo(new Version("1.0.2.22")) != -1;
+
+        if(!versionSupportsConfirmation){
+            GB.toast("not supported in this version", Toast.LENGTH_SHORT, GB.ERROR);
+            return;
+        }
+
         if (start) {
             queueWrite(new ConfirmOnDeviceRequest());
         }

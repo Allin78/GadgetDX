@@ -26,6 +26,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.transition.TransitionManager;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -107,7 +108,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
 
     private final Context context;
     private List<GBDevice> deviceList;
-    private int expandedDevicePosition = RecyclerView.NO_POSITION;
+    private String expandedDeviceAddress = "";
     private ViewGroup parent;
     private HashMap<String, long[]> deviceActivityMap = new HashMap();
 
@@ -225,6 +226,12 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
                                                            }
             );
 
+            // Hide the battery status level, if it has no text
+            if (TextUtils.isEmpty(batteryStatusLabels[batteryIndex].getText())) {
+                batteryStatusLabels[batteryIndex].setVisibility(View.GONE);
+            } else {
+                batteryStatusLabels[batteryIndex].setVisibility(View.VISIBLE);
+            }
         }
         holder.heartRateStatusBox.setVisibility((device.isInitialized() && coordinator.supportsRealtimeData() && coordinator.supportsHeartRateMeasurement(device)) ? View.VISIBLE : View.GONE);
         if (parent.getContext() instanceof ControlCenterv2) {
@@ -233,6 +240,13 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
                 holder.heartRateStatusLabel.setText(String.valueOf(sample.getHeartRate()));
             } else {
                 holder.heartRateStatusLabel.setText("");
+            }
+
+            // Hide the level, if it has no text
+            if (TextUtils.isEmpty(holder.heartRateStatusLabel.getText())) {
+                holder.heartRateStatusLabel.setVisibility(View.GONE);
+            } else {
+                holder.heartRateStatusLabel.setVisibility(View.VISIBLE);
             }
         }
 
@@ -371,7 +385,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         justifyListViewHeightBasedOnChildren(holder.deviceInfoList);
         holder.deviceInfoList.setFocusable(false);
 
-        final boolean detailsShown = position == expandedDevicePosition;
+        final boolean detailsShown = expandedDeviceAddress.equals(device.getAddress());
         boolean showInfoIcon = device.hasDeviceInfos() && !device.isBusy();
         holder.deviceInfoView.setVisibility(showInfoIcon ? View.VISIBLE : View.GONE);
         holder.deviceInfoBox.setActivated(detailsShown);
@@ -379,7 +393,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         holder.deviceInfoView.setOnClickListener(new View.OnClickListener() {
                                                      @Override
                                                      public void onClick(View v) {
-                                                         expandedDevicePosition = detailsShown ? -1 : position;
+                                                         expandedDeviceAddress = detailsShown ? "" : device.getAddress();
                                                          TransitionManager.beginDelayedTransition(parent);
                                                          notifyDataSetChanged();
                                                      }
