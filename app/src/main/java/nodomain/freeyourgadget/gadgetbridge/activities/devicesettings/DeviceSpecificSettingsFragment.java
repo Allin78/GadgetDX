@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.devicesettings;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.widget.EditText;
@@ -27,7 +28,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SeekBarPreference;
+import androidx.preference.SwitchPreference;
 
 import com.mobeta.android.dslv.DragSortListPreference;
 import com.mobeta.android.dslv.DragSortListPreferenceFragment;
@@ -179,6 +185,7 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_SHORTCUTS_SORTABLE;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_END;
+import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_LIFT_WRIST;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_OFF;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_SCHEDULED;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_DO_NOT_DISTURB_START;
@@ -191,11 +198,19 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PR
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_NIGHT_MODE_START;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_SWIPE_UNLOCK;
 
-public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
+public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat implements DeviceSpecificSettingsHandler {
+
+    private final DeviceSpecificSettingsCustomizer deviceSpecificSettingsCustomizer;
+
+    public DeviceSpecificSettingsFragment(final DeviceSpecificSettingsCustomizer deviceSpecificSettingsCustomizer) {
+        this.deviceSpecificSettingsCustomizer = deviceSpecificSettingsCustomizer;
+    }
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceSpecificSettingsFragment.class);
 
     static final String FRAGMENT_TAG = "DEVICE_SPECIFIC_SETTINGS_FRAGMENT";
+
+    private final SharedPreferencesChangeHandler sharedPreferencesChangeHandler = new SharedPreferencesChangeHandler();
 
     private void setSettingsFileSuffix(String settingsFileSuffix, @NonNull int[] supportedSettings, String[] supportedLanguages) {
         Bundle args = new Bundle();
@@ -258,6 +273,24 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
             }
         }
         setChangeListener();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        final SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+
+        reloadPreferences(sharedPreferences, getPreferenceScreen());
+
+        sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferencesChangeHandler);
+    }
+
+    @Override
+    public void onStop() {
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(sharedPreferencesChangeHandler);
+
+        super.onStop();
     }
 
     /*
@@ -487,6 +520,7 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(PREF_DO_NOT_DISTURB_NOAUTO);
         addPreferenceHandlerFor(PREF_DO_NOT_DISTURB_NOAUTO_START);
         addPreferenceHandlerFor(PREF_DO_NOT_DISTURB_NOAUTO_END);
+        addPreferenceHandlerFor(PREF_DO_NOT_DISTURB_LIFT_WRIST);
         addPreferenceHandlerFor(PREF_FIND_PHONE_ENABLED);
         addPreferenceHandlerFor(PREF_AUTOLIGHT);
         addPreferenceHandlerFor(PREF_AUTOREMOVE_MESSAGE);
@@ -525,8 +559,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         addPreferenceHandlerFor(PREF_GALAXY_BUDS_TOUCH_RIGHT);
         addPreferenceHandlerFor(PREF_GALAXY_BUDS_LIVE_ANC);
         addPreferenceHandlerFor(PREF_GALAXY_BUDS_PRESSURE_RELIEF);
-        addPreferenceHandlerFor(PREFS_DEVICE_CHARTS_TABS);
-
 
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_FOCUS_VOICE);
@@ -734,6 +766,7 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         setInputTypeFor(MiBandConst.PREF_MIBAND_DEVICE_TIME_OFFSET_HOURS, InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_SIGNED);
         setInputTypeFor(MakibesHR3Constants.PREF_FIND_PHONE_DURATION, InputType.TYPE_CLASS_NUMBER);
         setInputTypeFor(DeviceSettingsPreferenceConst.PREF_RESERVER_ALARMS_CALENDAR, InputType.TYPE_CLASS_NUMBER);
+        setInputTypeFor(DeviceSettingsPreferenceConst.PREF_RESERVER_REMINDERS_CALENDAR, InputType.TYPE_CLASS_NUMBER);
 
         String deviceActionsFellSleepSelection = prefs.getString(PREF_DEVICE_ACTION_FELL_SLEEP_SELECTION, PREF_DEVICE_ACTION_SELECTION_OFF);
         final Preference deviceActionsFellSleep = findPreference(PREF_DEVICE_ACTION_FELL_SLEEP_SELECTION);
@@ -810,7 +843,7 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 activityInDeviceSteps,
                 activityInDeviceSleep,
                 activityInDeviceDistance,
-                chartsTabsOrderSelection
+                chartsTabsOrderSelection,
         };
 
         for (Preference preferenceInControlCenter : preferencesInControlCenter) {
@@ -818,10 +851,17 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                 preferenceInControlCenter.setOnPreferenceClickListener(sendIntentRefreshDeviceListListener);
             }
         }
+
+        if (deviceSpecificSettingsCustomizer != null) {
+            deviceSpecificSettingsCustomizer.customizeSettings(this);
+        }
     }
 
-    static DeviceSpecificSettingsFragment newInstance(String settingsFileSuffix, @NonNull int[] supportedSettings, String[] supportedLanguages) {
-        DeviceSpecificSettingsFragment fragment = new DeviceSpecificSettingsFragment();
+    static DeviceSpecificSettingsFragment newInstance(String settingsFileSuffix,
+                                                      @NonNull int[] supportedSettings,
+                                                      String[] supportedLanguages,
+                                                      DeviceSpecificSettingsCustomizer deviceSpecificSettingsCustomizer) {
+        DeviceSpecificSettingsFragment fragment = new DeviceSpecificSettingsFragment(deviceSpecificSettingsCustomizer);
         fragment.setSettingsFileSuffix(settingsFileSuffix, supportedSettings, supportedLanguages);
 
         return fragment;
@@ -853,7 +893,13 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
-    private void addPreferenceHandlerFor(final String preferenceKey) {
+    @Override
+    public void addPreferenceHandlerFor(final String preferenceKey) {
+        addPreferenceHandlerFor(preferenceKey, null);
+    }
+
+    @Override
+    public void addPreferenceHandlerFor(final String preferenceKey, final Preference.OnPreferenceChangeListener extraListener) {
         Preference pref = findPreference(preferenceKey);
         if (pref != null) {
             pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -864,6 +910,11 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                             GBApplication.deviceService().onSendConfiguration(preferenceKey);
                         }
                     });
+
+                    if (extraListener != null) {
+                        return extraListener.onPreferenceChange(preference, newVal);
+                    }
+
                     return true;
                 }
             });
@@ -879,6 +930,61 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat {
                     editText.setInputType(editTypeFlags);
                 }
             });
+        }
+    }
+
+    /**
+     * Reload the preferences in the current screen. This is needed when the user enters or exists a PreferenceScreen,
+     * otherwise the settings won't be reloaded by the {@link SharedPreferencesChangeHandler}, as the preferences return
+     * null, since they're not visible.
+     *
+     * @param sharedPreferences the {@link SharedPreferences} instance
+     * @param preferenceGroup the {@link PreferenceGroup} for which preferences will be reloaded
+     */
+    private void reloadPreferences(final SharedPreferences sharedPreferences, final PreferenceGroup preferenceGroup) {
+        for (int i = 0; i < preferenceGroup.getPreferenceCount(); i++) {
+            final Preference preference = preferenceGroup.getPreference(i);
+
+            LOG.debug("Reloading {}", preference.getKey());
+
+            if (preference instanceof PreferenceCategory) {
+                reloadPreferences(sharedPreferences, (PreferenceCategory) preference);
+                continue;
+            }
+
+            sharedPreferencesChangeHandler.onSharedPreferenceChanged(sharedPreferences, preference.getKey());
+        }
+    }
+
+    /**
+     * Handler for preference changes, update UI accordingly (if device updates the preferences).
+     */
+    private class SharedPreferencesChangeHandler implements SharedPreferences.OnSharedPreferenceChangeListener {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            LOG.debug("Preference changed: {}", key);
+
+            final Preference preference = findPreference(key);
+            if (preference == null) {
+                LOG.warn("Preference {} not found, ignoring", key);
+
+                return;
+            }
+
+            if (preference instanceof SeekBarPreference) {
+                final SeekBarPreference seekBarPreference = (SeekBarPreference) preference;
+                seekBarPreference.setValue(prefs.getInt(key, seekBarPreference.getValue()));
+            } else if (preference instanceof SwitchPreference) {
+                final SwitchPreference switchPreference = (SwitchPreference) preference;
+                switchPreference.setChecked(prefs.getBoolean(key, switchPreference.isChecked()));
+            } else if (preference instanceof ListPreference) {
+                final ListPreference listPreference = (ListPreference) preference;
+                listPreference.setValue(prefs.getString(key, listPreference.getValue()));
+            } else if (preference instanceof PreferenceScreen) {
+                // Ignoring
+            } else {
+                LOG.warn("Unknown preference class {}, ignoring", preference.getClass());
+            }
         }
     }
 }
