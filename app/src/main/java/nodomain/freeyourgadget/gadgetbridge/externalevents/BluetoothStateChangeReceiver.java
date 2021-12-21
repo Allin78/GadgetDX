@@ -22,6 +22,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +63,13 @@ public class BluetoothStateChangeReceiver extends BroadcastReceiver {
 
             for(GBDevice iterated : devices){
                 if(iterated.getAddress().equals(mac)){
+                    SharedPreferences devicePrefs = GBApplication.getDeviceSpecificSharedPrefs(mac);
+                    if(!devicePrefs.getBoolean("device_auto_connect", false)){
+                        LOG.info("Bluetooth turned on (ACL_CONNECTED) => not connecting to {} due to device setting", mac);
+                        return;
+                    }
                     LOG.info("Bluetooth turned on (ACL_CONNECTED) => connecting to {}", mac);
-                    GBApplication.deviceService().connect();
+                    GBApplication.deviceService().connect(iterated);
                 }
             }
         } if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {

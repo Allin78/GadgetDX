@@ -28,7 +28,7 @@ public class QC35Coordinator extends AbstractDeviceCoordinator {
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        if(candidate.getName().startsWith("Bose QC 35")){
+        if (candidate.getName().startsWith("Bose QC 35")) {
             return DeviceType.BOSE_QC35;
         }
         return DeviceType.UNKNOWN;
@@ -48,7 +48,8 @@ public class QC35Coordinator extends AbstractDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-            R.xml.devicesettings_qc35
+                R.xml.devicesettings_auto_connect,
+                R.xml.devicesettings_qc35
         };
     }
 
