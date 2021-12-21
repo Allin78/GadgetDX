@@ -6,10 +6,15 @@ import android.os.ParcelUuid;
 
 import androidx.annotation.NonNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btclassic.BtClassicIoThread;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
@@ -17,11 +22,14 @@ import nodomain.freeyourgadget.gadgetbridge.service.serial.AbstractSerialDeviceS
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
 
 public class QC35IOThread extends BtClassicIoThread {
-    private boolean shouldProcessData = false;
-    private long processDataTimeout;
+    QC35Protocol protocol;
+    byte[] buffer = new byte[1024];
 
-    public QC35IOThread(GBDevice gbDevice, Context context, GBDeviceProtocol deviceProtocol, AbstractSerialDeviceSupport deviceSupport, BluetoothAdapter btAdapter) {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    public QC35IOThread(GBDevice gbDevice, Context context, QC35Protocol deviceProtocol, AbstractSerialDeviceSupport deviceSupport, BluetoothAdapter btAdapter) {
         super(gbDevice, context, deviceProtocol, deviceSupport, btAdapter);
+        this.protocol = deviceProtocol;
     }
 
     @NonNull
@@ -30,27 +38,18 @@ public class QC35IOThread extends BtClassicIoThread {
         return UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     }
 
-    public void processData(){
-        shouldProcessData = true;
-        processDataTimeout = System.currentTimeMillis() + 5000;
-        interrupt();
-    }
+    @Override
+    protected void initialize() {
+        super.initialize();
 
+        write(protocol.encodeSendConfiguration(DeviceSettingsPreferenceConst.PREF_QC35_NOISE_CANCELLING_LEVEL));
+    }
     @Override
     protected byte[] parseIncoming(InputStream inStream) throws IOException {
-        if(!shouldProcessData) {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }else{
-            if(System.currentTimeMillis() > processDataTimeout){
-                shouldProcessData = false;
-            }
-        }
-        byte[] buffer = new byte[inStream.available()];
-        inStream.read(buffer);
-        return buffer;
+        int size = inStream.read(buffer);
+        logger.debug("read bytes: {}", size);
+        byte[] actual = new byte[size];
+        System.arraycopy(buffer, 0, actual, 0, size);
+        return actual;
     }
 }

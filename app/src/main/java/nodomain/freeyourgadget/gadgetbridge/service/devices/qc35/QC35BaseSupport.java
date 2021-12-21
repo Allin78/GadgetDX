@@ -68,6 +68,6 @@ public class QC35BaseSupport extends AbstractSerialDeviceSupport {
 
     @Override
     protected GBDeviceIoThread createDeviceIOThread() {
-        return new QC35IOThread(getDevice(), getContext(), createDeviceProtocol(), this, getBluetoothAdapter());
+        return new QC35IOThread(getDevice(), getContext(), (QC35Protocol) createDeviceProtocol(), this, getBluetoothAdapter());
     }
 }
