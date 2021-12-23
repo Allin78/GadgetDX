@@ -315,9 +315,7 @@ public class DeviceHelper {
         result.add(new Ear1Coordinator());
         result.add(new GalaxyBudsDeviceCoordinator());
         result.add(new GalaxyBudsLiveDeviceCoordinator());
-        result.add(new SonyWh1000Xm3Coordinator());
         result.add(new VescCoordinator());
-        result.add(new GalaxyBudsLiveDeviceCoordinator());
         result.add(new SonyWH1000XM3Coordinator());
 
         return result;
