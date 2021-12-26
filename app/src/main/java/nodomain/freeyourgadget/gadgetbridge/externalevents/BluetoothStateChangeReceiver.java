@@ -18,22 +18,16 @@
 package nodomain.freeyourgadget.gadgetbridge.externalevents;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import java.util.List;
-
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class BluetoothStateChangeReceiver extends BroadcastReceiver {
@@ -43,36 +37,7 @@ public class BluetoothStateChangeReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
 
-        LOG.debug("bluetooth event: {}", action);
-
-        if(action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)){
-            Prefs prefs = GBApplication.getPrefs();
-            if (!prefs.getBoolean("general_autoconnectonbluetooth", false)) {
-                return;
-            }
-
-            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-            if(device == null){
-                LOG.error("connected device unknown");
-                return;
-            }
-
-            String mac = device.getAddress();
-            List<GBDevice> devices = GBApplication.app().getDeviceManager().getDevices();
-
-            for(GBDevice iterated : devices){
-                if(iterated.getAddress().equals(mac)){
-                    SharedPreferences devicePrefs = GBApplication.getDeviceSpecificSharedPrefs(mac);
-                    if(!devicePrefs.getBoolean("device_auto_connect", false)){
-                        LOG.info("Bluetooth turned on (ACL_CONNECTED) => not connecting to {} due to device setting", mac);
-                        return;
-                    }
-                    LOG.info("Bluetooth turned on (ACL_CONNECTED) => connecting to {}", mac);
-                    GBApplication.deviceService().connect(iterated);
-                }
-            }
-        } if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+        if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
             if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) {
 
                 Intent refreshIntent = new Intent(DeviceManager.ACTION_REFRESH_DEVICELIST);

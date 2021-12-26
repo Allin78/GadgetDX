@@ -48,7 +48,6 @@ public class QC35Coordinator extends AbstractDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_auto_connect,
                 R.xml.devicesettings_qc35
         };
     }
