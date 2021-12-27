@@ -35,7 +35,6 @@ public class ActivityKind {
     public static final int TYPE_NOT_WORN = 0x00000008;
     public static final int TYPE_RUNNING = 0x00000010;
     public static final int TYPE_WALKING = 0x00000020;
-    public static final int TYPE_HIKING = 0x00000021;
     public static final int TYPE_SWIMMING = 0x00000040;
     public static final int TYPE_CYCLING = 0x00000080;
     public static final int TYPE_TREADMILL = 0x00000100;
@@ -52,6 +51,7 @@ public class ActivityKind {
     public static final int TYPE_PINGPONG = 0x00080000;
     public static final int TYPE_BADMINTON = 0x00100000;
     public static final int TYPE_STRENGTH_TRAINING = 0x00200000;
+    public static final int TYPE_HIKING = 0x00400000;
 
     private static final int TYPES_COUNT = 25;
 
