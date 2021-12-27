@@ -374,6 +374,9 @@ public class DeviceSupportFactory {
                     case SONY_WH_1000XM3:
                         deviceSupport = new ServiceDeviceSupport(new SonyHeadphonesSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
+                    case SONY_WF_SP800N:
+                        deviceSupport = new ServiceDeviceSupport(new SonyHeadphonesSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
                     case BOSE_QC35:
                         deviceSupport = new ServiceDeviceSupport(new QC35BaseSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
