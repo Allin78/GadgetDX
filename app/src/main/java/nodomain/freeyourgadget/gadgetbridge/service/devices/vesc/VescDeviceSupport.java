@@ -19,6 +19,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.util.CheckSums;
 
 public class VescDeviceSupport extends VescBaseDeviceSupport{
     BluetoothGattCharacteristic serialWriteCharacteristic;
@@ -154,7 +155,7 @@ public class VescDeviceSupport extends VescBaseDeviceSupport{
             buffer.putShort((short) dataLength);
         }
         buffer.put(contents);
-        buffer.putShort((short) Utils.calculate_crc(contents));
+        buffer.putShort((short) CheckSums.getCRC16(contents, 0));
         buffer.put((byte) 0x03);
 
         return buffer.array();
