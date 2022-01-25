@@ -161,6 +161,32 @@ public class FossilHRInstallHandler implements InstallHandler {
         }
     }
 
+    public static boolean writeBackgroundImage(FossilFileReader fossilFile, DeviceCoordinator mCoordinator,Bitmap backgroundImg){
+        GBDeviceApp app;
+        File destDir;
+        // write app file
+        try {
+            app = fossilFile.getGBDeviceApp();
+            destDir = mCoordinator.getAppCacheDir();
+            destDir.mkdirs();
+            if (backgroundImg != null) {
+               File outputFile = new File(destDir, app.getUUID().toString() + ".png");
+                try {
+                    FileOutputStream fos = new FileOutputStream(outputFile);
+                    backgroundImg.compress(Bitmap.CompressFormat.PNG, 9, fos);
+                    fos.close();
+                } catch (IOException e) {
+                    LOG.error("Failed to write to output file: " + e.getMessage(), e);
+                    return false;
+                }
+            }
+            }catch(IOException e){
+                LOG.error("Failed to write to output file: " + e.getMessage(), e);
+                return false;
+            }
+        return true;
+        }
+
     @Override
     public boolean isValid() {
         return fossilFile.isValid();

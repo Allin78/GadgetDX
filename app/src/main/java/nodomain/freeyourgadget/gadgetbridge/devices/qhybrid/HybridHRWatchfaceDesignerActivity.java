@@ -50,6 +50,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -98,7 +99,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
     private HybridHRWatchfaceSettings watchfaceSettings = new HybridHRWatchfaceSettings();
     private int defaultWidgetColor = HybridHRWatchfaceWidget.COLOR_WHITE;
     private boolean readyToCloseActivity = false;
-
+    private boolean inverting = false;
     private final int CHILD_ACTIVITY_IMAGE_CHOOSER = 0;
     private final int CHILD_ACTIVITY_SETTINGS = 1;
 
@@ -226,6 +227,8 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                     .show();
         } else if (v.getId() == R.id.watchface_invert_colors) {
             if (selectedBackgroundImage != null) {
+                inverting = true;
+                //reload image
                 selectedBackgroundImage = BitmapUtil.invertBitmapColors(selectedBackgroundImage);
                 renderWatchfacePreview();
                 if (defaultWidgetColor == HybridHRWatchfaceWidget.COLOR_WHITE) {
@@ -386,8 +389,10 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                                     break;
                             }
                             int widgetColor = layoutItem.getString("color").equals("white") ? HybridHRWatchfaceWidget.COLOR_WHITE : HybridHRWatchfaceWidget.COLOR_BLACK;
+                            boolean show_circle_look_and_feel = Boolean.getBoolean(layoutItem.getJSONObject("lookAndFeel").getString("showCircle"));
                             if (widgetName.startsWith("widget2ndTZ")) {
                                 try {
+
                                     widgetName = "widget2ndTZ";
                                     JSONObject widgetData = layoutItem.getJSONObject("data");
                                     widgetTimezone = widgetData.getString("tzName");
@@ -397,7 +402,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                                             layoutItem.getJSONObject("size").getInt("w"),
                                             layoutItem.getJSONObject("size").getInt("h"),
                                             widgetColor,
-                                            widgetTimezone));
+                                            widgetTimezone,show_circle_look_and_feel));
                                 } catch (JSONException e) {
                                     LOG.error("Couldn't determine tzName!", e);
                                 }
@@ -407,6 +412,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                                 widgetUpdateTimeout = widgetData.getInt("update_timeout");
                                 widgetTimeoutHideText = widgetData.getBoolean("timeout_hide_text");
                                 widgetTimeoutShowCircle = widgetData.getBoolean("timeout_show_circle");
+
                                 widgets.add(new HybridHRWatchfaceWidget(widgetName,
                                         layoutItem.getJSONObject("pos").getInt("x"),
                                         layoutItem.getJSONObject("pos").getInt("y"),
@@ -415,14 +421,15 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                                         widgetColor,
                                         widgetUpdateTimeout,
                                         widgetTimeoutHideText,
-                                        widgetTimeoutShowCircle));
+                                        widgetTimeoutShowCircle,show_circle_look_and_feel));
                             } else {
+
                                 widgets.add(new HybridHRWatchfaceWidget(widgetName,
                                         layoutItem.getJSONObject("pos").getInt("x"),
                                         layoutItem.getJSONObject("pos").getInt("y"),
                                         layoutItem.getJSONObject("size").getInt("w"),
                                         layoutItem.getJSONObject("size").getInt("h"),
-                                        widgetColor));
+                                        widgetColor,show_circle_look_and_feel));
                             }
                         }
                     }
@@ -469,8 +476,52 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         watchfaceNameView.setText(watchfaceName);
     }
 
+    private Bitmap generateBackgroundWithLookAndFeel(Bitmap processedBackgroundImage,boolean noBackground){
+        if(noBackground) {
+            try {
+                selectedBackgroundImage = BitmapUtil.getCircularBitmap(BitmapFactory.decodeStream(getAssets().open("fossil_hr/look_feel_background.png")));
+                processedBackgroundImage = Bitmap.createScaledBitmap(selectedBackgroundImage, displayImageSize, displayImageSize, true);
+
+            } catch (IOException e) {
+                LOG.warn("Loading empty background failed", e);
+            }
+        }
+        //I dont fully understand the inverting process, as it seems to work when I didnt expect it to work
+        //but then when generating the background changes it removes everything - so we need to not
+        //use deletewatchfacebackground fix for when removing widgets, if we are rendering due to invert.
+
+            //we use this fix to remove background when changing a widget
+            deleteWatchfaceBackground();
+
+
+        //process background iterating through widgets adding circles to background as required
+        Bitmap altered = processedBackgroundImage.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas alteredImageCanvas = new Canvas(altered);
+        for (int i=0; i<widgets.size(); i++) {
+            HybridHRWatchfaceWidget widget = widgets.get(i);
+            if(widget.getAddCircleLookAndFeel()){
+                //look and feel is on - draw a circle
+                int x = (int) (widget.getPosX()*scaleFactor);
+                int y = (int) (widget.getPosY()*scaleFactor);
+
+
+                Paint circlePaint = new Paint();
+                circlePaint.setColor(Color.WHITE);
+                circlePaint.setAntiAlias(true);
+                circlePaint.setStrokeWidth(12);
+                circlePaint.setStyle(Paint.Style.STROKE);
+                alteredImageCanvas.drawCircle(x, y, 125, circlePaint);
+
+
+            }
+        }
+       // FossilHRInstallHandler.writeBackgroundImage();
+         return altered;
+    }
+
     private void renderWatchfacePreview() {
         int widgetSize = 50;
+        boolean noBackground = true;
         if (selectedBackgroundImage == null) {
             try {
                 selectedBackgroundImage = BitmapUtil.getCircularBitmap(BitmapFactory.decodeStream(getAssets().open("fossil_hr/default_background.png")));
@@ -482,7 +533,15 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
             deleteWatchfaceBackground();
         } else {
             processedBackgroundImage = Bitmap.createScaledBitmap(selectedBackgroundImage, displayImageSize, displayImageSize, true);
+            noBackground=false;
         }
+        //skip regenerating look and feel if we are simply inverting.
+        if(!inverting) {
+            processedBackgroundImage = generateBackgroundWithLookAndFeel(processedBackgroundImage, noBackground);
+        }else{
+            inverting=false;
+        }
+        selectedBackgroundImage = processedBackgroundImage.copy(Bitmap.Config.ARGB_8888, true);
         // Remove existing widget ImageViews
         RelativeLayout previewLayout = this.findViewById(R.id.watchface_preview_layout);
         boolean onlyPreviewIsRemaining = false;
@@ -525,7 +584,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
             ImageView widgetView = new ImageView(this);
             widgetView.setId(i);
             try {
-                widgetView.setImageBitmap(Bitmap.createScaledBitmap(widget.getPreviewImage(this), (int)(widgetSize * scaleFactor), (int)(widgetSize * scaleFactor), true));
+                widgetView.setImageBitmap(Bitmap.createScaledBitmap(widget.getPreviewImage(this,widgetSize), (int)(widgetSize * scaleFactor), (int)(widgetSize * scaleFactor), true));
             } catch (IOException e) {
                 widgetView.setImageBitmap(widgetNoPreviewBitmap);
             }
@@ -643,6 +702,12 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         if ((widget != null) && (widget.getTimeoutShowCircle())) {
             timeoutShowCircle.setChecked(widget.getTimeoutShowCircle());
         }
+
+        final Switch add_circle_look_and_feel = layout.findViewById(R.id.add_circle_look_and_feel);
+        if ((widget != null) && (widget.getAddCircleLookAndFeel())) {
+            add_circle_look_and_feel.setChecked(widget.getAddCircleLookAndFeel());
+        }
+
         // Show certain input fields only when the relevant TZ widget is selected
         typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -714,12 +779,13 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                         boolean selectedTimeoutHideText = timeoutHideText.isChecked();
                         boolean selectedTimeoutShowCircle = timeoutShowCircle.isChecked();
                         HybridHRWatchfaceWidget widgetConfig;
+                        boolean SelectedAddCircleLookAndFeel = add_circle_look_and_feel.isChecked();
                         if (selectedType.equals("widget2ndTZ")) {
-                            widgetConfig = new HybridHRWatchfaceWidget(selectedType, selectedPosX, selectedPosY, 76, 76, colorSpinner.getSelectedItemPosition(), selectedTZ);
+                            widgetConfig = new HybridHRWatchfaceWidget(selectedType, selectedPosX, selectedPosY, 76, 76, colorSpinner.getSelectedItemPosition(), selectedTZ,SelectedAddCircleLookAndFeel);
                         } else if (selectedType.equals("widgetCustom")) {
-                            widgetConfig = new HybridHRWatchfaceWidget(selectedType, selectedPosX, selectedPosY, selectedWidth, 76, colorSpinner.getSelectedItemPosition(), selectedUpdateTimeout, selectedTimeoutHideText, selectedTimeoutShowCircle);
+                            widgetConfig = new HybridHRWatchfaceWidget(selectedType, selectedPosX, selectedPosY, selectedWidth, 76, colorSpinner.getSelectedItemPosition(), selectedUpdateTimeout, selectedTimeoutHideText, selectedTimeoutShowCircle,SelectedAddCircleLookAndFeel);
                         } else {
-                            widgetConfig = new HybridHRWatchfaceWidget(selectedType, selectedPosX, selectedPosY, 76, 76, colorSpinner.getSelectedItemPosition());
+                            widgetConfig = new HybridHRWatchfaceWidget(selectedType, selectedPosX, selectedPosY, 76, 76, colorSpinner.getSelectedItemPosition(),SelectedAddCircleLookAndFeel);
                         }
                         if (index >= 0) {
                             widgets.set(index, widgetConfig);

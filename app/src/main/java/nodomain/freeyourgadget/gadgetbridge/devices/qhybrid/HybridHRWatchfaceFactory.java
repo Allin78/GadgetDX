@@ -112,7 +112,11 @@ public class HybridHRWatchfaceFactory {
             pos.put("x", widgetDesc.getPosX());
             pos.put("y", widgetDesc.getPosY());
             widget.put("pos", pos);
+            JSONObject lookAndFeel = new JSONObject();
+            lookAndFeel.put("showCircle",widgetDesc.getAddCircleLookAndFeel());
+            widget.put("lookAndFeel",lookAndFeel);
             widgets.add(widget);
+
         } catch (JSONException e) {
             LOG.warn("JSON error", e);
         }

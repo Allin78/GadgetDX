@@ -19,6 +19,9 @@ package nodomain.freeyourgadget.gadgetbridge.devices.qhybrid;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -42,20 +45,23 @@ public class HybridHRWatchfaceWidget {
     public static int COLOR_WHITE = 0;
     public static int COLOR_BLACK = 1;
 
-    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color) {
+    private boolean show_circle_look_and_feel = true;
+
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color,boolean show_circle_look_and_feel) {
         this.widgetType = widgetType;
         this.posX = posX;
         this.posY = posY;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.show_circle_look_and_feel = show_circle_look_and_feel;
     }
-    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color, String timezone) {
-        this(widgetType, posX, posY, width, height, color);
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color, String timezone,boolean show_circle_look_and_feel) {
+        this(widgetType, posX, posY, width, height, color,show_circle_look_and_feel);
         this.timezone = timezone;
     }
-    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color, int updateTimeout, boolean timeoutHideText, boolean timeoutShowCircle) {
-        this(widgetType, posX, posY, width, height, color);
+    public HybridHRWatchfaceWidget(String widgetType, int posX, int posY, int width, int height, int color, int updateTimeout, boolean timeoutHideText, boolean timeoutShowCircle,boolean show_circle_look_and_feel) {
+        this(widgetType, posX, posY, width, height, color,show_circle_look_and_feel);
         this.updateTimeout = updateTimeout;
         this.timeoutHideText = timeoutHideText;
         this.timeoutShowCircle = timeoutShowCircle;
@@ -81,8 +87,9 @@ public class HybridHRWatchfaceWidget {
         return widgetType;
     }
 
-    public Bitmap getPreviewImage(Context context) throws IOException {
-        Bitmap preview = BitmapFactory.decodeStream(context.getAssets().open("fossil_hr/" + widgetType + "_preview.png"));
+    public Bitmap getPreviewImage(Context context,int displayImageSize) throws IOException {
+        Bitmap preview;
+        preview = BitmapFactory.decodeStream(context.getAssets().open("fossil_hr/" + widgetType + "_preview.png"));
         if (color == COLOR_WHITE) {
             return preview;
         } else {
@@ -134,4 +141,5 @@ public class HybridHRWatchfaceWidget {
     public boolean getTimeoutShowCircle() {
         return timeoutShowCircle;
     }
+    public boolean getAddCircleLookAndFeel() { return show_circle_look_and_feel; };
 }
