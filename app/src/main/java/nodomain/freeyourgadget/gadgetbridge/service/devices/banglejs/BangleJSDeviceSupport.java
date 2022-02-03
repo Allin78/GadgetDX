@@ -370,16 +370,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
                 jsonalarm.put("h", alarm.getHour());
                 jsonalarm.put("m", alarm.getMinute());
-                JSONObject repetition = new JSONObject();
-                jsonalarm.put("rep", repetition);
-
-                repetition.put("MON", alarm.getRepetition(Alarm.ALARM_MON));
-                repetition.put("TUE", alarm.getRepetition(Alarm.ALARM_TUE));
-                repetition.put("WED", alarm.getRepetition(Alarm.ALARM_WED));
-                repetition.put("THU", alarm.getRepetition(Alarm.ALARM_THU));
-                repetition.put("FRI", alarm.getRepetition(Alarm.ALARM_FRI));
-                repetition.put("SAT", alarm.getRepetition(Alarm.ALARM_SAT));
-                repetition.put("SUN", alarm.getRepetition(Alarm.ALARM_SUN));
+                jsonalarm.put("rep", alarm.getRepetition());
             }
             uartTxJSON("onSetAlarms", o);
         } catch (JSONException e) {
