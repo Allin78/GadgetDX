@@ -381,26 +381,41 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
+
+    private String callSpecToCmd(CallSpec callSpec) {
+        switch (callSpec.command) {
+            case CallSpec.CALL_UNDEFINED:
+                return "undefined";
+            case CallSpec.CALL_ACCEPT:
+                return "accept";
+            case CallSpec.CALL_INCOMING:
+                return "incoming";
+            case CallSpec.CALL_OUTGOING:
+                return "outgoing";
+            case CallSpec.CALL_REJECT:
+                return "reject";
+            case CallSpec.CALL_START:
+                return "start";
+            case CallSpec.CALL_END:
+                return "end";
+            default:
+                return "unknown";
+        }
+    }
+
     @Override
     public void onSetCallState(CallSpec callSpec) {
         try {
             JSONObject o = new JSONObject();
             o.put("t", "call");
-            String cmdName = "";
-            try {
-                Field fields[] = callSpec.getClass().getDeclaredFields();
-                for (Field field : fields)
-                    if (field.getName().startsWith("CALL_") && field.getInt(callSpec) == callSpec.command)
-                        cmdName = field.getName().substring(5).toLowerCase();
-            } catch (IllegalAccessException e) {}
-            o.put("cmd", cmdName);
+            o.put("cmd", callSpecToCmd(callSpec));
             o.put("name", callSpec.name);
             o.put("number", callSpec.number);
             uartTxJSON("onSetCallState", o);
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
-}
+    }
 
     @Override
     public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
