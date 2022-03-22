@@ -18,10 +18,8 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -44,10 +42,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.UUID;
-import java.lang.reflect.Field;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
-import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
@@ -59,7 +55,6 @@ import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
@@ -381,34 +376,18 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-
-    private String callSpecToCmd(CallSpec callSpec) {
-        switch (callSpec.command) {
-            case CallSpec.CALL_UNDEFINED:
-                return "undefined";
-            case CallSpec.CALL_ACCEPT:
-                return "accept";
-            case CallSpec.CALL_INCOMING:
-                return "incoming";
-            case CallSpec.CALL_OUTGOING:
-                return "outgoing";
-            case CallSpec.CALL_REJECT:
-                return "reject";
-            case CallSpec.CALL_START:
-                return "start";
-            case CallSpec.CALL_END:
-                return "end";
-            default:
-                return "unknown";
-        }
-    }
-
     @Override
     public void onSetCallState(CallSpec callSpec) {
         try {
             JSONObject o = new JSONObject();
             o.put("t", "call");
-            o.put("cmd", callSpecToCmd(callSpec));
+            if (BangleJSConstants.CALL_CMDS.containsKey(callSpec.command)) {
+                o.put("cmd", BangleJSConstants.CALL_CMDS.get(callSpec.command));
+            } else {
+                // this should never happen (all CallSpec.CALL_* constants are mapped to a BangleJSConstants.CMD_*)
+                // but when it does, having the command code might help with debugging
+                o.put("cmd", callSpec.command);
+            }
             o.put("name", callSpec.name);
             o.put("number", callSpec.number);
             uartTxJSON("onSetCallState", o);
