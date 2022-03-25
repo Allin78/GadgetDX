@@ -126,6 +126,8 @@ android {
     flavorDimensions "device_type"
     productFlavors {
         main {
+            // Ensure that when starting from scratch, 'main' is selected, not 'banglejs'
+            getIsDefault().set(true)
             // the default build product flavor
             dimension "device_type"
             //applicationIdSuffix ""
@@ -137,6 +139,8 @@ android {
             applicationIdSuffix ".banglejs"
             versionNameSuffix "-banglejs"
             buildConfigField "boolean", "INTERNET_ACCESS", "true"
+            // Disable pebble provider to allow Bangle.js Gadgetbridge to coexist with Gadgetbridge
+            resValue "string", "pebble_content_provider", "com.getpebble.android.nopebble.provider"
         }
     }
 
