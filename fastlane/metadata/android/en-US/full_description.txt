@@ -6,3 +6,7 @@ You can get notifications on your wrist and (depending on the device):
 - control music playing on your android device
 - see the weather 
 - get directions
+- wearable watch
+- smart watch
+- smartwatch
+- watch
