@@ -278,13 +278,6 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             return new GBDeviceEventSendBytes(request.encode(sequenceNumber));
         }
 
-        if (GBDevice.State.INITIALIZING.equals(getDevice().getState())) {
-            // The queue is now empty, so we have got all the information from the device
-            // Mark it as initialized
-
-            return new GBDeviceEventUpdateDeviceState(GBDevice.State.INITIALIZED);
-        }
-
         return null;
     }
 }

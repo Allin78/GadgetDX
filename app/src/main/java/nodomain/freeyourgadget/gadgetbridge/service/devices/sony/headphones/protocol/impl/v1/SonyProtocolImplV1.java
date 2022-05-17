@@ -18,6 +18,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.pro
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_NOISE_OPTIMIZER_STATE_PRESSURE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_NOISE_OPTIMIZER_STATUS;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.v1.PayloadType.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSett
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceInfo;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCapabilities;
@@ -66,6 +68,31 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class SonyProtocolImplV1 extends AbstractSonyProtocolImpl {
     private static final Logger LOG = LoggerFactory.getLogger(SonyProtocolImplV1.class);
+
+    private static final Map<PayloadType, PayloadType> REQUEST_REPLY_MAP = new LinkedHashMap<PayloadType, PayloadType>() {{
+        put(FW_VERSION_REQUEST, FW_VERSION_REPLY);
+        put(AUDIO_CODEC_REQUEST, AUDIO_CODEC_REPLY);
+
+        put(BATTERY_LEVEL_REQUEST, BATTERY_LEVEL_REPLY);
+        put(AMBIENT_SOUND_CONTROL_GET, AMBIENT_SOUND_CONTROL_RET);
+        put(NOISE_CANCELLING_OPTIMIZER_STATE_GET, NOISE_CANCELLING_OPTIMIZER_STATE_RET);
+        put(AUDIO_UPSAMPLING_GET, AUDIO_UPSAMPLING_RET);
+        put(AUTOMATIC_POWER_OFF_BUTTON_MODE_GET, AUTOMATIC_POWER_OFF_BUTTON_MODE_RET);
+        put(VOICE_NOTIFICATIONS_GET, VOICE_NOTIFICATIONS_RET);
+        put(TOUCH_SENSOR_GET, TOUCH_SENSOR_RET);
+        put(EQUALIZER_GET, EQUALIZER_RET);
+        put(SOUND_POSITION_OR_MODE_GET, SOUND_POSITION_OR_MODE_RET);
+    }};
+    private static final Map<PayloadType, PayloadType> REPLY_REQUEST_MAP = new LinkedHashMap<PayloadType, PayloadType>() {{
+        // Inverse for REPLY_REQUEST_MAP
+        for (Map.Entry<PayloadType, PayloadType> entry : REQUEST_REPLY_MAP.entrySet()) {
+            put(entry.getValue(), entry.getKey());
+        }
+    }};
+
+    // Track initial requests to update device state.
+    private List<PayloadType> capabilityRequestPayloadTypes = null;
+    private ArrayList<PayloadType> receivedReplyPayloadTypes = new ArrayList<>();
 
     public SonyProtocolImplV1(GBDevice device) {
         super(device);
@@ -445,51 +472,78 @@ public class SonyProtocolImplV1 extends AbstractSonyProtocolImpl {
     @Override
     public List<? extends GBDeviceEvent> handlePayload(final MessageType messageType, final byte[] payload) {
         final PayloadType payloadType = PayloadType.fromCode(messageType, payload[0]);
+        final ArrayList<GBDeviceEvent> events = new ArrayList<>();
+
+        if (!GBDevice.State.INITIALIZED.equals((getDevice().getState()))) {
+            final PayloadType requestPayloadType = REPLY_REQUEST_MAP.get(payloadType);
+            if (capabilityRequestPayloadTypes != null && capabilityRequestPayloadTypes.contains(requestPayloadType)) {
+                receivedReplyPayloadTypes.add(payloadType);
+                if (capabilityRequestPayloadTypes.size() == receivedReplyPayloadTypes.size()) {
+                    // We have all the replies, update the device state.
+                    events.add(new GBDeviceEventUpdateDeviceState(GBDevice.State.INITIALIZED));
+                }
+            }
+        }
 
         switch (payloadType) {
             case INIT_REPLY:
-                return handleInitResponse(payload);
+                events.addAll(handleInitResponse(payload));
+                break;
             case FW_VERSION_REPLY:
-                return handleFirmwareVersion(payload);
+                events.addAll(handleFirmwareVersion(payload));
+                break;
             case BATTERY_LEVEL_REPLY:
             case BATTERY_LEVEL_NOTIFY:
-                return handleBattery(payload);
+                events.addAll(handleBattery(payload));
+                break;
             case AUDIO_CODEC_REPLY:
             case AUDIO_CODEC_NOTIFY:
-                return handleAudioCodec(payload);
+                events.addAll(handleAudioCodec(payload));
+                break;
             case SOUND_POSITION_OR_MODE_RET:
             case SOUND_POSITION_OR_MODE_NOTIFY:
-                return handleVirtualSound(payload);
+                events.addAll(handleVirtualSound(payload));
+                break;
             case EQUALIZER_RET:
             case EQUALIZER_NOTIFY:
-                return handleEqualizer(payload);
+                events.addAll(handleEqualizer(payload));
+                break;
             case AMBIENT_SOUND_CONTROL_RET:
             case AMBIENT_SOUND_CONTROL_NOTIFY:
-                return handleAmbientSoundControl(payload);
+                events.addAll(handleAmbientSoundControl(payload));
+                break;
             case NOISE_CANCELLING_OPTIMIZER_STATUS:
-                return handleNoiseCancellingOptimizerStatus(payload);
+                events.addAll(handleNoiseCancellingOptimizerStatus(payload));
+                break;
             case NOISE_CANCELLING_OPTIMIZER_STATE_RET:
             case NOISE_CANCELLING_OPTIMIZER_STATE_NOTIFY:
-                return handleNoiseCancellingOptimizerState(payload);
+                events.addAll(handleNoiseCancellingOptimizerState(payload));
+                break;
             case TOUCH_SENSOR_RET:
             case TOUCH_SENSOR_NOTIFY:
-                return handleTouchSensor(payload);
+                events.addAll(handleTouchSensor(payload));
+                break;
             case AUDIO_UPSAMPLING_RET:
             case AUDIO_UPSAMPLING_NOTIFY:
-                return handleAudioUpsampling(payload);
+                events.addAll(handleAudioUpsampling(payload));
+                break;
             case AUTOMATIC_POWER_OFF_BUTTON_MODE_RET:
             case AUTOMATIC_POWER_OFF_BUTTON_MODE_NOTIFY:
-                return handleAutomaticPowerOffButtonMode(payload);
+                events.addAll(handleAutomaticPowerOffButtonMode(payload));
+                break;
             case VOICE_NOTIFICATIONS_RET:
             case VOICE_NOTIFICATIONS_NOTIFY:
-                return handleVoiceNotifications(payload);
+                events.addAll(handleVoiceNotifications(payload));
+                break;
             case JSON_RET:
-                return handleJson(payload);
+                events.addAll(handleJson(payload));
+                break;
+            default:
+                LOG.warn("Unhandled payload type code {}", String.format("%02x", payload[0]));
+                break;
         }
 
-        LOG.warn("Unhandled payload type code {}", String.format("%02x", payload[0]));
-
-        return Collections.emptyList();
+        return events;
     }
 
     public List<? extends GBDeviceEvent> handleInitResponse(final byte[] payload) {
@@ -502,6 +556,7 @@ public class SonyProtocolImplV1 extends AbstractSonyProtocolImpl {
 
         // Populate the init requests
         final List<Request> capabilityRequests = new ArrayList<>();
+        final ArrayList<PayloadType> capabilityRequestPayloadTypes = new ArrayList<>();
 
         capabilityRequests.add(getFirmwareVersion());
         capabilityRequests.add(getAudioCodec());
@@ -526,9 +581,13 @@ public class SonyProtocolImplV1 extends AbstractSonyProtocolImpl {
 
         for (Map.Entry<SonyHeadphonesCapabilities, Request> capabilityEntry : capabilityRequestMap.entrySet()) {
             if (coordinator.supports(capabilityEntry.getKey())) {
-                capabilityRequests.add(capabilityEntry.getValue());
+                final Request request = capabilityEntry.getValue();
+                final PayloadType requestPayloadType = fromCode(request.messageType(), request.payload()[0]);
+                capabilityRequests.add(request);
+                capabilityRequestPayloadTypes.add(requestPayloadType);
             }
         }
+        this.capabilityRequestPayloadTypes = capabilityRequestPayloadTypes;
 
         return Collections.singletonList(new SonyHeadphonesEnqueueRequestEvent(capabilityRequests));
     }
