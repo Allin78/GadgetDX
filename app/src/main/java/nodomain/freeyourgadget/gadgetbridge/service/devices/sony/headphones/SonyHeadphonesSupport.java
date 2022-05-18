@@ -1,4 +1,4 @@
-/*  Copyright (C) 2021 José Rebelo
+/*  Copyright (C) 2021 - 2022 José Rebelo, Ngô Minh Quang
 
     This file is part of Gadgetbridge.
 
@@ -56,6 +56,11 @@ public class SonyHeadphonesSupport extends AbstractSerialDeviceSupport {
     }
 
     @Override
+    protected synchronized SonyHeadphonesProtocol getDeviceProtocol() {
+        return (SonyHeadphonesProtocol) super.getDeviceProtocol();
+    }
+
+    @Override
     public void evaluateGBDeviceEvent(GBDeviceEvent deviceEvent) {
         final SonyHeadphonesProtocol sonyProtocol = (SonyHeadphonesProtocol) getDeviceProtocol();
 
@@ -67,7 +72,7 @@ public class SonyHeadphonesSupport extends AbstractSerialDeviceSupport {
                 // There are no pending acks, send one request from the queue
                 // TODO: A more elegant way of scheduling these?
                 SonyHeadphonesIoThread deviceIOThread = getDeviceIOThread();
-                deviceIOThread.write(sonyProtocol.getFromQueue());
+                deviceIOThread.enqueueOutgoingMessage(sonyProtocol.getFromQueue());
             }
         }
 
@@ -112,5 +117,21 @@ public class SonyHeadphonesSupport extends AbstractSerialDeviceSupport {
     @Override
     public void onReadConfiguration(String config) {
         // Nothing to do
+    }
+
+    @Override
+    public void onSendConfiguration(String config) {
+        final SonyHeadphonesProtocol sonyHeadphonesProtocol = getDeviceProtocol();
+        if (sonyHeadphonesProtocol != null) {
+            sonyHeadphonesProtocol.onSendConfiguration(config);
+        }
+    }
+
+    @Override
+    public void onPowerOff() {
+        final SonyHeadphonesProtocol sonyHeadphonesProtocol = getDeviceProtocol();
+        if (sonyHeadphonesProtocol != null) {
+            sonyHeadphonesProtocol.onPowerOff();
+        }
     }
 }

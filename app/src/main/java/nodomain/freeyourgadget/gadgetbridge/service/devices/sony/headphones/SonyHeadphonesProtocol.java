@@ -1,4 +1,4 @@
-/*  Copyright (C) 2021 José Rebelo
+/*  Copyright (C) 2021 - 2022 José Rebelo, Ngô Minh Quang
 
     This file is part of Gadgetbridge.
 
@@ -29,7 +29,6 @@ import java.util.Queue;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AudioUpsampling;
@@ -38,14 +37,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.Button
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.EqualizerCustomBands;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.EqualizerPreset;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.PauseWhenTakenOff;
-import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.VoiceNotifications;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SoundPosition;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SurroundMode;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.TouchSensor;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.VoiceNotifications;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.Request;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.MessageType;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.Request;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.AbstractSonyProtocolImpl;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.v1.SonyProtocolImplV1;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
@@ -54,6 +53,8 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
     private static final Logger LOG = LoggerFactory.getLogger(SonyHeadphonesProtocol.class);
 
     private byte sequenceNumber = 0;
+
+    private SonyHeadphonesIoThread ioThread = null;
 
     // Request queue, sent every ACK, as we can't send them all at once
     // Initially, it should contain all the init requests
@@ -64,6 +65,17 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
 
     public SonyHeadphonesProtocol(GBDevice device) {
         super(device);
+    }
+
+    synchronized void initialize(SonyHeadphonesIoThread ioThread) {
+        this.ioThread = ioThread;
+
+        // Send first init request
+        this.ioThread.enqueueOutgoingMessage(createInitMessage());
+    }
+
+    synchronized void quit() {
+        // For future use
     }
 
     @Override
@@ -120,7 +132,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             switch (messageType) {
                 case COMMAND_1:
                 case COMMAND_2:
-                    events.add(new GBDeviceEventSendBytes(encodeAck(message.getSequenceNumber())));
+                    ioThread.enqueueOutgoingMessage(createAck(message.getSequenceNumber()));
                     events.addAll(protocolImpl.handlePayload(messageType, message.getPayload()));
                     break;
                 default:
@@ -137,9 +149,13 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
 
     @Override
     public byte[] encodeSendConfiguration(String config) {
+        throw new UnsupportedOperationException("Use onSendConfiguration(String) instead.");
+    }
+
+    public boolean onSendConfiguration(String config) {
         if (protocolImpl == null) {
             LOG.error("No protocol implementation, ignoring config {}", config);
-            return super.encodeSendConfiguration(config);
+            return false;
         }
 
         final SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
@@ -196,21 +212,21 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                 break;
             case DeviceSettingsPreferenceConst.PREF_SONY_CONNECT_TWO_DEVICES:
                 LOG.warn("Connection to two devices not implemented ('{}')", config);
-                return super.encodeSendConfiguration(config);
+                return false;
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT:
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT_SENSITIVITY:
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT_FOCUS_ON_VOICE:
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT_TIMEOUT:
                 LOG.warn("Speak-to-chat is not implemented ('{}')", config);
-                return super.encodeSendConfiguration(config);
+                return false;
             default:
                 LOG.warn("Unknown config '{}'", config);
-                return super.encodeSendConfiguration(config);
+                return false;
         }
 
         pendingAcks++;
 
-        return configRequest.encode(sequenceNumber);
+        return ioThread.enqueueOutgoingMessage(configRequest.toMessage(sequenceNumber));
     }
 
     @Override
@@ -221,19 +237,26 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
     }
 
     @Override
-    public byte[] encodePowerOff() {
-        if (protocolImpl != null) {
-            return protocolImpl.powerOff().encode(sequenceNumber);
+    public final byte[] encodePowerOff() {
+        throw new UnsupportedOperationException("Use onPowerOff() instead.");
+    }
+
+    public boolean onPowerOff() {
+        if (protocolImpl == null) {
+            LOG.error("No protocol implementation. Cannot power off!");
+            return false;
         }
 
-        return super.encodePowerOff();
+        final Message powerOffMessage = protocolImpl.powerOff().toMessage(sequenceNumber);
+
+        return ioThread.enqueueOutgoingMessage(powerOffMessage);
     }
 
-    public byte[] encodeAck(byte sequenceNumber) {
-        return new Message(MessageType.ACK, (byte) (1 - sequenceNumber), new byte[0]).encode();
+    private Message createAck(byte sequenceNumber) {
+        return new Message(MessageType.ACK, (byte) (1 - sequenceNumber), new byte[0]);
     }
 
-    public byte[] encodeInit() {
+    public Message createInitMessage() {
         pendingAcks++;
         return new Message(
                 MessageType.COMMAND_1,
@@ -242,7 +265,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                         (byte) 0x00,
                         (byte) 0x00
                 }
-        ).encode();
+        );
     }
 
     public void enqueueRequests(final List<Request> requests) {
@@ -259,8 +282,8 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
         pendingAcks--;
     }
 
-    public byte[] getFromQueue() {
-        return requestQueue.remove().encode(sequenceNumber);
+    public Message getFromQueue() {
+        return requestQueue.remove().toMessage(sequenceNumber);
     }
 
     public boolean hasProtocolImplementation() {
@@ -274,8 +297,11 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             LOG.debug("Outstanding requests in queue: {}", requestQueue.size());
 
             final Request request = requestQueue.remove();
+            final Message message = request.toMessage(sequenceNumber);
 
-            return new GBDeviceEventSendBytes(request.encode(sequenceNumber));
+            ioThread.enqueueOutgoingMessage(message);
+
+            return null;
         }
 
         if (GBDevice.State.INITIALIZING.equals(getDevice().getState())) {

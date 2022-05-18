@@ -1,4 +1,4 @@
-/*  Copyright (C) 2021 José Rebelo
+/*  Copyright (C) 2021 - 2022 José Rebelo, Ngô Minh Quang
 
     This file is part of Gadgetbridge.
 
@@ -30,6 +30,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btclassic.BtClassicIoThread;
@@ -40,6 +44,10 @@ public class SonyHeadphonesIoThread extends BtClassicIoThread {
     private static final Logger LOG = LoggerFactory.getLogger(SonyHeadphonesIoThread.class);
 
     private final SonyHeadphonesProtocol mProtocol;
+
+    private final BlockingQueue<Message> outgoingMessageQueue = new LinkedBlockingQueue<>();
+
+    private ExecutorService outgoingMessageExecutorService = null;
 
     // Track whether we got the first init reply
     private final Handler handler = new Handler();
@@ -57,7 +65,7 @@ public class SonyHeadphonesIoThread extends BtClassicIoThread {
                     LOG.warn("Init retry {}", initRetries);
 
                     mProtocol.decreasePendingAcks();
-                    write(mProtocol.encodeInit());
+                    enqueueOutgoingMessage(mProtocol.createInitMessage());
                     scheduleInitRetry();
                 } else {
                     LOG.error("Failed to start headphones init after {} tries", initRetries);
@@ -73,18 +81,37 @@ public class SonyHeadphonesIoThread extends BtClassicIoThread {
     }
 
     @Override
-    protected void initialize() {
-        write(mProtocol.encodeInit());
+    protected synchronized void initialize() {
+        outgoingMessageExecutorService = Executors.newSingleThreadExecutor();
+        outgoingMessageExecutorService.execute(createOutgoingMessageThread());
+        mProtocol.initialize(this);
+
         scheduleInitRetry();
         setUpdateState(GBDevice.State.INITIALIZING);
     }
 
     @Override
-    public synchronized void write(byte[] bytes) {
-        // Log the human-readable message, for debugging
-        LOG.info("Writing {}", Message.fromBytes(bytes));
+    public synchronized void quit() {
+        mProtocol.quit();
+        if (outgoingMessageExecutorService != null) {
+            outgoingMessageExecutorService.shutdownNow();
+        }
+        super.quit();
+    }
 
-        super.write(bytes);
+    public boolean enqueueOutgoingMessage(Message message) {
+        try {
+            outgoingMessageQueue.put(message);
+            return true;
+        } catch (InterruptedException e) {
+            LOG.error("{}", e);
+        }
+        return false;
+    }
+
+    @Override
+    public final void write(byte[] bytes) {
+        throw new UnsupportedOperationException("Use enqueueOutgoingMessage(Message) instead.");
     }
 
     @Override
@@ -117,5 +144,26 @@ public class SonyHeadphonesIoThread extends BtClassicIoThread {
         LOG.info("Scheduling init retry");
 
         handler.postDelayed(initSendRunnable, 1250);
+    }
+
+    private Runnable createOutgoingMessageThread() {
+        return new Runnable() {
+            @Override
+            public void run() {
+                do {
+                    try {
+                        final Message message = outgoingMessageQueue.take();
+                        final byte[] encodedMessage = message.encode();
+
+                        // Log the human-readable message, for debugging
+                        LOG.info("> {}", message);
+                        SonyHeadphonesIoThread.super.write(encodedMessage);
+                    } catch (InterruptedException e) {
+                        // shutdownNow() is called
+                        break;
+                    }
+                } while (true);
+            }
+        };
     }
 }
