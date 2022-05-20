@@ -1,4 +1,4 @@
-/*  Copyright (C) 2021 José Rebelo
+/*  Copyright (C) 2021 - 2022 José Rebelo, Ngô Minh Quang
 
     This file is part of Gadgetbridge.
 
@@ -18,7 +18,6 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.os.Handler;
 import android.os.ParcelUuid;
 
 import androidx.annotation.NonNull;
@@ -41,49 +40,33 @@ public class SonyHeadphonesIoThread extends BtClassicIoThread {
 
     private final SonyHeadphonesProtocol mProtocol;
 
-    // Track whether we got the first init reply
-    private final Handler handler = new Handler();
-    private int initRetries = 0;
-
-    /**
-     * Sometimes the headphones will ignore the first init request, so we retry a few times
-     * TODO: Implement this in a more elegant way. Ideally, we should retry every command for which we didn't get an ACK.
-     */
-    private final Runnable initSendRunnable = new Runnable() {
-        public void run() {
-            // If we still haven't got any reply, re-send the init
-            if (!mProtocol.hasProtocolImplementation()) {
-                if (initRetries++ < 2) {
-                    LOG.warn("Init retry {}", initRetries);
-
-                    mProtocol.decreasePendingAcks();
-                    write(mProtocol.encodeInit());
-                    scheduleInitRetry();
-                } else {
-                    LOG.error("Failed to start headphones init after {} tries", initRetries);
-                    quit();
-                }
-            }
-        }
-    };
-
-    public SonyHeadphonesIoThread(GBDevice gbDevice, Context context, SonyHeadphonesProtocol protocol, SonyHeadphonesSupport support, BluetoothAdapter btAdapter) {
+    public SonyHeadphonesIoThread(
+        GBDevice gbDevice,
+        Context context,
+        SonyHeadphonesProtocol protocol,
+        SonyHeadphonesSupport support,
+        BluetoothAdapter btAdapter
+    ) {
         super(gbDevice, context, protocol, support, btAdapter);
         mProtocol = protocol;
     }
 
     @Override
-    protected void initialize() {
-        write(mProtocol.encodeInit());
-        scheduleInitRetry();
+    protected synchronized void initialize() {
         setUpdateState(GBDevice.State.INITIALIZING);
+        mProtocol.initialize(this);
+    }
+
+    @Override
+    public synchronized void quit() {
+        mProtocol.quit();
+        super.quit();
     }
 
     @Override
     public synchronized void write(byte[] bytes) {
         // Log the human-readable message, for debugging
-        LOG.info("Writing {}", Message.fromBytes(bytes));
-
+        LOG.info("> {}", Message.fromBytes(bytes));
         super.write(bytes);
     }
 
@@ -111,11 +94,5 @@ public class SonyHeadphonesIoThread extends BtClassicIoThread {
     @Override
     protected UUID getUuidToConnect(@NonNull ParcelUuid[] uuids) {
         return UUID.fromString("96CC203E-5068-46ad-B32D-E316F5E069BA");
-    }
-
-    private void scheduleInitRetry() {
-        LOG.info("Scheduling init retry");
-
-        handler.postDelayed(initSendRunnable, 1250);
     }
 }

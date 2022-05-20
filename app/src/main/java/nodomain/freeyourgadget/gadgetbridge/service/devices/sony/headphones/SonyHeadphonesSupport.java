@@ -1,4 +1,4 @@
-/*  Copyright (C) 2021 José Rebelo
+/*  Copyright (C) 2021 - 2022 José Rebelo, Ngô Minh Quang
 
     This file is part of Gadgetbridge.
 
@@ -47,7 +47,18 @@ public class SonyHeadphonesSupport extends AbstractSerialDeviceSupport {
 
     @Override
     protected GBDeviceIoThread createDeviceIOThread() {
-        return new SonyHeadphonesIoThread(getDevice(), getContext(), (SonyHeadphonesProtocol) getDeviceProtocol(), SonyHeadphonesSupport.this, getBluetoothAdapter());
+        return new SonyHeadphonesIoThread(
+            getDevice(),
+            getContext(),
+            (SonyHeadphonesProtocol) getDeviceProtocol(),
+            SonyHeadphonesSupport.this,
+            getBluetoothAdapter()
+        );
+    }
+
+    @Override
+    protected synchronized SonyHeadphonesProtocol getDeviceProtocol() {
+        return (SonyHeadphonesProtocol) super.getDeviceProtocol();
     }
 
     @Override
@@ -62,13 +73,7 @@ public class SonyHeadphonesSupport extends AbstractSerialDeviceSupport {
         if (deviceEvent instanceof SonyHeadphonesEnqueueRequestEvent) {
             final SonyHeadphonesEnqueueRequestEvent enqueueRequestEvent = (SonyHeadphonesEnqueueRequestEvent) deviceEvent;
             sonyProtocol.enqueueRequests(enqueueRequestEvent.getRequests());
-
-            if (sonyProtocol.getPendingAcks() == 0) {
-                // There are no pending acks, send one request from the queue
-                // TODO: A more elegant way of scheduling these?
-                SonyHeadphonesIoThread deviceIOThread = getDeviceIOThread();
-                deviceIOThread.write(sonyProtocol.getFromQueue());
-            }
+            return;
         }
 
         super.evaluateGBDeviceEvent(deviceEvent);
@@ -112,5 +117,21 @@ public class SonyHeadphonesSupport extends AbstractSerialDeviceSupport {
     @Override
     public void onReadConfiguration(String config) {
         // Nothing to do
+    }
+
+    @Override
+    public void onSendConfiguration(String config) {
+        final SonyHeadphonesProtocol sonyHeadphonesProtocol = getDeviceProtocol();
+        if (sonyHeadphonesProtocol != null) {
+            sonyHeadphonesProtocol.onSendConfiguration(config);
+        }
+    }
+
+    @Override
+    public void onPowerOff() {
+        final SonyHeadphonesProtocol sonyHeadphonesProtocol = getDeviceProtocol();
+        if (sonyHeadphonesProtocol != null) {
+            sonyHeadphonesProtocol.onPowerOff();
+        }
     }
 }
