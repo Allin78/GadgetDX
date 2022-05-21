@@ -372,9 +372,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                         sendRequestAndRetry(
                                 sendRequestAndRetryExecutorService,
                                 request,
-                                sendSequenceNumber,
-                                MAX_SEND_RETRIES,
-                                SEND_RETRY_DELAY_MS
+                                sendSequenceNumber
                         );
                         // Should ONLY modify send sequence number here!
                         sendSequenceNumber = sendSequenceNumber.next();
@@ -393,9 +391,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
     private final void sendRequestAndRetry(
             final ExecutorService executorService,
             final Request request,
-            final SequenceNumber sequenceNumber,
-            final int maxRetries,
-            final long retryDelayMs
+            final SequenceNumber sequenceNumber
     ) {
         final Runnable task = new Runnable() {
             final Message message = request.toMessage(sequenceNumber.getValue());
@@ -431,7 +427,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             final Future<?> future = executorService.submit(task);
 
             try {
-                future.get(retryDelayMs, TimeUnit.MILLISECONDS);
+                future.get(SEND_RETRY_DELAY_MS, TimeUnit.MILLISECONDS);
             } catch (ExecutionException | InterruptedException e) {
                 break;
             } catch (TimeoutException e) {
