@@ -107,7 +107,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             requestQueue.put(request);
             return true;
         } catch (InterruptedException e) {
-            LOG.error("{}", e);
+            LOG.error("Failed to enqueue request", e);
         }
         return false;
     }
@@ -118,7 +118,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                 requestQueue.put(request);
             }
         } catch (InterruptedException e) {
-            LOG.error("{}", e);
+            LOG.error("Failed to enqueue request", e);
         }
     }
 
