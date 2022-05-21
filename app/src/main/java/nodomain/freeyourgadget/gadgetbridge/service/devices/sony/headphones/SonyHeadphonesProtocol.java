@@ -238,11 +238,6 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
         return protocolImpl.handlePayload(message.getType(), message.getPayload());
     }
 
-    @Override
-    public final byte[] encodeSendConfiguration(String config) {
-        throw new UnsupportedOperationException("Use onSendConfiguration(String) instead.");
-    }
-
     public boolean onSendConfiguration(String config) {
         if (protocolImpl == null) {
             LOG.error("No protocol implementation, ignoring config {}", config);
@@ -323,11 +318,6 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
         //return Request.fromHex(MessageType.COMMAND_1, "c40100").encode(sequenceNumber);
 
         return null;
-    }
-
-    @Override
-    public final byte[] encodePowerOff() {
-        throw new UnsupportedOperationException("Use onPowerOff() instead.");
     }
 
     public boolean onPowerOff() {
