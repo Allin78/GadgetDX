@@ -44,12 +44,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureWorldClocks;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.AbstractCapability;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
@@ -519,13 +521,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_LEVEL);
         addPreferenceHandlerFor(PREF_SONY_SOUND_POSITION);
         addPreferenceHandlerFor(PREF_SONY_SURROUND_MODE);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_MODE);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_BAND_400);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_BAND_1000);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_BAND_2500);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_BAND_6300);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_BAND_16000);
-        addPreferenceHandlerFor(PREF_SONY_EQUALIZER_BASS);
         addPreferenceHandlerFor(PREF_SONY_AUDIO_UPSAMPLING);
         addPreferenceHandlerFor(PREF_SONY_TOUCH_SENSOR);
         addPreferenceHandlerFor(PREF_SONY_PAUSE_WHEN_TAKEN_OFF);
@@ -800,6 +795,13 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
             }
         }
 
+        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+
+        final List<AbstractCapability> deviceCapabilities = coordinator.getCapabilities();
+        for (AbstractCapability capability : deviceCapabilities) {
+            capability.getImplementation().registerPreferences(getContext(), capability,  this);
+        }
+
         if (deviceSpecificSettingsCustomizer != null) {
             deviceSpecificSettingsCustomizer.customizeSettings(this, prefs);
         }
@@ -809,6 +811,15 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
         int[] supportedSettings = coordinator.getSupportedDeviceSpecificSettings(device);
         String[] supportedLanguages = coordinator.getSupportedLanguageSettings(device);
+
+        final List<AbstractCapability> deviceCapabilities = coordinator.getCapabilities();
+        for (AbstractCapability capability : deviceCapabilities) {
+            supportedSettings = ArrayUtils.insert(
+                    0,
+                    supportedSettings,
+                    capability.getImplementation().getSupportedDeviceSpecificSettings(device)
+            );
+        }
 
         if (supportedLanguages != null) {
             supportedSettings = ArrayUtils.insert(0, supportedSettings, R.xml.devicesettings_language_generic);

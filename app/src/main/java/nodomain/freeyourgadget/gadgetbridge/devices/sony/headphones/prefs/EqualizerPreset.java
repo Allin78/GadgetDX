@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerCapabilityPrefs;
 
 public enum EqualizerPreset {
     OFF((byte) 0x00),
@@ -50,11 +50,11 @@ public enum EqualizerPreset {
 
     public Map<String, Object> toPreferences() {
         return new HashMap<String, Object>() {{
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_MODE, name().toLowerCase(Locale.getDefault()));
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_MODE, name().toLowerCase(Locale.getDefault()));
         }};
     }
 
     public static EqualizerPreset fromPreferences(final SharedPreferences prefs) {
-        return EqualizerPreset.valueOf(prefs.getString(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_MODE, "off").toUpperCase());
+        return EqualizerPreset.valueOf(prefs.getString(EqualizerCapabilityPrefs.PREF_EQUALIZER_MODE, "off").toUpperCase());
     }
 }

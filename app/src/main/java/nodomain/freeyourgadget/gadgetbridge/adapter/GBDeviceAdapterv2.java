@@ -55,6 +55,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.jaredrummler.android.colorpicker.ColorPickerDialog;
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener;
@@ -78,11 +79,12 @@ import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureAlarms;
 import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureReminders;
 import nodomain.freeyourgadget.gadgetbridge.activities.ControlCenterv2;
 import nodomain.freeyourgadget.gadgetbridge.activities.HeartRateDialog;
-import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.VibrationActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.charts.ChartsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.AbstractCapability;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.poweroff.PowerOffCapabilityImpl;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
@@ -122,7 +124,14 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
     @Override
     public GBDeviceAdapterv2.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         this.parent = parent;
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_itemv2, parent, false);
+        final LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        final View view = layoutInflater.inflate(R.layout.device_itemv2, parent, false);
+        final ViewGroup infos = (ViewGroup) parent.findViewById(R.id.device_info_icons);
+        // TODO: Find a way to load these dynamically from all capabilities
+        for (Integer action : PowerOffCapabilityImpl.getActions()) {
+            layoutInflater.inflate(action, infos, false);
+        }
+
         return new ViewHolder(view);
     }
 
@@ -647,25 +656,8 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
             });
         }
 
-        holder.powerOff.setVisibility(View.GONE);
-        if (device.isInitialized() && coordinator.supportsPowerOff()) {
-            holder.powerOff.setVisibility(View.VISIBLE);
-            holder.powerOff.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new AlertDialog.Builder(context)
-                            .setTitle(R.string.controlcenter_power_off_confirm_title)
-                            .setMessage(R.string.controlcenter_power_off_confirm_description)
-                            .setIcon(R.drawable.ic_power_settings_new)
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(final DialogInterface dialog, final int whichButton) {
-                                    GBApplication.deviceService().onPowerOff();
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, null)
-                            .show();
-                }
-            });
+        for (AbstractCapability capability : coordinator.getCapabilities()) {
+            capability.getImplementation().configureCardShortcuts(holder.infos, device);
         }
 
         //remove device, hidden under details
@@ -803,6 +795,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
         ImageView deviceInfoView;
         //overflow
         final RelativeLayout deviceInfoBox;
+        FlexboxLayout infos;
         ListView deviceInfoList;
         ImageView findDevice;
         ImageView removeDevice;
@@ -856,6 +849,7 @@ public class GBDeviceAdapterv2 extends RecyclerView.Adapter<GBDeviceAdapterv2.Vi
             deviceInfoBox = view.findViewById(R.id.device_item_infos_box);
             //overflow
             deviceInfoList = view.findViewById(R.id.device_item_infos);
+            infos = (FlexboxLayout) view.findViewById(R.id.device_info_icons);
             findDevice = view.findViewById(R.id.device_action_find);
             removeDevice = view.findViewById(R.id.device_action_remove);
             setAlias = view.findViewById(R.id.device_action_set_alias);

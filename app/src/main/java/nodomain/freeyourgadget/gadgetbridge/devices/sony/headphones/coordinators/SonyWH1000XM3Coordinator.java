@@ -43,7 +43,8 @@ public class SonyWH1000XM3Coordinator extends SonyHeadphonesCoordinator {
     }
 
     @Override
-    public List<SonyHeadphonesCapabilities> getCapabilities() {
+    // TODO: Make these non-sony-specific capabilities
+    public List<SonyHeadphonesCapabilities> getSonyCapabilities() {
         return Arrays.asList(
                 SonyHeadphonesCapabilities.BatterySingle,
                 SonyHeadphonesCapabilities.AmbientSoundControl,

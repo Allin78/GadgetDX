@@ -28,6 +28,7 @@ import java.util.Queue;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerCapabilityPrefs;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState;
@@ -164,15 +165,15 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             case DeviceSettingsPreferenceConst.PREF_SONY_SURROUND_MODE:
                 configRequest = protocolImpl.setSurroundMode(SurroundMode.fromPreferences(prefs));
                 break;
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_MODE:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_MODE:
                 configRequest = protocolImpl.setEqualizerPreset(EqualizerPreset.fromPreferences(prefs));
                 break;
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_400:
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_1000:
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_2500:
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_6300:
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_16000:
-            case DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BASS:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_400:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_1000:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_2500:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_6300:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_16000:
+            case EqualizerCapabilityPrefs.PREF_EQUALIZER_BASS:
                 configRequest = protocolImpl.setEqualizerCustomBands(EqualizerCustomBands.fromPreferences(prefs));
                 break;
             case DeviceSettingsPreferenceConst.PREF_SONY_AUDIO_UPSAMPLING:

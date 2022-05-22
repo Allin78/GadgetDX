@@ -43,7 +43,8 @@ public class SonyWH1000XM4Coordinator extends SonyHeadphonesCoordinator {
     }
 
     @Override
-    public List<SonyHeadphonesCapabilities> getCapabilities() {
+    // TODO: Make these non-sony-specific capabilities
+    public List<SonyHeadphonesCapabilities> getSonyCapabilities() {
         return Arrays.asList(
                 // TODO: Function of [CUSTOM] button
                 // TODO R.xml.devicesettings_connect_two_devices,

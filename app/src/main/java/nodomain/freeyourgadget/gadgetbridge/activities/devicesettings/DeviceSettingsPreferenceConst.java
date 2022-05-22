@@ -181,15 +181,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SONY_NOISE_OPTIMIZER_STATE_PRESSURE = "pref_sony_noise_optimizer_state_pressure";
     public static final String PREF_SONY_SOUND_POSITION = "pref_sony_sound_position";
     public static final String PREF_SONY_SURROUND_MODE = "pref_sony_surround_mode";
-    public static final String PREF_SONY_EQUALIZER = "pref_sony_equalizer";
-    public static final String PREF_SONY_EQUALIZER_MODE = "pref_sony_equalizer_mode";
     public static final String PREF_SONY_AUDIO_UPSAMPLING = "pref_sony_audio_upsampling";
-    public static final String PREF_SONY_EQUALIZER_BAND_400 = "pref_sony_equalizer_band_400";
-    public static final String PREF_SONY_EQUALIZER_BAND_1000 = "pref_sony_equalizer_band_1000";
-    public static final String PREF_SONY_EQUALIZER_BAND_2500 = "pref_sony_equalizer_band_2500";
-    public static final String PREF_SONY_EQUALIZER_BAND_6300 = "pref_sony_equalizer_band_6300";
-    public static final String PREF_SONY_EQUALIZER_BAND_16000 = "pref_sony_equalizer_band_16000";
-    public static final String PREF_SONY_EQUALIZER_BASS = "pref_sony_equalizer_bass";
     public static final String PREF_SONY_TOUCH_SENSOR = "pref_sony_touch_sensor";
     public static final String PREF_SONY_PAUSE_WHEN_TAKEN_OFF = "sony_pause_when_taken_off";
     public static final String PREF_SONY_BUTTON_MODE_LEFT = "pref_sony_button_mode_left";

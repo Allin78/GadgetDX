@@ -18,10 +18,14 @@ package nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinator
 
 import androidx.annotation.NonNull;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.AbstractCapability;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.poweroff.PowerOffCapability;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCapabilities;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
@@ -54,7 +58,15 @@ public class SonyWFSP800NCoordinator extends SonyHeadphonesCoordinator {
     }
 
     @Override
-    public List<SonyHeadphonesCapabilities> getCapabilities() {
+    public List<AbstractCapability> getCapabilities() {
+        final List<AbstractCapability> capabilities = new ArrayList<>(super.getCapabilities());
+        capabilities.add(new PowerOffCapability());
+        return capabilities;
+    }
+
+    @Override
+    // TODO: Make these non-sony-specific capabilities
+    public List<SonyHeadphonesCapabilities> getSonyCapabilities() {
         return Arrays.asList(
                 SonyHeadphonesCapabilities.BatteryDual,
                 SonyHeadphonesCapabilities.BatteryCase,

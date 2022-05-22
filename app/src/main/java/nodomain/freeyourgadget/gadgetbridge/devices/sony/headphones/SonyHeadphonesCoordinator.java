@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -36,6 +37,10 @@ import java.util.Set;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.AbstractCapability;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerBand;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerCapability;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerPreset;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -43,7 +48,6 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
 
 public abstract class SonyHeadphonesCoordinator extends AbstractDeviceCoordinator {
     @Override
@@ -186,7 +190,6 @@ public abstract class SonyHeadphonesCoordinator extends AbstractDeviceCoordinato
 
         addSettingsUnderHeader(settings, R.xml.devicesettings_header_other, new LinkedHashMap<SonyHeadphonesCapabilities, Integer>() {{
             put(SonyHeadphonesCapabilities.AudioSettingsOnlyOnSbcCodec, R.xml.devicesettings_sony_warning_wh1000xm3);
-            put(SonyHeadphonesCapabilities.Equalizer, R.xml.devicesettings_sony_headphones_equalizer);
             put(SonyHeadphonesCapabilities.SoundPosition, R.xml.devicesettings_sony_headphones_sound_position);
             put(SonyHeadphonesCapabilities.SurroundMode, R.xml.devicesettings_sony_headphones_surround_mode);
             put(SonyHeadphonesCapabilities.AudioUpsampling, R.xml.devicesettings_sony_headphones_audio_upsampling);
@@ -206,12 +209,58 @@ public abstract class SonyHeadphonesCoordinator extends AbstractDeviceCoordinato
         return ArrayUtils.toPrimitive(settings.toArray(new Integer[0]));
     }
 
-    public List<SonyHeadphonesCapabilities> getCapabilities() {
+    public List<AbstractCapability> getCapabilities() {
+        return Arrays.<AbstractCapability>asList(
+                getEqualizerCapability()
+        );
+    }
+
+    protected EqualizerCapability getEqualizerCapability() {
+        final EqualizerCapability equalizerCapability = new EqualizerCapability();
+        equalizerCapability.supportedPresets = Arrays.asList(
+                EqualizerPreset.OFF,
+                EqualizerPreset.BRIGHT,
+                EqualizerPreset.EXCITED,
+                EqualizerPreset.MELLOW,
+                EqualizerPreset.RELAXED,
+                EqualizerPreset.VOCAL,
+                EqualizerPreset.TREBLE_BOOST,
+                EqualizerPreset.BASS_BOOST,
+                EqualizerPreset.SPEECH,
+                EqualizerPreset.MANUAL,
+                EqualizerPreset.CUSTOM_1,
+                EqualizerPreset.CUSTOM_2
+        );
+        equalizerCapability.customPresets = new HashSet<>(Arrays.asList(
+                EqualizerPreset.MANUAL,
+                EqualizerPreset.CUSTOM_1,
+                EqualizerPreset.CUSTOM_2
+        ));
+
+        equalizerCapability.bandMin = -10;
+        equalizerCapability.bandMax = 10;
+        equalizerCapability.supportedBands = Arrays.asList(
+                EqualizerBand.BAND_400,
+                EqualizerBand.BAND_1000,
+                EqualizerBand.BAND_2500,
+                EqualizerBand.BAND_6300,
+                EqualizerBand.BAND_16000
+        );
+
+        equalizerCapability.supportsBass = true;
+        equalizerCapability.bassMin = -10;
+        equalizerCapability.bassMax = 10;
+
+        return equalizerCapability;
+    }
+
+    // TODO: Make these non-sony-specific capabilities
+    public List<SonyHeadphonesCapabilities> getSonyCapabilities() {
         return Collections.emptyList();
     }
 
     public boolean supports(final SonyHeadphonesCapabilities capability) {
-        return getCapabilities().contains(capability);
+        return getSonyCapabilities().contains(capability);
     }
 
     /**

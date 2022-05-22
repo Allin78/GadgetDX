@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerCapabilityPrefs;
 
 public class EqualizerCustomBands {
     private List<Integer> bands;
@@ -62,23 +62,23 @@ public class EqualizerCustomBands {
 
     public Map<String, Object> toPreferences() {
         return new HashMap<String, Object>() {{
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_400, bands.get(0) + 10);
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_1000, bands.get(1) + 10);
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_2500, bands.get(2) + 10);
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_6300, bands.get(3) + 10);
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_16000, bands.get(4) + 10);
-            put(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BASS, bass + 10);
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_400, bands.get(0) + 10);
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_1000, bands.get(1) + 10);
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_2500, bands.get(2) + 10);
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_6300, bands.get(3) + 10);
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_16000, bands.get(4) + 10);
+            put(EqualizerCapabilityPrefs.PREF_EQUALIZER_BASS, bass + 10);
             ;
         }};
     }
 
     public static EqualizerCustomBands fromPreferences(final SharedPreferences prefs) {
-        int band1 = prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_400, 10) - 10;
-        int band2 = prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_1000, 10) - 10;
-        int band3 = prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_2500, 10) - 10;
-        int band4 = prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_6300, 10) - 10;
-        int band5 = prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_16000, 10) - 10;
-        int bass = prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BASS, 10) - 10;
+        int band1 = prefs.getInt(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_400, 10) - 10;
+        int band2 = prefs.getInt(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_1000, 10) - 10;
+        int band3 = prefs.getInt(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_2500, 10) - 10;
+        int band4 = prefs.getInt(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_6300, 10) - 10;
+        int band5 = prefs.getInt(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_16000, 10) - 10;
+        int bass = prefs.getInt(EqualizerCapabilityPrefs.PREF_EQUALIZER_BASS, 10) - 10;
 
         return new EqualizerCustomBands(Arrays.asList(band1, band2, band3, band4, band5), bass);
     }

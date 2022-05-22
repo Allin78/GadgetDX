@@ -19,14 +19,6 @@ package nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_AMBIENT_SOUND_CONTROL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_AMBIENT_SOUND_LEVEL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_AUDIO_CODEC;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_1000;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_16000;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_2500;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_400;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BAND_6300;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_BASS;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_MODE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_FOCUS_VOICE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_NOISE_OPTIMIZER_CANCEL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SONY_NOISE_OPTIMIZER_START;
@@ -46,6 +38,8 @@ import android.content.DialogInterface;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +49,8 @@ import java.util.Set;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsHandler;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerBand;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.equalizer.EqualizerCapabilityPrefs;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControl;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
@@ -77,18 +73,19 @@ public class SonyHeadphonesSettingsCustomizer implements DeviceSpecificSettingsC
         if (preference.getKey().equals(PREF_SONY_AUDIO_CODEC) && device.getType().equals(DeviceType.SONY_WH_1000XM3)) {
             final boolean isSbcCodec = ((EditTextPreference) preference).getText().equalsIgnoreCase("sbc");
 
-            final List<Preference> prefsToDisable = Arrays.asList(
-                    handler.findPreference(PREF_SONY_EQUALIZER),
-                    handler.findPreference(PREF_SONY_EQUALIZER_MODE),
-                    handler.findPreference(PREF_SONY_EQUALIZER_BAND_400),
-                    handler.findPreference(PREF_SONY_EQUALIZER_BAND_1000),
-                    handler.findPreference(PREF_SONY_EQUALIZER_BAND_2500),
-                    handler.findPreference(PREF_SONY_EQUALIZER_BAND_6300),
-                    handler.findPreference(PREF_SONY_EQUALIZER_BAND_16000),
-                    handler.findPreference(PREF_SONY_EQUALIZER_BASS),
+            final List<Preference> prefsToDisable = new ArrayList<>(Arrays.asList(
+                    handler.findPreference(EqualizerCapabilityPrefs.PREF_EQUALIZER),
+                    handler.findPreference(EqualizerCapabilityPrefs.PREF_EQUALIZER_MODE),
+                    handler.findPreference(EqualizerCapabilityPrefs.PREF_EQUALIZER_BASS),
                     handler.findPreference(PREF_SONY_SOUND_POSITION),
                     handler.findPreference(PREF_SONY_SURROUND_MODE)
-            );
+            ));
+
+            for (final EqualizerBand band : EqualizerBand.values()) {
+                final String bandPrefKey = String.format(EqualizerCapabilityPrefs.PREF_EQUALIZER_BAND_TEMPLATE, band.getFrequency());
+
+                prefsToDisable.add(handler.findPreference(bandPrefKey));
+            }
 
             for (Preference pref : prefsToDisable) {
                 if (pref != null) {
