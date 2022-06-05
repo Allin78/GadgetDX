@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,14 +34,13 @@ import android.widget.Button;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
+import nodomain.freeyourgadget.gadgetbridge.util.RingtoneUtils;
 
 
 public class FindPhoneActivity extends AbstractGBActivity {
@@ -115,7 +113,18 @@ public class FindPhoneActivity extends AbstractGBActivity {
         }
         mp = new MediaPlayer();
 
-        Uri ringtoneUri = Uri.parse(GBApplication.getPrefs().getString(GBPrefs.PING_TONE, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString()));
+        Uri defaultRingtoneUri = RingtoneUtils.getActualDefaultRingtoneUri(this);
+        String prefRingtoneUriString = GBApplication.getPrefs().getString(GBPrefs.PING_TONE, null);
+
+        Uri ringtoneUri;
+        if (prefRingtoneUriString != null) {
+            ringtoneUri = Uri.parse(prefRingtoneUriString);
+        } else if (defaultRingtoneUri != null) {
+            ringtoneUri = defaultRingtoneUri;
+        } else {
+            LOG.error("Failed to find a ringtone");
+            return;
+        }
 
         try {
             mp.setDataSource(this, ringtoneUri);
@@ -123,8 +132,8 @@ public class FindPhoneActivity extends AbstractGBActivity {
             mp.setLooping(true);
             mp.prepare();
             mp.start();
-        } catch (IOException ignore) {
-            LOG.warn("problem playing ringtone");
+        } catch (final Exception e) {
+            LOG.error("problem playing ringtone", e);
         }
 
         if (mAudioManager != null) {

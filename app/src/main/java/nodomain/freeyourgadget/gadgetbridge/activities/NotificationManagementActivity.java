@@ -51,11 +51,11 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+import nodomain.freeyourgadget.gadgetbridge.util.RingtoneUtils;
 
 public class NotificationManagementActivity extends AbstractSettingsActivity {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationManagementActivity.class);
     private static final int RINGTONE_REQUEST_CODE = 4712;
-    private static final String DEFAULT_RINGTONE_URI = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE).toString();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +91,21 @@ public class NotificationManagementActivity extends AbstractSettingsActivity {
                 return true;
             }
         });
-        pref.setSummary(RingtoneManager.getRingtone(this, Uri.parse(prefs.getString(GBPrefs.PING_TONE, DEFAULT_RINGTONE_URI))).getTitle(this));
+
+        Uri defaultRingtoneUri = RingtoneUtils.getActualDefaultRingtoneUri(this);
+        String prefRingtoneUriString = GBApplication.getPrefs().getString(GBPrefs.PING_TONE, null);
+
+        String pingToneSummary;
+        if (prefRingtoneUriString != null) {
+            pingToneSummary = RingtoneManager.getRingtone(this, Uri.parse(prefRingtoneUriString)).getTitle(this);
+        } else if (defaultRingtoneUri != null) {
+            pingToneSummary = RingtoneManager.getRingtone(this, defaultRingtoneUri).getTitle(this);
+        } else {
+            LOG.error("Failed to find the configured ping ringtone");
+            pingToneSummary = "-";
+        }
+
+        pref.setSummary(pingToneSummary);
 
         pref = findPreference("pref_key_blacklist");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
