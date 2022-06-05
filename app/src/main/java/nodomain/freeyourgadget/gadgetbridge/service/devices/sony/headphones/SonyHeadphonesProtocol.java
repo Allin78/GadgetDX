@@ -97,6 +97,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
     }
 
     public synchronized void quit() {
+        requestQueue.clear();
         if (requestQueueProcessingExecutorService != null) {
             requestQueueProcessingExecutorService.shutdownNow();
         }
@@ -368,6 +369,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                         sendSequenceNumber = sendSequenceNumber.next();
                     } catch (InterruptedException e) {
                         // shutdownNow() is called on `requestQueueProcessingThread`
+                        sendRequestAndRetryExecutorService.shutdownNow();
                         break;
                     }
                 } while (true);
@@ -434,7 +436,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
         }
 
         if (!sendSuccess) {
-            LOG.error("Cannot send request: {}. Max retries reached.", request);
+            LOG.error("Cannot send request: {}.", request);
         }
     }
 
