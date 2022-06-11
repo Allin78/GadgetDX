@@ -834,18 +834,13 @@ public class HuamiSupport extends AbstractBTLEDeviceSupport {
                 if (alertCategory == AlertCategory.CustomHuami) {
                     String appName;
                     prefixlength = 3;
-                    final PackageManager pm = getContext().getPackageManager();
-                    ApplicationInfo ai = null;
-                    try {
-                        ai = pm.getApplicationInfo(notificationSpec.sourceAppId, 0);
-                    } catch (PackageManager.NameNotFoundException ignored) {
-                    }
 
-                    if (ai != null) {
-                        appName = "\0" + pm.getApplicationLabel(ai) + "\0";
+                    if (notificationSpec.sourceName != null) {
+                        appName = "\0" + notificationSpec.sourceName + "\0";
                     } else {
                         appName = "\0" + "UNKNOWN" + "\0";
                     }
+
                     appSuffix = appName.getBytes();
                     suffixlength = appSuffix.length;
                 }

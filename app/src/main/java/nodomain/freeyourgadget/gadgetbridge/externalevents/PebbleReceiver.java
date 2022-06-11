@@ -24,6 +24,7 @@ import android.os.PowerManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,37 +65,51 @@ public class PebbleReceiver extends BroadcastReceiver {
         NotificationSpec notificationSpec = new NotificationSpec();
 
         String notificationData = intent.getStringExtra("notificationData");
+        JSONObject notification;
         try {
             JSONArray notificationJSON = new JSONArray(notificationData);
-            notificationSpec.title = notificationJSON.getJSONObject(0).getString("title");
-            notificationSpec.body = notificationJSON.getJSONObject(0).getString("body");
+            notification = notificationJSON.getJSONObject(0);
         } catch (JSONException e) {
-            e.printStackTrace();
+            LOG.error("Failed to deserialize json", e);
             return;
         }
 
-        if (notificationSpec.title != null) {
-            notificationSpec.type = NotificationType.UNKNOWN;
-            String sender = intent.getStringExtra("sender");
-            if (GBApplication.getPrefs().getString("notification_list_is_blacklist", "true").equals("true")) {
-                if (GBApplication.appIsPebbleBlacklisted(sender)) {
-                    LOG.info("Ignoring Pebble message, application " + sender + " is blacklisted");
-                    return;
-                }
-            } else {
-                if (!GBApplication.appIsPebbleBlacklisted(sender)) {
-                    LOG.info("Ignoring Pebble message, application " + sender + " is not whitelisted");
-                    return;
-                }
+        notificationSpec.title = notification.has("title") ? notification.optString("title") : null;
+        notificationSpec.body = notification.has("body") ? notification.optString("body") : null;
+        notificationSpec.sourceName = notification.has("sourceName") ? notification.optString("sourceName") : null;
+
+        if (notification.has("type")) {
+            try {
+                notificationSpec.type = NotificationType.valueOf(notification.optString("type"));
+            } catch (final IllegalArgumentException e) {
+                LOG.error("Invalid type: {}", notification.optString("type"));
+                notificationSpec.type = NotificationType.UNKNOWN;
             }
+        }
+
+        String sender = intent.getStringExtra("sender");
+        if (GBApplication.getPrefs().getString("notification_list_is_blacklist", "true").equals("true")) {
+            if (GBApplication.appIsPebbleBlacklisted(sender)) {
+                LOG.info("Ignoring Pebble message, application " + sender + " is blacklisted");
+                return;
+            }
+        } else {
+            if (!GBApplication.appIsPebbleBlacklisted(sender)) {
+                LOG.info("Ignoring Pebble message, application " + sender + " is not whitelisted");
+                return;
+            }
+        }
+
+        if (notificationSpec.type == null) {
+            notificationSpec.type = NotificationType.UNKNOWN;
 
             if ("Conversations".equals(sender)) {
                 notificationSpec.type = NotificationType.CONVERSATIONS;
-            }
-            else if ("OsmAnd".equals(sender)) {
+            } else if ("OsmAnd".equals(sender)) {
                 notificationSpec.type = NotificationType.GENERIC_NAVIGATION;
             }
-            GBApplication.deviceService().onNotification(notificationSpec);
         }
+
+        GBApplication.deviceService().onNotification(notificationSpec);
     }
 }
