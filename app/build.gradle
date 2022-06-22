@@ -327,11 +327,11 @@ tasks.withType(SpotBugsTask) {
 
 protobuf {
     protoc {
-        artifact = 'com.google.protobuf:protoc:3.0.0'
+        artifact = 'com.google.protobuf:protoc:3.0.0:osx-x86_64'
     }
     plugins {
         javalite {
-            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0:osx-x86_64'
         }
     }
     generateProtoTasks {

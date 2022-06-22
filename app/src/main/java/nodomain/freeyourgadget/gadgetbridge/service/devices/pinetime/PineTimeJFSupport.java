@@ -48,6 +48,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeActivitySampleProvider;
@@ -88,6 +89,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     private static final Logger LOG = LoggerFactory.getLogger(PineTimeJFSupport.class);
     private final GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
     private final GBDeviceEventBatteryInfo batteryCmd = new GBDeviceEventBatteryInfo();
+    private final GBDeviceEventFindPhone findPhoneCmd = new GBDeviceEventFindPhone();
 
     private final DeviceInfoProfile<PineTimeJFSupport> deviceInfoProfile;
     private final BatteryInfoProfile<PineTimeJFSupport> batteryInfoProfile;
@@ -226,6 +228,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
     public PineTimeJFSupport() {
         super(LOG);
+        addSupportedService(PineTimeJFConstants.UUID_SERVICE_INFINITIME);
         addSupportedService(GattService.UUID_SERVICE_ALERT_NOTIFICATION);
         addSupportedService(GattService.UUID_SERVICE_CURRENT_TIME);
         addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
@@ -462,6 +465,12 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         requestDeviceInfo(builder);
         onSetTime();
+
+        // Custom easy-to-implement InfiniTime commands
+        if (getSupportedServices().contains(PineTimeJFConstants.UUID_SERVICE_INFINITIME)) {
+            builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTICS_INFINITIME_FIND_PHONE), true);
+        }
+
         builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_EVENT), true);
         BluetoothGattCharacteristic alertNotificationEventCharacteristic = getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
         if (alertNotificationEventCharacteristic != null) {
@@ -586,6 +595,25 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         }
 
         UUID characteristicUUID = characteristic.getUuid();
+        if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTICS_INFINITIME_FIND_PHONE)) {
+            byte[] value = characteristic.getValue();
+
+            GBDeviceEventFindPhone findPhoneEvent = new GBDeviceEventFindPhone();
+
+            switch (value[0]) {
+                case 0:
+                    findPhoneEvent.event = GBDeviceEventFindPhone.Event.STOP;
+                    break;
+                case 1:
+                    findPhoneEvent.event = GBDeviceEventFindPhone.Event.START;
+                    break;
+                default:
+                    return false;
+            }
+
+            evaluateGBDeviceEvent(findPhoneEvent);
+            return true;
+        }
         if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_EVENT)) {
             byte[] value = characteristic.getValue();
             GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();

@@ -19,6 +19,9 @@ package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
 import java.util.UUID;
 
 public class PineTimeJFConstants {
+    public static final UUID UUID_SERVICE_INFINITIME = UUID.fromString("00010000-b5e2-40c4-b1d5-2c5c48529c84");
+    public static final UUID UUID_CHARACTERISTICS_INFINITIME_FIND_PHONE = UUID.fromString("00010001-b5e2-40c4-b1d5-2c5c48529c84");
+
     public static final UUID UUID_SERVICE_MUSIC_CONTROL = UUID.fromString("00000000-78fc-48fe-8e23-433b3a1942d0");
 
     public static final UUID UUID_CHARACTERISTICS_MUSIC_EVENT = UUID.fromString("00000001-78fc-48fe-8e23-433b3a1942d0");
