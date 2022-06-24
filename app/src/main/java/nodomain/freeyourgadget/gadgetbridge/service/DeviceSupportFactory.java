@@ -33,11 +33,11 @@ import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.fitpro.FitProDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGB6900DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGBX100DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.domyos.DomyosT540Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.fitpro.FitProDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.galaxy_buds.GalaxyBudsDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.hplus.HPlusSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
@@ -82,6 +82,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.makibeshr3.MakibesHR
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miband.MiBandSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.mijia_lywsd02.MijiaLywsd02Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miscale2.MiScale2DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.msftband.MsftBandBleDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.msftband.MsftBandDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.no1f1.No1F1Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.nothing.Ear1Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.nut.NutSupport;
@@ -402,6 +404,11 @@ public class DeviceSupportFactory {
                     case BOSE_QC35:
                         deviceSupport = new ServiceDeviceSupport(new QC35BaseSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                         break;
+                    case MSFT_BAND:
+                        deviceSupport = new ServiceDeviceSupport(new MsftBandDeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
+                        break;
+                    case MSFT_BAND_LE:
+                        deviceSupport = new ServiceDeviceSupport(new MsftBandBleDeviceSupport(), EnumSet.of(ServiceDeviceSupport.Flags.BUSY_CHECKING));
                 }
                 if (deviceSupport != null) {
                     deviceSupport.setContext(gbDevice, mBtAdapter, mContext);
