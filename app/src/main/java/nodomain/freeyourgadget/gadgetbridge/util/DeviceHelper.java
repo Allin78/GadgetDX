@@ -124,6 +124,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.watch9.Watch9DeviceCoordinat
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWFSP800NCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWH1000XM3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWF1000XM3Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xwatch.XWatchCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.zetime.ZeTimeCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
@@ -335,7 +336,7 @@ public class DeviceHelper {
         result.add(new SonyWF1000XM3Coordinator());
         result.add(new QC35Coordinator());
         result.add(new BinarySensorCoordinator());
-
+        result.add(new WithingsSteelHRDeviceCoordinator());
         return result;
     }
 
