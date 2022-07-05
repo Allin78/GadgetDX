@@ -13,7 +13,7 @@ import org.robolectric.annotation.Config;
 import java.io.File;
 
 import ch.qos.logback.classic.util.ContextInitializer;
-import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
+//import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBEnvironment;
 import nodomain.freeyourgadget.gadgetbridge.Logging;
@@ -85,7 +85,7 @@ public abstract class TestBase {
     }
 
     protected GBDevice createDummyGDevice(String macAddress) {
-        GBDevice dummyGBDevice = new GBDevice(macAddress, "Testie", "Tesie Alias", DeviceType.TEST);
+        GBDevice dummyGBDevice = new GBDevice(macAddress, "Testie", "Tesie Alias", "", DeviceType.TEST);
         dummyGBDevice.setFirmwareVersion("1.2.3");
         dummyGBDevice.setModel("4.0");
         return dummyGBDevice;

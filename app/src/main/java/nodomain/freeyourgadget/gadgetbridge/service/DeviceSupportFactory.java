@@ -99,6 +99,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.vesc.VescDeviceSuppo
 import nodomain.freeyourgadget.gadgetbridge.service.devices.vibratissimo.VibratissimoSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.waspos.WaspOSDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.watch9.Watch9DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.xwatch.XWatchSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.zetime.ZeTimeDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -317,6 +318,8 @@ public class DeviceSupportFactory {
                 return new ServiceDeviceSupport(new VescDeviceSupport(device.getType()));
             case BOSE_QC35:
                 return new ServiceDeviceSupport(new QC35BaseSupport());
+            case WITHINGS_STEEL_HR:
+                return new ServiceDeviceSupport(new WithingsSteelHRDeviceSupport());
         }
         return null;
     }
