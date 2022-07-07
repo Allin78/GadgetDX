@@ -1,14 +1,11 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
+import java.nio.ByteBuffer;
+
 public class WorkoutScreen extends WithingsStructure {
     @Override
     public short getType() {
         return WithingsStructureType.WORKOUT_ENTRY;
-    }
-
-    @Override
-    public void addSubStructure(WithingsStructure subStructure) {
-
     }
 
     @Override
@@ -17,7 +14,6 @@ public class WorkoutScreen extends WithingsStructure {
     }
 
     @Override
-    public byte[] getRawData() {
-        return new byte[0];
+    protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
     }
 }

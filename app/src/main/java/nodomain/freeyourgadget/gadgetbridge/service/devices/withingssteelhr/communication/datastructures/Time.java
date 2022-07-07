@@ -4,6 +4,9 @@ import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.zone.ZoneOffsetTransition;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -12,9 +15,19 @@ import ch.qos.logback.core.encoder.ByteArrayUtil;
 public class Time extends WithingsStructure {
 
     private LocalDateTime now;
-    private int TimeOffsetInSeconds;
+    private int timeOffsetInSeconds;
     private LocalDateTime nextDaylightSavingTransition;
     private int nextDaylightSavingTransitionOffsetInSeconds;
+
+    public Time() {
+        now = LocalDateTime.now();
+        ZoneId defaultZoneId = ZoneId.systemDefault();
+        ZoneOffset offset = defaultZoneId.getRules().getOffset(now);
+        timeOffsetInSeconds = offset.getTotalSeconds();
+        ZoneOffsetTransition transition = defaultZoneId.getRules().nextTransition(ZonedDateTime.now(defaultZoneId).toInstant());
+        nextDaylightSavingTransition = transition.getDateTimeBefore();
+        nextDaylightSavingTransitionOffsetInSeconds = transition.getOffsetBefore().getTotalSeconds();
+    }
 
     public LocalDateTime getNow() {
         return now;
@@ -25,11 +38,11 @@ public class Time extends WithingsStructure {
     }
 
     public int getTimeOffsetInSeconds() {
-        return TimeOffsetInSeconds;
+        return timeOffsetInSeconds;
     }
 
     public void setTimeOffsetInSeconds(int TimeOffsetInSeconds) {
-        this.TimeOffsetInSeconds = TimeOffsetInSeconds;
+        this.timeOffsetInSeconds = TimeOffsetInSeconds;
     }
 
     public LocalDateTime getNextDaylightSavingTransition() {
@@ -54,25 +67,16 @@ public class Time extends WithingsStructure {
     }
 
     @Override
-    public void addSubStructure(WithingsStructure subStructure) {
-
-    }
-
-    @Override
     public short getLength() {
         return 20;
     }
 
     @Override
-    public byte[] getRawData() {
-        ByteBuffer rawDataBuffer = ByteBuffer.allocate(getLength());
-        rawDataBuffer.putShort(getType());
-        rawDataBuffer.putShort((short)(getLength() - HEADER_SIZE));
+    protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
         rawDataBuffer.putInt((int)getUnixTimeInSeconds(now));
-        rawDataBuffer.putInt(TimeOffsetInSeconds);
+        rawDataBuffer.putInt(timeOffsetInSeconds);
         rawDataBuffer.putInt(getUnixTimeInSeconds(nextDaylightSavingTransition));
         rawDataBuffer.putInt(nextDaylightSavingTransitionOffsetInSeconds);
-        return rawDataBuffer.array();
     }
 
     private int getUnixTimeInSeconds(LocalDateTime date) {
