@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.command;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message;
 
 import static org.junit.Assert.*;
 
@@ -7,15 +7,15 @@ import org.junit.Test;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsTestStructure;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
-public class AbstractCommandTest {
+public class AbstractMessageTest {
 
     @Test
     public void testGetRawDataNoData() {
         // arrange
-        Command testCommand = createTestcommand();
+        Message testMessage = createTestcommand();
 
         // act
-        byte[] rawData = testCommand.getRawData();
+        byte[] rawData = testMessage.getRawData();
 
         // assert
         assertEquals("0100630000", StringUtils.bytesToHex(rawData));
@@ -24,18 +24,18 @@ public class AbstractCommandTest {
     @Test
     public void testGetRawDataWithData() {
         // arrange
-        Command testCommand = createTestcommand();
-        testCommand.addDataStructure(new WithingsTestStructure());
+        Message testMessage = createTestcommand();
+        testMessage.addDataStructure(new WithingsTestStructure());
 
         // act
-        byte[] rawData = testCommand.getRawData();
+        byte[] rawData = testMessage.getRawData();
 
         // assert
         assertEquals("0100630006006354657374", StringUtils.bytesToHex(rawData));
     }
 
-    private Command createTestcommand() {
-        return new AbstractCommand(){
+    private Message createTestcommand() {
+        return new AbstractMessage(){
             @Override
             public short getType() {
                     return 99;
