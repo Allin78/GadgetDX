@@ -8,6 +8,8 @@ public class WithingsStructureType {
     static final short ACTIVITY_TARGET = 1283;
     static final short LOCALE = 289;
     static final short HR = 2369;
+    static final short ALARM = 1298;
+    static final short ALARM_STATUS = 2329;
 
     private WithingsStructureType() {}
 }
