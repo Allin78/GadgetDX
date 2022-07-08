@@ -14,6 +14,7 @@ public abstract class AbstractMessage implements Message {
      * two bytes for the message type and 2 bytes for the actual datalength.
      */
     private static final int HEADER_SIZE = 5;
+    protected final static short EOM_SIZE = 4;
     private List<WithingsStructure> dataStructures = new ArrayList<WithingsStructure>();
 
     public List<WithingsStructure> getDataStructures() {
@@ -28,9 +29,18 @@ public abstract class AbstractMessage implements Message {
     @Override
     public byte[] getRawData() {
         short structureLength = 0;
+        boolean setEndOfMessage = false;
         for (WithingsStructure structure : dataStructures) {
+            if (structure.withEndOfMessage()) {
+                setEndOfMessage = true;
+            }
             structureLength = (short)(structure.getLength());
         }
+
+        if (setEndOfMessage) {
+            structureLength += EOM_SIZE;
+        }
+
         ByteBuffer rawDataBuffer = ByteBuffer.allocate(HEADER_SIZE + structureLength);
         rawDataBuffer.put((byte)0x01); // <= This seems to be always 0x01 for all commands
         rawDataBuffer.putShort(getType());
@@ -39,6 +49,16 @@ public abstract class AbstractMessage implements Message {
         for (WithingsStructure structure : dataStructures) {
             rawDataBuffer.put(structure.getRawData());
         }
+
+        if (setEndOfMessage) {
+            addEndOfMessageBytes(rawDataBuffer);
+        }
+
         return rawDataBuffer.array();
+    }
+
+    private void addEndOfMessageBytes(ByteBuffer buffer) {
+        buffer.putShort((short)256);
+        buffer.putShort((short)0);
     }
 }
