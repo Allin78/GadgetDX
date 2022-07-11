@@ -13,4 +13,5 @@ public interface Message {
     void addDataStructure(WithingsStructure data);
     short getType();
     byte[] getRawData();
+    boolean needsResponse();
 }

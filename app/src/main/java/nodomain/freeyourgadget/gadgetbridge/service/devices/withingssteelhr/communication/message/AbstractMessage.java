@@ -34,7 +34,7 @@ public abstract class AbstractMessage implements Message {
             if (structure.withEndOfMessage()) {
                 setEndOfMessage = true;
             }
-            structureLength = (short)(structure.getLength());
+            structureLength += (short)(structure.getLength());
         }
 
         if (setEndOfMessage) {
@@ -55,6 +55,11 @@ public abstract class AbstractMessage implements Message {
         }
 
         return rawDataBuffer.array();
+    }
+
+    @Override
+    public boolean needsResponse() {
+        return true;
     }
 
     private void addEndOfMessageBytes(ByteBuffer buffer) {

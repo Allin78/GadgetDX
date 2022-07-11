@@ -6,6 +6,7 @@ import java.util.Arrays;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.BatteryValues;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
@@ -14,16 +15,17 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 
 public class MessageHandler {
 
-    private GBDevice device;
+    private WithingsSteelHRDeviceSupport support;
 
-    public MessageHandler(GBDevice device) {
-        this.device = device;
+    public MessageHandler(WithingsSteelHRDeviceSupport support) {
+        this.support = support;
     }
 
     public boolean handleMessage(byte[] rawData) {
         Message message = deserializeMessage(rawData);
         if (message.getType() == WithingsMessageTypes.GET_BATTERY_STATUS) {
             BatteryValues battery = (BatteryValues) message.getDataStructures().get(0);
+            GBDevice device = support.getDevice();
             device.setBatteryLevel(battery.getPercent());
             switch (battery.getStatus()) {
                 case 0:
@@ -39,7 +41,7 @@ public class MessageHandler {
             device.setBatteryVoltage(battery.getVolt());
         }
 
-        return false;
+        return true;
     }
 
     public byte[] serializeMessage(Message msg) {
