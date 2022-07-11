@@ -17,10 +17,12 @@ public final class WithingsMessageTypes {
     public static final short SET_USER_UNIT = 274;
     public static final short SET_LOCALE = 282;
     public static final short SETUP_FINISHED = 275;
-    public static final short GET_HR = 2376;
+    public static final short GET_LIVE_HR = 2376;
+    public static final short GET_HR = 2343;
     public static final short SYNC = 16705;
-    public static final short ALARM = 325;
-    public static final short ALARM_STATUS = 2331;
+    public static final short SET_ALARM = 325;
+    public static final short START_ALARM_SETTING = 293;
+    public static final short ENABLE_ALARM = 2330;
 
     private WithingsMessageTypes() {}
 }

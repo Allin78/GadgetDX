@@ -25,11 +25,12 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.ConversationQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.MessageHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityTarget;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AlarmName;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AlarmSettings;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AlarmStatus;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Locale;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
@@ -41,47 +42,52 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class);
     private MessageHandler messageHandler;
+    private ConversationQueue conversationQueue;
+    private boolean firstTimeConnect;
 
     public WithingsSteelHRDeviceSupport() {
         super(logger);
         addSupportedService(WithingsUUID.WITHINGS_SERVICE_UUID);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
-        messageHandler = new MessageHandler(getDevice());
+        messageHandler = new MessageHandler(this);
+        conversationQueue = new ConversationQueue(this);
     }
 
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         // mark the device as initializing
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
-
-        // initialize...
         BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
         builder.notify(characteristic, true);
         builder.requestMtu(119);
-        // The rest of the initalization has to be done in "onMtuChanged()" as the
-        // write commands get truncated before the MTU-exchange is complete.
+        builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
+        getDevice().setFirmwareVersion("N/A");
+        getDevice().setFirmwareVersion2("N/A");
         return builder;
     }
 
     @Override
-    public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
-        TransactionBuilder builder = createTransactionBuilder("init");
-        builder.setGattCallback(this);
-        BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.INITIAL_CONNECT).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.START_HANDS_CALIBRATION).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.STOP_HANDS_CALIBRATION).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.SET_TIME, new Time()).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.SET_LOCALE, new Locale("de")).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.SET_ACTIVITY_TARGET, new ActivityTarget()).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.GET_BATTERY_STATUS).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.GET_HR).getRawData());
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.SETUP_FINISHED).getRawData());
+    public boolean connectFirstTime() {
+        firstTimeConnect = true;
+        return connect();
+    }
 
-        // finish initialization:
-        builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
-        builder.queue(getQueue());
+    @Override
+    public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+        if (firstTimeConnect) {
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.INITIAL_CONNECT));
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.SET_LOCALE, new Locale("de")));
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.START_HANDS_CALIBRATION));
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.STOP_HANDS_CALIBRATION));
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.SET_TIME, new Time()));
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.SET_ACTIVITY_TARGET, new ActivityTarget(5000)));
+            conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.SETUP_FINISHED));
+        }
+
+        conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.GET_BATTERY_STATUS));
+        conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.GET_HR));
+        conversationQueue.send();
     }
 
     @Override
@@ -94,9 +100,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         UUID characteristicUUID = characteristic.getUuid();
         byte[] data = characteristic.getValue();
         logger.debug("Characteristic changed:" + characteristicUUID + " with data " + StringUtils.bytesToHex(data));
-//        if (data.length == 0 ) {
-//            return true;
-//        }
 
         if (data.length < 7) {
             return true;
@@ -111,8 +114,13 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
                     TransactionBuilder builder = createTransactionBuilder("sync");
                     builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.SYNC).getRawData());
                     builder.queue(getQueue());
+                } else if (messageType == WithingsMessageTypes.SETUP_FINISHED) {
+                    TransactionBuilder builder = createTransactionBuilder("setupFinished");
+                    builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
+                    builder.queue(getQueue());
                 } else {
-                    messageHandler.handleMessage(data);
+                    conversationQueue.onResponseReceived(messageType);
+                    return messageHandler.handleMessage(data);
                 }
                 return true;
             default:
@@ -139,19 +147,25 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             throw new IllegalArgumentException("Steel HR does only have three alarmslots!");
         }
 
-        TransactionBuilder builder = createTransactionBuilder("alarm");
+        if (alarms.size() == 0) {
+            return;
+        }
+
+        conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.START_ALARM_SETTING));
         for (Alarm alarm : alarms) {
             if (!alarm.getUnused()) {
                 AlarmSettings alarmSettings = new AlarmSettings();
                 alarmSettings.setHour((short) alarm.getHour());
                 alarmSettings.setMinute((short) alarm.getMinute());
-                alarmSettings.setDayOfWeek((short) alarm.getRepetition());
-                builder.write(getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID), new WithingsMessage(WithingsMessageTypes.ALARM, alarmSettings).getRawData());
-                builder.write(getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID), new WithingsMessage(WithingsMessageTypes.ALARM_STATUS, new AlarmStatus(true)).getRawData());
+                // TODO find out how to map the values of GB to the withings settings.
+                alarmSettings.setDayOfWeek((short) 255);
+                Message alarmMessage = new WithingsMessage(WithingsMessageTypes.SET_ALARM, alarmSettings);
+                alarmMessage.addDataStructure(new AlarmName(alarm.getTitle()));
+                conversationQueue.addMessage(alarmMessage);
+                conversationQueue.addMessage(new WithingsMessage(WithingsMessageTypes.ENABLE_ALARM));
             }
         }
-
-        builder.queue(getQueue());
+        conversationQueue.send();
     }
 
     @Override
@@ -208,10 +222,12 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onHeartRateTest() {
+        logger.debug("onHeartRateTest");
     }
 
     @Override
     public void onEnableRealtimeHeartRateMeasurement(boolean enable) {
+        logger.debug("onEnableRealtimeHeartRateMeasurement");
     }
 
     @Override

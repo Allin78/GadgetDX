@@ -42,13 +42,13 @@ public class BatteryValues extends WithingsStructure {
 
     @Override
     public void fillFromRawData(byte[] rawData) {
-        if (rawData.length != BLETypeConversions.toInt16(rawData[1], rawData[0]) + 2 || rawData.length < 8) {
+        if (rawData.length != BLETypeConversions.toInt16(rawData[1], rawData[0]) + 1 || rawData.length < 8) {
             throw new IllegalArgumentException();
         }
 
-        percent = (short) BLETypeConversions.toInt16(rawData[2]);
-        status = (short) BLETypeConversions.toInt16(rawData[3]);
-        volt = BLETypeConversions.toUint16(rawData[4], rawData[5],rawData[6],rawData[7]);
+        percent = (short) BLETypeConversions.toUnsigned(rawData[2]);
+        status = (short) BLETypeConversions.toUnsigned(rawData[3]);
+        volt = BLETypeConversions.toUint32(rawData[7], rawData[6],rawData[5],rawData[4]);
     }
 
     @Override

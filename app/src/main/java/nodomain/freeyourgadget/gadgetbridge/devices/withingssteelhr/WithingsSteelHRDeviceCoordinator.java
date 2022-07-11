@@ -54,12 +54,12 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     public boolean supportsActivityDataFetching() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean supportsActivityTracking() {
-        return true;
+        return false;
     }
 
     @Override
@@ -80,6 +80,11 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
     @Override
     public int getAlarmSlotCount() {
         return 3;
+    }
+
+    @Override
+    public boolean supportsAlarmDescription(GBDevice device) {
+        return true;
     }
 
     @Override

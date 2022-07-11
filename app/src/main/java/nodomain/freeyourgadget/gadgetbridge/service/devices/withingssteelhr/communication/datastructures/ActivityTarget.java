@@ -4,7 +4,11 @@ import java.nio.ByteBuffer;
 
 public class ActivityTarget extends WithingsStructure {
 
-    private long targetCount = 10000;
+    private long targetCount;
+
+    public ActivityTarget(long targetCount) {
+        this.targetCount = targetCount;
+    }
 
     public long getTargetCount() {
         return targetCount;
