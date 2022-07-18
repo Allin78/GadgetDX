@@ -97,7 +97,9 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsFlashing() { return true; }
+    public boolean supportsFlashing() {
+        return true;
+    }
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {

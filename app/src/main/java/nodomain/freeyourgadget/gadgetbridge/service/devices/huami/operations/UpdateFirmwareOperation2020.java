@@ -31,6 +31,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceBusyAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetProgressAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuamiFirmwareInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
@@ -214,7 +215,7 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
     }
 
 
-    private boolean sendFirmwareDataChunk(HuamiFirmwareInfo info, int offset) {
+    private boolean sendFirmwareDataChunk(AbstractHuamiFirmwareInfo info, int offset) {
         byte[] fwbytes = info.getBytes();
         int len = fwbytes.length;
         int remaining = len - offset;
