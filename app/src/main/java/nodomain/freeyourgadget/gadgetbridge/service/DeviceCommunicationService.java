@@ -970,7 +970,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         return false;
     }
 
-    private boolean isCalendarReceiverForDevice(GBDevice device){
+    private boolean deviceHasCalendarReceiverRegistered(GBDevice device){
         for (CalendarReceiver receiver: mCalendarReceiver){
             if(receiver.getGBDevice().equals(device)){
                 return true;
@@ -989,7 +989,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
 
         if (enable && initialized && features.supportsCalendarEvents()) {
             for (GBDevice deviceWithCalendar : devicesWithCalendar) {
-                if (!isCalendarReceiverForDevice(deviceWithCalendar)) {
+                if (!deviceHasCalendarReceiverRegistered(deviceWithCalendar)) {
                     if (!(GBApplication.isRunningMarshmallowOrLater() && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_DENIED)) {
                         IntentFilter calendarIntentFilter = new IntentFilter();
                         calendarIntentFilter.addAction("android.intent.action.PROVIDER_CHANGED");
@@ -1008,8 +1008,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         } else {
             for (CalendarReceiver registeredReceiver: mCalendarReceiver){
                 unregisterReceiver(registeredReceiver);
-                mCalendarReceiver.remove(registeredReceiver);
             }
+            mCalendarReceiver.clear();
             if (mAlarmReceiver != null) {
                 unregisterReceiver(mAlarmReceiver);
                 mAlarmReceiver = null;
