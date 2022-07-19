@@ -2,6 +2,9 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -13,12 +16,16 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 
 public class ConversationQueue {
 
-    private static final Queue<Message> queue = new LinkedBlockingQueue<>();
-
+    private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class);
+    private final Queue<Message> queue = new LinkedBlockingQueue<>();
     private WithingsSteelHRDeviceSupport support;
 
     public ConversationQueue(WithingsSteelHRDeviceSupport support) {
         this.support = support;
+    }
+
+    public void clear() {
+        queue.clear();
     }
 
     public void send() {
@@ -42,11 +49,14 @@ public class ConversationQueue {
 
     public void onResponseReceived(short responsetype) {
         Message messageWaitingForResponse = queue.peek();
+        printQueue();
         if (messageWaitingForResponse != null && messageWaitingForResponse.getType() == responsetype) {
+            logger.info("Removing message from queue, as it got a response: " + responsetype);
             queue.poll();
             Message nextInLine = queue.peek();
             sendToDevice(nextInLine);
         }
+        printQueue();
     }
 
     private void sendToDevice(Message message) {
@@ -59,5 +69,12 @@ public class ConversationQueue {
         BluetoothGattCharacteristic characteristic = support.getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
         builder.write(characteristic, message.getRawData());
         builder.queue(support.getQueue());
+    }
+
+    private void printQueue() {
+        logger.info("Messages in queue:");
+        for (Message message : queue) {
+            logger.info("Message: " + message.getType());
+        }
     }
 }

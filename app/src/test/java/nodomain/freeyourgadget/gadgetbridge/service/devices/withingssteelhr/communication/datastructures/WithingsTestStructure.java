@@ -11,6 +11,11 @@ public class WithingsTestStructure extends WithingsStructure {
     }
 
     @Override
+    protected void fillinTypeSpecificData(ByteBuffer buffer) {
+
+    }
+
+    @Override
     public byte[] getRawData() {
         ByteBuffer rawDataBuffer = ByteBuffer.allocate(getLength());
         rawDataBuffer.putShort(getType());
@@ -21,10 +26,5 @@ public class WithingsTestStructure extends WithingsStructure {
     @Override
     short getType() {
         return 99;
-    }
-
-    @Override
-    void addSubStructure(WithingsStructure subStructure) {
-
     }
 }

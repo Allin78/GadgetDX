@@ -7,12 +7,14 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
+import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
@@ -22,7 +24,9 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
-
+        Long deviceId = device.getId();
+        QueryBuilder<?> qb = session.getWithingsSteelHRActivitySampleDao().queryBuilder();
+        qb.where(WithingsSteelHRActivitySampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
     @NonNull
@@ -54,17 +58,17 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     public boolean supportsActivityDataFetching() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supportsActivityTracking() {
-        return false;
+        return true;
     }
 
     @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
-        return null;
+        return new WithingsSteelHRSampleProvider(device, session);
     }
 
     @Override
@@ -114,7 +118,7 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     public boolean supportsCalendarEvents() {
-        return true;
+        return false;
     }
 
     @Override

@@ -40,6 +40,11 @@ public class AbstractMessageTest {
             public short getType() {
                     return 99;
             }
+
+            @Override
+            public boolean needsResponse() {
+                return false;
+            }
         };
     }
 }
