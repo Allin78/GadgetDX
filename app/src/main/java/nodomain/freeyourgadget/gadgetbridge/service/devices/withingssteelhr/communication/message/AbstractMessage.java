@@ -15,6 +15,7 @@ public abstract class AbstractMessage implements Message {
      */
     private static final int HEADER_SIZE = 5;
     protected final static short EOM_SIZE = 4;
+
     private List<WithingsStructure> dataStructures = new ArrayList<WithingsStructure>();
 
     public List<WithingsStructure> getDataStructures() {
@@ -55,11 +56,6 @@ public abstract class AbstractMessage implements Message {
         }
 
         return rawDataBuffer.array();
-    }
-
-    @Override
-    public boolean needsResponse() {
-        return true;
     }
 
     private void addEndOfMessageBytes(ByteBuffer buffer) {
