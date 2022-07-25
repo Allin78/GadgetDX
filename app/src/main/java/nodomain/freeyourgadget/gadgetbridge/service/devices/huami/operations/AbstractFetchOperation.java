@@ -85,7 +85,6 @@ public abstract class AbstractFetchOperation extends AbstractHuamiOperation {
         lastPacketCounter = -1;
 
         TransactionBuilder builder = performInitialized(getName());
-        getSupport().setLowLatency(builder);
         if (fetchCount == 0) {
             builder.add(new SetDeviceBusyAction(getDevice(), getContext().getString(R.string.busy_task_fetch_activity_data), getContext()));
         }

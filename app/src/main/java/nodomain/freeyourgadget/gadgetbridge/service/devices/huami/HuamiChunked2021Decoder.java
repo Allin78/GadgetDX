@@ -1,4 +1,4 @@
-/*  Copyright (C) 2022 Andreas Shimokawa
+/*  Copyright (C) 2022 Andreas Shimokawa, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -20,48 +20,58 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.util.CryptoUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class HuamiChunked2021Decoder {
     private static final Logger LOG = LoggerFactory.getLogger(HuamiChunked2021Decoder.class);
+
     private Byte currentHandle;
     private int currentType;
     private int currentLength;
     ByteBuffer reassemblyBuffer;
-    private final HuamiSupport huamiSupport;
 
-    public HuamiChunked2021Decoder(HuamiSupport huamiSupport) {
-        this.huamiSupport = huamiSupport;
+    private byte[] sharedSessionKey;
+
+    private Huami2021Handler huami2021Handler;
+    private final boolean force2021Protocol;
+
+    public HuamiChunked2021Decoder(final Huami2021Handler huami2021Handler,
+                                   final boolean force2021Protocol) {
+        this.huami2021Handler = huami2021Handler;
+        this.force2021Protocol = force2021Protocol;
     }
 
+    public void setEncryptionParameters(final byte[] sharedSessionKey) {
+        this.sharedSessionKey = sharedSessionKey;
+    }
 
-    public byte[] decode(byte[] data) {
+    public void setHuami2021Handler(final Huami2021Handler huami2021Handler) {
+        this.huami2021Handler = huami2021Handler;
+    }
+
+    public void decode(final byte[] data) {
         int i = 0;
         if (data[i++] != 0x03) {
-            return null;
+            return;
         }
-        boolean encrypted = false;
         byte flags = data[i++];
-        if ((flags & 0x08) == 0x08) {
-            encrypted = true;
-        }
-        if (huamiSupport.force2021Protocol) {
+        boolean encrypted = ((flags & 0x08) == 0x08);
+        boolean firstChunk = ((flags & 0x01) == 0x01);
+        boolean lastChunk = ((flags & 0x02) == 0x02);
+
+        if (force2021Protocol) {
             i++; // skip extended header
         }
         byte handle = data[i++];
         if (currentHandle != null && currentHandle != handle) {
             LOG.warn("ignoring handle " + handle + ", expected " + currentHandle);
-            return null;
+            return;
         }
         byte count = data[i++];
-        if ((flags & 0x01) == 0x01) { // beginning
+        if (firstChunk) { // beginning
             int full_length = (data[i++] & 0xff) | ((data[i++] & 0xff) << 8) | ((data[i++] & 0xff) << 16) | ((data[i++] & 0xff) << 24);
             currentLength = full_length;
             if (encrypted) {
@@ -77,71 +87,39 @@ public class HuamiChunked2021Decoder {
             currentHandle = handle;
         }
         reassemblyBuffer.put(data, i, data.length - i);
-        if ((flags & 0x02) == 0x02) { // end
+        if (lastChunk) { // end
             byte[] buf = reassemblyBuffer.array();
             if (encrypted) {
+                if (sharedSessionKey == null) {
+                    // Should never happen
+                    LOG.warn("Got encrypted message, but there's no shared session key");
+                    currentHandle = null;
+                    currentType = 0;
+                    return;
+                }
+
                 byte[] messagekey = new byte[16];
                 for (int j = 0; j < 16; j++) {
-                    messagekey[j] = (byte) (huamiSupport.sharedSessionKey[j] ^ handle);
+                    messagekey[j] = (byte) (sharedSessionKey[j] ^ handle);
                 }
                 try {
                     buf = CryptoUtils.decryptAES(buf, messagekey);
                     buf = ArrayUtils.subarray(buf, 0, currentLength);
-                    LOG.info("decrypted data: " + GB.hexdump(buf));
+                    LOG.debug("decrypted data {}: {}", String.format("0x%04x", currentType), GB.hexdump(buf));
                 } catch (Exception e) {
                     LOG.warn("error decrypting " + e);
-                    return null;
+                    currentHandle = null;
+                    currentType = 0;
+                    return;
                 }
             }
-            if (currentType == HuamiService.CHUNKED2021_ENDPOINT_COMPAT) {
-                LOG.info("got configuration data");
-                currentHandle = null;
-                currentType = 0;
-                return ArrayUtils.remove(buf, 0);
-            }
-            if (currentType == HuamiService.CHUNKED2021_ENDPOINT_SMSREPLY && false) { // unsafe for now, disabled, also we shoud return somehing and then parse in HuamiSupport instead of firing stuff here
-                LOG.debug("got command for SMS reply");
-                if (buf[0] == 0x0d) {
-                    try {
-                        TransactionBuilder builder = huamiSupport.performInitialized("allow sms reply");
-                        huamiSupport.writeToChunked2021(builder, (short) 0x0013, huamiSupport.getNextHandle(), new byte[]{(byte) 0x0e, 0x01}, huamiSupport.force2021Protocol, false);
-                        builder.queue(huamiSupport.getQueue());
-                    } catch (IOException e) {
-                        LOG.error("Unable to allow sms reply");
-                    }
-                } else if (buf[0] == 0x0b) {
-                    String phoneNumber = null;
-                    String smsReply = null;
-                    for (i = 1; i < buf.length; i++) {
-                        if (buf[i] == 0) {
-                            phoneNumber = new String(buf, 1, i - 1);
-                            // there are four unknown bytes between caller and reply
-                            smsReply = new String(buf, i + 5, buf.length - i - 6);
-                            break;
-                        }
-                    }
-                    if (phoneNumber != null && !phoneNumber.isEmpty()) {
-                        LOG.debug("will send message '" + smsReply + "' to number '" + phoneNumber + "'");
-                        GBDeviceEventNotificationControl devEvtNotificationControl = new GBDeviceEventNotificationControl();
-                        devEvtNotificationControl.handle = -1;
-                        devEvtNotificationControl.phoneNumber = phoneNumber;
-                        devEvtNotificationControl.reply = smsReply;
-                        devEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.REPLY;
-                        huamiSupport.evaluateGBDeviceEvent(devEvtNotificationControl);
-                        try {
-                            TransactionBuilder builder = huamiSupport.performInitialized("ack sms reply");
-                            byte[] ackSentCommand = new byte[]{0x0c, 0x01};
-                            huamiSupport.writeToChunked2021(builder, (short) 0x0013, huamiSupport.getNextHandle(), ackSentCommand, huamiSupport.force2021Protocol, false);
-                            builder.queue(huamiSupport.getQueue());
-                        } catch (IOException e) {
-                            LOG.error("Unable to ack sms reply");
-                        }
-                    }
-                }
+            try {
+                huami2021Handler.handle2021Payload(currentType, buf);
+            } catch (final Exception e) {
+                LOG.error("Failed to handle payload", e);
             }
             currentHandle = null;
             currentType = 0;
         }
-        return null;
     }
 }
