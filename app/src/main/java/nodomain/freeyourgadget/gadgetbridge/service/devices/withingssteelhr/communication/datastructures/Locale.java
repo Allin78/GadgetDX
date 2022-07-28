@@ -18,17 +18,11 @@ public class Locale extends WithingsStructure {
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
-        if (locale == null) {
-            rawDataBuffer.put((byte)0);
-        } else {
-            byte[] localeAsBytes = locale.getBytes(StandardCharsets.UTF_8);
-            rawDataBuffer.put((byte)localeAsBytes.length);
-            rawDataBuffer.put(localeAsBytes);
-        }
+        addStringAsBytesWithLengthByte(rawDataBuffer, locale);
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.LOCALE;
     }
 }

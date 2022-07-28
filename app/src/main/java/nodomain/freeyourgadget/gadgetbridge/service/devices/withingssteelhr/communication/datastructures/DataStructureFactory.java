@@ -11,7 +11,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 
 public class DataStructureFactory {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataStructureFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataStructureFactory.class.getSimpleName());
     private static final int HEADER_SIZE = 4;
 
     public List<WithingsStructure> createStructuresFromRawData(byte[] rawData) {
@@ -51,8 +51,42 @@ public class DataStructureFactory {
                 case WithingsStructureType.ACTIVITY_SAMPLE_MOVEMENT:
                     structure = new ActivitySampleMovement();
                     break;
+                case WithingsStructureType.ACTIVITY_SAMPLE_CALORIES:
+                    structure = new ActivitySampleCalories();
+                    break;
+                case WithingsStructureType.ACTIVITY_SAMPLE_CALORIES_2:
+                    structure = new ActivitySampleCalories2();
+                    break;
+                case WithingsStructureType.ACTIVITY_SAMPLE_SLEEP:
+                    structure = new ActivitySampleSleep();
+                    break;
+                case WithingsStructureType.ACTIVITY_SAMPLE_WALK:
+                    structure = new VasistasWalk();
+                    break;
+                case WithingsStructureType.VASISTAS_HR:
+                    structure = new VasistasHeartrate();
+                    break;
+                case WithingsStructureType.PROBE_REPLY:
+                    structure = new ProbeReply();
+                    break;
+                case WithingsStructureType.CHALLENGE:
+                    structure = new Challenge();
+                    break;
+                case WithingsStructureType.CHALLENGE_RESPONSE:
+                    structure = new ChallengeResponse();
+                    break;
+                case WithingsStructureType.ACTIVITY_SAMPLE_RECOVERY:
+                    structure = new ProbeReply();
+                    break;
+                case WithingsStructureType.END_OF_TRANSMISSION:
+                    structure = new EndOfTransmission();
+                    break;
+                case WithingsStructureType.SLEEP_ACTIVITY_SAMPLE:
+                    structure = new SleepActivitySample();
+                    break;
                 default:
-                    logger.warn("Received unknown structure type: " + structureTypeFromResponse);
+                    structure = null;
+                    logger.warn("Received yet unknown structure type: " + structureTypeFromResponse);
             }
 
             if (structure != null) {
@@ -73,7 +107,7 @@ public class DataStructureFactory {
             remainingBytes -= (structureLength + HEADER_SIZE);
             result.add(Arrays.copyOfRange(rawData, 0, structureLength + HEADER_SIZE));
             if (remainingBytes > 0) {
-                rawData = Arrays.copyOfRange(rawData, structureLength, rawData.length);
+                rawData = Arrays.copyOfRange(rawData, structureLength + HEADER_SIZE, rawData.length);
             }
         }
 

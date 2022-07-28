@@ -29,7 +29,7 @@ public class AlarmStatus extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ALARM_STATUS;
     }
 }

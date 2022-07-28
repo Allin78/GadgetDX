@@ -65,14 +65,21 @@ public class User extends WithingsStructure {
 
     @Override
     public short getLength() {
-        return 28;
+        return (short) ((name != null ? name.getBytes().length : 0) + 22);
     }
 
     @Override
-    protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {}
+    protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
+        rawDataBuffer.putInt(userID);
+        rawDataBuffer.putInt(weight);
+        rawDataBuffer.putInt(height);
+        rawDataBuffer.put(gender);
+        rawDataBuffer.putInt((int)(birthdate.getTime()/1000));
+        addStringAsBytesWithLengthByte(rawDataBuffer, name);
+    }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.USER;
     }
 }

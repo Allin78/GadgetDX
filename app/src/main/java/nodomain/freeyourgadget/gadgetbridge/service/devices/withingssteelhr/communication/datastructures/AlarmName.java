@@ -18,17 +18,11 @@ public class AlarmName extends WithingsStructure {
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
-        if (name == null) {
-            rawDataBuffer.put((byte)0);
-        } else {
-            byte[] localeAsBytes = name.getBytes(StandardCharsets.UTF_8);
-            rawDataBuffer.put((byte)localeAsBytes.length);
-            rawDataBuffer.put(localeAsBytes);
-        }
+        addStringAsBytesWithLengthByte(rawDataBuffer, name);
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return 0;
     }
 }

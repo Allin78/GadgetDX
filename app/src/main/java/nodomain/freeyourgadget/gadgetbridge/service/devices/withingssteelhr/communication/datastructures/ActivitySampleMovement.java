@@ -41,19 +41,15 @@ public class ActivitySampleMovement extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        if (rawData.length < 14) {
-            throw new IllegalArgumentException();
-        }
-
-        steps = (short)BLETypeConversions.toInt16(rawData[1], rawData[0]);
-        distance = BLETypeConversions.toInt16(rawData[5], rawData[4], rawData[3], rawData[2]);
-        asc = BLETypeConversions.toInt16(rawData[9], rawData[8], rawData[7], rawData[6]);
-        desc = BLETypeConversions.toInt16(rawData[13], rawData[12], rawData[11], rawData[10]);
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        steps = rawDataBuffer.getShort();
+        distance = rawDataBuffer.getInt();
+        asc = rawDataBuffer.getInt();
+        desc = rawDataBuffer.getInt();
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ACTIVITY_SAMPLE_MOVEMENT;
     }
 }
