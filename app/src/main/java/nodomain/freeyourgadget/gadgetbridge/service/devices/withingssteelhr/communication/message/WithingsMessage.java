@@ -4,15 +4,21 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 
 public class WithingsMessage extends AbstractMessage {
     private short type;
-    private boolean needsResponse = true;
+    private ExpectedResponse expectedResponse = ExpectedResponse.SIMPLE;
+    private boolean isIncoming;
 
     public WithingsMessage(short type) {
         this.type = type;
     }
 
-    public WithingsMessage(short type, boolean needsResponse) {
+    public WithingsMessage(short type, boolean incoming) {
         this.type = type;
-        this.needsResponse = needsResponse;
+        this.isIncoming = incoming;
+    }
+
+    public WithingsMessage(short type, ExpectedResponse expectedResponse) {
+        this.type = type;
+        this.expectedResponse = expectedResponse;
     }
 
     public WithingsMessage(short type, WithingsStructure dataStructure) {
@@ -22,11 +28,21 @@ public class WithingsMessage extends AbstractMessage {
 
     @Override
     public boolean needsResponse() {
-        return needsResponse;
+        return expectedResponse == ExpectedResponse.SIMPLE;
+    }
+
+    @Override
+    public boolean needsEOT() {
+        return expectedResponse == ExpectedResponse.EOT;
     }
 
     @Override
     public short getType() {
         return type;
+    }
+
+    @Override
+    public boolean isIncomingMessage() {
+        return isIncoming;
     }
 }

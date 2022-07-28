@@ -25,7 +25,7 @@ public class GetActivitySamples extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.GET_ACTIVITY_SAMPLES;
     }
 }

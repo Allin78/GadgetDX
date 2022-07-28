@@ -58,6 +58,17 @@ public abstract class AbstractMessage implements Message {
         return rawDataBuffer.array();
     }
 
+    @Override
+    public <T extends WithingsStructure> T getStructureByType(Class<T> type) {
+        for (WithingsStructure structure : this.getDataStructures()) {
+            if (type.isInstance(structure)) {
+                return (T)structure;
+            }
+        }
+
+        return null;
+    }
+
     private void addEndOfMessageBytes(ByteBuffer buffer) {
         buffer.putShort((short)256);
         buffer.putShort((short)0);

@@ -24,17 +24,13 @@ public class ActivitySampleTime extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        if (rawData.length < 4) {
-            throw new IllegalArgumentException();
-        }
-
-        long timestampInSeconds = BLETypeConversions.toUint32(rawData[3], rawData[2], rawData[1], rawData[0]);
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        long timestampInSeconds = rawDataBuffer.getInt() & 4294967295L;
         date = new Date(timestampInSeconds * 1000);
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ACTIVITY_SAMPLE_TIME;
     }
 }

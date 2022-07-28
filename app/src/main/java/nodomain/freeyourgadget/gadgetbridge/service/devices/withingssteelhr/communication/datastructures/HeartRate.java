@@ -2,8 +2,6 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
-
 public class HeartRate extends WithingsStructure {
 
     private int heartrate;
@@ -18,8 +16,8 @@ public class HeartRate extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        heartrate = rawData[1] & 0xff;
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        heartrate = rawDataBuffer.get(1) & 0xff;
     }
 
     @Override
@@ -27,7 +25,7 @@ public class HeartRate extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.HR;
     }
 }

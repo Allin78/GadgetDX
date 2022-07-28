@@ -24,7 +24,7 @@ public class WithingsTestStructure extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return 99;
     }
 }

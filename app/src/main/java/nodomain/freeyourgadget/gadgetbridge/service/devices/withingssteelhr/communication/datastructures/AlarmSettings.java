@@ -86,7 +86,7 @@ public class AlarmSettings extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ALARM;
     }
 

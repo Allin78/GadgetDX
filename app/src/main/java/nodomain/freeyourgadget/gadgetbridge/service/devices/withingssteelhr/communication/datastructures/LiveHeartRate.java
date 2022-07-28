@@ -21,16 +21,12 @@ public class LiveHeartRate extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        if (rawData.length != 1) {
-            throw new IllegalArgumentException();
-        }
-
-        heartrate = rawData[0] & 0xff;
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        heartrate = rawDataBuffer.get() & 0xff;
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.LIVE_HR;
     }
 }

@@ -20,6 +20,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.With
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.BatteryValues;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageFactory;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.test.TestHelperUtils;
 

@@ -23,17 +23,13 @@ public class ActivitySampleDuration extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        if (rawData.length < 2) {
-            throw new IllegalArgumentException();
-        }
-
-        duration = (short) BLETypeConversions.toInt16(rawData[1],rawData[0]);
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        duration = rawDataBuffer.getShort();
     }
 
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ACTIVITY_SAMPLE_DURATION;
     }
 }

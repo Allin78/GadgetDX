@@ -30,7 +30,7 @@ public class UserUnit extends WithingsStructure {
     }
 
     @Override
-    short getType() {
-        return 0;
+    public short getType() {
+        return WithingsStructureType.USER_UNIT;
     }
 }

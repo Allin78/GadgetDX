@@ -23,7 +23,7 @@ public class AncsStatus extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ANCS_STATUS;
     }
 }

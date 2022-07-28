@@ -14,4 +14,7 @@ public interface Message {
     short getType();
     byte[] getRawData();
     boolean needsResponse();
+    boolean needsEOT();
+    boolean isIncomingMessage();
+    <T extends WithingsStructure> T getStructureByType(Class<T> type);
 }

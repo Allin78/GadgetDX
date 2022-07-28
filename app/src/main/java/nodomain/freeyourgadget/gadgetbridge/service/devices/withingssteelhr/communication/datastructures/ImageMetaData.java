@@ -37,14 +37,14 @@ public class ImageMetaData extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        unknown = rawData[0];
-        width = rawData[1];
-        height = rawData[2];
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        unknown = rawDataBuffer.get();
+        width = rawDataBuffer.get();
+        height = rawDataBuffer.get();
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.IMAGE_META_DATA;
     }
 }

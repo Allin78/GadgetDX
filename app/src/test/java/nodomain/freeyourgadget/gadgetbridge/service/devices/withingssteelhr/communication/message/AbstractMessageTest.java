@@ -1,6 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -43,6 +43,16 @@ public class AbstractMessageTest {
 
             @Override
             public boolean needsResponse() {
+                return false;
+            }
+
+            @Override
+            public boolean needsEOT() {
+                return false;
+            }
+
+            @Override
+            public boolean isIncomingMessage() {
                 return false;
             }
         };

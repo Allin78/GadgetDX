@@ -1,12 +1,11 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
+import org.threeten.bp.Instant;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.zone.ZoneOffsetTransition;
+import org.threeten.bp.zone.ZoneRules;
+
 import java.nio.ByteBuffer;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.zone.ZoneOffsetTransition;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -14,26 +13,32 @@ import ch.qos.logback.core.encoder.ByteArrayUtil;
 
 public class Time extends WithingsStructure {
 
-    private LocalDateTime now;
+    private Instant now;
     private int timeOffsetInSeconds;
-    private LocalDateTime nextDaylightSavingTransition;
+    private Instant nextDaylightSavingTransition;
     private int nextDaylightSavingTransitionOffsetInSeconds;
 
     public Time() {
-        now = LocalDateTime.now();
-        ZoneId defaultZoneId = ZoneId.systemDefault();
-        ZoneOffset offset = defaultZoneId.getRules().getOffset(now);
-        timeOffsetInSeconds = offset.getTotalSeconds();
-        ZoneOffsetTransition transition = defaultZoneId.getRules().nextTransition(ZonedDateTime.now(defaultZoneId).toInstant());
-        nextDaylightSavingTransition = transition.getDateTimeBefore();
-        nextDaylightSavingTransitionOffsetInSeconds = transition.getOffsetBefore().getTotalSeconds();
+        now = Instant.now();
+        final TimeZone timezone = TimeZone.getDefault();
+        final ZoneId zoneId = ZoneId.systemDefault();
+        final ZoneRules zoneRules = zoneId.getRules();
+        final ZoneOffsetTransition nextTransition = zoneRules.nextTransition(Instant.now());
+        long nextTransitionTs = 0;
+        if (nextTransition != null) {
+            nextTransitionTs = nextTransition.getDateTimeBefore().atZone(zoneId).toEpochSecond();
+            nextDaylightSavingTransitionOffsetInSeconds = nextTransition.getOffsetAfter().getTotalSeconds();
+        }
+
+        timeOffsetInSeconds = timezone.getRawOffset() / 1000;
+        nextDaylightSavingTransition = Instant.ofEpochMilli(nextTransitionTs);
     }
 
-    public LocalDateTime getNow() {
+    public Instant getNow() {
         return now;
     }
 
-    public void setNow(LocalDateTime now) {
+    public void setNow(Instant now) {
         this.now = now;
     }
 
@@ -45,11 +50,11 @@ public class Time extends WithingsStructure {
         this.timeOffsetInSeconds = TimeOffsetInSeconds;
     }
 
-    public LocalDateTime getNextDaylightSavingTransition() {
+    public Instant getNextDaylightSavingTransition() {
         return nextDaylightSavingTransition;
     }
 
-    public void setNextDaylightSavingTransition(LocalDateTime nextDaylightSavingTransition) {
+    public void setNextDaylightSavingTransition(Instant nextDaylightSavingTransition) {
         this.nextDaylightSavingTransition = nextDaylightSavingTransition;
     }
 
@@ -73,21 +78,9 @@ public class Time extends WithingsStructure {
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer rawDataBuffer) {
-        rawDataBuffer.putInt((int)getUnixTimeInSeconds(now));
+        rawDataBuffer.putInt((int)now.getEpochSecond());
         rawDataBuffer.putInt(timeOffsetInSeconds);
-        rawDataBuffer.putInt(getUnixTimeInSeconds(nextDaylightSavingTransition));
+        rawDataBuffer.putInt((int)nextDaylightSavingTransition.getEpochSecond());
         rawDataBuffer.putInt(nextDaylightSavingTransitionOffsetInSeconds);
-    }
-
-    private int getUnixTimeInSeconds(LocalDateTime date) {
-        long unixTimeInSeconds = 0;
-        if (date != null) {
-            ZoneId zoneId = ZoneId.systemDefault();
-            unixTimeInSeconds = date.atZone(zoneId).toEpochSecond();
-        }
-
-        // This loss in precision might be a problem around 2038, but at the moment
-        // the Steel HR does onl understand 32 bit timestamps :-(
-        return ((int)unixTimeInSeconds);
     }
 }

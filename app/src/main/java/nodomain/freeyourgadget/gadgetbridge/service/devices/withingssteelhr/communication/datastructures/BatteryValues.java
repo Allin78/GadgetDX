@@ -1,7 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 
@@ -41,14 +40,10 @@ public class BatteryValues extends WithingsStructure {
     }
 
     @Override
-    public void fillFromRawData(byte[] rawData) {
-        if (rawData.length < 6) {
-            throw new IllegalArgumentException();
-        }
-
-        percent = (short) BLETypeConversions.toUnsigned(rawData[0]);
-        status = (short) BLETypeConversions.toUnsigned(rawData[1]);
-        volt = BLETypeConversions.toUint32(rawData[5], rawData[4],rawData[3],rawData[2]);
+    public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
+        percent = (short)(rawDataBuffer.get() & 255);
+        status = (short)(rawDataBuffer.get() & 255);
+        volt = rawDataBuffer.getInt();
     }
 
     @Override
@@ -56,7 +51,7 @@ public class BatteryValues extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.BATTERY_STATUS;
     }
 }

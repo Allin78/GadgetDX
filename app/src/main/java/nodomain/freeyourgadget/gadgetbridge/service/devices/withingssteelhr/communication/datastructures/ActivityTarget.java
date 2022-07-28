@@ -29,7 +29,7 @@ public class ActivityTarget extends WithingsStructure {
     }
 
     @Override
-    short getType() {
+    public short getType() {
         return WithingsStructureType.ACTIVITY_TARGET;
     }
 }
