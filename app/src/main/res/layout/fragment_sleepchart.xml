@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="0"
             android:maxLines="3"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:scrollbarAlwaysDrawVerticalTrack="true" />
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/sleepchart_pie_light_deep"
