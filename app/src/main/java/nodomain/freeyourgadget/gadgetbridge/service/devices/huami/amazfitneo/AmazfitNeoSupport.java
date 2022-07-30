@@ -81,6 +81,18 @@ public class AmazfitNeoSupport extends MiBand5Support {
     }
 
     @Override
+    public void onFindDevice(boolean start) {
+        BluetoothGattCharacteristic characteristic = getCharacteristic(UUID_CHARACTERISTIC_ALERT_LEVEL);
+        try {
+            TransactionBuilder builder = performInitialized("find neo");
+            builder.write(characteristic,start ? new byte[] {3} : new byte[] {0});
+            builder.queue(getQueue());
+        } catch (IOException e) {
+            LOG.error("error while sending find Amazfit Neo command", e);
+        }
+    }
+
+    @Override
     public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
         return new AmazfitNeoFWHelper(uri, context);
     }
