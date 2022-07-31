@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitneo;
 
+import static nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL;
+
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.net.Uri;
 
