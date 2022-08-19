@@ -51,6 +51,7 @@ import nodomain.freeyourgadget.gadgetbridge.Logging;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice.State;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.WriteAction;
 
 /**
  * One queue/thread per connectable device.
@@ -112,15 +113,8 @@ public final class BtLEQueue {
                         mAbortServerTransaction = false;
 
                         for (BtLEServerAction action : serverTransaction.getActions()) {
-                            while (mPauseTransaction && !mAbortServerTransaction) {
-                              LOG.info("Pausing transaction");
-                              try {
-                                  Thread.sleep(100);
-                              } catch (Exception e) {}
-                            }
                             if (mAbortServerTransaction) { // got disconnected
                                 LOG.info("Aborting running transaction");
-                                mPauseTransaction = false;
                                 break;
                             }
                             if (LOG.isDebugEnabled()) {
@@ -153,11 +147,14 @@ public final class BtLEQueue {
                                 LOG.info("Aborting running transaction");
                                 break;
                             }
-                            while (mPauseTransaction && !mAbortTransaction) {
-                              LOG.info("Pausing transaction");
+                            while ((action instanceof WriteAction) && mPauseTransaction && !mAbortTransaction) {
+                              LOG.info("Pausing WriteAction");
                               try {
                                   Thread.sleep(100);
-                              } catch (Exception e) {}
+                              } catch (Exception e) {
+                                  LOG.info("Exception during pause: "+e.toString());
+                                  break;
+                              }
                             }
                             mWaitCharacteristic = action.getCharacteristic();
                             mWaitForActionResultLatch = new CountDownLatch(1);
