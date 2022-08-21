@@ -1107,9 +1107,10 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             baos.write(0x03);
             
             if (clocks.size() != 0) {
-                int i = clocks.size();
+                baos.write(clocks.size());
+                int i = 0;
                 for (final WorldClock clock : clocks) {
-                    baos.write(i--);
+                    baos.write(i++);
                     baos.write(encodeWorldClock(clock));
                 }
             } else {
@@ -1132,8 +1133,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             final TimeZone timezone = TimeZone.getTimeZone(clock.getTimeZoneId());
             final ZoneId zoneId = ZoneId.of(clock.getTimeZoneId());
 
-            // Usually the 3-letter city code (eg. LIS for Lisbon), but doesn't seem to be used in the UI
-            baos.write("   ".getBytes(StandardCharsets.UTF_8));
+            // Usually the 3-letter city code (eg. LIS for Lisbon), but doesn't seem to be used in the UI (used in Amazfit Neo)
+            baos.write(StringUtils.truncate(clock.getLabel(), 3).toUpperCase().getBytes(StandardCharsets.UTF_8));
             baos.write(0x00);
 
             // Some other string? Seems to be empty
