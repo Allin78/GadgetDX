@@ -62,9 +62,10 @@ public class WithingsSteelHRSampleProvider extends AbstractSampleProvider<Within
             case 2:
             case 3:
                 return ActivityKind.TYPE_DEEP_SLEEP;
-            case 4:
-                return ActivityKind.TYPE_UNKNOWN;
+            case 5:
+                return ActivityKind.TYPE_SWIMMING;
             default:
+                logger.info("++++++++++++++++++++++++++Received raw " + rawType);
                 return ActivityKind.TYPE_ACTIVITY;
         }
     }
@@ -79,14 +80,14 @@ public class WithingsSteelHRSampleProvider extends AbstractSampleProvider<Within
             case ActivityKind.TYPE_DEEP_SLEEP:
                 return 2;
             default:
+                logger.debug("Received activityKind " + activityKind);
                 return activityKind;
         }
     }
 
     @Override
     public float normalizeIntensity(int rawIntensity) {
-        logger.debug("########### normalizeIntensity " + rawIntensity);
-        return 0;
+        return rawIntensity * -0.5f;
     }
 
     @Override

@@ -2,7 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-public class VasistasHeartrate extends WithingsStructure
+public class ActivityHeartrate extends WithingsStructure
 {
     private int heartrate;
 
@@ -26,6 +26,6 @@ public class VasistasHeartrate extends WithingsStructure
 
     @Override
     public short getType() {
-        return WithingsStructureType.VASISTAS_HR;
+        return WithingsStructureType.ACTIVITY_HR;
     }
 }

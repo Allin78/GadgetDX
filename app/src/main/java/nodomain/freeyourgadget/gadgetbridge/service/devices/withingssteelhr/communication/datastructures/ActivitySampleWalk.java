@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 
-public class VasistasWalk extends WithingsStructure {
+public class ActivitySampleWalk extends WithingsStructure {
 
     private short level;
 

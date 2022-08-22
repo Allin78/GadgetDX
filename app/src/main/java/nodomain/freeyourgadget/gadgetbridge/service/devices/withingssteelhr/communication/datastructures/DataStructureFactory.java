@@ -36,7 +36,7 @@ public class DataStructureFactory {
                 case WithingsStructureType.BATTERY_STATUS:
                     structure = new BatteryValues();
                     break;
-                case WithingsStructureType.WORKOUT_ENTRY:
+                case WithingsStructureType.SCREEN_SETTINGS:
                     structure = new BatteryValues();
                     break;
                 case WithingsStructureType.ANCS_STATUS:
@@ -61,10 +61,16 @@ public class DataStructureFactory {
                     structure = new ActivitySampleSleep();
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_WALK:
-                    structure = new VasistasWalk();
+                    structure = new ActivitySampleWalk();
                     break;
-                case WithingsStructureType.VASISTAS_HR:
-                    structure = new VasistasHeartrate();
+                case WithingsStructureType.ACTIVITY_SAMPLE_RUN:
+                    structure = new ActivitySampleRun();
+                    break;
+                case WithingsStructureType.ACTIVITY_SAMPLE_SWIM:
+                    structure = new ActivitySampleSwim();
+                    break;
+                case WithingsStructureType.ACTIVITY_HR:
+                    structure = new ActivityHeartrate();
                     break;
                 case WithingsStructureType.PROBE_REPLY:
                     structure = new ProbeReply();
@@ -80,9 +86,6 @@ public class DataStructureFactory {
                     break;
                 case WithingsStructureType.END_OF_TRANSMISSION:
                     structure = new EndOfTransmission();
-                    break;
-                case WithingsStructureType.SLEEP_ACTIVITY_SAMPLE:
-                    structure = new SleepActivitySample();
                     break;
                 default:
                     structure = null;

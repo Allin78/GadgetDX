@@ -10,7 +10,7 @@ public final class WithingsMessageTypes {
     public static final short CHALLENGE = 296;
     public static final short SET_TIME = 1281;
     public static final short GET_BATTERY_STATUS = 1284;
-    public static final short SET_WORKOUT_LIST = 1292;
+    public static final short SET_SCREEN_LIST = 1292;
     public static final short INITIAL_CONNECT = 273;
     public static final short START_HANDS_CALIBRATION = 286;
     public static final short STOP_HANDS_CALIBRATION = 287;
@@ -34,14 +34,12 @@ public final class WithingsMessageTypes {
     public static final short GET_ANCS_STATUS = 2353;
     public static final short SET_ANCS_STATUS = 2345;
     public static final short GET_SCREEN_SETTINGS = 1293;
+    // The next to do nearly the same, when I look at the responses, though only the first seems to deliver sleep samples
     public static final short GET_ACTIVITY_SAMPLES = 2424;
     public static final short GET_MOVEMENT_SAMPLES = 1286;
-    public static final short GET_SPORT_MODE = 2371;
-    public static final short GET_BODY_VASISTAS = 2344;
-    public static final short GET_SLEEP_ACTIVITY = 2391;
 
-    public static final short CMD_NOTIFICATION_APP_ENABLED_GET = 2405;
-    public static final short CMD_NOTIFICATION_APP_ENABLED_SET = 2406;
+    public static final short GET_SPORT_MODE = 2371;
+    public static final short GET_HEARTRATE_SAMPLES = 2344;
 
     private WithingsMessageTypes() {}
 }

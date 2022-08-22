@@ -20,13 +20,12 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleMovement;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleSleep;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleTime;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.SleepActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.VasistasHeartrate;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.VasistasWalk;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityHeartrate;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleWalk;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructureType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
-import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class ActivitySampleHandler extends AbstractResponseHandler {
 
@@ -58,28 +57,31 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
                     handleMovement(data);
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_CALORIES:
-                    handleMetCal(data);
+                    handleCalories1(data);
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_CALORIES_2:
-                    handleMetCalEarned(data);
+                    handleCalories2(data);
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_SLEEP:
-                    handleVasistasSleep(data);
+                    handleSleep(data);
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_WALK:
                     handleWalk(data);
                     break;
-                case WithingsStructureType.VASISTAS_HR:
-                    handleHeartrate(data);
+                case WithingsStructureType.ACTIVITY_SAMPLE_RUN:
+                    handleWalk(data);
                     break;
-                case WithingsStructureType.SLEEP_ACTIVITY_SAMPLE:
-                    handleSleep(data);
+                case WithingsStructureType.ACTIVITY_SAMPLE_SWIM:
+                    handleSwim(data);
+                    break;
+                case WithingsStructureType.ACTIVITY_HR:
+                    handleHeartrate(data);
                     break;
                 case WithingsStructureType.ACTIVITY_CATEGORY:
                     handleCategory(data);
                     break;
                 default:
-                    logger.info("Received yet unhandled activity data of type '" + data.getType() + "' with data '" + data.getRawData() + "'.");
+                    logger.info("Received yet unhandled activity data of type '" + data.getType() + "' with data '" + GB.hexdump(data.getRawData()) + "'.");
             }
         }
 
@@ -103,23 +105,12 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
         activityEntry.setRawKind(((ActivityCategory)data).getCategory());
     }
 
-    private void handleSleep(WithingsStructure data) {
-        SleepActivitySample sleepSample = (SleepActivitySample) data;
-        logger.debug("Received sleep data " + StringUtils.bytesToHex(data.getRawData()));
-//        if (activityEntry != null) {
-//            saveData(activityEntry);
-//        }
-//
-//        activityEntry = new ActivityEntry();
-//        activityEntry.setTimestamp(sleepSample.getStartdate());
-    }
-
     private void handleDuration(WithingsStructure data) {
         activityEntry.setDuration(((ActivitySampleDuration)data).getDuration());
     }
 
     private void handleHeartrate(WithingsStructure data) {
-        activityEntry.setHeartrate(((VasistasHeartrate)data).getHeartrate());
+        activityEntry.setHeartrate(((ActivityHeartrate)data).getHeartrate());
     }
 
     private void handleMovement(WithingsStructure data) {
@@ -128,23 +119,27 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
     }
 
     private void handleWalk(WithingsStructure data) {
-        activityEntry.setRawIntensity(((VasistasWalk)data).getLevel());
+        activityEntry.setRawKind(ActivityKind.TYPE_WALKING);
     }
 
-    private void handleVasistasSleep(WithingsStructure data) {
+    private void handleRun(WithingsStructure data) {
+        activityEntry.setRawKind(ActivityKind.TYPE_RUNNING);
+    }
+
+    private void handleSwim(WithingsStructure data) {
+        activityEntry.setRawKind(ActivityKind.TYPE_SWIMMING);
+    }
+
+    private void handleSleep(WithingsStructure data) {
         activityEntry.setRawKind(((ActivitySampleSleep)data).getSleepType());
     }
 
-    private void handleMetCal(WithingsStructure data) {
+    private void handleCalories1(WithingsStructure data) {
         activityEntry.setCalories(((ActivitySampleCalories)data).getCalories());
     }
 
-    private void handleMetCalEarned(WithingsStructure data) {
+    private void handleCalories2(WithingsStructure data) {
         activityEntry.setCalories(((ActivitySampleCalories2)data).getCalories());
-
-    }
-
-    private void handleActiRecovV1V2(WithingsStructure data) {
 
     }
 

@@ -21,6 +21,7 @@ public class Time extends WithingsStructure {
     public Time() {
         now = Instant.now();
         final TimeZone timezone = TimeZone.getDefault();
+        timeOffsetInSeconds = timezone.getOffset(now.toEpochMilli()) / 1000;
         final ZoneId zoneId = ZoneId.systemDefault();
         final ZoneRules zoneRules = zoneId.getRules();
         final ZoneOffsetTransition nextTransition = zoneRules.nextTransition(Instant.now());
@@ -30,8 +31,7 @@ public class Time extends WithingsStructure {
             nextDaylightSavingTransitionOffsetInSeconds = nextTransition.getOffsetAfter().getTotalSeconds();
         }
 
-        timeOffsetInSeconds = timezone.getRawOffset() / 1000;
-        nextDaylightSavingTransition = Instant.ofEpochMilli(nextTransitionTs);
+        nextDaylightSavingTransition = Instant.ofEpochSecond(nextTransitionTs);
     }
 
     public Instant getNow() {

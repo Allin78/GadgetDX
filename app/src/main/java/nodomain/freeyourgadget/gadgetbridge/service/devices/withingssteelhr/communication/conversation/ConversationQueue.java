@@ -78,7 +78,13 @@ public class ConversationQueue implements ConversationObserver
         TransactionBuilder builder = support.createTransactionBuilder("conversation");
         builder.setGattCallback(support);
         BluetoothGattCharacteristic characteristic = support.getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-        builder.write(characteristic, message.getRawData());
+        byte[] rawData = message.getRawData();
+        if (rawData.length > 110) {
+            builder.write(characteristic, Arrays.copyOfRange(rawData, 0 , 110));
+            builder.write(characteristic, Arrays.copyOfRange(rawData, 110 , rawData.length ));
+        } else {
+            builder.write(characteristic, rawData);
+        }
         builder.queue(support.getQueue());
     }
 

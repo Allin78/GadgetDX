@@ -31,16 +31,18 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.WaitAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsServerAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.ActivitySampleHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.BatteryStateHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.Conversation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.ConversationQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.SetupFinishedHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.SyncFinishedHandler;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Status;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.EndOfTransmission;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ScreenSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.HeartbeatHandler;
@@ -58,33 +60,36 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.UserSecret;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.UserUnit;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.UserUnitConstants;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.VasistasType;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructureType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.ExpectedResponse;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageFactory;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageTypes;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Time;
-import nodomain.freeyourgadget.gadgetbridge.util.GB;
-import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.GetNotificationAttributes;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.GetNotificationAttributesResponse;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationProvider;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationSource;
 
 public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
-    private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class.getSimpleName());
+    private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class);
+    public static final String LAST_ACTIVITY_SYNC = "lastActivitySync";
     private MessageHandler messageHandler;
     private ConversationQueue conversationQueue;
     private boolean firstTimeConnect;
-    private BluetoothGattCharacteristic initNotificationCharacteristic;
-    private BluetoothGattCharacteristic handleNotificationsCharacteristic;
+    private BluetoothGattCharacteristic notificationSourceCharacteristic;
+    private BluetoothGattCharacteristic dataSourceCharacteristic;
     private BluetoothDevice device;
     private boolean authenticationInProgress;
     private boolean syncInProgress;
     private AuthenticationHandler authenticationHandler;
     private ActivityUser activityUser;
+    private NotificationProvider notificationProvider;
 
     public WithingsSteelHRDeviceSupport() {
         super(logger);
+        notificationProvider = new NotificationProvider(this);
         authenticationHandler = new AuthenticationHandler(this);
         messageHandler = new MessageHandler(this, new MessageFactory(new DataStructureFactory()));
         addSupportedService(WithingsUUID.WITHINGS_SERVICE_UUID);
@@ -148,7 +153,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
         UUID characteristicUUID = characteristic.getUuid();
         byte[] data = characteristic.getValue();
-        logger.debug("Characteristic changed:" + characteristicUUID + " with data " + StringUtils.bytesToHex(data));
 
         boolean complete = messageHandler.handleMessage(data);
         if (complete) {
@@ -161,7 +165,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
                     addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_RESPONSE, ExpectedResponse.NONE));
                     addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_OK));
                     conversationQueue.send();
-                    doSync();
                 }
             } else if (authenticationInProgress) {
                 authenticationHandler.handleAuthenticationResponse(message);
@@ -177,8 +180,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
-        Class clazz = notificationSpec.getClass();
-        logger.info("Got notification from " + notificationSpec.sender + " to send: " + notificationSpec.body);
+        notificationProvider.notifyClient(notificationSpec);
     }
 
     @Override
@@ -207,7 +209,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
                 alarmSettings.setHour((short) alarm.getHour());
                 alarmSettings.setMinute((short) alarm.getMinute());
                 // TODO find out how to map the values of GB to the withings settings.
-                alarmSettings.setDayOfWeek((short) alarm.getRepetition());
+                alarmSettings.setDayOfWeek((short) 0xff);
                 if (alarm.getSmartWakeup()) {
                     alarmSettings.setYetUnknown((short) 15);
                 }
@@ -223,7 +225,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     public boolean onDescriptorWriteRequest(BluetoothDevice device, int requestId, BluetoothGattDescriptor descriptor, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
         this.device = device;
-        return super.onDescriptorWriteRequest(device, requestId, descriptor, preparedWrite, responseNeeded, offset, value);
+        return true;
     }
 
     @Override
@@ -233,7 +235,13 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public boolean onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
-        return super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+        if (characteristic.getUuid().equals(WithingsUUID.CONTROL_POINT_CHARACTERISTIC_UUID)) {
+            GetNotificationAttributes request = new GetNotificationAttributes();
+            request.deserialize(value);
+            notificationProvider.handleNotificationAttributeRequest(request);
+        }
+
+        return true;
     }
 
     @Override
@@ -242,7 +250,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
-        logger.info("onSetCannedMessages");
     }
 
     @Override
@@ -340,18 +347,13 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onTestNewFunction() {
-//        conversationQueue.clear();
-//        addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.CMD_NOTIFICATION_APP_ENABLED_GET, new Status()));
-//        addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.CMD_NOTIFICATION_APP_ENABLED_SET, new Status()));
-//        conversationQueue.send();
-        TransactionBuilder builder= createTransactionBuilder("test");
-        BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-        builder.write(characteristic, new WithingsMessage(WithingsMessageTypes.SET_ANCS_STATUS, new AncsStatus(true)).getRawData());
-        builder.add(new WaitAction(100));
-        builder.write(characteristic, GB.hexStringToByteArray("0109310000"));
-        builder.add(new WaitAction(100));
-        builder.write(characteristic, GB.hexStringToByteArray("00020000fd542259"));
-        builder.queue(getQueue());
+        conversationQueue.clear();
+        Calendar c = Calendar.getInstance();
+        c.set(Calendar.DAY_OF_MONTH, 19);
+        Message message = new WithingsMessage(WithingsMessageTypes.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
+        message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
+        addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
+        conversationQueue.send();
     }
 
     @Override
@@ -363,11 +365,19 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         return false;
     }
 
-    void setAuthenticationInProgress(boolean inProgress) {
-        authenticationInProgress = inProgress;
-//        if (!authenticationInProgress) {
-//            doSync();
-//        }
+    public void sendAncsNotificationSourceNotification(NotificationSource notificationSource) {
+        ServerTransactionBuilder builder = createServerTransactionBuilder("notificationSourceNotification");
+        notificationSourceCharacteristic.setValue(notificationSource.serialize());
+        builder.add(new WithingsServerAction(getBluetoothDevice(), notificationSourceCharacteristic));
+        builder.queue(getQueue());
+    }
+
+    public void sendAncsDataSourceNotification(GetNotificationAttributesResponse response) {
+        ServerTransactionBuilder builder = createServerTransactionBuilder("dataSourceNotification");
+        byte[] data = response.serialize();
+        dataSourceCharacteristic.setValue(response.serialize());
+        builder.add(new WithingsServerAction(getBluetoothDevice(), dataSourceCharacteristic));
+        builder.queue(getQueue());
     }
 
     public void finishInitialization() {
@@ -381,15 +391,26 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         saveLastSyncTimestamp(new Date().getTime());
     }
 
+    void setAuthenticationInProgress(boolean inProgress) {
+        authenticationInProgress = inProgress;
+        if (!authenticationInProgress) {
+            addScreenListCommands();
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SET_ANCS_STATUS, new AncsStatus(true)));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ANCS_STATUS));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_BATTERY_STATUS), new BatteryStateHandler(this));
+            conversationQueue.send();
+        }
+    }
+
     private void addANCSService() {
-        BluetoothGattService withingsGATTService = new BluetoothGattService(WithingsUUID.WITHINGS_APP_SERVICE_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
-        initNotificationCharacteristic = new BluetoothGattCharacteristic(WithingsUUID.INIT_NOTIFICATIONS_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_READ);
-        initNotificationCharacteristic.addDescriptor(new BluetoothGattDescriptor(WithingsUUID.CCC_DESCRIPTOR_UUID, BluetoothGattCharacteristic.PERMISSION_WRITE));
-        withingsGATTService.addCharacteristic(initNotificationCharacteristic);
-        withingsGATTService.addCharacteristic(new BluetoothGattCharacteristic(WithingsUUID.INIT_NOTIFICATIONS_RESPONSE_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_WRITE));
-        handleNotificationsCharacteristic = new BluetoothGattCharacteristic(WithingsUUID.HANDLE_NOTIFICATIONS_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_READ);
-        handleNotificationsCharacteristic.addDescriptor(new BluetoothGattDescriptor(WithingsUUID.CCC_DESCRIPTOR_UUID, BluetoothGattCharacteristic.PERMISSION_WRITE));
-        withingsGATTService.addCharacteristic(handleNotificationsCharacteristic);
+        BluetoothGattService withingsGATTService = new BluetoothGattService(WithingsUUID.WITHINGS_ANCS_SERVICE_UUID, BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        notificationSourceCharacteristic = new BluetoothGattCharacteristic(WithingsUUID.NOTIFICATION_SOURCE_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_READ);
+        notificationSourceCharacteristic.addDescriptor(new BluetoothGattDescriptor(WithingsUUID.CCC_DESCRIPTOR_UUID, BluetoothGattCharacteristic.PERMISSION_WRITE));
+        withingsGATTService.addCharacteristic(notificationSourceCharacteristic);
+        withingsGATTService.addCharacteristic(new BluetoothGattCharacteristic(WithingsUUID.CONTROL_POINT_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_WRITE, BluetoothGattCharacteristic.PERMISSION_WRITE));
+        dataSourceCharacteristic = new BluetoothGattCharacteristic(WithingsUUID.DATA_SOURCE_CHARACTERISTIC_UUID, BluetoothGattCharacteristic.PROPERTY_NOTIFY, BluetoothGattCharacteristic.PERMISSION_READ);
+        dataSourceCharacteristic.addDescriptor(new BluetoothGattDescriptor(WithingsUUID.CCC_DESCRIPTOR_UUID, BluetoothGattCharacteristic.PERMISSION_WRITE));
+        withingsGATTService.addCharacteristic(dataSourceCharacteristic);
         addSupportedServerService(withingsGATTService);
     }
 
@@ -406,8 +427,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         conversationQueue.clear();
         syncInProgress = true;
         try {
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.INITIAL_CONNECT, ExpectedResponse.NONE));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_RESPONSE, ExpectedResponse.NONE));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.INITIAL_CONNECT));
+//            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_RESPONSE, ExpectedResponse.NONE));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ANCS_STATUS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_USER));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_BATTERY_STATUS), new BatteryStateHandler(this));
@@ -422,45 +443,44 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ALARM_SETTINGS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_SCREEN_SETTINGS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ALARM));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ALARM_ENABLED), new SyncFinishedHandler(this));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ALARM_ENABLED));
 
-            // TODO: add handler for workoutscreenlist
+            // TODO: add handler for workoutscreenlist as soon as we have a settings screen for different workout types
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_WORKOUT_SCREEN_LIST));
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(getLastSyncTimestamp());
             message = new WithingsMessage(WithingsMessageTypes.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
-            message.addDataStructure(new VasistasType(WithingsStructureType.VASISTAS_TYPE_WORKOUT_PAUSE));
             addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
             message = new WithingsMessage(WithingsMessageTypes.GET_MOVEMENT_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
             addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
-            message = new WithingsMessage(WithingsMessageTypes.GET_BODY_VASISTAS, ExpectedResponse.EOT);
+            message = new WithingsMessage(WithingsMessageTypes.GET_HEARTRATE_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
             addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_SPORT_MODE, new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0)));
+//            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_SPORT_MODE, new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0)));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_OK));
         } catch (Exception e) {
             logger.error("Could not synchronize! ", e);
             conversationQueue.clear();
         } finally {
             // This must be done in all cases or the watch won't respond anymore!
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_OK));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_OK), new SyncFinishedHandler(this));
         }
         conversationQueue.send();
     }
 
     private void saveLastSyncTimestamp(@NonNull long timestamp) {
         SharedPreferences.Editor editor = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()).edit();
-        editor.putLong("lastActivitySync", timestamp);
+        editor.putLong(LAST_ACTIVITY_SYNC, timestamp);
         editor.apply();
     }
 
     private long getLastSyncTimestamp() {
         SharedPreferences settings = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
-        long lastSyncTime =  settings.getLong("lastActivitySync", 0);
+        long lastSyncTime =  settings.getLong(LAST_ACTIVITY_SYNC, 0);
         if (lastSyncTime > 0) {
             return lastSyncTime;
         } else {
@@ -481,5 +501,43 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         user.setWeight(activityUser.getWeightKg());
         user.setBirthdate(activityUser.getUserBirthday());
         return user;
+    }
+
+    private void addScreenListCommands() {
+        Message message = new WithingsMessage(WithingsMessageTypes.SET_SCREEN_LIST);
+        ScreenSettings settings = new ScreenSettings();
+        settings.setId(0xff);
+        settings.setIdOnDevice((byte)6);
+        message.addDataStructure(settings);
+        settings = new ScreenSettings();
+        settings.setId(0x3d);
+        settings.setIdOnDevice((byte)1);
+        message.addDataStructure(settings);
+        settings = new ScreenSettings();
+        settings.setId(0x33);
+        settings.setIdOnDevice((byte)4);
+        message.addDataStructure(settings);
+        settings = new ScreenSettings();
+        settings.setId(0x2d);
+        settings.setIdOnDevice((byte)2);
+        message.addDataStructure(settings);
+        settings = new ScreenSettings();
+        settings.setId(0x2a);
+        settings.setIdOnDevice((byte)3);
+        message.addDataStructure(settings);
+        settings = new ScreenSettings();
+        settings.setId(0x26);
+        settings.setIdOnDevice((byte)7);
+        message.addDataStructure(settings);
+        settings = new ScreenSettings();
+        settings.setId(0x39);
+        settings.setIdOnDevice((byte)9);
+        message.addDataStructure(settings);
+        message.addDataStructure(new EndOfTransmission());
+        addSimpleConversationToQueue(message);
+    }
+
+    public BluetoothDevice getBluetoothDevice() {
+        return device;
     }
 }

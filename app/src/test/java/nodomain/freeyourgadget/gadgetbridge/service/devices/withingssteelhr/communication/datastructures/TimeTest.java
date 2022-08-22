@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.threeten.bp.Instant;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;

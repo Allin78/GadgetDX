@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 public class WorkoutScreen extends WithingsStructure {
     @Override
     public short getType() {
-        return WithingsStructureType.WORKOUT_ENTRY;
+        return WithingsStructureType.SCREEN_SETTINGS;
     }
 
     @Override
