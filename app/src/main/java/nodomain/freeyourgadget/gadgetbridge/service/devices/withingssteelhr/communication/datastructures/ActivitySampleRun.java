@@ -2,26 +2,19 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-public class VasistasType extends WithingsStructure {
-
-    private int type;
-
-    public VasistasType(int type) {
-        this.type = type;
-    }
-
+public class ActivitySampleRun extends WithingsStructure {
     @Override
     public short getLength() {
-        return 8;
+        return 0;
     }
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer buffer) {
-        buffer.putInt(type);
+
     }
 
     @Override
     public short getType() {
-        return WithingsStructureType.VASISTAS_TYPE;
+        return WithingsStructureType.ACTIVITY_SAMPLE_RUN;
     }
 }

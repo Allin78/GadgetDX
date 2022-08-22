@@ -2,26 +2,19 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-public class SleepActivityRequest extends WithingsStructure {
-
-    private int startTime;
-
-    public SleepActivityRequest(int startTime) {
-        this.startTime = startTime;
-    }
-
+public class ActivitySampleSwim extends WithingsStructure {
     @Override
     public short getLength() {
-        return 8;
+        return 0;
     }
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer buffer) {
-        buffer.putInt(startTime);
+
     }
 
     @Override
     public short getType() {
-        return WithingsStructureType.SLEEP_ACTIVITY_REQUEST;
+        return WithingsStructureType.ACTIVITY_SAMPLE_SWIM;
     }
 }
