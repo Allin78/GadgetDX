@@ -18,9 +18,9 @@ public class GalaxyBuds2DeviceCoordinator extends GalaxyBudsGenericCoordinator {
         String name = candidate.getName();
 
         if (name != null && (
-                name.startsWith("Galaxy Buds Pro (")
+                name.startsWith("Galaxy Buds2 (")
         )) {
-            return DeviceType.GALAXY_BUDS_PRO;
+            return DeviceType.GALAXY_BUDS2;
         }
         return DeviceType.UNKNOWN;
     }
@@ -31,7 +31,7 @@ public class GalaxyBuds2DeviceCoordinator extends GalaxyBudsGenericCoordinator {
     }
     @Override
     public DeviceType getDeviceType() {
-        return DeviceType.GALAXY_BUDS_PRO;
+        return DeviceType.GALAXY_BUDS2;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class GalaxyBuds2DeviceCoordinator extends GalaxyBudsGenericCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_galaxy_buds_pro,
+                R.xml.devicesettings_galaxy_buds_2,
         };
     }
 }
