@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <PreferenceScreen
         android:icon="@drawable/ic_surround"
         android:key="pref_galaxy_buds_pro_noise_control_preference"
@@ -13,7 +14,7 @@
                 android:entries="@array/galaxy_pro_noise_controls_options"
                 android:entryValues="@array/galaxy_pro_noise_controls_options_values"
                 android:icon="@drawable/ic_surround"
-                android:key="pref_galaxy_buds_pro_noise_control"
+                android:key="pref_galaxy_buds_2_noise_control"
                 android:summary="%s"
                 android:title="@string/prefs_noise_control" />
 
