@@ -179,7 +179,7 @@
                 android:dependency="pref_galaxy_buds_ambient_sound"
                 android:icon="@drawable/ic_volume_up"
                 android:key="pref_galaxy_buds_pro_ambient_volume_right"
-                android:max="4"
+                android:max="2"
                 android:min="0"
                 android:title="@string/prefs_ambient_volume_right"
                 app:showSeekBarValue="false" />
@@ -189,7 +189,7 @@
                 android:dependency="pref_galaxy_buds_ambient_sound"
                 android:icon="@drawable/ic_volume_up"
                 android:key="pref_galaxy_buds_pro_ambient_volume_left"
-                android:max="4"
+                android:max="2"
                 android:min="0"
                 android:title="@string/prefs_ambient_volume_left"
                 app:showSeekBarValue="false" />
