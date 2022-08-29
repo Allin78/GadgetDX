@@ -44,18 +44,16 @@
         android:title="@string/prefs_galaxy_touch_options">
         <PreferenceCategory android:title="@string/prefs_galaxy_touch_options">
             <SwitchPreference
-                android:defaultValue="false"
-                android:disableDependentsState="true"
-                android:icon="@drawable/ic_lock_open"
+                android:defaultValue="true"
+                android:icon="@drawable/ic_touch"
                 android:key="pref_galaxy_buds_lock_touch"
-                android:summary="@string/prefs_touch_lock_summary"
-                android:title="@string/prefs_touch_lock" />
+                android:title="@string/prefs_touch_lock_buds2" />
             <ListPreference
                 android:defaultValue="0"
                 android:dependency="pref_galaxy_buds_lock_touch"
                 android:entries="@array/galaxy_pro_touch_options_left"
                 android:entryValues="@array/galaxy_pro_touch_options_values"
-                android:icon="@drawable/ic_touch"
+                android:icon="@drawable/ic_switch_left"
                 android:key="pref_galaxy_buds_touch_left"
                 android:summary="%s"
                 android:title="@string/prefs_left" />
@@ -65,7 +63,6 @@
                 android:dependency="pref_galaxy_buds_lock_touch"
                 android:entries="@array/galaxy_pro_touch_switch_controls_options"
                 android:entryValues="@array/galaxy_pro_touch_switch_controls_values"
-                android:icon="@drawable/ic_switch_left"
                 android:key="pref_galaxy_buds_touch_left_switch"
                 android:summary="%s"
                 android:title="@string/prefs_switch_control_left" />
@@ -75,7 +72,7 @@
                 android:dependency="pref_galaxy_buds_lock_touch"
                 android:entries="@array/galaxy_pro_touch_options_right"
                 android:entryValues="@array/galaxy_pro_touch_options_values"
-                android:icon="@drawable/ic_touch"
+                android:icon="@drawable/ic_switch_right"
                 android:key="pref_galaxy_buds_touch_right"
                 android:summary="%s"
                 android:title="@string/prefs_right" />
@@ -84,7 +81,6 @@
                 android:dependency="pref_galaxy_buds_lock_touch"
                 android:entries="@array/galaxy_pro_touch_switch_controls_options"
                 android:entryValues="@array/galaxy_pro_touch_switch_controls_values"
-                android:icon="@drawable/ic_switch_right"
                 android:key="pref_galaxy_buds_touch_right_switch"
                 android:summary="%s"
                 android:title="@string/prefs_switch_control_right" />

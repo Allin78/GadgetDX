@@ -1589,7 +1589,7 @@
     <string name="prefs_ambient_sound">Ambient Sound</string>
     <string name="prefs_customize_ambient_sound_summary">Customize Ambient Sound</string>
     <string name="prefs_ambient_sound_during_call_title">Ambient Sound during call</string>
-    <string name="prefs_ambient_sound_during_call_summary">Hear own voice during call</string>
+    <string name="prefs_ambient_sound_during_call_summary">Hear own voice clearly during calls</string>
     <string name="prefs_ambient_mode">Ambient Mode</string>
     <string name="prefs_ambient_settings_title">Ambient Sound Options</string>
     <string name="prefs_active_noise_cancelling">Active Noise Cancelling</string>
@@ -1814,4 +1814,5 @@
     <string name="prefs_hourly_chime">Hourly chime</string>
     <string name="prefs_hourly_chime_summary">The watch will beep once an hour</string>
     <string name="devicetype_galaxybuds_2">Galaxy Buds2</string>
+    <string name="prefs_touch_lock_buds2">Touch controls</string>
 </resources>
