@@ -361,6 +361,10 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
                 int noise_controls = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_PRO_NOISE_CONTROL, "0"));
                 return encodeMessage(set_noise_controls, (byte) noise_controls);
 
+            case DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_2_NOISE_CONTROL:
+                int b2_noise_controls = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_2_NOISE_CONTROL, "0"));
+                return encodeMessage(set_noise_controls, (byte) b2_noise_controls);
+
             case DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_PRO_ANC_LEVEL:
                 int anc_level = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_PRO_ANC_LEVEL, "0"));
                 return encodeMessage(set_noise_reduction_level, (byte) anc_level);
