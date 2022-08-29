@@ -21,7 +21,7 @@
             <SeekBarPreference
                 android:icon="@drawable/ic_volume_up"
                 android:key="pref_galaxy_buds_ambient_volume"
-                android:max="3"
+                android:max="2"
                 android:min="0"
                 android:title="@string/prefs_ambient_volume"
                 app:showSeekBarValue="false" />
