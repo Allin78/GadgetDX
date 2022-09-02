@@ -24,6 +24,7 @@ public final class WithingsMessageTypes {
     public static final short LIVE_HR = (short) -32448;
     public static final short GET_HR = 2343;
     public static final short GET_WORKOUT_SCREEN_LIST = 315;
+    public static final short SET_WORKOUT_SCREEN = 316;
     public static final short SYNC = 321;
     public static final short SYNC_RESPONSE = 16705;
     public static final short SYNC_OK = 277;
@@ -34,7 +35,7 @@ public final class WithingsMessageTypes {
     public static final short GET_ANCS_STATUS = 2353;
     public static final short SET_ANCS_STATUS = 2345;
     public static final short GET_SCREEN_SETTINGS = 1293;
-    // The next to do nearly the same, when I look at the responses, though only the first seems to deliver sleep samples
+    // The next two do nearly the same, when I look at the responses, though only the first seems to deliver sleep samples
     public static final short GET_ACTIVITY_SAMPLES = 2424;
     public static final short GET_MOVEMENT_SAMPLES = 1286;
 

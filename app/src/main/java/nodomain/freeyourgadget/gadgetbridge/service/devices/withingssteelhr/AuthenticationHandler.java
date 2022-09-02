@@ -34,7 +34,6 @@ public class AuthenticationHandler {
     }
 
     public void startAuthentication() {
-        support.setAuthenticationInProgress(true);
         Message message = new WithingsMessage(WithingsMessageTypes.PROBE);
         message.addDataStructure(new Probe((short) 1, (short) 1, 5100401));
         message.addDataStructure(new ProbeOsVersion((short) Build.VERSION.SDK_INT));
@@ -53,7 +52,7 @@ public class AuthenticationHandler {
     }
 
     private void finishAuthentication() {
-        support.setAuthenticationInProgress(false);
+        support.onAuthenticationFinished();
     }
 
     private void sendMessage(Message message) {

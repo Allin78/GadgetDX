@@ -102,6 +102,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
     }
 
     private void handleCategory(WithingsStructure data) {
+        logger.info("Got activity category " + ((ActivityCategory)data).getCategory());
         activityEntry.setRawKind(((ActivityCategory)data).getCategory());
     }
 
@@ -131,7 +132,19 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
     }
 
     private void handleSleep(WithingsStructure data) {
-        activityEntry.setRawKind(((ActivitySampleSleep)data).getSleepType());
+        int sleepType;
+        switch (((ActivitySampleSleep)data).getSleepType()) {
+            case 0:
+                sleepType = 0;
+            case 2:
+            case 3:
+                sleepType = 4;
+                break;
+            default:
+                sleepType = 2;
+        }
+
+        activityEntry.setRawKind(sleepType);
     }
 
     private void handleCalories1(WithingsStructure data) {

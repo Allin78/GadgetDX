@@ -10,6 +10,7 @@ public class WithingsStructureType {
     public static final short PROBE_OS_VERSION = 2344;
     public static final short TIME = 1281;
     public static final short SCREEN_SETTINGS = 1302;
+    public static final short WORKOUT_SCREEN_SETTINGS = 317;
     public static final short BATTERY_STATUS = 1284;
     public static final short USER = 1283;
     public static final short USER_SECRET = 1299;
@@ -41,6 +42,8 @@ public class WithingsStructureType {
 
     public static final short ACTIVITY_SAMPLE_RECOVERY = 1547;
     public static final short ACTIVITY_CATEGORY = 2409;
+    public static final short ACTIVITY_START = 2418;
+    public static final short ACTIVITY_END = 2419;
 
     private WithingsStructureType() {}
 }

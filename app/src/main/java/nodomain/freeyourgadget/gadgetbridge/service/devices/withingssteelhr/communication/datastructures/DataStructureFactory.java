@@ -87,6 +87,15 @@ public class DataStructureFactory {
                 case WithingsStructureType.END_OF_TRANSMISSION:
                     structure = new EndOfTransmission();
                     break;
+                case WithingsStructureType.ACTIVITY_CATEGORY:
+                    structure = new ActivityCategory();
+                    break;
+                case WithingsStructureType.ACTIVITY_START:
+                    structure = new ActivityStart();
+                    break;
+                case WithingsStructureType.ACTIVITY_END:
+                    structure = new ActivityEnd();
+                    break;
                 default:
                     structure = null;
                     logger.warn("Received yet unknown structure type: " + structureTypeFromResponse);

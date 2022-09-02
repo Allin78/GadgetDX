@@ -48,6 +48,9 @@ public class NotificationProvider {
 
         GetNotificationAttributesResponse response = new GetNotificationAttributesResponse(request.getNotificationUID());
         List<RequestedNotificationAttribute> requestedAttributes = request.getAttributes();
+
+        boolean complete = false;
+
         for (RequestedNotificationAttribute requestedAttribute : requestedAttributes) {
             NotificationAttribute attribute = new NotificationAttribute();
             attribute.setAttributeID(requestedAttribute.getAttributeID());
@@ -57,12 +60,15 @@ public class NotificationProvider {
                 value = spec.sourceAppId;
             }
             if (requestedAttribute.getAttributeID() == 1) {
+                complete = true;
                 value = spec.sender != null? spec.sender : (spec.phoneNumber != null? spec.phoneNumber : spec.sourceName);
             }
             if (requestedAttribute.getAttributeID() == 2) {
+                complete = true;
                 value = spec.title != null? spec.title : spec.subject;
             }
             if (requestedAttribute.getAttributeID() == 3) {
+                complete = true;
                 value = spec.body;
             }
 
@@ -78,6 +84,10 @@ public class NotificationProvider {
         }
 
         support.sendAncsDataSourceNotification(response);
+
+        if (complete) {
+            pendingNotifications.remove(request.getNotificationUID());
+        }
     }
 
     private byte mapNotificationType(NotificationType type) {

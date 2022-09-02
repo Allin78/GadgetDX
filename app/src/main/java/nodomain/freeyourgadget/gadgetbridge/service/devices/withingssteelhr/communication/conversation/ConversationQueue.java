@@ -45,7 +45,7 @@ public class ConversationQueue implements ConversationObserver
             Conversation nextInLine = queue.peek();
             if (nextInLine!= null) {
                 Message request = nextInLine.getRequest();
-                sendToDevice(request);
+                support.sendToDevice(request);
             }
         }
     }
@@ -59,7 +59,7 @@ public class ConversationQueue implements ConversationObserver
             queue.add(conversation);
             conversation.registerObserver(this);
         } else {
-            sendToDevice(conversation.getRequest());
+            support.sendToDevice(conversation.getRequest());
         }
     }
 
@@ -68,24 +68,6 @@ public class ConversationQueue implements ConversationObserver
         if (conversation != null) {
             conversation.handleResponse(response);
         }
-    }
-
-    private void sendToDevice(Message message) {
-        if (message == null) {
-            return;
-        }
-
-        TransactionBuilder builder = support.createTransactionBuilder("conversation");
-        builder.setGattCallback(support);
-        BluetoothGattCharacteristic characteristic = support.getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-        byte[] rawData = message.getRawData();
-        if (rawData.length > 110) {
-            builder.write(characteristic, Arrays.copyOfRange(rawData, 0 , 110));
-            builder.write(characteristic, Arrays.copyOfRange(rawData, 110 , rawData.length ));
-        } else {
-            builder.write(characteristic, rawData);
-        }
-        builder.queue(support.getQueue());
     }
 
     private Conversation getConversation(short requestType) {

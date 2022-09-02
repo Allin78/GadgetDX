@@ -6,15 +6,22 @@ public class ImageData extends WithingsStructure {
 
     byte [] imageData;
 
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
+    }
+
     @Override
     public short getLength() {
-
-        return imageData != null ? (short)imageData.length : 0;
+        return imageData != null ? (short)(imageData.length + 1 + HEADER_SIZE) : 1 + HEADER_SIZE;
     }
 
     @Override
     protected void fillinTypeSpecificData(ByteBuffer buffer) {
-        buffer.put(imageData);
+        if (imageData != null) {
+            addByteArrayWithLengthByte(buffer, imageData);
+        } else {
+            addByteArrayWithLengthByte(buffer, new byte[0]);
+        }
     }
 
     @Override

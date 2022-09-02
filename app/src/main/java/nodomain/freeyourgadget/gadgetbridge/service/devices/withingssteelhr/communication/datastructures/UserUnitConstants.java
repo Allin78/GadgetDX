@@ -7,6 +7,7 @@ public final class UserUnitConstants {
     public static final short UNIT_KM = 24;
     public static final short UNIT_MILES = 25;
     public static final short UNIT_24H = 26;
+    public static final short UNIT_12H = 27;
 
     private UserUnitConstants() {}
 }
