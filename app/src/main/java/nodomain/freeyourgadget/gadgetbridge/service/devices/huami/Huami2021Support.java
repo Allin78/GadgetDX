@@ -2230,11 +2230,17 @@ public abstract class Huami2021Support extends HuamiSupport {
 
             if (response != null) {
                 replyHttpSuccess(requestId, response.toJson());
-                return;
+            } else {
+                LOG.warn("Unhandled weather URL {}", url);
+                // Reply with an empty object. If we reply with no internet, the devices will keep spamming
+                // requests which will cause battery life issues
+                replyHttpSuccess(requestId, "{}");
             }
+
+            return;
         }
 
-        LOG.error("Unhandled URL {}", url);
+        LOG.warn("Unhandled URL {}", url);
         replyHttpNoInternet(requestId);
     }
 
