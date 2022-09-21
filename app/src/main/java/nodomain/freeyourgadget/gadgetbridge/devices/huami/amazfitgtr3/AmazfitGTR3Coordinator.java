@@ -40,7 +40,7 @@ public class AmazfitGTR3Coordinator extends Huami2021Coordinator {
         try {
             final BluetoothDevice device = candidate.getDevice();
             final String name = device.getName();
-            if (name != null && name.startsWith(HuamiConst.AMAZFIT_GTR3_NAME)) {
+            if (name != null && name.startsWith(HuamiConst.AMAZFIT_GTR3_NAME) && !name.contains("Pro")) {
                 return DeviceType.AMAZFITGTR3;
             }
         } catch (final Exception e) {
