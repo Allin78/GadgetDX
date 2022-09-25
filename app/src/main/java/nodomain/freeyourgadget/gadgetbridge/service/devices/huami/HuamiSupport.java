@@ -2371,6 +2371,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                         break;
                     case COMMAND_WORKOUT_ACTIVITY_TYPES:
                         LOG.warn("got workout activity types, not handled");
+                        logMessageContent(reassemblyBuffer);
                         break;
                     default:
                         LOG.warn("got unknown chunked configuration response for {}, not handled", String.format("0x%02x", reassemblyType));
@@ -3479,7 +3480,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     protected HuamiSupport setWorkoutActivityTypes(final TransactionBuilder builder) {
         final SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress());
 
-        final List<String> defaultActivityTypes = Arrays.asList(HuamiWorkoutActivityType.Freestyle.name().toLowerCase(Locale.ROOT));
+        final List<String> defaultActivityTypes = Arrays.asList(HuamiWorkoutScreenActivityType.Freestyle.name().toLowerCase(Locale.ROOT));
         final String activityTypesPref = prefs.getString(HuamiConst.PREF_WORKOUT_ACTIVITY_TYPES_SORTABLE, null);
 
         final List<String> enabledActivityTypes;
@@ -3491,17 +3492,33 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
         LOG.info("Setting workout types to {}", enabledActivityTypes);
 
-        final byte[] command = new byte[enabledActivityTypes.size() * 3 + 2];
-        command[0] = 0x0b;
+        int workoutCount = HuamiWorkoutScreenActivityType.values().length;
+        final byte[] command = new byte[workoutCount * 3 + 2];
+        command[0] = (byte) workoutCount;
         command[1] = 0x00;
 
         int pos = 2;
 
+        Set<Byte> enabledCodes = new HashSet<>();
         for (final String workoutType : enabledActivityTypes) {
-            command[pos++] = HuamiWorkoutScreenActivityType.fromPrefValue(workoutType).getCode();
+            byte code = HuamiWorkoutScreenActivityType.fromPrefValue(workoutType).getCode();
+            enabledCodes.add(code);
+            command[pos++] = code;
             command[pos++] = 0x00;
             command[pos++] = 0x01;
         }
+        // add all other workout types to the "more" section
+        // this was tested on MiBand6
+        for (final HuamiWorkoutScreenActivityType workoutType : HuamiWorkoutScreenActivityType.values()) {
+            byte code = workoutType.getCode();
+            if (enabledCodes.contains(code)) {
+                continue;
+            }
+            command[pos++] = code;
+            command[pos++] = 0x00;
+            command[pos++] = 0x00;
+        }
+
 
         writeToChunked(builder, 9, command);
 
