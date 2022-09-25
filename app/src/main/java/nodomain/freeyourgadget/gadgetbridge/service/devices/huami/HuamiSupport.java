@@ -3484,7 +3484,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         final String activityTypesPref = prefs.getString(HuamiConst.PREF_WORKOUT_ACTIVITY_TYPES_SORTABLE, null);
 
         final List<String> enabledActivityTypes;
-        if (activityTypesPref == null || activityTypesPref.equals("")) {
+        if (activityTypesPref == null || activityTypesPref.equals("") || activityTypesPref.equals("more")) {
             enabledActivityTypes = defaultActivityTypes;
         } else {
             enabledActivityTypes = Arrays.asList(activityTypesPref.split(","));
@@ -3492,31 +3492,30 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
         LOG.info("Setting workout types to {}", enabledActivityTypes);
 
-        int workoutCount = HuamiWorkoutScreenActivityType.values().length;
+        int workoutCount = enabledActivityTypes.size();
+        if (enabledActivityTypes.contains("more")) {
+            // we shouldn't count the more item when it is present, since it isn't a real
+            // workout type and isn't sent to the device
+            workoutCount--;
+        }
         final ByteBuffer command = ByteBuffer.allocate(workoutCount * 3 + 2);
         command.order(ByteOrder.LITTLE_ENDIAN);
-        command.putShort((short)workoutCount);
+        command.putShort((short) workoutCount);
 
-        int pos = 2;
+        // a value of 1 puts items in the main section, a value of 0 puts them in the more section
+        // by default items are put in the main section
+        byte section = 0x01;
 
-        Set<Byte> enabledCodes = new HashSet<>();
         for (final String workoutType : enabledActivityTypes) {
-            byte code = HuamiWorkoutScreenActivityType.fromPrefValue(workoutType).getCode();
-            enabledCodes.add(code);
-            command.putShort(code);
-            command.put((byte)0x01);
-        }
-        // add all other workout types to the "more" section
-        // this was tested on MiBand6
-        for (final HuamiWorkoutScreenActivityType workoutType : HuamiWorkoutScreenActivityType.values()) {
-            byte code = workoutType.getCode();
-            if (enabledCodes.contains(code)) {
+            if (workoutType.equals("more")) {
+                // all items that follow the More separator are put in the more section
+                section = 0x00;
                 continue;
             }
+            byte code = HuamiWorkoutScreenActivityType.fromPrefValue(workoutType).getCode();
             command.putShort(code);
-            command.put((byte)0x00);
+            command.put(section);
         }
-
 
         writeToChunked(builder, 9, command.array());
 
