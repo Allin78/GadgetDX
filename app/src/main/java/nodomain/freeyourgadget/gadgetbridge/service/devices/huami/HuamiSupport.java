@@ -3493,9 +3493,9 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         LOG.info("Setting workout types to {}", enabledActivityTypes);
 
         int workoutCount = HuamiWorkoutScreenActivityType.values().length;
-        final byte[] command = new byte[workoutCount * 3 + 2];
-        command[0] = (byte) workoutCount;
-        command[1] = 0x00;
+        final ByteBuffer command = ByteBuffer.allocate(workoutCount * 3 + 2);
+        command.order(ByteOrder.LITTLE_ENDIAN);
+        command.putShort((short)workoutCount);
 
         int pos = 2;
 
@@ -3503,9 +3503,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         for (final String workoutType : enabledActivityTypes) {
             byte code = HuamiWorkoutScreenActivityType.fromPrefValue(workoutType).getCode();
             enabledCodes.add(code);
-            command[pos++] = code;
-            command[pos++] = 0x00;
-            command[pos++] = 0x01;
+            command.putShort(code);
+            command.put((byte)0x01);
         }
         // add all other workout types to the "more" section
         // this was tested on MiBand6
@@ -3514,13 +3513,12 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             if (enabledCodes.contains(code)) {
                 continue;
             }
-            command[pos++] = code;
-            command[pos++] = 0x00;
-            command[pos++] = 0x00;
+            command.putShort(code);
+            command.put((byte)0x00);
         }
 
 
-        writeToChunked(builder, 9, command);
+        writeToChunked(builder, 9, command.array());
 
         return this;
     }
