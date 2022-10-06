@@ -161,6 +161,27 @@
                 grid:layout_gravity="fill_horizontal"
                 android:text="Fetch device Debug Logs" />
             <Button
+                android:id="@+id/fetchSpo2Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Fetch SPO2" />
+            <Button
+                android:id="@+id/fetchStressButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Fetch Stress" />
+            <Button
+                android:id="@+id/fetchRestingHr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="Fetch Resting HR" />
+            <Button
                 android:id="@+id/testNewFunctionality"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

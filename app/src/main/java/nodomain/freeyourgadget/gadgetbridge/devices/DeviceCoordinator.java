@@ -287,6 +287,16 @@ public interface DeviceCoordinator {
     boolean supportsManualHeartRateMeasurement(GBDevice device);
 
     /**
+     * Returns true if the given device supports stress measurements.
+     */
+    boolean supportsStressMeasurement(GBDevice device);
+
+    /**
+     * Returns true if the given device supports SPO2 measurements.
+     */
+    boolean supportsSpo2Measurement(GBDevice device);
+
+    /**
      * Returns the readable name of the manufacturer.
      */
     String getManufacturer();

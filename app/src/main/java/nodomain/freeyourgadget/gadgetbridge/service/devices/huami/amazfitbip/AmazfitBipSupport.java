@@ -24,22 +24,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbip.AmazfitBipFWHelper;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.AbstractFetchOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchActivityOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressAutoOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressManualOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miband.NotificationStrategy;
+import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
 public class AmazfitBipSupport extends HuamiSupport {
 
@@ -81,21 +90,8 @@ public class AmazfitBipSupport extends HuamiSupport {
     }
 
     @Override
-    public void onFetchRecordedData(int dataTypes) {
-        try {
-            // FIXME: currently only one data type supported, these are meant to be flags
-            if (dataTypes == RecordedDataTypes.TYPE_ACTIVITY) {
-                new FetchActivityOperation(this).perform();
-            } else if (dataTypes == RecordedDataTypes.TYPE_GPS_TRACKS) {
-                new FetchSportsSummaryOperation(this).perform();
-            } else if (dataTypes == RecordedDataTypes.TYPE_DEBUGLOGS) {
-                new HuamiFetchDebugLogsOperation(this).perform();
-            } else {
-                LOG.warn("fetching multiple data types at once is not supported yet");
-            }
-        } catch (IOException ex) {
-            LOG.error("Unable to fetch recorded data types" + dataTypes, ex);
-        }
+    protected boolean supportsDebugLogs() {
+        return true;
     }
 
     @Override

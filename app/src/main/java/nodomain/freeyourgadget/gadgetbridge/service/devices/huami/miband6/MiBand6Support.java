@@ -76,4 +76,9 @@ public class MiBand6Support extends MiBand5Support {
     public int getActivitySampleSize() {
         return 8;
     }
+
+    @Override
+    protected boolean supportsPai() {
+        return true;
+    }
 }

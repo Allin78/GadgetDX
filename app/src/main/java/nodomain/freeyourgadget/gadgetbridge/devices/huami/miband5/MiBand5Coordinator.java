@@ -176,4 +176,9 @@ public class MiBand5Coordinator extends HuamiCoordinator {
                 HeartRateCapability.MeasurementInterval.MINUTES_30
         );
     }
+
+    @Override
+    public boolean supportsStressMeasurement(GBDevice device) {
+        return true;
+    }
 }

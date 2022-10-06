@@ -418,7 +418,8 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
                                                         @Override
                                                         public void onClick(View v) {
                                                             showTransientSnackbar(R.string.busy_task_fetch_activity_data);
-                                                            GBApplication.deviceService(device).onFetchRecordedData(RecordedDataTypes.TYPE_ACTIVITY);
+                                                            final int dataTypes = RecordedDataTypes.TYPE_ACTIVITY; // | RecordedDataTypes.TYPE_STRESS | RecordedDataTypes.TYPE_SPO2;
+                                                            GBApplication.deviceService(device).onFetchRecordedData(dataTypes);
                                                         }
                                                     }
         );

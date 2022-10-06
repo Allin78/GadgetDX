@@ -145,8 +145,11 @@ import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.AbstractFetchOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchActivityOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressAutoOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressManualOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2021;
@@ -349,25 +352,13 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    public void onFetchRecordedData(final int dataTypes) {
-        try {
-            // FIXME: currently only one data type supported, these are meant to be flags
-            switch (dataTypes) {
-                case RecordedDataTypes.TYPE_ACTIVITY:
-                    new FetchActivityOperation(this).perform();
-                    break;
-                case RecordedDataTypes.TYPE_GPS_TRACKS:
-                    new FetchSportsSummaryOperation(this).perform();
-                    break;
-                case RecordedDataTypes.TYPE_DEBUGLOGS:
-                    new HuamiFetchDebugLogsOperation(this).perform();
-                    break;
-                default:
-                    LOG.warn("fetching multiple data types at once is not supported yet");
-            }
-        } catch (final Exception e) {
-            LOG.error("Unable to fetch recorded data types {}", dataTypes, e);
-        }
+    protected boolean supportsDebugLogs() {
+        return true;
+    }
+
+    @Override
+    protected boolean supportsPai() {
+        return true;
     }
 
     @Override

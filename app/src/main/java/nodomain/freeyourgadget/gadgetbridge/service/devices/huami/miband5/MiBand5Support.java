@@ -69,4 +69,9 @@ public class MiBand5Support extends MiBand4Support {
             setWorkoutActivityTypes(builder);  // TODO: Supported by other bands?
         }
     }
+
+    @Override
+    protected boolean supportsPai() {
+        return true;
+    }
 }

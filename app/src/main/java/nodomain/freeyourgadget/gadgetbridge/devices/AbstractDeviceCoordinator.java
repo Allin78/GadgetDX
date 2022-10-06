@@ -376,4 +376,14 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
                 HeartRateCapability.MeasurementInterval.HOUR_1
         );
     }
+
+    @Override
+    public boolean supportsStressMeasurement(GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsSpo2Measurement(GBDevice device) {
+        return false;
+    }
 }

@@ -1079,7 +1079,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onFetchRecordedData(int dataTypes) {
-        if (dataTypes == RecordedDataTypes.TYPE_DEBUGLOGS) {
+        if ((dataTypes & RecordedDataTypes.TYPE_DEBUGLOGS) > 0) {
             File dir;
             try {
                 dir = FileUtils.getExternalFilesDir();

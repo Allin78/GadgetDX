@@ -71,6 +71,11 @@ public class AmazfitBand5Coordinator extends HuamiCoordinator {
     }
 
     @Override
+    public boolean supportsStressMeasurement(GBDevice device) {
+        return true;
+    }
+
+    @Override
     public boolean supportsWeather() {
         return true;
     }

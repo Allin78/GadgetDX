@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -310,10 +311,20 @@ public class DebugActivity extends AbstractGBActivity {
                             long timestamp = date.getTimeInMillis() - 1000;
                             GB.toast("Setting lastSyncTimeMillis: " + timestamp, Toast.LENGTH_LONG, GB.INFO);
 
-                            for(GBDevice device : devices){
-                                SharedPreferences.Editor editor = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).edit();
-                                editor.remove("lastSyncTimeMillis"); //FIXME: key reconstruction is BAD
-                                editor.putLong("lastSyncTimeMillis", timestamp);
+                            for (GBDevice device : devices) {
+                                final SharedPreferences.Editor editor = GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()).edit();
+
+                                final List<String> syncKeys = Arrays.asList(
+                                        "lastSyncTimeMillis",
+                                        "lastStressAutoTimeMillis",
+                                        "lastStressManualTimeMillis"
+                                );
+
+                                for (final String syncKey : syncKeys) {
+                                    editor.remove(syncKey); //FIXME: key reconstruction is BAD
+                                    editor.putLong(syncKey, timestamp);
+                                }
+
                                 editor.apply();
                             }
                         }
@@ -416,6 +427,30 @@ public class DebugActivity extends AbstractGBActivity {
             @Override
             public void onClick(View v) {
                 GBApplication.deviceService().onFetchRecordedData(RecordedDataTypes.TYPE_DEBUGLOGS);
+            }
+        });
+
+        Button fetchStressButton = findViewById(R.id.fetchStressButton);
+        fetchStressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GBApplication.deviceService().onFetchRecordedData(RecordedDataTypes.TYPE_STRESS);
+            }
+        });
+
+        Button fetchSpo2Button = findViewById(R.id.fetchSpo2Button);
+        fetchSpo2Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GBApplication.deviceService().onFetchRecordedData(RecordedDataTypes.TYPE_SPO2);
+            }
+        });
+
+        Button fetchRestingHr = findViewById(R.id.fetchRestingHr);
+        fetchRestingHr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GBApplication.deviceService().onFetchRecordedData(RecordedDataTypes.TYPE_RESTING_HR | RecordedDataTypes.TYPE_MANUAL_HR);
             }
         });
 

@@ -155,6 +155,16 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
     }
 
     @Override
+    public boolean supportsStressMeasurement(GBDevice device) {
+        return true;
+    }
+
+    @Override
+    public boolean supportsSpo2Measurement(GBDevice device) {
+        return true;
+    }
+
+    @Override
     public int[] getSupportedDeviceSpecificSettings(final GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_header_time,
