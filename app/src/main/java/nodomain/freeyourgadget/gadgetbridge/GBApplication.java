@@ -99,8 +99,6 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.fromKey;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_HIGH_PRIORITY_ID;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_ID_ERROR;
 
-import androidx.multidex.MultiDex;
-
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 /**
@@ -118,14 +116,14 @@ public class GBApplication extends Application {
     private static SharedPreferences sharedPrefs;
     private static final String PREFS_VERSION = "shared_preferences_version";
     //if preferences have to be migrated, increment the following and add the migration logic in migratePrefs below; see http://stackoverflow.com/questions/16397848/how-can-i-migrate-android-preferences-with-a-new-version
-    private static final int CURRENT_PREFS_VERSION = 17;
+    private static final int CURRENT_PREFS_VERSION = 18;
 
     private static LimitedQueue mIDSenderLookup = new LimitedQueue(16);
     private static Prefs prefs;
     private static GBPrefs gbPrefs;
     private static LockHandler lockHandler;
     /**
-     * Note: is null on Lollipop and Kitkat
+     * Note: is null on Lollipop
      */
     private static NotificationManager notificationManager;
 
@@ -168,12 +166,6 @@ public class GBApplication extends Application {
     public GBApplication() {
         context = this;
         // don't do anything here, add it to onCreate instead
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     public static Logging getLogging() {
@@ -375,10 +367,6 @@ public class GBApplication extends Application {
      */
     public static void releaseDB() {
         dbLock.unlock();
-    }
-
-    public static boolean isRunningLollipopOrLater() {
-        return VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     }
 
     public static boolean isRunningMarshmallowOrLater() {
@@ -1171,6 +1159,30 @@ public class GBApplication extends Application {
             }
 
             editor.remove(GBPrefs.CALENDAR_BLACKLIST);
+        }
+
+        if (oldVersion < 18) {
+            // Migrate the default value for Huami find band vibration pattern
+            try (DBHandler db = acquireDB()) {
+                final DaoSession daoSession = db.getDaoSession();
+                final List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
+
+                for (Device dbDevice : activeDevices) {
+                    if (!dbDevice.getManufacturer().equals("Huami")) {
+                        continue;
+                    }
+
+                    final SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+                    final SharedPreferences.Editor deviceSharedPrefsEdit = deviceSharedPrefs.edit();
+
+                    deviceSharedPrefsEdit.putString("huami_vibration_profile_find_band", "long");
+                    deviceSharedPrefsEdit.putString("huami_vibration_count_find_band", "1");
+
+                    deviceSharedPrefsEdit.apply();
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "error acquiring DB lock");
+            }
         }
 
         editor.putString(PREFS_VERSION, Integer.toString(CURRENT_PREFS_VERSION));

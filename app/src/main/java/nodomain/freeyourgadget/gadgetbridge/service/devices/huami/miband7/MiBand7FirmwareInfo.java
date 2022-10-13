@@ -32,6 +32,8 @@ public class MiBand7FirmwareInfo extends Huami2021FirmwareInfo {
 
     private static final Map<Integer, String> crcToVersion = new HashMap<Integer, String>() {{
         // firmware
+        put(26036, "1.20.3.1");
+        put(55449, "1.27.0.4");
     }};
 
     public MiBand7FirmwareInfo(final byte[] bytes) {
@@ -41,6 +43,11 @@ public class MiBand7FirmwareInfo extends Huami2021FirmwareInfo {
     @Override
     public String deviceName() {
         return HuamiConst.XIAOMI_SMART_BAND7_NAME;
+    }
+
+    @Override
+    public byte[] getExpectedFirmwareHeader() {
+        return new byte[]{0x51, 0x71};
     }
 
     @Override

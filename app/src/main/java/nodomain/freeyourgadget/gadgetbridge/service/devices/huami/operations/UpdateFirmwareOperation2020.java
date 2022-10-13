@@ -32,7 +32,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceBusyAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetProgressAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuamiFirmwareInfo;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.ArrayUtils;
@@ -47,15 +46,15 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
         super(uri, support);
     }
 
-    private final byte COMMAND_REQUEST_PARAMETERS = (byte) 0xd0;
-    private final byte COMMAND_UNKNOWN_D1 = (byte) 0xd1;
-    private final byte COMMAND_SEND_FIRMWARE_INFO = (byte) 0xd2;
-    private final byte COMMAND_START_TRANSFER = (byte) 0xd3;
-    private final byte REPLY_UPDATE_PROGRESS = (byte) 0xd4;
-    private final byte COMMAND_COMPLETE_TRANSFER = (byte) 0xd5;
-    private final byte COMMAND_FINALIZE_UPDATE = (byte) 0xd6;
+    public static final byte COMMAND_REQUEST_PARAMETERS = (byte) 0xd0;
+    public static final byte COMMAND_UNKNOWN_D1 = (byte) 0xd1;
+    public static final byte COMMAND_SEND_FIRMWARE_INFO = (byte) 0xd2;
+    public static final byte COMMAND_START_TRANSFER = (byte) 0xd3;
+    public static final byte REPLY_UPDATE_PROGRESS = (byte) 0xd4;
+    public static final byte COMMAND_COMPLETE_TRANSFER = (byte) 0xd5;
+    public static final byte COMMAND_FINALIZE_UPDATE = (byte) 0xd6;
 
-    private int mChunkLength = -1;
+    protected int mChunkLength = -1;
 
     @Override
     protected void doPerform() throws IOException {
@@ -151,30 +150,7 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
             builder.add(new SetDeviceBusyAction(getDevice(), getContext().getString(R.string.updating_firmware), getContext()));
             int fwSize = getFirmwareInfo().getSize();
             byte[] sizeBytes = BLETypeConversions.fromUint32(fwSize);
-            int crc32 = firmwareInfo.getCrc32();
-            byte[] chunkSizeBytes = BLETypeConversions.fromUint16(mChunkLength);
-            byte[] crcBytes = BLETypeConversions.fromUint32(crc32);
-            byte[] bytes = new byte[]{
-                    COMMAND_SEND_FIRMWARE_INFO,
-                    getFirmwareInfo().getFirmwareType().getValue(),
-                    sizeBytes[0],
-                    sizeBytes[1],
-                    sizeBytes[2],
-                    sizeBytes[3],
-                    crcBytes[0],
-                    crcBytes[1],
-                    crcBytes[2],
-                    crcBytes[3],
-                    chunkSizeBytes[0],
-                    chunkSizeBytes[1],
-                    0, // ??
-                    0, // index
-                    1, // count
-                    sizeBytes[0], // total size? right now it is equal to the size above
-                    sizeBytes[1],
-                    sizeBytes[2],
-                    sizeBytes[3]
-            };
+            byte[] bytes = buildFirmwareInfoCommand();
 
             if (getFirmwareInfo().getFirmwareType() == HuamiFirmwareType.WATCHFACE) {
                 byte[] fwBytes = firmwareInfo.getBytes();
@@ -201,6 +177,34 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
         }
     }
 
+    protected byte[] buildFirmwareInfoCommand() {
+        int fwSize = getFirmwareInfo().getSize();
+        byte[] sizeBytes = BLETypeConversions.fromUint32(fwSize);
+        int crc32 = firmwareInfo.getCrc32();
+        byte[] chunkSizeBytes = BLETypeConversions.fromUint16(mChunkLength);
+        byte[] crcBytes = BLETypeConversions.fromUint32(crc32);
+        return new byte[]{
+                COMMAND_SEND_FIRMWARE_INFO,
+                getFirmwareInfo().getFirmwareType().getValue(),
+                sizeBytes[0],
+                sizeBytes[1],
+                sizeBytes[2],
+                sizeBytes[3],
+                crcBytes[0],
+                crcBytes[1],
+                crcBytes[2],
+                crcBytes[3],
+                chunkSizeBytes[0],
+                chunkSizeBytes[1],
+                0, // 0 to update in foreground, 1 for background
+                0, // index
+                1, // count
+                sizeBytes[0], // total size? right now it is equal to the size above
+                sizeBytes[1],
+                sizeBytes[2],
+                sizeBytes[3]
+        };
+    }
 
     public boolean requestParameters() {
         try {
@@ -266,7 +270,7 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
 
 
     protected void sendTransferStart() throws IOException {
-        TransactionBuilder builder = performInitialized("trasfer complete");
+        TransactionBuilder builder = performInitialized("transfer complete");
         builder.write(fwCControlChar, new byte[]{
                 COMMAND_START_TRANSFER, 1,
         });
@@ -274,7 +278,7 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
     }
 
     protected void sendTransferComplete() throws IOException {
-        TransactionBuilder builder = performInitialized("trasfer complete");
+        TransactionBuilder builder = performInitialized("transfer complete");
         builder.write(fwCControlChar, new byte[]{
                 COMMAND_COMPLETE_TRANSFER,
         });

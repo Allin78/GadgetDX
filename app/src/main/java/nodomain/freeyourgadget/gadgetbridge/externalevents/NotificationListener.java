@@ -53,8 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -110,9 +110,11 @@ public class NotificationListener extends NotificationListenerService {
     private final HashMap<String, Long> notificationBurstPrevention = new HashMap<>();
     private final HashMap<String, Long> notificationOldRepeatPrevention = new HashMap<>();
 
-    private static final Set<String> GROUP_SUMMARY_WHITELIST = Collections.singleton(
-            "mikado.bizcalpro"
-    );
+    private static final Set<String> GROUP_SUMMARY_WHITELIST = new HashSet<String>() {{
+        add("com.microsoft.office.lync15");
+        add("com.skype.raider");
+        add("mikado.bizcalpro");
+    }};
 
     public static ArrayList<String> notificationStack = new ArrayList<>();
     private static ArrayList<Integer> notificationsActive = new ArrayList<Integer>();
@@ -184,15 +186,8 @@ public class NotificationListener extends NotificationListenerService {
                     }
                     for (StatusBarNotification sbn : sbns) {
                         if (sbn.getPostTime() == ts) {
-                            if (GBApplication.isRunningLollipopOrLater()) {
-                                String key = sbn.getKey();
-                                NotificationListener.this.cancelNotification(key);
-                            } else {
-                                int id = sbn.getId();
-                                String pkg = sbn.getPackageName();
-                                String tag = sbn.getTag();
-                                NotificationListener.this.cancelNotification(pkg, tag, id);
-                            }
+                            String key = sbn.getKey();
+                            NotificationListener.this.cancelNotification(key);
                         }
                     }
                     break;
@@ -282,7 +277,7 @@ public class NotificationListener extends NotificationListenerService {
         if (handleMediaSessionNotification(sbn)) return;
 
         int dndSuppressed = 0;
-        if (GBApplication.isRunningLollipopOrLater() && rankingMap != null) {
+        if (rankingMap != null) {
             // Handle priority notifications for Do Not Disturb
             Ranking ranking = new Ranking();
             if (rankingMap.getRanking(sbn.getKey(), ranking)) {
@@ -291,16 +286,14 @@ public class NotificationListener extends NotificationListenerService {
         }
 
         Prefs prefs = GBApplication.getPrefs();
-        if (GBApplication.isRunningLollipopOrLater()) {
-            if (prefs.getBoolean("notification_filter", false) && dndSuppressed == 1) {
-                return;
-            }
-            if (NotificationCompat.CATEGORY_CALL.equals(sbn.getNotification().category)
-                    && prefs.getBoolean("notification_support_voip_calls", false)
-                    && sbn.isOngoing()) {
-                handleCallNotification(sbn);
-                return;
-            }
+        if (prefs.getBoolean("notification_filter", false) && dndSuppressed == 1) {
+            return;
+        }
+        if (NotificationCompat.CATEGORY_CALL.equals(sbn.getNotification().category)
+                && prefs.getBoolean("notification_support_voip_calls", false)
+                && sbn.isOngoing()) {
+            handleCallNotification(sbn);
+            return;
         }
 
         if (shouldIgnoreNotification(sbn, false)) {
@@ -368,12 +361,12 @@ public class NotificationListener extends NotificationListenerService {
 
         LOG.info("Processing notification " + notificationSpec.getId() + " age: " + (System.currentTimeMillis() - notification.when) + " from source " + source + " with flags: " + notification.flags);
 
-        boolean preferBigText = source.startsWith("com.fsck.k9") || source.equals("com.google.android.gm");
+        boolean preferBigText = prefs.getBoolean("notification_prefer_long_text", true);
 
         dissectNotificationTo(notification, notificationSpec, preferBigText);
 
         if (notificationSpec.body != null) {
-            if (!checkNotificationContentForWhiteAndBlackList(sbn.getPackageName().toLowerCase(), notificationSpec.body)) {
+            if (!checkNotificationContentForWhiteAndBlackList(sbn.getPackageName().toLowerCase(), notificationSpec.title + " " + notificationSpec.body)) {
                 return;
             }
         }
@@ -388,7 +381,8 @@ public class NotificationListener extends NotificationListenerService {
         NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender(notification);
         List<NotificationCompat.Action> actions = wearableExtender.getActions();
 
-
+        // Some apps such as Telegram send both a group + normal notifications, which would get sent in duplicate to the devices
+        // Others only send the group summary, so they need to be whitelisted
         if (actions.isEmpty() && NotificationCompat.isGroupSummary(notification)
                 && !GROUP_SUMMARY_WHITELIST.contains(source)) { //this could cause #395 to come back
             LOG.info("Not forwarding notification, FLAG_GROUP_SUMMARY is set and no wearable action present. Notification flags: " + notification.flags);
@@ -732,15 +726,13 @@ public class NotificationListener extends NotificationListenerService {
 
         if (handleMediaSessionNotification(sbn)) return;
 
-        if (GBApplication.isRunningLollipopOrLater()) {
-            if(Notification.CATEGORY_CALL.equals(sbn.getNotification().category)
-                    && activeCallPostTime == sbn.getPostTime()) {
-                activeCallPostTime = 0;
-                CallSpec callSpec = new CallSpec();
-                callSpec.command = CallSpec.CALL_END;
-                mLastCallCommand = callSpec.command;
-                GBApplication.deviceService().onSetCallState(callSpec);
-            }
+        if(Notification.CATEGORY_CALL.equals(sbn.getNotification().category)
+                && activeCallPostTime == sbn.getPostTime()) {
+            activeCallPostTime = 0;
+            CallSpec callSpec = new CallSpec();
+            callSpec.command = CallSpec.CALL_END;
+            mLastCallCommand = callSpec.command;
+            GBApplication.deviceService().onSetCallState(callSpec);
         }
 
         if (shouldIgnoreNotification(sbn, true)) return;
@@ -787,9 +779,7 @@ public class NotificationListener extends NotificationListenerService {
                 sbn.getPackageName()
         );
 
-        if (GBApplication.isRunningLollipopOrLater()) {
-            infoMsg += ": " + sbn.getNotification().category;
-        }
+        infoMsg += ": " + sbn.getNotification().category;
 
         LOG.debug(infoMsg);
     }
