@@ -25,13 +25,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.util.ArrayUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
@@ -43,15 +43,19 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
             0x50, 0x4B, 0x03, 0x04
     };
 
-    public static final byte[] FW_HEADER = new byte[]{
-            0x51, 0x71
-    };
-
     public Huami2021FirmwareInfo(final byte[] bytes) {
         super(bytes);
     }
 
+    /**
+     * The device name, to search on firmware.bin in order to determine compatibility.
+     */
     public abstract String deviceName();
+
+    /**
+     * The expected firmware header bytes, to search on firmware.bin in order to determine compatibility.
+     */
+    public abstract byte[] getExpectedFirmwareHeader();
 
     @Override
     protected HuamiFirmwareType determineFirmwareType(final byte[] bytes) {
@@ -81,9 +85,7 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
                 final byte[] firmwareBin = getFileFromZip(uihhFirmwareZipFile.getContent(), "META/firmware.bin");
 
                 if (isCompatibleFirmwareBin(firmwareBin)) {
-                    // TODO: Firmware upgrades are untested, so they are disabled
-                    return HuamiFirmwareType.INVALID;
-                    //return HuamiFirmwareType.FIRMWARE_UIHH_2021_ZIP_WITH_CHANGELOG;
+                    return HuamiFirmwareType.FIRMWARE_UIHH_2021_ZIP_WITH_CHANGELOG;
                 }
             }
 
@@ -96,14 +98,17 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
 
         final byte[] firmwareBin = getFileFromZip(bytes, "META/firmware.bin");
         if (isCompatibleFirmwareBin(firmwareBin)) {
-            // TODO: Firmware upgrades are untested, so they are disabled
-            return HuamiFirmwareType.INVALID;
-            //return HuamiFirmwareType.FIRMWARE;
+            return HuamiFirmwareType.FIRMWARE;
         }
 
         final String appType = getAppType();
-        if ("watchface".equals(appType)) {
-            return HuamiFirmwareType.WATCHFACE;
+        switch(appType) {
+            case "watchface":
+                return HuamiFirmwareType.WATCHFACE;
+            case "app":
+                return HuamiFirmwareType.APP;
+            default:
+                LOG.warn("Unknown app type {}", appType);
         }
 
         return HuamiFirmwareType.INVALID;
@@ -126,14 +131,48 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
             case FIRMWARE:
                 return getFirmwareVersion(getBytes());
             case WATCHFACE:
-                final String appName = getAppName();
-                if (appName == null) {
+                final String watchfaceName = getAppName();
+                if (watchfaceName == null) {
                     return "(unknown watchface)";
                 }
-                return String.format("%s (watchface)", appName);
+                return String.format("%s (watchface)", watchfaceName);
+            case APP:
+                final String appName = getAppName();
+                if (appName == null) {
+                    return "(unknown app)";
+                }
+                return String.format("%s (app)", appName);
         }
 
         return null;
+    }
+
+    public Huami2021FirmwareInfo repackFirmwareInUIHH() throws IOException {
+        if (!firmwareType.equals(HuamiFirmwareType.FIRMWARE)) {
+            throw new IllegalStateException("Can only repack FIRMWARE");
+        }
+
+        final UIHHContainer uihh = packFirmwareInUIHH();
+
+        try {
+            final Constructor<? extends Huami2021FirmwareInfo> constructor = this.getClass().getConstructor(byte[].class);
+            return constructor.newInstance((Object) uihh.toRawBytes());
+        } catch (final Exception e) {
+            throw new IOException("Failed to construct new " + getClass().getName(), e);
+        }
+    }
+
+    private UIHHContainer packFirmwareInUIHH() {
+        final UIHHContainer uihh = new UIHHContainer();
+        final byte[] timestampBytes = BLETypeConversions.fromUint32((int) (System.currentTimeMillis() / 1000L));
+        final String changelogText = "Unknown changelog";
+        final byte[] changelogBytes = BLETypeConversions.join(
+                timestampBytes,
+                changelogText.getBytes(StandardCharsets.UTF_8)
+        );
+        uihh.addFile(UIHHContainer.FileType.FIRMWARE_ZIP, getBytes());
+        uihh.addFile(UIHHContainer.FileType.FIRMWARE_CHANGELOG, changelogBytes);
+        return uihh;
     }
 
     private boolean isCompatibleFirmwareBin(final byte[] firmwareBin) {
@@ -141,13 +180,13 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
             return false;
         }
 
-        if (!ArrayUtils.equals(firmwareBin, FW_HEADER, 0)) {
-            LOG.warn("Unexpected firmware header: {}", GB.hexdump(Arrays.copyOfRange(firmwareBin, 0, FW_HEADER.length + 1)));
+        if (!ArrayUtils.equals(firmwareBin, getExpectedFirmwareHeader(), 0)) {
+            LOG.warn("Unexpected firmware header: {}", GB.hexdump(Arrays.copyOfRange(firmwareBin, 0, getExpectedFirmwareHeader().length + 3)));
             return false;
         }
 
         // On the MB7, this only works for firmwares > 1.8.5.1, not for any older firmware
-        if (!searchString32BitAligned(firmwareBin, deviceName())) {
+        if (!searchString32BitAligned(firmwareBin, deviceName() + "\0")) {
             LOG.warn("Failed to find {} in fwBytes", deviceName());
             return false;
         }
@@ -204,7 +243,7 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
             // TODO Show preview icon?
             final String appName = jsonObject.getJSONObject("app").getString("appName");
 
-            return String.format("%s (watchface)", appName);
+            return String.format("%s", appName);
         } catch (final Exception e) {
             LOG.error("Failed to parse app.json", e);
         }

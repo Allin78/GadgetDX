@@ -25,7 +25,11 @@ import androidx.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
+
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
@@ -75,7 +79,17 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
 
     @Override
     public boolean supportsActivityTracks() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public int getWorldClocksSlotCount() {
+        return 20; // max in Zepp app
+    }
+
+    @Override
+    public int getWorldClocksLabelLength() {
+        return 3; // neo has 3 letter city codes
     }
 
     @Override
@@ -91,6 +105,7 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_heartrate_sleep_activity,
                 R.xml.devicesettings_goal_notification,
                 R.xml.devicesettings_timeformat,
+                R.xml.devicesettings_world_clocks,
                 R.xml.devicesettings_liftwrist_display,
                 R.xml.devicesettings_inactivity_dnd,
                 R.xml.devicesettings_hourly_chime,
@@ -98,6 +113,7 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_high_mtu,
+                R.xml.devicesettings_overwrite_settings_on_connection,
                 R.xml.devicesettings_transliteration
         };
     }
@@ -105,5 +121,16 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
     @Override
     public int getBondingStyle() {
         return BONDING_STYLE_REQUIRE_KEY;
+    }
+
+    @Override
+    public List<HeartRateCapability.MeasurementInterval> getHeartRateMeasurementIntervals() {
+        return Arrays.asList(
+                HeartRateCapability.MeasurementInterval.OFF,
+                HeartRateCapability.MeasurementInterval.MINUTES_1,
+                HeartRateCapability.MeasurementInterval.MINUTES_5,
+                HeartRateCapability.MeasurementInterval.MINUTES_10,
+                HeartRateCapability.MeasurementInterval.MINUTES_30
+        );
     }
 }
