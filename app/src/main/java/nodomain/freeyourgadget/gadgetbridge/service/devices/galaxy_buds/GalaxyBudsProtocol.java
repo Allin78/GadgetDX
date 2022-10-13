@@ -107,8 +107,8 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
     // "Use ambient sound during calls"
 
     private static final byte set_noise_controls_with_one_earbud = (byte) 0x6f; //0x0/0x1
-    // "Noise controls with one earbud" in Accessibility menu. I'm not exactly sure what it means,
-    // my guess is that it allows ANC even if only one earbuds is in-ear
+    // "Noise controls with one earbud" in Accessibility menu.
+    // It allows ANC and ambient sound even if only one earbud is in-ear.
 
     private static final byte set_balance = (byte) 0x8f;
     // takes value in 0-32 range, it is used to change left/right balance
@@ -384,7 +384,7 @@ public class GalaxyBudsProtocol extends GBDeviceProtocol {
                 return encodeMessage(set_ambient_mode, enable_ambient);
 
             case DeviceSettingsPreferenceConst.PREFS_GALAXY_BUDS_SEAMLESS_CONNECTION:
-                byte seamless_switch = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREFS_GALAXY_BUDS_SEAMLESS_CONNECTION, false) ? 0x01 : 0x00);
+                byte seamless_switch = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREFS_GALAXY_BUDS_SEAMLESS_CONNECTION, false) ? 0x00 : 0x01);
                 return encodeMessage(set_seamless_connection, seamless_switch);
 
             case DeviceSettingsPreferenceConst.PREF_GALAXY_BUDS_AMBIENT_VOICE_FOCUS:
