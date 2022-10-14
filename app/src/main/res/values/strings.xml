@@ -1662,6 +1662,8 @@
     <string name="pref_title_touch_volume">Volume</string>
     <string name="pref_title_touch_ambient">Ambient Sound</string>
     <string name="pref_title_touch_spotify">Spotify</string>
+    <string name="pref_title_touch_spotify_official_app">Spotify (official app only)</string>
+    <string name="pref_title_touch_spotify_galaxy_app">Spotify (Galaxy Wearable app only)</string>
     <string name="pref_switch_noise_control">Switch Noise Control</string>
     <string name="prefs_noise_control_with_one_earbud">Noise Control with one earbud</string>
     <string name="prefs_noise_control_with_one_earbud_summary">Allow noise control when using one earbud only</string>
@@ -1675,7 +1677,7 @@
     <string name="prefs_voice_detect">Voice detect</string>
     <string name="prefs_voice_detect_summary">Enable Ambient sound and lower playback automatically after voice has been detected</string>
     <string name="prefs_double_tap_edge">Double tap edge</string>
-    <string name="prefs_double_tap_edge_summary">Detect double tap even when not taped on touch pad</string>
+    <string name="prefs_double_tap_edge_summary">Detect double tap even when not tapped on touch pad</string>
     <string name="prefs_voice_detect_duration">End after quiet for:</string>
     <string name="pref_voice_detect_duration_5">5 seconds</string>
     <string name="pref_voice_detect_duration_10">10 seconds</string>
@@ -1718,7 +1720,7 @@
     <string name="sony_anc_optimizer_status_starting">Starting…</string>
     <string name="sony_anc_optimizer_status_not_running">Not Running</string>
     <string name="sony_anc_optimizer_status_wearing_condition">Measuring wearing condition…</string>
-    <string name="sony_anc_optimizer_status_atmospheric_pressure">Measuring atmostpheric pressure…</string>
+    <string name="sony_anc_optimizer_status_atmospheric_pressure">Measuring atmospheric pressure…</string>
     <string name="sony_anc_optimizer_status_analyzing">Analyzing…</string>
     <string name="sony_anc_optimizer_status_finished">Finishing…</string>
     <string name="sony_equalizer_preset_off">Off</string>
