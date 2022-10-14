@@ -1862,7 +1862,7 @@
     <string name="step_streaks_achievements_sharing_message">My daily step achievements!</string>
     <string name="step_streaks_achievements_sharing_title">Steps Achievements</string>
     <string name="prefs_hourly_chime">Hourly chime</string>
-    <string name="prefs_hourly_chime_summary">The watch will beep once an hour</string
+    <string name="prefs_hourly_chime_summary">The watch will beep once an hour</string>
     <string name="devicetype_galaxybuds_2">Galaxy Buds2</string>
     <string name="prefs_touch_lock_buds2">Touch controls</string>
     <string name="devicetype_flipper_zero">Flipper zero</string>
