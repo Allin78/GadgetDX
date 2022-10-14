@@ -132,6 +132,8 @@
     <string name="fw_upgrade_notice_miband5">You are about to install the %s firmware on your Mi Band 5.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband6">You are about to install the %s firmware on your Mi Band 6.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_miband7">You are about to install the %s firmware on your Xiaomi Smart Band 7.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfit_gts3">You are about to install the %s firmware on your Amazfit GTS 3.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfit_gtr3">You are about to install the %s firmware on your Amazfit GTR 3.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfitx">You are about to install the %s firmware on your Amazfit X.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfitneo">You are about to install the %s firmware on your Amazfit Neo.
 \n
@@ -197,6 +199,10 @@
     <string name="pref_title_notifications_generic">Generic notification support</string>
     <string name="pref_title_notifications_generic_settings">Android notification settings</string>
     <string name="pref_title_whenscreenon">…also when screen is on</string>
+    <string name="pref_title_notifications_ignore_low_priority">Ignore low priority notifications</string>
+    <string name="pref_summary_notifications_ignore_low_priority">Do not send low and minimum priority notifications to the watch</string>
+    <string name="pref_title_notification_prefer_long_text">Prefer long notification text</string>
+    <string name="pref_summary_notification_prefer_long_text">If available, send the long notification text to the device</string>
     <string name="pref_title_notification_filter">Do Not Disturb</string>
     <string name="pref_summary_notification_filter">Block all notifications when Do Not Disturb is enabled on the phone</string>
     <string name="pref_header_notification_application_settings">Per application settings</string>
@@ -240,6 +246,7 @@
     <string name="pref_title_canned_messages_dismisscall">Call Dismissal</string>
     <string name="pref_title_canned_messages_set">Update on device</string>
     <string name="pref_header_development">Developer options</string>
+    <string name="pref_header_authentication">Authentication</string>
     <string name="pref_title_development_miaddr">Mi Band address</string>
     <string name="pref_title_pebble_settings">Pebble settings</string>
     <string name="pref_header_activitytrackers">Activity trackers</string>
@@ -299,6 +306,8 @@
     <string name="pref_summary_use_custom_font">Enable this if your device has a custom font firmware for emoji support</string>
     <string name="pref_title_allow_high_mtu">Allow high MTU</string>
     <string name="pref_summary_allow_high_mtu">Increases transfer speed, but might not work on some Android devices.</string>
+    <string name="pref_title_overwrite_settings_on_connection">Overwrite settings on connection</string>
+    <string name="pref_summary_overwrite_settings_on_connection">When connecting to the band, overwrite all the settings on it.</string>
     <string name="pref_title_device_internet_access">Allow Internet Access</string>
     <string name="pref_summary_device_internet_access">Allow apps on this device to access the internet</string>
     <string name="pref_title_device_intents">Allow Intents</string>
@@ -715,9 +724,11 @@
     <string name="average">Average: %1$s</string>
     <string name="pref_title_dont_ack_transfer">Do not ACK activity data transfer</string>
     <string name="pref_summary_dont_ack_transfers">If not ACKed to the band, activity data is not cleared. Useful if GB is used together with other apps.</string>
-    <string name="pref_summary_keep_data_on_device">Will keep activity data on the Mi Band even after synchronization. Useful if GB is used together with other apps.</string>
+    <string name="pref_summary_keep_data_on_device">Will keep activity data on the device even after synchronization. Useful if GB is used together with other apps.</string>
     <string name="pref_title_low_latency_fw_update">Use low-latency mode for firmware flashing</string>
     <string name="pref_summary_low_latency_fw_update">This might help on devices where firmware flashing fails.</string>
+    <string name="pref_title_third_party_app_device_settings">Allow 3rd party apps to change settings</string>
+    <string name="pref_summary_third_party_app_device_settings">Allow other installed 3rd party apps to set device settings through intents.</string>
     <string name="live_activity_steps_history">Steps history</string>
     <string name="live_activity_current_steps_per_minute">Current steps/min</string>
     <string name="live_activity_total_steps">Total steps</string>
@@ -727,6 +738,7 @@
     <string name="abstract_chart_fragment_kind_activity">Activity</string>
     <string name="abstract_chart_fragment_kind_light_sleep">Light sleep</string>
     <string name="abstract_chart_fragment_kind_deep_sleep">Deep sleep</string>
+    <string name="abstract_chart_fragment_kind_rem_sleep">REM sleep</string>
     <string name="abstract_chart_fragment_kind_not_worn">Not worn</string>
     <string name="you_slept">You slept from %1$s to %2$s</string>
     <string name="you_did_not_sleep">You did not sleep</string>
@@ -861,6 +873,7 @@
     <string name="activity_prefs_chart_max_heart_rate">Max heart rate</string>
     <string name="activity_prefs_chart_min_heart_rate">Min heart rate</string>
     <string name="pref_title_charts_range">Charts Range</string>
+    <string name="pref_chart_sleep_lines_limit">How many sleep session lines to show before scrolling them</string>
     <string name="pref_charts_range_on">Charts range is set to a Month</string>
     <string name="pref_charts_range_off">Charts range is set to a Week</string>
     <string name="pref_chart_heartrate_color_red">Red</string>
@@ -937,6 +950,7 @@
     <string name="Cancel">Cancel</string>
     <string name="Delete">Delete</string>
     <string name="ok">OK</string>
+    <string name="dismiss">Dismiss</string>
     <string name="start">Start</string>
     <string name="set">Set</string>
     <string name="activity_data_management_directory_content_title">Export/Import directory content</string>
@@ -1014,7 +1028,6 @@
     <string name="activity_type_elliptical">Elliptical</string>
     <string name="activity_type_jump_roping">Jumping Rope</string>
     <string name="activity_type_yoga">Yoga</string>
-    <string name="activity_type_pilates">Pilates</string>
     <string name="activity_type_soccer">Soccer</string>
     <string name="activity_type_football">Football</string>
     <string name="activity_type_rugby">Rugby</string>
@@ -1022,7 +1035,6 @@
     <string name="activity_type_cricket">Cricket</string>
     <string name="activity_type_baseball">Baseball</string>
     <string name="activity_type_basketball">Basketball</string>
-    <string name="activity_type_volleyball">Volleyball</string>
     <string name="activity_type_handball">Handball</string>
     <string name="activity_type_tennis">Tennis</string>
     <string name="activity_type_pingpong">Ping Pong</string>
@@ -1030,6 +1042,19 @@
     <string name="activity_type_badminton">Badminton</string>
     <string name="activity_type_weightlifting">Weightlifting</string>
     <string name="activity_type_strength_training">Strength Training</string>
+    <string name="activity_type_dance">Dance</string>
+    <string name="activity_type_indoor_fitness">Indoor Fitness</string>
+    <string name="activity_type_hiit">High-intensity Interval Training</string>
+    <string name="activity_type_core_training">Core Training</string>
+    <string name="activity_type_stretching">Stretching</string>
+    <string name="activity_type_stepper">Stepper</string>
+    <string name="activity_type_pilates">Pilates</string>
+    <string name="activity_type_volleyball">Volleyball</string>
+    <string name="activity_type_table_tennis">Table Tennis</string>
+    <string name="activity_type_bowling">Bowling</string>
+    <string name="activity_type_kickboxing">Kickboxing</string>
+    <string name="activity_type_street_dance">Street Dance</string>
+    <string name="activity_type_indoor_ice_skating">Indoor Ice Skating</string>
     <string name="activity_type_gymnastics">Gymnastics</string>
     <string name="activity_type_dancing">Dancing</string>
     <string name="activity_type_zumba">Zumba</string>
@@ -1068,6 +1093,7 @@
     <string name="kind_agps_bundle">AGPS Bundle</string>
     <string name="kind_resources">Resources</string>
     <string name="kind_watchface">Watchface</string>
+    <string name="kind_app">App</string>
     <string name="devicetype_unknown">Unknown Device</string>
     <string name="devicetype_test">Test Device</string>
     <string name="add_test_device">Add test device</string>
@@ -1079,6 +1105,8 @@
     <string name="devicetype_miband5">Mi Band 5</string>
     <string name="devicetype_miband6">Mi Band 6</string>
     <string name="devicetype_miband7">Xiaomi Smart Band 7</string>
+    <string name="devicetype_amazfit_gts3">Amazfit GTS 3</string>
+    <string name="devicetype_amazfit_gtr3">Amazfit GTR 3</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
     <string name="devicetype_amazfit_neo">Amazfit Neo</string>
     <string name="devicetype_amazfit_bip">Amazfit Bip</string>
@@ -1086,6 +1114,7 @@
     <string name="devicetype_amazfit_cor">Amazfit Cor</string>
     <string name="devicetype_amazfit_cor2">Amazfit Cor 2</string>
     <string name="devicetype_amazfit_gtr">Amazfit GTR</string>
+    <string name="devicetype_amazfit_gtr_lite">Amazfit GTR Lite</string>
     <string name="devicetype_amazfit_trex">Amazfit T-Rex</string>
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="devicetype_amazfit_bips_lite">Amazfit Bip S Lite</string>
@@ -1196,6 +1225,7 @@
     <string name='menuitem_workout_history'>Workout History</string>
     <string name='menuitem_female_health'>Female Health</string>
     <string name='menuitem_workout_status'>Workout Status</string>
+    <string name="menuitem_unknown_app">Unknown (%s)</string>
     <string name="watch9_time_minutes">Minutes:</string>
     <string name="watch9_time_hours">Hours:</string>
     <string name="watch9_time_seconds">Seconds:</string>
@@ -1315,7 +1345,7 @@
     <string name="permission_notification_listener">%1$s needs access to Notifications in order to display them on your watch when your phone\'s screen is off.\n\nPlease tap \'%2$s\' then \'%1$s\' and enable \'Allow Notification Access\', then tap \'Back\' to return to %1$s.</string>
     <string name="permission_notification_policy_access">%1$s needs access to Do Not Disturb settings in order to honour them on your watch when your phone\'s screen is off.\n\nPlease tap \'%2$s\' then \'%1$s\' and enable \'Allow Do Not Disturb\', then tap \'Back\' to return to %1$s.</string>
     <string name="permission_location">%1$s needs access to your location in the background to allow it to stay connected to your watch even when your screen is off.\n\nPlease tap \'%2$s\' to agree.</string>
-    <string name="permission_display_over_other_apps">%1$s needs permission to display over other apps in order to let Bangle.js watches start activities via intents when %1$s is in the background.\n\nThis can be used to start a music app and play a song, and many other things.\n\nPlease tap \'%2$s\' then \'%1$s\' and enable \'Allow display over other apps\', then tap \'Back\' to return to %1$s.</string>
+    <string name="permission_display_over_other_apps">%1$s needs permission to display over other apps in order to let Bangle.js watches start activities via intents when %1$s is in the background.\n\nThis can be used to start a music app and play a song, and many other things.\n\nPlease tap \'%2$s\' then \'%1$s\' and enable \'Allow display over other apps\', then tap \'Back\' to return to %1$s.\n\nTo stop %1$s asking for permissions go to \'Settings\' and uncheck \'Check permission status\'.\n\nMake sure to grant %1$s the permissions needed to function as you expect.</string>
     <string name="error_version_check_extreme_caution">CAUTION: Error when checking version information! You should not continue! Saw version name \"%s\"</string>
     <string name="require_location_provider">Location must be enabled</string>
     <string name="companiondevice_pairing">CompanionDevice Pairing</string>
@@ -1364,6 +1394,18 @@
     <string name="maxHR">Max Heartrate</string>
     <string name="minHR">Min Heartrate</string>
     <string name="averageKMPaceSeconds">Pace</string>
+    <string name="HeartRateZones">Heart Rate Zones</string>
+    <string name="hrZoneNa">N/A</string>
+    <string name="hrZoneWarmUp">Warm-Up</string>
+    <string name="hrZoneFatBurn">Fat Burn</string>
+    <string name="hrZoneAerobic">Aerobic</string>
+    <string name="hrZoneAnaerobic">Anaerobic</string>
+    <string name="hrZoneExtreme">Extreme</string>
+    <string name="TrainingEffect">Training Effect</string>
+    <string name="aerobicTrainingEffect">Aerobic Effect</string>
+    <string name="anaerobicTrainingEffect">Anaerobic Effect</string>
+    <string name="currentWorkoutLoad">Workout Load</string>
+    <string name="maximumOxygenUptake">Maximum Oxygen Uptake</string>
     <string name="averageStride">Average Stride</string>
     <string name="maxStride">Max Stride</string>
     <string name="minStride">Min Stride</string>
@@ -1450,6 +1492,8 @@
     <string name="sports_activity_quick_filter_7days">7 days</string>
     <string name="sports_activity_quick_filter_30days">30 days</string>
     <string name="sports_activity_quick_filter_select">Time period</string>
+    <string name="sports_activity_confirm_delete_title">Delete %d activities</string>
+    <string name="sports_activity_confirm_delete_description">Are you sure you want to delete %d activities?</string>
     <string name="activity_summaries_all_devices">All devices</string>
     <string name="activity_filter_from_placeholder">distant past</string>
     <string name="activity_filter_to_placeholder">today</string>
@@ -1551,6 +1595,7 @@
     <string name="watchface_setting_title_custom_events">Custom events</string>
     <string name="watchface_setting_button_toggle_widgets">Toggle widgets</string>
     <string name="watchface_setting_button_toggle_backlight">Turn backlight on</string>
+    <string name="watchface_setting_button_move_hands">Move hands</string>
     <string name="watchface_cache_confirm_overwrite">A watchface with this name already exists in the cache. Do you want to overwrite it?</string>
     <string name="watchface_upload_failed">Upload of the watchface failed. Please try again.</string>
     <string name="watchface_widget_type_battery">Battery</string>
@@ -1836,4 +1881,11 @@
     <string name="step_streaks_achievements_sharing_title">Steps Achievements</string>
     <string name="prefs_hourly_chime">Hourly chime</string>
     <string name="prefs_hourly_chime_summary">The watch will beep once an hour</string>
+    <string name="devicetype_flipper_zero">Flipper zero</string>
+    <string name="activity_prefs_allow_bluetooth_intent_api">Bluetooth Intent API</string>
+    <string name="activity_prefs_summary_allow_bluetooth_intent_api">Allow controlling Bluetooth connection via Intent API</string>
+    <string name="devicetype_super_cars">Shell Racing</string>
+    <string name="supercars_turbo_speed_label">Turbo Speed</string>
+    <string name="supercars_lights_label">Lights</string>
+    <string name="supercars_lights_blinking_label">Blinking</string>
 </resources>

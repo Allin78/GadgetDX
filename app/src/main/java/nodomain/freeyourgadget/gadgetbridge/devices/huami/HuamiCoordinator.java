@@ -59,6 +59,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.MiBandActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiVibrationPatternNotificationType;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
@@ -72,7 +73,6 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
 
     @NonNull
     @Override
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public Collection<? extends ScanFilter> createBLEScanFilters() {
         ParcelUuid mi2Service = new ParcelUuid(MiBandService.UUID_SERVICE_MIBAND2_SERVICE);
         ScanFilter filter = new ScanFilter.Builder().setServiceUuid(mi2Service).build();
@@ -139,6 +139,11 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public SampleProvider<? extends AbstractActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
         return new MiBand2SampleProvider(device, session);
+    }
+
+    @Override
+    public ActivitySummaryParser getActivitySummaryParser(final GBDevice device) {
+        return new HuamiActivitySummaryParser();
     }
 
     public static DateTimeDisplay getDateDisplay(Context context, String deviceAddress) throws IllegalArgumentException {
@@ -348,13 +353,64 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
         return prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_BT_CONNECTED_ADVERTISEMENT, false);
     }
 
+    public static boolean getOverwriteSettingsOnConnection(String deviceAddress) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
+        return prefs.getBoolean("overwrite_settings_on_connection", true);
+    }
+
+    public static boolean getKeepActivityDataOnDevice(String deviceAddress) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
+        return prefs.getBoolean("keep_activity_data_on_device", false);
+    }
+
     public static VibrationProfile getVibrationProfile(String deviceAddress, HuamiVibrationPatternNotificationType notificationType) {
+        final String defaultVibrationProfileId;
+        final int defaultVibrationCount;
+
+        switch (notificationType) {
+            case APP_ALERTS:
+                defaultVibrationProfileId = VibrationProfile.ID_SHORT;
+                defaultVibrationCount = 2;
+                break;
+            case INCOMING_CALL:
+                defaultVibrationProfileId = VibrationProfile.ID_RING;
+                defaultVibrationCount = 1;
+                break;
+            case INCOMING_SMS:
+                defaultVibrationProfileId = VibrationProfile.ID_STACCATO;
+                defaultVibrationCount = 2;
+                break;
+            case GOAL_NOTIFICATION:
+                defaultVibrationProfileId = VibrationProfile.ID_LONG;
+                defaultVibrationCount = 1;
+                break;
+            case ALARM:
+                defaultVibrationProfileId = VibrationProfile.ID_LONG;
+                defaultVibrationCount = 7;
+                break;
+            case IDLE_ALERTS:
+                defaultVibrationProfileId = VibrationProfile.ID_MEDIUM;
+                defaultVibrationCount = 2;
+                break;
+            case EVENT_REMINDER:
+                defaultVibrationProfileId = VibrationProfile.ID_LONG;
+                defaultVibrationCount = 1;
+                break;
+            case FIND_BAND:
+                defaultVibrationProfileId = VibrationProfile.ID_RING;
+                defaultVibrationCount = 3;
+                break;
+            default:
+                defaultVibrationProfileId = VibrationProfile.ID_MEDIUM;
+                defaultVibrationCount = 2;
+        }
+
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(deviceAddress));
         final String vibrationProfileId = prefs.getString(
                 HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_PREFIX + notificationType.name().toLowerCase(Locale.ROOT),
-                VibrationProfile.ID_MEDIUM
+                defaultVibrationProfileId
         );
-        final int vibrationProfileCount = prefs.getInt(HuamiConst.PREF_HUAMI_VIBRATION_COUNT_PREFIX + notificationType.name().toLowerCase(Locale.ROOT), 2);
+        final int vibrationProfileCount = prefs.getInt(HuamiConst.PREF_HUAMI_VIBRATION_COUNT_PREFIX + notificationType.name().toLowerCase(Locale.ROOT), defaultVibrationCount);
 
         return VibrationProfile.getProfile(vibrationProfileId, (short) vibrationProfileCount);
     }

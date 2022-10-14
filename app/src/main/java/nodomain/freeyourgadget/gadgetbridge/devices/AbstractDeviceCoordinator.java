@@ -32,17 +32,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.password.PasswordCapabilityImpl;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.entities.AlarmDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.BatteryLevelDao;
@@ -51,6 +55,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.DeviceAttributesDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
@@ -145,6 +150,12 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     @Override
     public boolean allowFetchActivityData(GBDevice device) {
         return device.isInitialized() && !device.isBusy() && supportsActivityDataFetching();
+    }
+
+    @Override
+    @Nullable
+    public ActivitySummaryParser getActivitySummaryParser(final GBDevice device) {
+        return null;
     }
 
     public boolean isHealthWearable(BluetoothDevice device) {
@@ -270,6 +281,16 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public boolean supportsManualHeartRateMeasurement(final GBDevice device) {
+        return supportsHeartRateMeasurement(device);
+    }
+
+    @Override
+    public boolean supportsRemSleep() {
+        return false;
+    }
+
+    @Override
     public boolean supportsWeather() {
         return false;
     }
@@ -342,5 +363,17 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     @Override
     public PasswordCapabilityImpl.Mode getPasswordCapability() {
         return PasswordCapabilityImpl.Mode.NONE;
+    }
+
+    @Override
+    public List<HeartRateCapability.MeasurementInterval> getHeartRateMeasurementIntervals() {
+        return Arrays.asList(
+                HeartRateCapability.MeasurementInterval.OFF,
+                HeartRateCapability.MeasurementInterval.MINUTES_1,
+                HeartRateCapability.MeasurementInterval.MINUTES_5,
+                HeartRateCapability.MeasurementInterval.MINUTES_10,
+                HeartRateCapability.MeasurementInterval.MINUTES_30,
+                HeartRateCapability.MeasurementInterval.HOUR_1
+        );
     }
 }

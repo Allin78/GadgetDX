@@ -75,7 +75,6 @@ import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami20
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -103,6 +102,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -127,6 +127,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.miband.DoNotDisturb;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.VibrationProfile;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
@@ -148,7 +149,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.Fet
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2020;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2021;
 import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.CheckSums;
@@ -156,7 +157,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
-import nodomain.freeyourgadget.gadgetbridge.util.MapUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
@@ -193,7 +193,7 @@ public abstract class Huami2021Support extends HuamiSupport {
     public void onTestNewFunction() {
         try {
             final TransactionBuilder builder = performInitialized("test");
-            findBandOneShot(builder);
+
             builder.queue(getQueue());
         } catch (final Exception e) {
             LOG.error("Failed to test new function", e);
@@ -209,19 +209,21 @@ public abstract class Huami2021Support extends HuamiSupport {
         writeToChunked2021("ack find phone", CHUNKED2021_ENDPOINT_FIND_DEVICE, cmd, true);
     }
 
-    protected void findBandOneShot(final TransactionBuilder builder) {
+    @Override
+    protected void sendFindDeviceCommand(boolean start) {
+        if (!start) {
+            return;
+        }
+
         LOG.info("Sending one-shot find band");
 
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_FIND_DEVICE, new byte[]{FIND_BAND_ONESHOT}, true);
-    }
-
-    @Override
-    public void onFindDevice(final boolean start) {
-        // FIXME: This does not work while band is in DND (#752)
-        final CallSpec callSpec = new CallSpec();
-        callSpec.command = start ? CallSpec.CALL_INCOMING : CallSpec.CALL_END;
-        callSpec.name = "Gadgetbridge";
-        onSetCallState(callSpec);
+        try {
+            final TransactionBuilder builder = performInitialized("find huami 2021");
+            writeToChunked2021(builder, CHUNKED2021_ENDPOINT_FIND_DEVICE, new byte[]{FIND_BAND_ONESHOT}, true);
+            builder.queue(getQueue());
+        } catch (IOException e) {
+            LOG.error("error while sending find Huami 2021 device command", e);
+        }
     }
 
     @Override
@@ -282,10 +284,10 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         int length = 34;
         if (calendarEventSpec.title != null) {
-            length += calendarEventSpec.title.length();
+            length += calendarEventSpec.title.getBytes(StandardCharsets.UTF_8).length;
         }
         if (calendarEventSpec.description != null) {
-            length += calendarEventSpec.description.length();
+            length += calendarEventSpec.description.getBytes(StandardCharsets.UTF_8).length;
         }
 
         final ByteBuffer buf = ByteBuffer.allocate(length);
@@ -691,7 +693,18 @@ public abstract class Huami2021Support extends HuamiSupport {
             return;
         }
 
-        final ByteBuffer buf = ByteBuffer.allocate(1 + 10 + reminder.getMessage().getBytes().length + 1);
+        final String message;
+        if (reminder.getMessage().length() > coordinator.getMaximumReminderMessageLength()) {
+            LOG.warn("The reminder message length {} is longer than {}, will be truncated",
+                    reminder.getMessage().length(),
+                    coordinator.getMaximumReminderMessageLength()
+            );
+            message = StringUtils.truncate(reminder.getMessage(), coordinator.getMaximumReminderMessageLength());
+        } else {
+            message = reminder.getMessage();
+        }
+
+        final ByteBuffer buf = ByteBuffer.allocate(1 + 10 + message.getBytes(StandardCharsets.UTF_8).length + 1);
         buf.order(ByteOrder.LITTLE_ENDIAN);
 
         // Update does an upsert, so let's use it. If we call create twice on the same ID, it becomes weird
@@ -729,15 +742,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         buf.putInt((int) (cal.getTimeInMillis() / 1000L));
         buf.put((byte) 0x00);
 
-        if (reminder.getMessage().getBytes().length > coordinator.getMaximumReminderMessageLength()) {
-            LOG.warn("The reminder message length {} is longer than {}, will be truncated",
-                    reminder.getMessage().getBytes().length,
-                    coordinator.getMaximumReminderMessageLength()
-            );
-            buf.put(Arrays.copyOf(reminder.getMessage().getBytes(), coordinator.getMaximumReminderMessageLength()));
-        } else {
-            buf.put(reminder.getMessage().getBytes());
-        }
+        buf.put(message.getBytes(StandardCharsets.UTF_8));
         buf.put((byte) 0x00);
 
         writeToChunked2021(builder, CHUNKED2021_ENDPOINT_REMINDERS, buf.array(), false);
@@ -805,14 +810,14 @@ public abstract class Huami2021Support extends HuamiSupport {
                 cannedMessage = StringUtils.truncate(cannedMessage, 140);
                 LOG.debug("Setting canned message {} = '{}'", i, cannedMessage);
 
-                final int length = cannedMessage.getBytes().length + 7;
+                final int length = cannedMessage.getBytes(StandardCharsets.UTF_8).length + 7;
                 final ByteBuffer buf = ByteBuffer.allocate(length);
                 buf.order(ByteOrder.LITTLE_ENDIAN);
                 buf.put(CANNED_MESSAGES_CMD_SET);
                 buf.putInt(i++);
-                buf.put((byte) cannedMessage.length());
+                buf.put((byte) cannedMessage.getBytes(StandardCharsets.UTF_8).length);
                 buf.put((byte) 0x00);
-                buf.put(cannedMessage.getBytes());
+                buf.put(cannedMessage.getBytes(StandardCharsets.UTF_8));
                 writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CANNED_MESSAGES, buf.array(), false);
             }
             builder.queue(getQueue());
@@ -1043,7 +1048,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write((byte) 0x09);
+            baos.write(Huami2021Service.WEATHER_CMD_SET_DEFAULT_LOCATION);
             baos.write((byte) 0x02); // ? 2 for current, 4 for default
             baos.write((byte) 0x00); // ?
             baos.write((byte) 0x00); // ?
@@ -1149,7 +1154,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         final byte aodByte;
         switch (alwaysOnDisplay) {
-            case AUTO:
+            case AUTOMATIC:
                 aodByte = 0x01;
                 break;
             case SCHEDULED:
@@ -1232,98 +1237,43 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     protected Huami2021Support setDisplayItems(final TransactionBuilder builder) {
-        setDisplayItems2021(builder, false, getAllDisplayItems(), getDefaultDisplayItems());
+        setDisplayItems2021(builder, false);
         return this;
     }
 
     @Override
     protected Huami2021Support setShortcuts(final TransactionBuilder builder) {
-        setDisplayItems2021(builder, true, getAllShortcutItems(), getDefaultShortcutItems());
+        setDisplayItems2021(builder, true);
         return this;
     }
 
-    /**
-     * Get the array of all possible display items.
-     */
-    protected int getAllDisplayItems() {
-        return 0;
-    }
-
-    /**
-     * Get the array of default display items.
-     */
-    protected int getDefaultDisplayItems() {
-        return 0;
-    }
-
-    /**
-     * Get the array of all possible shortcuts.
-     */
-    protected int getAllShortcutItems() {
-        return 0;
-    }
-
-    /**
-     * Get the array of default shortcuts.
-     */
-    protected int getDefaultShortcutItems() {
-        return 0;
-    }
-
-    private Huami2021Support setDisplayItems2021(final TransactionBuilder builder,
-                                                 final boolean isShortcuts, final int allSettings, final int defaultSettings) {
-        if (allSettings == 0) {
-            LOG.warn("List of all display items is missing");
-            return this;
-        }
-
-        final SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress());
-        final String pages;
+    private void setDisplayItems2021(final TransactionBuilder builder,
+                                     final boolean isShortcuts) {
+        final Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+        final List<String> allSettings;
+        List<String> enabledList;
         final byte menuType;
-        final Map<String, Integer> idLookup;
 
         if (isShortcuts) {
             menuType = Huami2021Service.DISPLAY_ITEMS_SHORTCUTS;
-            pages = prefs.getString(HuamiConst.PREF_SHORTCUTS_SORTABLE, null);
-            idLookup = Huami2021MenuType.shortcutsIdLookup;
+            allSettings = new ArrayList<>(prefs.getList(HuamiConst.PREF_ALL_SHORTCUTS, Collections.emptyList()));
+            enabledList = new ArrayList<>(prefs.getList(HuamiConst.PREF_SHORTCUTS_SORTABLE, Collections.emptyList()));
             LOG.info("Setting shortcuts");
         } else {
             menuType = Huami2021Service.DISPLAY_ITEMS_MENU;
-            pages = prefs.getString(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE, null);
-            idLookup = Huami2021MenuType.displayItemIdLookup;
+            allSettings = new ArrayList<>(prefs.getList(HuamiConst.PREF_ALL_DISPLAY_ITEMS, Collections.emptyList()));
+            enabledList = new ArrayList<>(prefs.getList(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE, Collections.emptyList()));
             LOG.info("Setting menu items");
         }
 
-        final List<String> allSettingsList = new ArrayList<>(Arrays.asList(getContext().getResources().getStringArray(allSettings)));
-        List<String> enabledList;
-        if (pages != null) {
-            enabledList = new ArrayList<>(Arrays.asList(pages.split(",")));
-        } else if (defaultSettings != 0) {
-            enabledList = new ArrayList<>(Arrays.asList(getContext().getResources().getStringArray(defaultSettings)));
-        } else {
-            enabledList = new ArrayList<>();
+        if (allSettings.isEmpty()) {
+            LOG.warn("List of all display items is missing");
+            return;
         }
 
-        // Remove unknown items, so that we can configure even if some are unknown
-        for (int i = 0; i < allSettingsList.size(); i++) {
-            final String key = allSettingsList.get(i);
-            if (!idLookup.containsKey(key) && !key.equals("more")) {
-                LOG.warn("Unknown display item {}, ignoring", key);
-                allSettingsList.remove(i--);
-            }
-        }
-
-        for (int i = 0; i < enabledList.size(); i++) {
-            final String key = enabledList.get(i);
-            if (!idLookup.containsKey(key) && !key.equals("more")) {
-                LOG.warn("Unknown display item {}, ignoring", key);
-                enabledList.remove(i--);
-            }
-        }
-
-        if (!isShortcuts && !enabledList.contains("settings")) {
+        if (!isShortcuts && !enabledList.contains("00000013")) {
             // Settings can't be disabled
-            enabledList.add("settings");
+            enabledList.add("00000013");
         }
 
         if (isShortcuts && enabledList.size() > 10) {
@@ -1334,7 +1284,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         LOG.info("Setting display items (shortcuts={}): {}", isShortcuts, enabledList);
 
-        int numItems = allSettingsList.size();
+        int numItems = allSettings.size();
         if (!isShortcuts) {
             // Exclude the "more" item from the main menu, since it's not a real item
             numItems--;
@@ -1351,17 +1301,11 @@ public abstract class Huami2021Support extends HuamiSupport {
         byte pos = 0;
         boolean inMoreSection = false;
 
-        for (final String key : enabledList) {
-            if (key.equals("more")) {
+        for (final String id : enabledList) {
+            if (id.equals("more")) {
                 inMoreSection = true;
                 pos = 0;
                 continue;
-            }
-
-            final Integer id = idLookup.get(key);
-            if (id == null) {
-                LOG.error("Invalid id {} for {}", id, key);
-                return this;
             }
 
             final byte sectionKey;
@@ -1374,37 +1318,29 @@ public abstract class Huami2021Support extends HuamiSupport {
             }
 
             // Screen IDs are sent as literal hex strings
-            buf.put(String.format("%08X", id).getBytes(StandardCharsets.UTF_8));
+            buf.put(id.getBytes(StandardCharsets.UTF_8));
             buf.put((byte) 0);
             buf.put(sectionKey);
             buf.put(pos++);
-            buf.put((byte) (key.equals("settings") ? 1 : 0));
+            buf.put((byte) (id.equals("00000013") ? 1 : 0));
         }
 
         // Set all disabled items
         pos = 0;
-        for (final String key : allSettingsList) {
-            if (enabledList.contains(key) || key.equals("more")) {
+        for (final String id : allSettings) {
+            if (enabledList.contains(id) || id.equals("more")) {
                 continue;
             }
 
-            final Integer id = idLookup.get(key);
-            if (id == null) {
-                LOG.error("Invalid id {} for {}", id, key);
-                return this;
-            }
-
             // Screen IDs are sent as literal hex strings
-            buf.put(String.format("%08X", id).getBytes(StandardCharsets.UTF_8));
+            buf.put(id.getBytes(StandardCharsets.UTF_8));
             buf.put((byte) 0);
             buf.put(DISPLAY_ITEMS_SECTION_DISABLED);
             buf.put(pos++);
-            buf.put((byte) (key.equals("settings") ? 1 : 0));
+            buf.put((byte) (id.equals("00000013") ? 1 : 0));
         }
 
         writeToChunked2021(builder, CHUNKED2021_ENDPOINT_DISPLAY_ITEMS, buf.array(), true);
-
-        return this;
     }
 
     @Override
@@ -1684,7 +1620,7 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    protected Huami2021Support requestDisplayItems(final TransactionBuilder builder) {
+    public Huami2021Support requestDisplayItems(final TransactionBuilder builder) {
         LOG.info("Requesting display items");
 
         writeToChunked2021(
@@ -1742,7 +1678,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     public UpdateFirmwareOperation createUpdateFirmwareOperation(final Uri uri) {
-        return new UpdateFirmwareOperation2020(uri, this);
+        return new UpdateFirmwareOperation2021(uri, this);
     }
 
     @Override
@@ -1782,6 +1718,9 @@ public abstract class Huami2021Support extends HuamiSupport {
                 return;
             case CHUNKED2021_ENDPOINT_ICONS:
                 handle2021Icons(payload);
+                return;
+            case CHUNKED2021_ENDPOINT_WEATHER:
+                handle2021Weather(payload);
                 return;
             case CHUNKED2021_ENDPOINT_WORKOUT:
                 handle2021Workout(payload);
@@ -2087,14 +2026,18 @@ public abstract class Huami2021Support extends HuamiSupport {
             case WORKOUT_CMD_APP_OPEN:
                 final Huami2021WorkoutTrackActivityType activityType = Huami2021WorkoutTrackActivityType.fromCode(payload[3]);
                 final boolean workoutNeedsGps = (payload[2] == 1);
+                final int activityKind;
 
                 if (activityType == null) {
                     LOG.warn("Unknown workout activity type {}", String.format("0x%x", payload[3]));
+                    activityKind = ActivityKind.TYPE_UNKNOWN;
+                } else {
+                    activityKind = activityType.toActivityKind();
                 }
 
                 LOG.info("Workout starting on band: {}, needs gps = {}", activityType, workoutNeedsGps);
 
-                onWorkoutOpen(workoutNeedsGps);
+                onWorkoutOpen(workoutNeedsGps, activityKind);
                 return;
             case WORKOUT_CMD_STATUS:
                 switch (payload[1]) {
@@ -2138,17 +2081,17 @@ public abstract class Huami2021Support extends HuamiSupport {
             return;
         }
 
-        final Map<Integer, String> idMap;
+        final String allScreensPrefKey;
         final String prefKey;
         switch (payload[1]) {
             case DISPLAY_ITEMS_MENU:
                 LOG.info("Got {} display items", numberScreens);
-                idMap = MapUtils.reverse(Huami2021MenuType.displayItemIdLookup);
+                allScreensPrefKey = HuamiConst.PREF_ALL_DISPLAY_ITEMS;
                 prefKey = HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE;
                 break;
             case DISPLAY_ITEMS_SHORTCUTS:
                 LOG.info("Got {} shortcuts", numberScreens);
-                idMap = MapUtils.reverse(Huami2021MenuType.shortcutsIdLookup);
+                allScreensPrefKey = HuamiConst.PREF_ALL_SHORTCUTS;
                 prefKey = HuamiConst.PREF_SHORTCUTS_SORTABLE;
                 break;
             default:
@@ -2158,15 +2101,17 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         final String[] mainScreensArr = new String[numberScreens];
         final String[] moreScreensArr = new String[numberScreens];
+        final List<String> allScreens = new LinkedList<>();
+        if (payload[1] == DISPLAY_ITEMS_MENU) {
+            // The band doesn't report the "more" screen, so we add it
+            allScreens.add("more");
+        }
 
         for (int i = 0; i < numberScreens; i++) {
             // Screen IDs are sent as literal hex strings
-            final Integer screenId = Integer.parseInt(new String(subarray(payload, 4 + i * 12, 4 + i * 12 + 8)), 16);
-            final String screenKey = idMap.get(screenId);
-            if (screenKey == null) {
-                LOG.warn("Unknown screen {}, ignoring", String.format("0x%08X", screenId));
-                continue;
-            }
+            final String screenId = new String(subarray(payload, 4 + i * 12, 4 + i * 12 + 8));
+
+            allScreens.add(screenId);
 
             final int screenSectionVal = payload[4 + i * 12 + 9];
             final int screenPosition = payload[4 + i * 12 + 10];
@@ -2182,14 +2127,14 @@ public abstract class Huami2021Support extends HuamiSupport {
                         LOG.warn("Duplicate position {} for main section", screenPosition);
                     }
                     //LOG.debug("mainScreensArr[{}] = {}", screenPosition, screenKey);
-                    mainScreensArr[screenPosition] = screenKey;
+                    mainScreensArr[screenPosition] = screenId;
                     break;
                 case DISPLAY_ITEMS_SECTION_MORE:
                     if (moreScreensArr[screenPosition] != null) {
                         LOG.warn("Duplicate position {} for more section", screenPosition);
                     }
                     //LOG.debug("moreScreensArr[{}] = {}", screenPosition, screenKey);
-                    moreScreensArr[screenPosition] = screenKey;
+                    moreScreensArr[screenPosition] = screenId;
                     break;
                 case DISPLAY_ITEMS_SECTION_DISABLED:
                     // Ignore disabled screens
@@ -2207,8 +2152,11 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
         screens.removeAll(Collections.singleton(null));
 
+        final String allScrensPrefValue = StringUtils.join(",", allScreens.toArray(new String[0])).toString();
         final String prefValue = StringUtils.join(",", screens.toArray(new String[0])).toString();
-        final GBDeviceEventUpdatePreferences eventUpdatePreferences = new GBDeviceEventUpdatePreferences(prefKey, prefValue);
+        final GBDeviceEventUpdatePreferences eventUpdatePreferences = new GBDeviceEventUpdatePreferences()
+                .withPreference(allScreensPrefKey, allScrensPrefValue)
+                .withPreference(prefKey, prefValue);
 
         evaluateGBDeviceEvent(eventUpdatePreferences);
     }
@@ -2287,9 +2235,16 @@ public abstract class Huami2021Support extends HuamiSupport {
             final Huami2021Weather.Response response = Huami2021Weather.handleHttpRequest(path, query);
 
             if (response != null) {
-                replyHttpSuccess(requestId, response.toJson());
-                return;
+                replyHttpSuccess(requestId, 200, response.toJson());
+            } else {
+                final Huami2021Weather.Response notFoundResponse = new Huami2021Weather.ErrorResponse(
+                        -2001,
+                        "Not found"
+                );
+                replyHttpSuccess(requestId, 404, notFoundResponse.toJson());
             }
+
+            return;
         }
 
         LOG.error("Unhandled URL {}", url);
@@ -2323,8 +2278,8 @@ public abstract class Huami2021Support extends HuamiSupport {
         writeToChunked2021("http reply no internet", Huami2021Service.CHUNKED2021_ENDPOINT_HTTP, cmd, true);
     }
 
-    private void replyHttpSuccess(final byte requestId, final String content) {
-        LOG.debug("Replying with success to http request {} with {}", requestId, content);
+    private void replyHttpSuccess(final byte requestId, final int status, final String content) {
+        LOG.debug("Replying with http {} request {} with {}", status, requestId, content);
 
         final byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
         final ByteBuffer buf = ByteBuffer.allocate(8 + contentBytes.length);
@@ -2333,7 +2288,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         buf.put((byte) 0x02);
         buf.put(requestId);
         buf.put(HTTP_RESPONSE_SUCCESS);
-        buf.put((byte) 0xc8); // ?
+        buf.put((byte) status);
         buf.putInt(contentBytes.length);
         buf.put(contentBytes);
 
@@ -2485,6 +2440,16 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
     }
 
+    protected void handle2021Weather(final byte[] payload) {
+        switch (payload[0]) {
+            case WEATHER_CMD_DEFAULT_LOCATION_ACK:
+                LOG.info("Weather default location ACK, status = {}", payload[1]);
+                return;
+            default:
+                LOG.warn("Unexpected weather byte {}", String.format("0x%02x", payload[0]));
+        }
+    }
+
     private void sendNextQueuedIconData() {
         if (queuedIconPackage == null) {
             LOG.error("No queued icon to send");
@@ -2524,15 +2489,15 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         LOG.info("Acknowledging icon send for {}", queuedIconPackage);
 
-        queuedIconPackage = null;
-        queuedIconBytes = null;
-
         final ByteBuffer buf = ByteBuffer.allocate(1 + queuedIconPackage.length() + 1 + 1);
         buf.order(ByteOrder.LITTLE_ENDIAN);
         buf.put(NOTIFICATION_CMD_ICON_REQUEST_ACK);
         buf.put(queuedIconPackage.getBytes(StandardCharsets.UTF_8));
         buf.put((byte) 0x00);
         buf.put((byte) 0x01);
+
+        queuedIconPackage = null;
+        queuedIconBytes = null;
 
         writeToChunked2021("ack icon send", CHUNKED2021_ENDPOINT_NOTIFICATIONS, buf.array(), true);
     }
@@ -2584,7 +2549,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         final ByteBuffer buf = ByteBuffer.allocate(2 + url.length() + 1 + filename.length() + 1 + 4 + 4);
         buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put((byte) ICONS_CMD_SEND_REQUEST);
+        buf.put(ICONS_CMD_SEND_REQUEST);
         buf.put((byte) 0x00);
         buf.put(url.getBytes(StandardCharsets.UTF_8));
         buf.put((byte) 0x00);
