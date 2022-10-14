@@ -23,6 +23,6 @@ public class AlarmName extends WithingsStructure {
 
     @Override
     public short getType() {
-        return 0;
+        return WithingsStructureType.ALARM_NAME;
     }
 }

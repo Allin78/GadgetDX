@@ -11,7 +11,7 @@ public class AlarmSettings extends WithingsStructure {
     private short year;
 
     // TODO: find out what this field is used for.
-    private short yetUnknown;
+    private short smartWakeupMinutes;
 
     public short getHour() {
         return hour;
@@ -62,11 +62,11 @@ public class AlarmSettings extends WithingsStructure {
     }
 
     public short getYetUnkown() {
-        return yetUnknown;
+        return smartWakeupMinutes;
     }
 
-    public void setYetUnknown(short yetUnknown) {
-        this.yetUnknown = yetUnknown;
+    public void setSmartWakeupMinutes(short smartWakeupMinutes) {
+        this.smartWakeupMinutes = smartWakeupMinutes;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class AlarmSettings extends WithingsStructure {
         buffer.put((byte)dayOfMonth);
         buffer.put((byte)month);
         buffer.put((byte)year);
-        buffer.put((byte)yetUnknown);
+        buffer.put((byte)smartWakeupMinutes);
     }
 
     @Override

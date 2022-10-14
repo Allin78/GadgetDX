@@ -25,6 +25,8 @@ public final class WithingsMessageTypes {
     public static final short GET_HR = 2343;
     public static final short GET_WORKOUT_SCREEN_LIST = 315;
     public static final short SET_WORKOUT_SCREEN = 316;
+    public static final short START_LIVE_WORKOUT = 317;
+    public static final short STOP_LIVEWORKOUT = 318;
     public static final short SYNC = 321;
     public static final short SYNC_RESPONSE = 16705;
     public static final short SYNC_OK = 277;
@@ -32,6 +34,7 @@ public final class WithingsMessageTypes {
     public static final short SET_ALARM = 325;
     public static final short GET_ALARM = 293;
     public static final short GET_ALARM_ENABLED = 2330;
+    public static final short SET_ALARM_ENABLED = 2331;
     public static final short GET_ANCS_STATUS = 2353;
     public static final short SET_ANCS_STATUS = 2345;
     public static final short GET_SCREEN_SETTINGS = 1293;

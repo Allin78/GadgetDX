@@ -22,6 +22,8 @@ public class WithingsStructureType {
     public static final short ACTIVITY_HR = 2345;
     public static final short ALARM = 1298;
     public static final short ALARM_STATUS = 2329;
+    public static final short ALARM_NAME = 1300;
+    public static final short STEPS = 2390;
     public static final short IMAGE_META_DATA = 2397;
     public static final short IMAGE_DATA = 2398;
     public static final short ANCS_STATUS = 2346;
@@ -41,9 +43,10 @@ public class WithingsStructureType {
     public static final short ACTIVITY_SAMPLE_CALORIES_2 = 1546;
 
     public static final short ACTIVITY_SAMPLE_RECOVERY = 1547;
-    public static final short ACTIVITY_CATEGORY = 2409;
-    public static final short ACTIVITY_START = 2418;
-    public static final short ACTIVITY_END = 2419;
+    public static final short WORKOUT_TYPE = 2409;
+    public static final short LIVE_WORKOUT_START = 2418;
+    public static final short LIVE_WORKOUT_END = 2419;
+    public static final short LIVE_WORKOUT_PAUSE_STATE = 2439;
 
     private WithingsStructureType() {}
 }

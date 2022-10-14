@@ -14,7 +14,7 @@ public class WorkoutScreen extends WithingsStructure {
 
     public String name;
 
-    public byte mode;
+    public byte mode = MODE_PACE;
 
     public short yetunknown2 = 0;
 

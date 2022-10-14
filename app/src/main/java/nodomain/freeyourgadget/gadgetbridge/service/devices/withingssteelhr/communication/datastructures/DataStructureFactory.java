@@ -31,7 +31,7 @@ public class DataStructureFactory {
                     structure = new HeartRate();
                     break;
                 case WithingsStructureType.LIVE_HR:
-                    structure = new HeartRate();
+                    structure = new LiveHeartRate();
                     break;
                 case WithingsStructureType.BATTERY_STATUS:
                     structure = new BatteryValues();
@@ -87,14 +87,20 @@ public class DataStructureFactory {
                 case WithingsStructureType.END_OF_TRANSMISSION:
                     structure = new EndOfTransmission();
                     break;
-                case WithingsStructureType.ACTIVITY_CATEGORY:
-                    structure = new ActivityCategory();
+                case WithingsStructureType.WORKOUT_TYPE:
+                    structure = new WorkoutType();
                     break;
-                case WithingsStructureType.ACTIVITY_START:
-                    structure = new ActivityStart();
+                case WithingsStructureType.LIVE_WORKOUT_START:
+                    structure = new LiveWorkoutStart();
                     break;
-                case WithingsStructureType.ACTIVITY_END:
-                    structure = new ActivityEnd();
+                case WithingsStructureType.LIVE_WORKOUT_END:
+                    structure = new LiveWorkoutEnd();
+                    break;
+                case WithingsStructureType.LIVE_WORKOUT_PAUSE_STATE:
+                    structure = new LiveWorkoutPauseState();
+                    break;
+                case WithingsStructureType.STEPS:
+                    logger.info("###################################################### Got Steps!");
                     break;
                 default:
                     structure = null;

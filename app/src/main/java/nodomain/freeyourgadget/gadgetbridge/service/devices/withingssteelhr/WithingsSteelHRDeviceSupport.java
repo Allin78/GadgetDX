@@ -42,6 +42,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.LiveWorkoutDataHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.WithingsActivityType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsServerAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
@@ -57,6 +58,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityTarget;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AlarmName;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AlarmSettings;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AlarmStatus;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.AncsStatus;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.DataStructureFactory;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.EndOfTransmission;
@@ -84,12 +86,14 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class);
     public static final String LAST_ACTIVITY_SYNC = "lastActivitySync";
     private MessageHandler messageHandler;
+    private LiveWorkoutDataHandler liveWorkoutDataHandler;
     private ConversationQueue conversationQueue;
     private boolean firstTimeConnect;
     private BluetoothGattCharacteristic notificationSourceCharacteristic;
@@ -107,6 +111,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         notificationProvider = new NotificationProvider(this);
         authenticationHandler = new AuthenticationHandler(this);
         messageHandler = new MessageHandler(this, new MessageFactory(new DataStructureFactory()));
+        liveWorkoutDataHandler = new LiveWorkoutDataHandler();
         addSupportedService(WithingsUUID.WITHINGS_SERVICE_UUID);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
@@ -181,6 +186,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
                     addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_RESPONSE, ExpectedResponse.NONE));
                     addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_OK));
                     conversationQueue.send();
+                } else {
+                    liveWorkoutDataHandler.handleMessage(message);
                 }
             } else if (authenticationInProgress) {
                 authenticationHandler.handleAuthenticationResponse(message);
@@ -215,24 +222,20 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             return;
         }
 
+        boolean noAlarmsEnabled = true;
         conversationQueue.clear();
         addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ALARM));
         for (Alarm alarm : alarms) {
-            if (alarm.getEnabled()) {
-                AlarmSettings alarmSettings = new AlarmSettings();
-                alarmSettings.setHour((short) alarm.getHour());
-                alarmSettings.setMinute((short) alarm.getMinute());
-                // TODO find out how to map the values of GB to the withings settings.
-                alarmSettings.setDayOfWeek((short) 0xff);
-                if (alarm.getSmartWakeup()) {
-                    alarmSettings.setYetUnknown((short) 15);
-                }
-                Message alarmMessage = new WithingsMessage(WithingsMessageTypes.SET_ALARM, alarmSettings);
-                alarmMessage.addDataStructure(new AlarmName(alarm.getTitle()));
-                addSimpleConversationToQueue(alarmMessage);
-                addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_ALARM_ENABLED));
+            if (alarm.getEnabled() && !alarm.getUnused()) {
+                noAlarmsEnabled = false;
+                addAlarm(alarm);
             }
         }
+
+        if (noAlarmsEnabled) {
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SET_ALARM_ENABLED, new AlarmStatus(false)));
+        }
+
         conversationQueue.send();
     }
 
@@ -400,7 +403,9 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         builder.setGattCallback(this);
         BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
         byte[] rawData = message.getRawData();
-        builder.writeChunkedData(characteristic, rawData, mtuSize);
+        String command = GB.hexdump(message.getRawData());
+        logger.info("Screenlist: " + command);
+        builder.writeChunkedData(characteristic, rawData, mtuSize - 4);
         builder.queue(getQueue());
     }
 
@@ -440,6 +445,53 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_BATTERY_STATUS), new BatteryStateHandler(this));
             conversationQueue.send();
         }
+    }
+
+    private void addAlarm(Alarm alarm) {
+        AlarmSettings alarmSettings = new AlarmSettings();
+        alarmSettings.setHour((short) alarm.getHour());
+        alarmSettings.setMinute((short) alarm.getMinute());
+        alarmSettings.setDayOfWeek(mapRepetitionToWithingsValue(alarm));
+        if (alarm.getSmartWakeup()) {
+            // Healthmate has the possibility to change the minutecount, in GB we use a fixed value of 15
+            alarmSettings.setSmartWakeupMinutes((short) 15);
+        }
+
+        Message alarmMessage = new WithingsMessage(WithingsMessageTypes.SET_ALARM, alarmSettings);
+        if (!StringUtils.isEmpty(alarm.getTitle())) {
+            AlarmName alarmName = new AlarmName(alarm.getTitle());
+            alarmMessage.addDataStructure(alarmName);
+        }
+
+        addSimpleConversationToQueue(alarmMessage);
+        addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SET_ALARM_ENABLED, new AlarmStatus(true)));
+    }
+
+    private short mapRepetitionToWithingsValue(Alarm alarm) {
+        int repetition = 0;
+        if (alarm.getRepetition(Alarm.ALARM_MON)) {
+            repetition += 0x02;
+        }
+        if (alarm.getRepetition(Alarm.ALARM_TUE)) {
+            repetition += 0x04;
+        }
+        if (alarm.getRepetition(Alarm.ALARM_WED)) {
+            repetition += 0x08;
+        }
+        if (alarm.getRepetition(Alarm.ALARM_THU)) {
+            repetition += 0x10;
+        }
+        if (alarm.getRepetition(Alarm.ALARM_FRI)) {
+            repetition += 0x20;
+        }
+        if (alarm.getRepetition(Alarm.ALARM_SAT)) {
+            repetition += 0x40;
+        }
+        if (alarm.getRepetition(Alarm.ALARM_SUN)) {
+            repetition += 0x01;
+        }
+
+        return (short)(repetition + 0x80);
     }
 
     private void addANCSService() {
@@ -500,7 +552,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
             addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
-//            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.GET_SPORT_MODE, new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0)));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageTypes.SYNC_OK));
         } catch (Exception e) {
             logger.error("Could not synchronize! ", e);

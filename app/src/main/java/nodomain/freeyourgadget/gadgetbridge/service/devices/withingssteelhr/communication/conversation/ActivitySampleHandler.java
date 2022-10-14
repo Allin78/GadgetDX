@@ -13,7 +13,8 @@ import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySamp
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.ActivityEntry;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityCategory;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.WithingsActivityType;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleCalories;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleCalories2;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleDuration;
@@ -21,7 +22,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleSleep;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleTime;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityHeartrate;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleWalk;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructureType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
@@ -77,8 +77,8 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
                 case WithingsStructureType.ACTIVITY_HR:
                     handleHeartrate(data);
                     break;
-                case WithingsStructureType.ACTIVITY_CATEGORY:
-                    handleCategory(data);
+                case WithingsStructureType.WORKOUT_TYPE:
+                    handleWorkoutType(data);
                     break;
                 default:
                     logger.info("Received yet unhandled activity data of type '" + data.getType() + "' with data '" + GB.hexdump(data.getRawData()) + "'.");
@@ -101,9 +101,10 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
         activityEntry.setRawKind(ActivityKind.TYPE_UNKNOWN);
     }
 
-    private void handleCategory(WithingsStructure data) {
-        logger.info("Got activity category " + ((ActivityCategory)data).getCategory());
-        activityEntry.setRawKind(((ActivityCategory)data).getCategory());
+    private void handleWorkoutType(WithingsStructure data) {
+        WithingsActivityType activityType = WithingsActivityType.fromCode(((WorkoutType)data).getActivityType());
+        logger.info("Got activity category " + activityType);
+        activityEntry.setRawKind(activityType.toActivityKind());
     }
 
     private void handleDuration(WithingsStructure data) {

@@ -1,12 +1,13 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
-public class ActivityEnd extends WithingsStructure {
+public class LiveWorkoutEnd extends WithingsStructure {
 
-    private int endtime;
+    private Date endtime;
 
-    public int getEndtime() {
+    public Date getEndtime() {
         return endtime;
     }
 
@@ -22,11 +23,12 @@ public class ActivityEnd extends WithingsStructure {
 
     @Override
     protected void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
-        endtime = rawDataBuffer.getInt();
+        long timestampInSeconds = rawDataBuffer.getInt() & 4294967295L;
+        endtime = new Date(timestampInSeconds * 1000);
     }
 
     @Override
     public short getType() {
-        return WithingsStructureType.ACTIVITY_END;
+        return WithingsStructureType.LIVE_WORKOUT_END;
     }
 }

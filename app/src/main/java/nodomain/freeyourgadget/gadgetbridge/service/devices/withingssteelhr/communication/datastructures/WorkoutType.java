@@ -2,16 +2,14 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
-
-public class ActivityCategory extends WithingsStructure {
+public class WorkoutType extends WithingsStructure {
 
     public static short RUNNING = 0;
 
-    private short category;
+    private short activityType;
 
-    public short getCategory() {
-        return category;
+    public short getActivityType() {
+        return activityType;
     }
 
     @Override
@@ -26,11 +24,11 @@ public class ActivityCategory extends WithingsStructure {
 
     @Override
     public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
-        category = rawDataBuffer.getShort();
+        activityType = rawDataBuffer.getShort();
     }
 
     @Override
     public short getType() {
-        return WithingsStructureType.ACTIVITY_CATEGORY;
+        return WithingsStructureType.WORKOUT_TYPE;
     }
 }
