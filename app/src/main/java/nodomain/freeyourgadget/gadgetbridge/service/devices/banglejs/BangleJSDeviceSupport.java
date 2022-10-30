@@ -27,8 +27,13 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -66,6 +71,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SimpleTimeZone;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.lang.reflect.Field;
 
@@ -142,6 +149,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private int lastBatteryPercent = -1;
 
     private final LimitedQueue/*Long*/ mNotificationReplyAction = new LimitedQueue(16);
+
+    private Timer gpsPositionTimer;
+    private final int gpsUpdateTimerInterval = 1000;
 
     /// Maximum amount of characters to store in receiveHistory
     public static final int MAX_RECEIVE_HISTORY_CHARS = 100000;
@@ -272,6 +282,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         lastBatteryPercent = -1;
 
         LOG.info("Initialization Done");
+        System.out.println("Test 123");
+
+        setupGPSUpdateTimer(builder);
 
         return builder;
     }
@@ -824,6 +837,56 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
       cmd += "(s=>{s&&(s.timezone="+tz+")&&require('Storage').write('setting.json',s);})(require('Storage').readJSON('setting.json',1))";
       uartTx(builder, cmd+"\n");
     }
+
+    void setupGPSUpdateTimer(TransactionBuilder builder) {
+        if (gpsPositionTimer != null) {
+            LOG.info("GPS position timer is already setup");
+        }
+       gpsPositionTimer = new Timer();
+       gpsPositionTimer.schedule(new TimerTask(){
+           @Override
+           public void run() {
+               if(!isConnected()) {
+                   LOG.info("Skip gps updated due to disconnect of device");
+                   return;
+               };
+               if(GBApplication.getPrefs().getBoolean("use_updated_location_if_available", false)) {
+                   LocationManager locationManager = (LocationManager) GBApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
+                   Criteria criteria = new Criteria();
+                   String provider = null;
+                   if (locationManager != null) {
+                       provider = locationManager.getBestProvider(criteria, false);
+                   }
+                   if (provider != null) {
+                       Location lastKnownLocation = locationManager.getLastKnownLocation(provider);
+                       lastKnownLocation.getSpeed();
+                       JSONObject o = new JSONObject();
+                       try {
+                           o.put("lat", lastKnownLocation.getLatitude());
+                           o.put("long", lastKnownLocation.getLongitude());
+                           o.put("alt", lastKnownLocation.getAltitude());
+                           o.put("speed", lastKnownLocation.getSpeed());
+                           o.put("course", 0);
+                           o.put("time", new Date().getTime());
+                           o.put("satellites", 0);
+                           o.put("hdop", lastKnownLocation.getAccuracy());
+                           o.put("externalSource", true);
+                           LOG.info("Sending gps valu: " + o.toString());
+                           String cmd = "\u0010E.showMessage(\"GPS: lat " + o.get("lat") + "\");";
+                           uartTxJSON("gps",  o);
+                       } catch (JSONException e) {
+                           GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                       }
+
+                   }
+
+
+               }
+
+           }
+       }, 0, gpsUpdateTimerInterval);
+    }
+
 
     @Override
     public boolean useAutoConnect() {
