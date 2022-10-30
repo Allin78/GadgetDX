@@ -32,8 +32,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -282,7 +280,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         lastBatteryPercent = -1;
 
         LOG.info("Initialization Done");
-        System.out.println("Test 123");
 
         setupGPSUpdateTimer(builder);
 
