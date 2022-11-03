@@ -149,10 +149,12 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
     }
 
     private void handleCalories1(WithingsStructure data) {
+        activityEntry.setRawIntensity(((ActivitySampleCalories)data).getMet()/100);
         activityEntry.setCalories(((ActivitySampleCalories)data).getCalories());
     }
 
     private void handleCalories2(WithingsStructure data) {
+        activityEntry.setRawIntensity(((ActivitySampleCalories2)data).getMet()/100);
         activityEntry.setCalories(((ActivitySampleCalories2)data).getCalories());
 
     }

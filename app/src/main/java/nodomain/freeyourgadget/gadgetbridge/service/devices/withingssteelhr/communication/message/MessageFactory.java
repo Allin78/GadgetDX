@@ -26,7 +26,7 @@ public class MessageFactory {
 
         short messageTypeFromResponse = (short) (BLETypeConversions.toInt16(rawData[2], rawData[1]) & 16383);
         short totalDataLength = (short) BLETypeConversions.toInt16(rawData[4], rawData[3]);
-        boolean isIncoming = rawData[1] == 0x41 || rawData[1] == 0x81;
+        boolean isIncoming = rawData[1] == 65 || rawData[1] == -127;
         Message message = new WithingsMessage(messageTypeFromResponse, isIncoming);
         byte[] rawStructureData = Arrays.copyOfRange(rawData, 5, rawData.length);
         List<WithingsStructure> structures = dataStructureFactory.createStructuresFromRawData(rawStructureData);

@@ -61,15 +61,15 @@ public class NotificationProvider {
             }
             if (requestedAttribute.getAttributeID() == 1) {
                 complete = true;
-                value = spec.sender != null? spec.sender : (spec.phoneNumber != null? spec.phoneNumber : spec.sourceName);
+                value = spec.sender != null? spec.sender : (spec.phoneNumber != null? spec.phoneNumber : (spec.sourceName != null? spec.sourceName : "Unknown"));
             }
             if (requestedAttribute.getAttributeID() == 2) {
                 complete = true;
-                value = spec.title != null? spec.title : spec.subject;
+                value = spec.title != null? spec.title : (spec.subject != null? spec.subject : "");
             }
             if (requestedAttribute.getAttributeID() == 3) {
                 complete = true;
-                value = spec.body;
+                value = (spec.body != null? spec.body : "");
             }
 
             if (value != null) {

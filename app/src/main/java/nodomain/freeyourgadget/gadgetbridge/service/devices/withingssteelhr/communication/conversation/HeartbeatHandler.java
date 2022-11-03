@@ -1,5 +1,9 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation;
 
+import android.content.Intent;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +14,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.HeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveHeartRate;
@@ -55,6 +60,9 @@ public class HeartbeatHandler extends AbstractResponseHandler {
             sample.setDeviceId(deviceId);
             sample.setUserId(userId);
             provider.addGBActivitySample(sample);
+            Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
+                    .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
+            LocalBroadcastManager.getInstance(support.getContext()).sendBroadcast(intent);
         } catch (Exception ex) {
             logger.warn("Error saving current heart rate: " + ex.getLocalizedMessage());
         }

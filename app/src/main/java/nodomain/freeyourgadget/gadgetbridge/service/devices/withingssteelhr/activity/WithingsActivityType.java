@@ -66,6 +66,8 @@ public enum WithingsActivityType {
 
     public int toActivityKind() {
         switch (this) {
+            case WALKING:
+                return ActivityKind.TYPE_WALKING;
             case RUNNING:
                 return ActivityKind.TYPE_RUNNING;
             case HIKING:

@@ -2,19 +2,17 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
-
 public class ActivitySampleCalories extends WithingsStructure {
 
     private int calories;
-    private int yetUnknown;
+    private int met;
 
     public int getCalories() {
         return calories;
     }
 
-    public int getYetUnknown() {
-        return yetUnknown;
+    public int getMet() {
+        return met;
     }
 
     @Override
@@ -30,7 +28,7 @@ public class ActivitySampleCalories extends WithingsStructure {
     @Override
     public void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
         calories = rawDataBuffer.getShort() & 65535;
-        yetUnknown = rawDataBuffer.getShort() & 65535;
+        met = rawDataBuffer.getShort() & 65535;
     }
 
     @Override

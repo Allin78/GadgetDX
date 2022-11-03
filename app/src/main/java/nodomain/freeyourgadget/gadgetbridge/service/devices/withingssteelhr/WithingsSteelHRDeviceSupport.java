@@ -111,7 +111,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         notificationProvider = new NotificationProvider(this);
         authenticationHandler = new AuthenticationHandler(this);
         messageHandler = new MessageHandler(this, new MessageFactory(new DataStructureFactory()));
-        liveWorkoutDataHandler = new LiveWorkoutDataHandler();
+        liveWorkoutDataHandler = new LiveWorkoutDataHandler(this);
         addSupportedService(WithingsUUID.WITHINGS_SERVICE_UUID);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);

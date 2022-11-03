@@ -47,6 +47,7 @@ public class WithingsStructureType {
     public static final short LIVE_WORKOUT_START = 2418;
     public static final short LIVE_WORKOUT_END = 2419;
     public static final short LIVE_WORKOUT_PAUSE_STATE = 2439;
+    public static final short WORKOUT_GPS_STATE = 321;
 
     private WithingsStructureType() {}
 }

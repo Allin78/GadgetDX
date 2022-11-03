@@ -78,6 +78,11 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
     }
 
     @Override
+    public boolean supportsActivityTracks() {
+        return true;
+    }
+
+    @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
         return new WithingsSteelHRSampleProvider(device, session);
     }
@@ -129,7 +134,7 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     public boolean supportsCalendarEvents() {
-        return false;
+        return true;
     }
 
     @Override
