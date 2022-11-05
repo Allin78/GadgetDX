@@ -2,7 +2,13 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import java.nio.ByteBuffer;
 
-public class ActivityScreenList extends WithingsStructure {
+public class WorkoutScreenList extends WithingsStructure {
+
+    private int[] workoutIds;
+
+    public int[] getWorkoutIds() {
+        return workoutIds;
+    }
 
     @Override
     public short getLength() {
@@ -16,11 +22,11 @@ public class ActivityScreenList extends WithingsStructure {
 
     @Override
     protected void fillFromRawDataAsBuffer(ByteBuffer rawDataBuffer) {
-        super.fillFromRawDataAsBuffer(rawDataBuffer);
+        workoutIds = getNextIntArray(rawDataBuffer);
     }
 
     @Override
     public short getType() {
-        return WithingsStructureType.GET_ACTIVITY_SCREEN_LIST;
+        return WithingsStructureType.WORKOUT_SCREEN_LIST;
     }
 }

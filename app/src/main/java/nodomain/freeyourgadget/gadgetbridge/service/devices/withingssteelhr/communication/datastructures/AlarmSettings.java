@@ -9,8 +9,6 @@ public class AlarmSettings extends WithingsStructure {
     private short dayOfMonth;
     private short month;
     private short year;
-
-    // TODO: find out what this field is used for.
     private short smartWakeupMinutes;
 
     public short getHour() {

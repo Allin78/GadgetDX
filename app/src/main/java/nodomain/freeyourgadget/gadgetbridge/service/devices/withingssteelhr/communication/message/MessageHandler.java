@@ -10,22 +10,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.Arrays;
-import java.util.GregorianCalendar;
 import java.util.Random;
 
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
-import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
-import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
-import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Challenge;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ChallengeResponse;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.HeartRate;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveHeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ProbeReply;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
@@ -65,54 +57,12 @@ public class MessageHandler {
             }
 
             this.message = message;
-//            switch (message.getType()) {
-//                case WithingsMessageTypes.PROBE:
-//                    if (message.getDataStructures().size() > 0) {
-//                        handleProbeReply((ProbeReply) message.getDataStructures().get(0));
-//                    }
-//                    break;
-//                case WithingsMessageTypes.CHALLENGE:
-//                    if (message.getDataStructures().size() > 0) {
-//                        handleChallenge((Challenge) message.getDataStructures().get(0));
-//                    }
-//                    break;
-//                default:
-//                    logger.warn("Unknown message type received: " + message.getType());
-//                    return true;
-//            }
             return true;
         }
     }
 
     public Message getMessage() {
         return message;
-    }
-
-    private void handleChallenge(Challenge challenge) {
-        try {
-            String secret = "2EM5zNP37QzM00hmP6BFTD92nG15XwNd";
-            ByteBuffer allocate = ByteBuffer.allocate(challenge.getChallenge().length + challenge.getMacAddress().getBytes().length + secret.getBytes().length);
-            allocate.put(challenge.getChallenge());
-            allocate.put(challenge.getMacAddress().getBytes());
-            allocate.put(secret.getBytes());
-            byte[] hash = MessageDigest.getInstance("SHA1").digest(allocate.array());
-            ChallengeResponse challengeResponse = new ChallengeResponse();
-            challengeResponse.setResponse(hash);
-            Message message = new WithingsMessage(WithingsMessageTypes.CHALLENGE);
-            message.addDataStructure(challengeResponse);
-            Challenge challengeToSend = new Challenge();
-            challengeToSend.setMacAddress(challengeToSend.getMacAddress());
-            byte[] bArr = new byte[16];
-            new Random().nextBytes(bArr);
-            challengeToSend.setChallenge(bArr);
-            message.addDataStructure(challengeToSend);
-            TransactionBuilder builder = support.createTransactionBuilder("setupFinished");
-            BluetoothGattCharacteristic characteristic = support.getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-            builder.write(characteristic, message.getRawData());
-            builder.queue(support.getQueue());
-        } catch (Exception e) {
-            logger.error("Failed to create response to challenge: " + e.getMessage());
-        }
     }
 
     private boolean isMessageComplete(byte[] messageData) {
@@ -127,9 +77,5 @@ public class MessageHandler {
         }
 
         return false;
-    }
-
-    private void handleProbeReply(ProbeReply probeReply) {
-        support.getDevice().setFirmwareVersion(String.valueOf(probeReply.getFirmwareVersion()));
     }
 }

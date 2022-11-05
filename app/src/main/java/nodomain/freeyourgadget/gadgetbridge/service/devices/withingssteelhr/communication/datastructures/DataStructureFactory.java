@@ -99,8 +99,8 @@ public class DataStructureFactory {
                 case WithingsStructureType.LIVE_WORKOUT_PAUSE_STATE:
                     structure = new LiveWorkoutPauseState();
                     break;
-                case WithingsStructureType.STEPS:
-                    logger.info("###################################################### Got Steps!");
+                case WithingsStructureType.WORKOUT_SCREEN_LIST:
+                    structure = new WorkoutScreenList();
                     break;
                 default:
                     structure = null;

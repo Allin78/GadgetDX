@@ -36,7 +36,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageTypes;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class LiveWorkoutDataHandler {
@@ -58,7 +58,6 @@ public class LiveWorkoutDataHandler {
 
     private void handleLiveData(List<WithingsStructure> dataList) {
         for (WithingsStructure data : dataList) {
-            logger.info("################ Got live workout type: " + data.getType());
             switch (data.getType()) {
                 case WithingsStructureType.LIVE_WORKOUT_START:
                     handleStart((LiveWorkoutStart) data);
@@ -91,6 +90,7 @@ public class LiveWorkoutDataHandler {
     }
 
     private void handlePause(LiveWorkoutPauseState workoutPause) {
+        // Not sure what to do with these events at the moment so we just log them.
         if (workoutPause.getStarttime() == null) {
             if (workoutPause.getLengthInSeconds() > 0) {
                 logger.info("Got workout pause end with duration: " + workoutPause.getLengthInSeconds());
@@ -100,7 +100,6 @@ public class LiveWorkoutDataHandler {
         } else {
             logger.info("Got workout pause started at: " + workoutPause.getStarttime());
         }
-
     }
 
     private void handleEnd(LiveWorkoutEnd workoutEnd) {
@@ -132,7 +131,7 @@ public class LiveWorkoutDataHandler {
     }
 
     private void sendGpsState() {
-        Message message = new WithingsMessage((short)(WithingsMessageTypes.START_LIVE_WORKOUT | 16384), new WorkoutGpsState(isGpsEnabled()));
+        Message message = new WithingsMessage((short)(WithingsMessageType.START_LIVE_WORKOUT | 16384), new WorkoutGpsState(isGpsEnabled()));
         support.sendToDevice(message);
     }
 
@@ -147,7 +146,6 @@ public class LiveWorkoutDataHandler {
         sample.setHeartRate(heartRate);
         sample.setRawIntensity(ActivitySample.NOT_MEASURED);
         sample.setRawKind(MiBandSampleProvider.TYPE_ACTIVITY);
-        logger.info("Current heart rate is: " + sample.getHeartRate() + " BPM");
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(support.getDevice(), dbHandler.getDaoSession()).getId();
@@ -170,7 +168,6 @@ public class LiveWorkoutDataHandler {
             User user = DBHelper.getUser(session);
             baseActivitySummary.setDevice(device);
             baseActivitySummary.setUser(user);
-//            baseActivitySummary.setRawSummaryData(buffer.toByteArray());
             session.getBaseActivitySummaryDao().insertOrReplace(baseActivitySummary);
         } catch (Exception ex) {
             GB.toast(support.getContext(), "Error saving activity summary", Toast.LENGTH_LONG, GB.ERROR, ex);

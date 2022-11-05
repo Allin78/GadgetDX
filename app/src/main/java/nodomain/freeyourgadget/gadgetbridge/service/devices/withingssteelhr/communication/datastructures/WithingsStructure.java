@@ -69,6 +69,15 @@ public abstract class WithingsStructure {
         return nextByteArray;
     }
 
+    protected int[] getNextIntArray(ByteBuffer byteBuffer) {
+        int arrayLength = (short)(byteBuffer.get() & 255);
+        int[] nextIntArray = new int[arrayLength];
+        for (int i = 0; i < arrayLength; i++) {
+            nextIntArray[i] = byteBuffer.getInt();
+        }
+        return nextIntArray;
+    }
+
     protected void addByteArrayWithLengthByte(ByteBuffer buffer, byte[] data) {
         buffer.put((byte) data.length);
         if (data.length != 0) {

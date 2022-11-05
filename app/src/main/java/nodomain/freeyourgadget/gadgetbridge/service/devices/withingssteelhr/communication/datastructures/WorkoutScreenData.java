@@ -31,6 +31,6 @@ public class WorkoutScreenData extends WithingsStructure {
 
     @Override
     public short getType() {
-        return WithingsStructureType.ACTIVITY_SCREEN_DATA;
+        return WithingsStructureType.WORKOUT_SCREEN_DATA;
     }
 }

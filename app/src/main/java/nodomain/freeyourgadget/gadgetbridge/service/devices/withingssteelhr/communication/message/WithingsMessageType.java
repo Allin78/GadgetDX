@@ -4,7 +4,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
  * Contains all identified commandtypes in the used TLV format of the messages exchanged
  * between device and app.
  */
-public final class WithingsMessageTypes {
+public final class WithingsMessageType {
 
     public static final short PROBE = 257;
     public static final short CHALLENGE = 296;
@@ -44,5 +44,5 @@ public final class WithingsMessageTypes {
     public static final short GET_WORKOUT_GPS_STATUS = 323;
     public static final short GET_HEARTRATE_SAMPLES = 2344;
 
-    private WithingsMessageTypes() {}
+    private WithingsMessageType() {}
 }

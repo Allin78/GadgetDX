@@ -28,8 +28,6 @@ public class WithingsStructureType {
     public static final short IMAGE_DATA = 2398;
     public static final short ANCS_STATUS = 2346;
 
-    public static final short GET_ACTIVITY_SCREEN_LIST = 316;
-    public static final short ACTIVITY_SCREEN_DATA = 317;
     public static final short GET_ACTIVITY_SAMPLES = 1286;
     public static final short ACTIVITY_SAMPLE_TIME = 1537;
     public static final short ACTIVITY_SAMPLE_DURATION = 1538;
@@ -48,6 +46,8 @@ public class WithingsStructureType {
     public static final short LIVE_WORKOUT_END = 2419;
     public static final short LIVE_WORKOUT_PAUSE_STATE = 2439;
     public static final short WORKOUT_GPS_STATE = 321;
+    public static final short WORKOUT_SCREEN_LIST = 316;
+    public static final short WORKOUT_SCREEN_DATA = 317;
 
     private WithingsStructureType() {}
 }

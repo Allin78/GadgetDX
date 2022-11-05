@@ -2,7 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageTypes;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 
 public class SetupFinishedHandler extends AbstractResponseHandler {
 
@@ -12,7 +12,7 @@ public class SetupFinishedHandler extends AbstractResponseHandler {
 
     @Override
     public void handleResponse(Message response) {
-        if (response.getType() == WithingsMessageTypes.SETUP_FINISHED) {
+        if (response.getType() == WithingsMessageType.SETUP_FINISHED) {
             support.finishInitialization();;
         }
     }

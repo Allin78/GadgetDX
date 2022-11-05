@@ -1,11 +1,15 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.AuthenticationHandler;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class ProbeReply extends WithingsStructure {
-
+    private static final Logger logger = LoggerFactory.getLogger(ProbeReply.class);
     private int yetUnknown1;
     private String name;
     private String mac;
@@ -79,7 +83,7 @@ public class ProbeReply extends WithingsStructure {
             firmwareVersion = rawDataBuffer.getInt();
             yetUnknown4 = rawDataBuffer.getInt();
         } catch (Exception e) {
-            System.out.println("Could not handle buffer wit data " + StringUtils.bytesToHex(rawDataBuffer.array()));
+            logger.warn("Could not handle buffer with data " + StringUtils.bytesToHex(rawDataBuffer.array()));
         }
     }
 
