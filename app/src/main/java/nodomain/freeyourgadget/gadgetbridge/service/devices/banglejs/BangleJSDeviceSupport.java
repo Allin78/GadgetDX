@@ -849,6 +849,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             LocationListener listener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
+                    if (!GBApplication.getPrefs().getBoolean("use_updated_location_if_available", false)) return;
                     LOG.debug("new location: " + location.toString());
                     JSONObject o = new JSONObject();
                     try {
