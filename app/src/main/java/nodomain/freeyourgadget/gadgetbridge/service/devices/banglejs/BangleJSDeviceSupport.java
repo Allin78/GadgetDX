@@ -29,9 +29,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Looper;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -148,6 +151,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     private final LimitedQueue/*Long*/ mNotificationReplyAction = new LimitedQueue(16);
 
+    private Boolean gpsUpdateSetup = false;
     private Timer gpsPositionTimer;
     private final int gpsUpdateTimerInterval = 1000;
 
@@ -836,56 +840,52 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     void setupGPSUpdateTimer(TransactionBuilder builder) {
-        if (gpsPositionTimer != null) {
-            LOG.info("GPS position timer is already setup");
+        if (gpsUpdateSetup) {
+            LOG.debug("GPS position timer is already setup");
+            return;
         }
-       gpsPositionTimer = new Timer();
-       gpsPositionTimer.schedule(new TimerTask(){
-           @Override
-           public void run() {
-               if(!isConnected()) {
-                   LOG.info("Skip gps updated due to disconnect of device");
-                   return;
-               };
-               if(GBApplication.getPrefs().getBoolean("use_updated_location_if_available", false)) {
-                   LocationManager locationManager = (LocationManager) GBApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
-                   Criteria criteria = new Criteria();
-                   String provider = null;
-                   if (locationManager != null) {
-                       provider = locationManager.getBestProvider(criteria, false);
-                   }
-                   if (provider != null) {
-                       Location lastKnownLocation = locationManager.getLastKnownLocation(provider);
-                       if (lastKnownLocation == null) {
-                           LOG.info("No location found");
-                           return;
-                       };
-                       JSONObject o = new JSONObject();
-                       try {
-                           o.put("t", "gps");
-                           o.put("lat", lastKnownLocation.getLatitude());
-                           o.put("long", lastKnownLocation.getLongitude());
-                           o.put("alt", lastKnownLocation.getAltitude());
-                           o.put("speed", lastKnownLocation.getSpeed());
-                           o.put("course", 0);
-                           o.put("time", new Date().getTime());
-                           o.put("satellites", 0);
-                           o.put("hdop", lastKnownLocation.getAccuracy());
-                           o.put("externalSource", true);
-                           LOG.info("Sending gps valu: " + o.toString());
-                           String cmd = "\u0010E.showMessage(\"GPS: lat " + o.get("lat") + "\");";
-                           uartTxJSON("gps",  o);
-                       } catch (JSONException e) {
-                           GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
-                       }
+        if(GBApplication.getPrefs().getBoolean("use_updated_location_if_available", false)) {
+            LOG.info("Setup location listener");
+            LocationListener listener = new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    LOG.debug("new location: " + location.toString());
+                    JSONObject o = new JSONObject();
+                    try {
+                        o.put("t", "gps");
+                        o.put("lat", location.getLatitude());
+                        o.put("long", location.getLongitude());
+                        o.put("alt", location.getAltitude());
+                        o.put("speed", location.getSpeed());
+                        o.put("course", 0);
+                        o.put("time", new Date().getTime());
+                        o.put("satellites", 0);
+                        o.put("hdop", location.getAccuracy());
+                        o.put("externalSource", true);
+                        LOG.debug("Sending gps valu: " + o.toString());
+                        uartTxJSON("gps", o);
+                    } catch (JSONException e) {
+                        GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+                    }
+                }
 
-                   }
+                @Override
+                public void onStatusChanged(String s, int i, Bundle bundle) {
+                }
 
+                @Override
+                public void onProviderEnabled(String s) {
+                }
 
-               }
-
-           }
-       }, 0, gpsUpdateTimerInterval);
+                @Override
+                public void onProviderDisabled(String s) {
+                }
+            };
+            gpsUpdateSetup = true;
+            LocationManager locationManager = (LocationManager) GBApplication.getContext().getSystemService(Context.LOCATION_SERVICE);
+            locationManager.requestLocationUpdates("network", 1, 1, listener, Looper.getMainLooper());
+            locationManager.requestLocationUpdates("gps", 1, 1, listener,  Looper.getMainLooper());
+        }
     }
 
 
