@@ -856,9 +856,13 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                    }
                    if (provider != null) {
                        Location lastKnownLocation = locationManager.getLastKnownLocation(provider);
-                       lastKnownLocation.getSpeed();
+                       if (lastKnownLocation == null) {
+                           LOG.info("No location found");
+                           return;
+                       };
                        JSONObject o = new JSONObject();
                        try {
+                           o.put("t", "gps");
                            o.put("lat", lastKnownLocation.getLatitude());
                            o.put("long", lastKnownLocation.getLongitude());
                            o.put("alt", lastKnownLocation.getAltitude());
