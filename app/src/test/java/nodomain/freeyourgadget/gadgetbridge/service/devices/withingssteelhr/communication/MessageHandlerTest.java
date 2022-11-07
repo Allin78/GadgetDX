@@ -147,7 +147,6 @@ public class MessageHandlerTest {
         verify(messageFactoryMock, never()).createMessageFromRawData(data1);
         verify(messageFactoryMock, never()).createMessageFromRawData(data2);
         verify(messageFactoryMock, times(1)).createMessageFromRawData(dataComplete);
-        verify(supportMock, times(1)).evaluateGBDeviceEvent(Matchers.<>any());
         verifyNoMoreInteractions(supportMock);
     }
 
