@@ -24,7 +24,7 @@ public final class WithingsMessageType {
     public static final short GET_WORKOUT_SCREEN_LIST = 315;
     public static final short SET_WORKOUT_SCREEN = 316;
     public static final short START_LIVE_WORKOUT = 317;
-    public static final short STOP_LIVEWORKOUT = 318;
+    public static final short STOP_LIVE_WORKOUT = 318;
     public static final short SYNC = 321;
     public static final short SYNC_RESPONSE = 16705;
     public static final short SYNC_OK = 277;
@@ -43,6 +43,9 @@ public final class WithingsMessageType {
     public static final short GET_SPORT_MODE = 2371;
     public static final short GET_WORKOUT_GPS_STATUS = 323;
     public static final short GET_HEARTRATE_SAMPLES = 2344;
+    public static final short LIVE_WORKOUT_DATA = 320;
+    public static final short GET_NOTIFICATION = 2404;
+    public static final short GET_UNICODE_GLYPH = 2403;
 
     private WithingsMessageType() {}
 }

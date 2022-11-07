@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattService;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,7 +43,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.LiveWorkoutDataHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.IncomingMessageHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.IncomingMessageHandlerFactory;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.LiveWorkoutHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.WithingsActivityType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsServerAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
@@ -67,18 +70,19 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageMetaData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Locale;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Probe;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ProbeOsVersion;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ScreenSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Time;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.TypeVersion;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.User;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.UserSecret;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.UserUnit;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.UserUnitConstants;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutScreen;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.ExpectedResponse;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageFactory;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.GetNotificationAttributes;
@@ -94,26 +98,25 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class);
     public static final String LAST_ACTIVITY_SYNC = "lastActivitySync";
-    private MessageHandler messageHandler;
-    private LiveWorkoutDataHandler liveWorkoutDataHandler;
+    private MessageBuilder messageBuilder;
+    private LiveWorkoutHandler liveWorkoutHandler;
     private ConversationQueue conversationQueue;
     private boolean firstTimeConnect;
     private BluetoothGattCharacteristic notificationSourceCharacteristic;
     private BluetoothGattCharacteristic dataSourceCharacteristic;
     private BluetoothDevice device;
-    private boolean authenticationInProgress;
     private boolean syncInProgress;
-    private AuthenticationHandler authenticationHandler;
     private ActivityUser activityUser;
     private NotificationProvider notificationProvider;
+    private IncomingMessageHandlerFactory incomingMessageHandlerFactory;
     private int mtuSize;
 
     public WithingsSteelHRDeviceSupport() {
         super(logger);
-        notificationProvider = new NotificationProvider(this);
-        authenticationHandler = new AuthenticationHandler(this);
-        messageHandler = new MessageHandler(this, new MessageFactory(new DataStructureFactory()));
-        liveWorkoutDataHandler = new LiveWorkoutDataHandler(this);
+        notificationProvider = NotificationProvider.getInstance(this);
+        messageBuilder = new MessageBuilder(this, new MessageFactory(new DataStructureFactory()));
+        liveWorkoutHandler = new LiveWorkoutHandler(this);
+        incomingMessageHandlerFactory = IncomingMessageHandlerFactory.getInstance(this);
         addSupportedService(WithingsUUID.WITHINGS_SERVICE_UUID);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
@@ -157,8 +160,11 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             addScreenListCommands();
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SETUP_FINISHED), new SetupFinishedHandler(this));
         } else {
-            authenticationInProgress = true;
-            authenticationHandler.startAuthentication();
+            Message message = new WithingsMessage(WithingsMessageType.PROBE);
+            message.addDataStructure(new Probe((short) 1, (short) 1, 5100401));
+            message.addDataStructure(new ProbeOsVersion((short) Build.VERSION.SDK_INT));
+            conversationQueue.clear();
+            addSimpleConversationToQueue(message, new AuthenticationHandler(this));
         }
 
         if (!firstTimeConnect) {
@@ -177,9 +183,9 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         UUID characteristicUUID = characteristic.getUuid();
         byte[] data = characteristic.getValue();
 
-        boolean complete = messageHandler.handleMessage(data);
+        boolean complete = messageBuilder.buildMessage(data);
         if (complete) {
-            Message message = messageHandler.getMessage();
+            Message message = messageBuilder.getMessage();
             if (message.isIncomingMessage()) {
                 logger.debug("received incoming message: " + message.getType());
                 if (message.getType() == WithingsMessageType.SYNC && !syncInProgress) {
@@ -189,10 +195,9 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
                     addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SYNC_OK));
                     conversationQueue.send();
                 } else {
-                    liveWorkoutDataHandler.handleMessage(message);
+                    IncomingMessageHandler handler = incomingMessageHandlerFactory.getHandler(message);
+                    handler.handleMessage(message);
                 }
-            } else if (authenticationInProgress) {
-                authenticationHandler.handleAuthenticationResponse(message);
             } else {
                 conversationQueue.processResponse(message);
             }
@@ -428,7 +433,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     void onAuthenticationFinished() {
-        authenticationInProgress = false;
         if (!firstTimeConnect && shoudSync()) {
             doSync();
         } else {
@@ -562,15 +566,15 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     private long getLastSyncTimestamp() {
         SharedPreferences settings = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
         long lastSyncTime =  settings.getLong(LAST_ACTIVITY_SYNC, 0);
-        if (lastSyncTime > 0) {
-            return lastSyncTime;
-        } else {
+//        if (lastSyncTime > 0) {
+//            return lastSyncTime;
+//        } else {
             Date currentDate = new Date();
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(currentDate.getTime());
-            c.add(Calendar.DAY_OF_MONTH, -2);
+            c.add(Calendar.DAY_OF_MONTH, -1);
             return c.getTimeInMillis();
-        }
+//        }
     }
 
     private boolean shoudSync() {

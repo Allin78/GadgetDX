@@ -14,6 +14,7 @@ import java.util.Random;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.AbstractResponseHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Challenge;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ChallengeResponse;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Probe;
@@ -24,26 +25,21 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 
-public class AuthenticationHandler {
+public class AuthenticationHandler extends AbstractResponseHandler {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
 
-    // TODO: Save this somewhere:
+    // TODO: Save this somewhere if we actually decide to use te secret for more security:
     private final String secret = "2EM5zNP37QzM00hmP6BFTD92nG15XwNd";
     private WithingsSteelHRDeviceSupport support;
     private Challenge challengeToSend;
 
     public AuthenticationHandler(WithingsSteelHRDeviceSupport support) {
+        super(support);
         this.support = support;
     }
 
-    public void startAuthentication() {
-        Message message = new WithingsMessage(WithingsMessageType.PROBE);
-        message.addDataStructure(new Probe((short) 1, (short) 1, 5100401));
-        message.addDataStructure(new ProbeOsVersion((short) Build.VERSION.SDK_INT));
-        sendMessage(message);
-    }
-
-    public void handleAuthenticationResponse(Message response) {
+    @Override
+    public void handleResponse(Message response) {
         short messageType = response.getType();
         if (messageType == WithingsMessageType.PROBE) {
             handleProbeReply(response);
@@ -52,17 +48,6 @@ public class AuthenticationHandler {
         } else {
             logger.warn("Received unkown message: " + messageType + ", will ignore this.");
         }
-    }
-
-    private void finishAuthentication() {
-        support.onAuthenticationFinished();
-    }
-
-    private void sendMessage(Message message) {
-        TransactionBuilder builder = support.createTransactionBuilder("authentication");
-        BluetoothGattCharacteristic characteristic = support.getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-        builder.write(characteristic, message.getRawData());
-        builder.queue(support.getQueue());
     }
 
     private void handleChallenge(Message challengeMessage) {
@@ -78,7 +63,7 @@ public class AuthenticationHandler {
             new Random().nextBytes(bArr);
             challengeToSend.setChallenge(bArr);
             message.addDataStructure(challengeToSend);
-            sendMessage(message);
+            support.sendToDevice(message);
         } catch (Exception e) {
             logger.error("Failed to create response to challenge: " + e.getMessage());
         }
@@ -98,7 +83,7 @@ public class AuthenticationHandler {
             throw new SecurityException("Response is not the one expected!");
         }
 
-        finishAuthentication();
+        support.onAuthenticationFinished();
     }
 
     private byte[] createResponse(Challenge challenge) {

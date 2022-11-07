@@ -73,7 +73,11 @@ public class WithingsSteelHRSampleProvider extends AbstractSampleProvider<Within
 
     @Override
     public float normalizeIntensity(int rawIntensity) {
-        return rawIntensity * -0.5f;
+        if (rawIntensity > 0) {
+            return (float) (Math.log(rawIntensity) / 8);
+        }
+
+        return 0;
     }
 
     @Override

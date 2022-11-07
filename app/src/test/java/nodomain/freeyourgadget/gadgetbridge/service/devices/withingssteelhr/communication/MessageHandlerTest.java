@@ -20,7 +20,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.With
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.BatteryValues;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageFactory;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.test.TestHelperUtils;
 
@@ -32,12 +32,12 @@ public class MessageHandlerTest {
     @Mock
     private WithingsSteelHRDeviceSupport supportMock;
 
-    private MessageHandler messageHandler2Test;
+    private MessageBuilder messageBuilder2Test;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        messageHandler2Test = new MessageHandler(supportMock, messageFactoryMock);
+        messageBuilder2Test = new MessageBuilder(supportMock, messageFactoryMock);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class MessageHandlerTest {
         when(messageFactoryMock.createMessageFromRawData(data)).thenReturn(null);
 
         // act
-        boolean result = messageHandler2Test.handleMessage(data);
+        boolean result = messageBuilder2Test.buildMessage(data);
 
         // assert;
         assertFalse(result);
@@ -61,7 +61,7 @@ public class MessageHandlerTest {
         when(messageFactoryMock.createMessageFromRawData(data)).thenReturn(new WithingsMessage((short)999));
 
         // act
-        boolean result = messageHandler2Test.handleMessage(data);
+        boolean result = messageBuilder2Test.buildMessage(data);
 
         // assert;
         assertFalse(result);
@@ -76,7 +76,7 @@ public class MessageHandlerTest {
         when(messageFactoryMock.createMessageFromRawData(data)).thenReturn(new WithingsMessage((short)1286));
 
         // act
-        boolean result = messageHandler2Test.handleMessage(data);
+        boolean result = messageBuilder2Test.buildMessage(data);
 
         // assert;
         assertFalse(result);
@@ -93,8 +93,8 @@ public class MessageHandlerTest {
         when(messageFactoryMock.createMessageFromRawData(dataComplete)).thenReturn(new WithingsMessage((short)1286));
 
         // act
-        boolean result1 = messageHandler2Test.handleMessage(data1);
-        boolean result2 = messageHandler2Test.handleMessage(data2);
+        boolean result1 = messageBuilder2Test.buildMessage(data1);
+        boolean result2 = messageBuilder2Test.buildMessage(data2);
 
         // assert;
         assertFalse(result1);
@@ -114,8 +114,8 @@ public class MessageHandlerTest {
         when(messageFactoryMock.createMessageFromRawData(dataComplete)).thenReturn(new WithingsMessage((short)1284));
 
         // act
-        boolean result1 = messageHandler2Test.handleMessage(data1);
-        boolean result2 = messageHandler2Test.handleMessage(data2);
+        boolean result1 = messageBuilder2Test.buildMessage(data1);
+        boolean result2 = messageBuilder2Test.buildMessage(data2);
 
         // assert;
         assertFalse(result1);
@@ -138,8 +138,8 @@ public class MessageHandlerTest {
         when(messageFactoryMock.createMessageFromRawData(dataComplete)).thenReturn(message);
 
         // act
-        boolean result1 = messageHandler2Test.handleMessage(data1);
-        boolean result2 = messageHandler2Test.handleMessage(data2);
+        boolean result1 = messageBuilder2Test.buildMessage(data1);
+        boolean result2 = messageBuilder2Test.buildMessage(data2);
 
         // assert;
         assertFalse(result1);
@@ -147,7 +147,7 @@ public class MessageHandlerTest {
         verify(messageFactoryMock, never()).createMessageFromRawData(data1);
         verify(messageFactoryMock, never()).createMessageFromRawData(data2);
         verify(messageFactoryMock, times(1)).createMessageFromRawData(dataComplete);
-        verify(supportMock, times(1)).evaluateGBDeviceEvent(Matchers.<GBDeviceEvent>any());
+        verify(supportMock, times(1)).evaluateGBDeviceEvent(Matchers.<>any());
         verifyNoMoreInteractions(supportMock);
     }
 

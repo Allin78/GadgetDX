@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message;
 
 import android.content.Intent;
 import android.location.LocationManager;
@@ -26,6 +26,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.opentracks.OpenTracks
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.WithingsActivityType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveHeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveWorkoutEnd;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveWorkoutPauseState;
@@ -34,20 +35,16 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructureType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutGpsState;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutType;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
-public class LiveWorkoutDataHandler {
-    private static final Logger logger = LoggerFactory.getLogger(LiveWorkoutDataHandler.class);
+public class LiveWorkoutHandler implements IncomingMessageHandler {
+    private static final Logger logger = LoggerFactory.getLogger(LiveWorkoutHandler.class);
     private final WithingsSteelHRDeviceSupport support;
     private BaseActivitySummary baseActivitySummary;
 
-    public LiveWorkoutDataHandler(WithingsSteelHRDeviceSupport support) {
+    public LiveWorkoutHandler(WithingsSteelHRDeviceSupport support) {
         this.support = support;
     }
-
 
     public void handleMessage(Message message) {
         List<WithingsStructure> data = message.getDataStructures();
@@ -70,9 +67,6 @@ public class LiveWorkoutDataHandler {
                     break;
                 case WithingsStructureType.WORKOUT_TYPE:
                     handleType((WorkoutType) data);
-                    break;
-                case WithingsStructureType.LIVE_HR:
-                    handleHeartrate((LiveHeartRate) data);
                     break;
                 default:
                     logger.info("Received yet unhandled live workout data of type '" + data.getType() + "' with data '" + GB.hexdump(data.getRawData()) + "'.");
@@ -119,17 +113,6 @@ public class LiveWorkoutDataHandler {
         baseActivitySummary.setActivityKind(withingsWorkoutType.toActivityKind());
     }
 
-    private void handleHeartrate(WithingsStructure structure) {
-        int heartRate = 0;
-        if (structure instanceof LiveHeartRate) {
-            heartRate = ((LiveHeartRate)structure).getHeartrate();
-        }
-
-        if (heartRate > 0) {
-            saveHeartRateData(heartRate);
-        }
-    }
-
     private void sendGpsState() {
         Message message = new WithingsMessage((short)(WithingsMessageType.START_LIVE_WORKOUT | 16384), new WorkoutGpsState(isGpsEnabled()));
         support.sendToDevice(message);
@@ -138,27 +121,6 @@ public class LiveWorkoutDataHandler {
     private boolean isGpsEnabled() {
         final LocationManager manager = (LocationManager) support.getContext().getSystemService(support.getContext().LOCATION_SERVICE );
         return manager.isProviderEnabled(LocationManager.GPS_PROVIDER );
-    }
-
-    private void saveHeartRateData(int heartRate) {
-        WithingsSteelHRActivitySample sample = new WithingsSteelHRActivitySample();
-        sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
-        sample.setHeartRate(heartRate);
-        sample.setRawIntensity(ActivitySample.NOT_MEASURED);
-        sample.setRawKind(MiBandSampleProvider.TYPE_ACTIVITY);
-        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-            Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
-            Long deviceId = DBHelper.getDevice(support.getDevice(), dbHandler.getDaoSession()).getId();
-            WithingsSteelHRSampleProvider provider = new WithingsSteelHRSampleProvider(support.getDevice(), dbHandler.getDaoSession());
-            sample.setDeviceId(deviceId);
-            sample.setUserId(userId);
-            provider.addGBActivitySample(sample);
-        } catch (Exception ex) {
-            logger.warn("Error saving current heart rate: " + ex.getLocalizedMessage());
-        }
-        Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
-                .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
-        LocalBroadcastManager.getInstance(support.getContext()).sendBroadcast(intent);
     }
 
     private void saveBaseActivitySummary() {

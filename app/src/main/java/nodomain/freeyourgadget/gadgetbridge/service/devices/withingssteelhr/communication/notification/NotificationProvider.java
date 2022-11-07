@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleColor;
-import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleIconID;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
@@ -18,8 +16,17 @@ public class NotificationProvider {
     private static final Logger logger = LoggerFactory.getLogger(NotificationProvider.class);
     private final WithingsSteelHRDeviceSupport support;
     private final Map<Integer, NotificationSpec> pendingNotifications = new HashMap<>();
+    private static NotificationProvider instance;
 
-    public NotificationProvider(WithingsSteelHRDeviceSupport support) {
+    public static NotificationProvider getInstance(WithingsSteelHRDeviceSupport support) {
+        if (instance == null) {
+            instance = new NotificationProvider(support);
+        }
+
+        return instance;
+    }
+
+    private NotificationProvider(WithingsSteelHRDeviceSupport support) {
         this.support = support;
     }
 
@@ -73,6 +80,9 @@ public class NotificationProvider {
             }
 
             if (value != null) {
+                // Remove linefeed and carriage returns as the watch cannot display this:
+                value = value.replace("\n", " ");
+                value = value.replace("\r", " ");
                 if (requestedAttribute.getAttributeMaxLength() == 0 || requestedAttribute.getAttributeMaxLength() >= value.length()) {
                     attribute.setValue(value);
                 } else {
@@ -88,6 +98,16 @@ public class NotificationProvider {
         if (complete) {
             pendingNotifications.remove(request.getNotificationUID());
         }
+    }
+
+    public NotificationSpec getNotificationSpecForSourceAppId(String sourceAppId) {
+        for (NotificationSpec notificationSpec : pendingNotifications.values()) {
+            if (notificationSpec.sourceAppId != null && notificationSpec.sourceAppId.equalsIgnoreCase(sourceAppId)) {
+                return notificationSpec;
+            }
+        }
+
+        return null;
     }
 
     private byte mapNotificationType(NotificationType type) {

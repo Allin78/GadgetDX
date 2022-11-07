@@ -16,7 +16,7 @@ public class IconHelper {
         return toByteArray(scaledBitmap);
     }
 
-    private static byte[] toByteArray(Bitmap bitmap) {
+    public static byte[] toByteArray(Bitmap bitmap) {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
         int bytesPerColumn = getBytesPerColumn(height);

@@ -102,6 +102,12 @@ public class DataStructureFactory {
                 case WithingsStructureType.WORKOUT_SCREEN_LIST:
                     structure = new WorkoutScreenList();
                     break;
+                case WithingsStructureType.IMAGE_META_DATA:
+                    structure = new ImageMetaData();
+                    break;
+                case WithingsStructureType.GLYPH_ID:
+                    structure = new GlyphId();
+                    break;
                 default:
                     structure = null;
                     logger.warn("Received yet unknown structure type: " + structureTypeFromResponse);

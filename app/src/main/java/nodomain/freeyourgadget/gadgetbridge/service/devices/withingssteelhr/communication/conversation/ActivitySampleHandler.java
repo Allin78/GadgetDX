@@ -136,25 +136,32 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
         int sleepType;
         switch (((ActivitySampleSleep)data).getSleepType()) {
             case 0:
-                sleepType = 0;
+                sleepType = ActivityKind.TYPE_LIGHT_SLEEP;
+                activityEntry.setRawIntensity(25);
+                break;
             case 2:
+                sleepType = ActivityKind.TYPE_DEEP_SLEEP;
+                activityEntry.setRawIntensity(70);
+                break;
             case 3:
-                sleepType = 4;
+                sleepType = ActivityKind.TYPE_REM_SLEEP;
+                activityEntry.setRawIntensity(80);
                 break;
             default:
-                sleepType = 2;
+                sleepType = ActivityKind.TYPE_LIGHT_SLEEP;
+                activityEntry.setRawIntensity(50);
         }
 
         activityEntry.setRawKind(sleepType);
     }
 
     private void handleCalories1(WithingsStructure data) {
-        activityEntry.setRawIntensity(((ActivitySampleCalories)data).getMet()/100);
+        activityEntry.setRawIntensity(((ActivitySampleCalories)data).getMet());
         activityEntry.setCalories(((ActivitySampleCalories)data).getCalories());
     }
 
     private void handleCalories2(WithingsStructure data) {
-        activityEntry.setRawIntensity(((ActivitySampleCalories2)data).getMet()/100);
+        activityEntry.setRawIntensity(((ActivitySampleCalories2)data).getMet());
         activityEntry.setCalories(((ActivitySampleCalories2)data).getCalories());
 
     }

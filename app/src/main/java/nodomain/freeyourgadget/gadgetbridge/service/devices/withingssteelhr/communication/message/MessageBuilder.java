@@ -1,40 +1,30 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message;
 
-import android.bluetooth.BluetoothGattCharacteristic;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
 import java.util.Arrays;
-import java.util.Random;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Challenge;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ChallengeResponse;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ProbeReply;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
-public class MessageHandler {
+public class MessageBuilder {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageBuilder.class);
     private WithingsSteelHRDeviceSupport support;
     private MessageFactory messageFactory;
     private ByteArrayOutputStream pendingMessage;
     private Message message;
 
-    public MessageHandler(WithingsSteelHRDeviceSupport support, MessageFactory messageFactory) {
+    public MessageBuilder(WithingsSteelHRDeviceSupport support, MessageFactory messageFactory) {
         this.support = support;
         this.messageFactory = messageFactory;
     }
 
-    public synchronized boolean handleMessage(byte[] rawData) {
+    public synchronized boolean buildMessage(byte[] rawData) {
         if (pendingMessage == null && rawData[0] == 0x01) {
             pendingMessage = new ByteArrayOutputStream();
         }
