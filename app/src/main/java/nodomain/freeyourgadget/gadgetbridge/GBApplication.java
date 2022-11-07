@@ -43,6 +43,7 @@ import android.util.Log;
 import android.util.TypedValue;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.os.LocaleListCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
@@ -83,6 +84,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
+import static androidx.appcompat.app.AppCompatDelegate.getApplicationLocales;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.AMAZFITBIP;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.AMAZFITCOR;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.AMAZFITCOR2;
@@ -129,7 +131,6 @@ public class GBApplication extends Application {
 
     public static final String ACTION_QUIT
             = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.quit";
-    public static final String ACTION_LANGUAGE_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.language_change";
     public static final String ACTION_NEW_DATA = "nodomain.freeyourgadget.gadgetbridge.action.new_data";
 
     private static GBApplication app;
@@ -145,7 +146,6 @@ public class GBApplication extends Application {
             }
         }
     };
-    private static Locale language;
 
     private DeviceManager deviceManager;
     private BluetoothStateChangeReceiver bluetoothStateChangeReceiver;
@@ -213,8 +213,6 @@ public class GBApplication extends Application {
         Weather.getInstance().setCacheFile(getCacheDir(), prefs.getBoolean("cache_weather", true));
 
         deviceManager = new DeviceManager(this);
-        String language = prefs.getString("language", "default");
-        setLanguage(language);
 
         deviceService = createDeviceService();
         loadAppsNotifBlackList();
@@ -1203,22 +1201,13 @@ public class GBApplication extends Application {
         context.getSharedPreferences("devicesettings_" + deviceIdentifier, Context.MODE_PRIVATE).edit().clear().apply();
     }
 
-
-    public static void setLanguage(String lang) {
-        if (lang.equals("default")) {
-            language = Resources.getSystem().getConfiguration().locale;
+    public static Locale getLanguage() {
+        LocaleListCompat localeListCompat = getApplicationLocales();
+        if(localeListCompat.isEmpty()) {
+            return Resources.getSystem().getConfiguration().locale;
         } else {
-            language = new Locale(lang);
+            return localeListCompat.get(0);
         }
-        updateLanguage(language);
-    }
-
-    public static void updateLanguage(Locale locale) {
-        AndroidUtils.setLanguage(context, locale);
-
-        Intent intent = new Intent();
-        intent.setAction(ACTION_LANGUAGE_CHANGE);
-        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     public static LimitedQueue getIDSenderLookup() {
@@ -1251,7 +1240,6 @@ public class GBApplication extends Application {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        updateLanguage(getLanguage());
     }
 
     public static int getBackgroundColor(Context context) {
@@ -1282,10 +1270,6 @@ public class GBApplication extends Application {
 
     public static GBApplication app() {
         return app;
-    }
-
-    public static Locale getLanguage() {
-        return language;
     }
 
     public String getVersion() {

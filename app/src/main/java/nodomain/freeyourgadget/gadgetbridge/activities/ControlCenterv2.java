@@ -47,6 +47,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.LocaleListCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.DialogFragment;
@@ -113,9 +114,6 @@ public class ControlCenterv2 extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             switch (Objects.requireNonNull(action)) {
-                case GBApplication.ACTION_LANGUAGE_CHANGE:
-                    setLanguage(GBApplication.getLanguage(), true);
-                    break;
                 case GBApplication.ACTION_QUIT:
                     finish();
                     break;
@@ -245,7 +243,6 @@ public class ControlCenterv2 extends AppCompatActivity
         registerForContextMenu(deviceListView);
 
         IntentFilter filterLocal = new IntentFilter();
-        filterLocal.addAction(GBApplication.ACTION_LANGUAGE_CHANGE);
         filterLocal.addAction(GBApplication.ACTION_QUIT);
         filterLocal.addAction(GBApplication.ACTION_NEW_DATA);
         filterLocal.addAction(DeviceManager.ACTION_DEVICES_CHANGED);
@@ -531,11 +528,8 @@ public class ControlCenterv2 extends AppCompatActivity
         }
     }
 
-    public void setLanguage(Locale language, boolean invalidateLanguage) {
-        if (invalidateLanguage) {
-            isLanguageInvalid = true;
-        }
-        AndroidUtils.setLanguage(this, language);
+    public void setLanguage(Locale language) {
+        AndroidUtils.setLanguage(LocaleListCompat.create(language));
     }
 
     private long[] getSteps(GBDevice device, DBHandler db) {

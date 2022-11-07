@@ -19,7 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.activities;
 import java.util.Locale;
 
 public interface GBActivity {
-    void setLanguage(Locale language, boolean invalidateLanguage);
+    void setLanguage(Locale language);
     void setTheme(int themeId);
 
 }

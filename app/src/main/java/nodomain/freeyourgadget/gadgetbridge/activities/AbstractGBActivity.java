@@ -27,6 +27,7 @@ import android.os.Bundle;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.os.LocaleListCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -47,9 +48,6 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
                 return;
             }
             switch (action) {
-                case GBApplication.ACTION_LANGUAGE_CHANGE:
-                    setLanguage(GBApplication.getLanguage(), true);
-                    break;
                 case GBApplication.ACTION_QUIT:
                     finish();
                     break;
@@ -57,11 +55,8 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
         }
     };
 
-    public void setLanguage(Locale language, boolean invalidateLanguage) {
-        if (invalidateLanguage) {
-            isLanguageInvalid = true;
-        }
-        AndroidUtils.setLanguage(this, language);
+    public void setLanguage(Locale language) {
+        AndroidUtils.setLanguage(LocaleListCompat.create(language));
     }
 
     public static void init(GBActivity activity) {
@@ -88,14 +83,13 @@ public abstract class AbstractGBActivity extends AppCompatActivity implements GB
                 activity.setTheme(R.style.GadgetbridgeTheme);
             }
         }
-        activity.setLanguage(GBApplication.getLanguage(), false);
+        activity.setLanguage(GBApplication.getLanguage());
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         IntentFilter filterLocal = new IntentFilter();
         filterLocal.addAction(GBApplication.ACTION_QUIT);
-        filterLocal.addAction(GBApplication.ACTION_LANGUAGE_CHANGE);
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filterLocal);
 
         init(this);

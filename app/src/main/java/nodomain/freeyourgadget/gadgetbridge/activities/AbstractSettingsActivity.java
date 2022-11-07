@@ -30,6 +30,7 @@ import android.text.InputType;
 import android.view.MenuItem;
 
 import androidx.core.app.NavUtils;
+import androidx.core.os.LocaleListCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
@@ -51,16 +52,11 @@ public abstract class AbstractSettingsActivity extends AppCompatPreferenceActivi
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSettingsActivity.class);
 
-    private boolean isLanguageInvalid = false;
-
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             switch (action) {
-                case GBApplication.ACTION_LANGUAGE_CHANGE:
-                    setLanguage(GBApplication.getLanguage(), true);
-                    break;
                 case GBApplication.ACTION_QUIT:
                     finish();
                     break;
@@ -136,7 +132,6 @@ public abstract class AbstractSettingsActivity extends AppCompatPreferenceActivi
 
         IntentFilter filterLocal = new IntentFilter();
         filterLocal.addAction(GBApplication.ACTION_QUIT);
-        filterLocal.addAction(GBApplication.ACTION_LANGUAGE_CHANGE);
         LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, filterLocal);
 
         super.onCreate(savedInstanceState);
@@ -153,15 +148,6 @@ public abstract class AbstractSettingsActivity extends AppCompatPreferenceActivi
             } else {
                 LOG.error("Unknown preference key: " + prefKey + ", unable to display value.");
             }
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (isLanguageInvalid) {
-            isLanguageInvalid = false;
-            recreate();
         }
     }
 
@@ -223,11 +209,12 @@ public abstract class AbstractSettingsActivity extends AppCompatPreferenceActivi
         return super.onOptionsItemSelected(item);
     }
 
-    public void setLanguage(Locale language, boolean invalidateLanguage) {
-        if (invalidateLanguage) {
-            isLanguageInvalid = true;
+    public void setLanguage(Locale language) {
+        if(language == null){
+            AndroidUtils.setLanguage(LocaleListCompat.getEmptyLocaleList());
+        } else {
+            AndroidUtils.setLanguage(LocaleListCompat.create(language));
         }
-        AndroidUtils.setLanguage(this, language);
     }
 
     protected void addPreferenceHandlerFor(final String preferenceKey) {

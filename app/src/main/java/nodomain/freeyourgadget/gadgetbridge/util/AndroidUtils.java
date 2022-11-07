@@ -22,11 +22,9 @@ import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
@@ -38,15 +36,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import androidx.core.os.LocaleListCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Locale;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+
+import static androidx.appcompat.app.AppCompatDelegate.setApplicationLocales;
 
 public class AndroidUtils {
     /**
@@ -94,12 +94,8 @@ public class AndroidUtils {
         }
     }
 
-    public static void setLanguage(Context context, Locale language) {
-        Configuration config = new Configuration();
-        config.setLocale(language);
-
-        // FIXME: I have no idea what I am doing
-        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
+    public static void setLanguage(LocaleListCompat localeListCompat) {
+        setApplicationLocales(localeListCompat);
     }
 
     /**

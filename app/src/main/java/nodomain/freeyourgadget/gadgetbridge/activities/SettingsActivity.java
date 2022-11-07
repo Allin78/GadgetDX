@@ -20,19 +20,23 @@ package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.LocaleConfig;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.LocaleList;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -47,6 +51,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.os.LocaleListCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
@@ -73,6 +78,9 @@ import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+
+import static androidx.appcompat.app.AppCompatDelegate.getApplicationLocales;
+import static androidx.appcompat.app.AppCompatDelegate.setApplicationLocales;
 
 public class SettingsActivity extends AbstractSettingsActivity {
     private static final Logger LOG = LoggerFactory.getLogger(SettingsActivity.class);
@@ -203,20 +211,21 @@ public class SettingsActivity extends AbstractSettingsActivity {
             pref.setSummary(R.string.pref_write_logfiles_not_available);
         }
 
-        pref = findPreference("language");
-        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        final ListPreference languagePreference = (ListPreference) findPreference("language");
+        LocaleListCompat localeListCompat = getApplicationLocales();
+        if(localeListCompat.isEmpty()) {
+            languagePreference.setValue("default");
+        } else {
+            languagePreference.setValue(localeListCompat.get(0).getLanguage());
+        }
+        languagePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newVal) {
                 String newLang = newVal.toString();
-                try {
-                    GBApplication.setLanguage(newLang);
-                    recreate();
-                } catch (Exception ex) {
-                    GB.toast(getApplicationContext(),
-                            "Error setting language: " + ex.getLocalizedMessage(),
-                            Toast.LENGTH_LONG,
-                            GB.ERROR,
-                            ex);
+                if (newLang.equals("default")) {
+                    setLanguage(null);
+                } else {
+                    setLanguage(new Locale(newLang));
                 }
                 return true;
             }
@@ -393,7 +402,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
         final Preference amoled_black = findPreference("pref_key_theme_amoled_black");
 
         String selectedTheme = prefs.getString("pref_key_theme", SettingsActivity.this.getString(R.string.pref_theme_value_system));
-        if (selectedTheme.equals("light"))
+        if ("light".equals(selectedTheme))
             amoled_black.setEnabled(false);
         else
             amoled_black.setEnabled(true);
@@ -402,7 +411,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newVal) {
                 final String val = newVal.toString();
-                if (val.equals("light"))
+                if ("light".equals(val))
                     amoled_black.setEnabled(false);
                 else
                     amoled_black.setEnabled(true);
