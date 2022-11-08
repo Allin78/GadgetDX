@@ -49,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini.Amazfi
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfittrex2.AmazfitTRex2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.pinecil.PinecilCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyLinkBudsSCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.soflow.SoFlowCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.supercars.SuperCarsCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.FitProDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.UnknownDeviceCoordinator;
@@ -368,6 +369,7 @@ public class DeviceHelper {
         result.add(new FlipperZeroCoordinator());
         result.add(new SuperCarsCoordinator());
         result.add(new AsteroidOSDeviceCoordinator());
+        result.add(new SoFlowCoordinator());
 
         return result;
     }
