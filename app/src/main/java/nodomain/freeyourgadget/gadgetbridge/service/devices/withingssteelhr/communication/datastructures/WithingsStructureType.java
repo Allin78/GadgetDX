@@ -28,7 +28,7 @@ public class WithingsStructureType {
     public static final short IMAGE_DATA = 2398;
     public static final short ANCS_STATUS = 2346;
     public static final short NOTIFICATION_APP_ID = 2404;
-    public static final short GLYPH_ID = 2403;
+    public static final short GLYPH_ID = 2396;
 
     public static final short GET_ACTIVITY_SAMPLES = 1286;
     public static final short ACTIVITY_SAMPLE_TIME = 1537;

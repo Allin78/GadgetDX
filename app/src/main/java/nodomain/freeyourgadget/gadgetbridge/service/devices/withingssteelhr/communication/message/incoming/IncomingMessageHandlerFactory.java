@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.GlyphRequestHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 
 public class IncomingMessageHandlerFactory {
 
@@ -49,6 +52,11 @@ public class IncomingMessageHandlerFactory {
             case WithingsMessageType.GET_UNICODE_GLYPH:
                 if (handler == null) {
                     handlers.put(message.getType(), new GlyphRequestHandler(support));
+                }
+                break;
+            case WithingsMessageType.SYNC:
+                if (handler == null) {
+                    handlers.put(message.getType(), new SyncRequestHandler(support));
                 }
                 break;
             default:

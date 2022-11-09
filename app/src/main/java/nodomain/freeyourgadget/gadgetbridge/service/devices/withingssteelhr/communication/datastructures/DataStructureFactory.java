@@ -108,6 +108,9 @@ public class DataStructureFactory {
                 case WithingsStructureType.GLYPH_ID:
                     structure = new GlyphId();
                     break;
+                case WithingsStructureType.NOTIFICATION_APP_ID:
+                    structure = new GlyphId();
+                    break;
                 default:
                     structure = null;
                     logger.warn("Received yet unknown structure type: " + structureTypeFromResponse);

@@ -10,6 +10,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.With
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.GlyphId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageMetaData;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
 
 public class GlyphRequestHandler implements IncomingMessageHandler {
     private final WithingsSteelHRDeviceSupport support;
