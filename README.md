@@ -31,11 +31,11 @@ vendor's servers.
 **(WARNING: Some of them WIP and some of them without maintainer)**
 
 - Amazfit
-	- [Band 5](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-5) [**\[!\]**](#special-pairing-procedures)
+	- [Band 5](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Band-5), [Band 7](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Band-7) [**\[!\]**](#special-pairing-procedures)
 	- [Bip](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip)
 	- [Bip Lite](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-Lite), [Bip S](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-S), [Bip U](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-U) [**\[!\]**](#special-pairing-procedures)
 	- [Cor](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cor), [Cor 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cor-2)
-	- [GTR](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-3) [**\[!\]**](#special-pairing-procedures)
+	- [GTR](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-3), [GTR 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-4) [**\[!\]**](#special-pairing-procedures)
 	- [GTS](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-3) [**\[!\]**](#special-pairing-procedures) 
 	- [Neo](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Neo) [**\[!\]**](#special-pairing-procedures) 
 	- T-Rex [**\[!\]**](#special-pairing-procedures)
@@ -85,7 +85,10 @@ vendor's servers.
 - PineTime (InfiniTime Firmware)
 - Roidmi, Roidmi 3, Mojietu 3 (Bluetooth FM Transmitters)
 - [SMA](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/SMA) Q2 (SMA-Q2-OSS Firmware)
-- [Sony WH-1000XM3, WH-1000XM4, WF-SP800N, WF-1000XM3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)
+- [Sony Headphones](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)
+	- WH-1000XM2, WH-1000XM3, WH-1000XM4
+	- WF-SP800N
+	- WF-1000XM3, WF-1000XM4
 - Teclast H10, H30
 - TLW64
 - Vibratissimo (Experimental)

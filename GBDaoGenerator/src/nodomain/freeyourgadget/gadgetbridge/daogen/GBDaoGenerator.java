@@ -592,6 +592,8 @@ public class GBDaoGenerator {
         indexUnique.makeUnique();
         worldClock.addIndex(indexUnique);
         worldClock.addStringProperty("label").notNull();
+        worldClock.addBooleanProperty("enabled");
+        worldClock.addStringProperty("code");
         worldClock.addStringProperty("timeZoneId").notNull();
         worldClock.addToOne(user, userId);
         worldClock.addToOne(device, deviceId);

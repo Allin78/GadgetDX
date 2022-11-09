@@ -21,27 +21,19 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.util.ArrayUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
+import nodomain.freeyourgadget.gadgetbridge.util.ZipFile;
 
 
 public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
     private static final Logger LOG = LoggerFactory.getLogger(Huami2021FirmwareInfo.class);
-
-    public static final byte[] ZIP_HEADER = new byte[]{
-            0x50, 0x4B, 0x03, 0x04
-    };
 
     public Huami2021FirmwareInfo(final byte[] bytes) {
         super(bytes);
@@ -60,43 +52,49 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
     @Override
     protected HuamiFirmwareType determineFirmwareType(final byte[] bytes) {
         if (ArrayUtils.equals(bytes, UIHHContainer.UIHH_HEADER, 0)) {
-            final UIHHContainer uihh = UIHHContainer.fromRawBytes(bytes);
-            if (uihh == null) {
-                LOG.warn("Invalid UIHH file");
-                return HuamiFirmwareType.INVALID;
-            }
+            return handleUihhPackage(bytes);
+        } else if (ZipFile.isZipFile(bytes)) {
+            return handleZipPackage(bytes);
+        } else {
+            return HuamiFirmwareType.INVALID;
+        }
+    }
 
-            UIHHContainer.FileEntry uihhFirmwareZipFile = null;
-            boolean hasChangelog = false;
-            for (final UIHHContainer.FileEntry file : uihh.getFiles()) {
-                switch(file.getType()) {
-                    case FIRMWARE_ZIP:
-                        uihhFirmwareZipFile = file;
-                        continue;
-                    case FIRMWARE_CHANGELOG:
-                        hasChangelog = true;
-                        continue;
-                    default:
-                        LOG.warn("Unexpected file for {}", file.getType());
-                }
-            }
-
-            if (uihhFirmwareZipFile != null && hasChangelog) {
-                final byte[] firmwareBin = getFileFromZip(uihhFirmwareZipFile.getContent(), "META/firmware.bin");
-
-                if (isCompatibleFirmwareBin(firmwareBin)) {
-                    return HuamiFirmwareType.FIRMWARE_UIHH_2021_ZIP_WITH_CHANGELOG;
-                }
-            }
-
+    private HuamiFirmwareType handleUihhPackage(byte[] bytes) {
+        final UIHHContainer uihh = UIHHContainer.fromRawBytes(bytes);
+        if (uihh == null) {
+            LOG.warn("Invalid UIHH file");
             return HuamiFirmwareType.INVALID;
         }
 
-        if (!ArrayUtils.equals(bytes, ZIP_HEADER, 0)) {
-            return HuamiFirmwareType.INVALID;
+        UIHHContainer.FileEntry uihhFirmwareZipFile = null;
+        boolean hasChangelog = false;
+        for (final UIHHContainer.FileEntry file : uihh.getFiles()) {
+            switch(file.getType()) {
+                case FIRMWARE_ZIP:
+                    uihhFirmwareZipFile = file;
+                    continue;
+                case FIRMWARE_CHANGELOG:
+                    hasChangelog = true;
+                    continue;
+                default:
+                    LOG.warn("Unexpected file for {}", file.getType());
+            }
         }
 
-        final byte[] firmwareBin = getFileFromZip(bytes, "META/firmware.bin");
+        if (uihhFirmwareZipFile != null && hasChangelog) {
+            byte[] firmwareBin = ZipFile.tryReadFileQuick(uihhFirmwareZipFile.getContent(), "META/firmware.bin");
+
+            if (isCompatibleFirmwareBin(firmwareBin)) {
+                return HuamiFirmwareType.FIRMWARE_UIHH_2021_ZIP_WITH_CHANGELOG;
+            }
+        }
+
+        return HuamiFirmwareType.INVALID;
+    }
+
+    private HuamiFirmwareType handleZipPackage(byte[] bytes) {
+        final byte[] firmwareBin = ZipFile.tryReadFileQuick(bytes, "META/firmware.bin");
         if (isCompatibleFirmwareBin(firmwareBin)) {
             return HuamiFirmwareType.FIRMWARE;
         }
@@ -195,7 +193,7 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
     }
 
     public String getFirmwareVersion(final byte[] fwbytes) {
-        final byte[] firmwareBin = getFileFromZip(fwbytes, "META/firmware.bin");
+        final byte[] firmwareBin = ZipFile.tryReadFileQuick(fwbytes, "META/firmware.bin");
 
         if (firmwareBin == null) {
             LOG.warn("Failed to read firmware.bin");
@@ -228,7 +226,7 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
     }
 
     public String getAppName() {
-        final byte[] appJsonBin = getFileFromZip(getBytes(), "app.json");
+        final byte[] appJsonBin = ZipFile.tryReadFileQuick(getBytes(), "app.json");
         if (appJsonBin == null) {
             LOG.warn("Failed to get app.json from zip");
             return null;
@@ -252,7 +250,7 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
     }
 
     public String getAppType() {
-        final byte[] appJsonBin = getFileFromZip(getBytes(), "app.json");
+        final byte[] appJsonBin = ZipFile.tryReadFileQuick(getBytes(), "app.json");
         if (appJsonBin == null) {
             LOG.warn("Failed to get app.json from zip");
             return null;
@@ -269,36 +267,5 @@ public abstract class Huami2021FirmwareInfo extends AbstractHuamiFirmwareInfo {
         }
 
         return null;
-    }
-
-    public static byte[] getFileFromZip(final byte[] zipBytes, final String path) {
-        try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
-            ZipEntry zipEntry;
-            while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                if (zipEntry.getName().equals(path)) {
-                    return readAllBytes(zipInputStream);
-                }
-            }
-        } catch (final IOException e) {
-            LOG.error(String.format("Failed to read %s from zip", path), e);
-            return null;
-        }
-
-        LOG.debug("{} not found in zip", path);
-
-        return null;
-    }
-
-    public static byte[] readAllBytes(final InputStream is) throws IOException {
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        int n;
-        byte[] buf = new byte[16384];
-
-        while ((n = is.read(buf, 0, buf.length)) != -1) {
-            buffer.write(buf, 0, n);
-        }
-
-        return buffer.toByteArray();
     }
 }

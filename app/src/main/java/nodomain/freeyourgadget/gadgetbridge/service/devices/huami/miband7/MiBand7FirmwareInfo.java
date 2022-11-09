@@ -28,8 +28,6 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021FirmwareInfo;
 
 public class MiBand7FirmwareInfo extends Huami2021FirmwareInfo {
-    private static final Logger LOG = LoggerFactory.getLogger(MiBand7FirmwareInfo.class);
-
     private static final Map<Integer, String> crcToVersion = new HashMap<Integer, String>() {{
         // firmware
         put(26036, "1.20.3.1");

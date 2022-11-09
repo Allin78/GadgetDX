@@ -19,21 +19,15 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband7;
 import android.content.Context;
 import android.net.Uri;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 
-import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband7.MiBand7FWHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Support;
 
 public class MiBand7Support extends Huami2021Support {
-    private static final Logger LOG = LoggerFactory.getLogger(MiBand7Support.class);
-
     @Override
-    public HuamiFWHelper createFWHelper(Uri uri, Context context) throws IOException {
+    public HuamiFWHelper createFWHelper(final Uri uri, final Context context) throws IOException {
         return new MiBand7FWHelper(uri, context);
     }
 }

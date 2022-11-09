@@ -52,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -164,9 +165,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.Version;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ACTIVATE_DISPLAY_ON_LIFT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALLOW_HIGH_MTU;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALWAYS_ON_DISPLAY_END;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALWAYS_ON_DISPLAY_MODE;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALWAYS_ON_DISPLAY_START;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BT_CONNECTED_ADVERTISEMENT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DATEFORMAT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DISPLAY_ON_LIFT_SENSITIVITY;
@@ -183,9 +181,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HEARTRATE_ALERT_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HEARTRATE_ALERT_HIGH_THRESHOLD;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HEARTRATE_ALERT_LOW_THRESHOLD;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HEARTRATE_SLEEP_BREATHING_QUALITY_MONITORING;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HEARTRATE_STRESS_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HEARTRATE_STRESS_RELAXATION_REMINDER;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HOURLY_CHIME_ENABLE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HOURLY_CHIME_END;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_HOURLY_CHIME_START;
@@ -199,12 +195,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LANGUAGE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_RESERVER_ALARMS_CALENDAR;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_RESERVER_REMINDERS_CALENDAR;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SCREEN_BRIGHTNESS;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SCREEN_ON_ON_NOTIFICATIONS;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SCREEN_TIMEOUT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SOUNDS;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SPO2_ALL_DAY_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SPO2_LOW_ALERT_THRESHOLD;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_USER_FITNESS_GOAL_NOTIFICATION;
@@ -236,6 +227,8 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_COUNT_INCOMING_CALL;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_COUNT_INCOMING_SMS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_COUNT_PREFIX;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_COUNT_SCHEDULE;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_COUNT_TODO_LIST;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_ALARM;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_APP_ALERTS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_EVENT_REMINDER;
@@ -245,6 +238,8 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_INCOMING_CALL;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_INCOMING_SMS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_PREFIX;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_SCHEDULE;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_TODO_LIST;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_ALARM;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_APP_ALERTS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_EVENT_REMINDER;
@@ -254,6 +249,8 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_INCOMING_CALL;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_INCOMING_SMS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_PREFIX;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_SCHEDULE;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_HUAMI_VIBRATION_TRY_TODO_LIST;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService.COMMAND_ALARMS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService.COMMAND_ALARMS_WITH_TIMES;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService.COMMAND_GPS_VERSION;
@@ -278,6 +275,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_NAME;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_WEIGHT_KG;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_YEAR_OF_BIRTH;
+import static nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions.fromUint8;
 import static nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL;
 
 public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements Huami2021Handler {
@@ -405,29 +403,15 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         return weatherSpec.windSpeedAsBeaufort() + ""; // cast to string
     }
 
-    /**
-     * Returns the given date/time (calendar) as a byte sequence, suitable for sending to the
-     * Mi Band 2 (or derivative). The band appears to not handle DST offsets, so we simply add this
-     * to the timezone.
-     *
-     * @param calendar
-     * @param precision
-     * @return
-     */
-    public byte[] getTimeBytes(Calendar calendar, TimeUnit precision) {
-        byte[] bytes;
-        if (precision == TimeUnit.MINUTES) {
-            bytes = BLETypeConversions.shortCalendarToRawBytes(calendar);
-        } else if (precision == TimeUnit.SECONDS) {
-            bytes = BLETypeConversions.calendarToRawBytes(calendar);
-        } else {
-            throw new IllegalArgumentException("Unsupported precision, only MINUTES and SECONDS are supported till now");
+    public byte[] getTimeBytes(final Calendar calendar, final TimeUnit precision) {
+        final byte[] bytes = BLETypeConversions.shortCalendarToRawBytes(calendar);
+
+        if (precision != TimeUnit.MINUTES && precision != TimeUnit.SECONDS) {
+            throw new IllegalArgumentException("Unsupported precision, only MINUTES and SECONDS are supported");
         }
-        byte[] tail = new byte[] { 0, BLETypeConversions.mapTimeZone(calendar, BLETypeConversions.TZ_FLAG_INCLUDE_DST_IN_TZ) };
-        // 0 = adjust reason bitflags? or DST offset?? , timezone
-//        byte[] tail = new byte[] { 0x2 }; // reason
-        byte[] all = BLETypeConversions.join(bytes, tail);
-        return all;
+        final byte seconds = precision == TimeUnit.SECONDS ? fromUint8(calendar.get(Calendar.SECOND)) : 0;
+        final byte tz = BLETypeConversions.mapTimeZone(calendar, BLETypeConversions.TZ_FLAG_INCLUDE_DST_IN_TZ);
+        return BLETypeConversions.join(bytes, new byte[]{seconds, tz});
     }
 
     public Calendar fromTimeBytes(byte[] bytes) {
@@ -437,7 +421,9 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     public HuamiSupport setCurrentTimeWithService(TransactionBuilder builder) {
         GregorianCalendar now = BLETypeConversions.createCalendar();
-        byte[] bytes = getTimeBytes(now, TimeUnit.SECONDS);
+        byte[] head = BLETypeConversions.calendarToRawBytes(now);
+        byte[] tail = new byte[] { 0, BLETypeConversions.mapTimeZone(now, BLETypeConversions.TZ_FLAG_INCLUDE_DST_IN_TZ) };
+        byte[] bytes = BLETypeConversions.join(head, tail);
         builder.write(getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_CURRENT_TIME), bytes);
         return this;
     }
@@ -753,31 +739,11 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         return this;
     }
 
-    protected HuamiSupport setHeartrateSleepBreathingQualityMonitoring(TransactionBuilder builder) {
-        LOG.warn("setHeartrateSleepBreathingQualityMonitoring not implemented");
-        return this;
-    }
-
-    protected HuamiSupport setSPO2AllDayMonitoring(TransactionBuilder builder) {
-        LOG.warn("setSPO2AllDayMonitoring not implemented");
-        return this;
-    }
-
-    protected HuamiSupport setSPO2AlertThreshold(TransactionBuilder builder) {
-        LOG.warn("setSPO2AlertThreshold not implemented");
-        return this;
-    }
-
     protected HuamiSupport setHeartrateStressMonitoring(TransactionBuilder builder) {
         final boolean enableHrStressMonitoring = HuamiCoordinator.getHeartrateStressMonitoring(gbDevice.getAddress());
         LOG.info("Setting heart rate stress monitoring to {}", enableHrStressMonitoring);
         final byte[] cmd = new byte[] {(byte) 0xfe, 0x06, 0x00, (byte) (enableHrStressMonitoring ? 0x01 : 0x00)};
         writeToConfiguration(builder, cmd);
-        return this;
-    }
-
-    protected HuamiSupport setHeartrateStressRelaxationReminder(TransactionBuilder builder) {
-        LOG.warn("setHeartrateStressRelaxationReminder not implemented");
         return this;
     }
 
@@ -998,7 +964,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
 
         // Delete the remaining slots, skipping the sent reminders and reserved slots
-        for (int i = reminders.size() + reservedSlots; i < coordinator.getReminderSlotCount(); i++) {
+        final int reminderSlotCount = coordinator.getReminderSlotCount(getDevice());
+        for (int i = reminders.size() + reservedSlots; i < reminderSlotCount; i++) {
             LOG.debug("Deleting reminder at position {}", i);
 
             sendReminderToDevice(builder, i, null);
@@ -1012,9 +979,10 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
 
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+        final int reminderSlotCount = coordinator.getReminderSlotCount(getDevice());
 
-        if (position + 1 > coordinator.getReminderSlotCount()) {
-            LOG.error("Reminder for position {} is over the limit of {} reminders", position, coordinator.getReminderSlotCount());
+        if (position + 1 > reminderSlotCount) {
+            LOG.error("Reminder for position {} is over the limit of {} reminders", position, reminderSlotCount);
             return;
         }
 
@@ -1106,7 +1074,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
         try {
             baos.write(0x03);
-            
+
             if (clocks.size() != 0) {
                 baos.write(clocks.size());
                 int i = 0;
@@ -1122,7 +1090,11 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             return;
         }
 
-        writeToChunked2021(builder, (short) 0x0008, baos.toByteArray(), false);
+        writeToChunked2021(builder, (short) 0x0008, baos.toByteArray(), isWorldClocksEncrypted());
+    }
+
+    protected boolean isWorldClocksEncrypted() {
+        return false;
     }
 
     private byte[] encodeWorldClock(final WorldClock clock) {
@@ -1134,8 +1106,12 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             final TimeZone timezone = TimeZone.getTimeZone(clock.getTimeZoneId());
             final ZoneId zoneId = ZoneId.of(clock.getTimeZoneId());
 
-            // Usually the 3-letter city code (eg. LIS for Lisbon), but doesn't seem to be used in the UI (used in Amazfit Neo)
-            baos.write(StringUtils.truncate(clock.getLabel(), 3).toUpperCase().getBytes(StandardCharsets.UTF_8));
+            // Usually the 3-letter city code (eg. LIS for Lisbon)
+            if (clock.getCode() != null) {
+                baos.write(StringUtils.truncate(clock.getCode(), 3).toUpperCase().getBytes(StandardCharsets.UTF_8));
+            } else {
+                baos.write(StringUtils.truncate(clock.getLabel(), 3).toUpperCase().getBytes(StandardCharsets.UTF_8));
+            }
             baos.write(0x00);
 
             // Some other string? Seems to be empty
@@ -1183,6 +1159,10 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
             for (int i = 0; i < 4; i++) {
                 baos.write((byte) ((nextTransitionTs >> (i * 8)) & 0xff));
+            }
+
+            if (coordinator.supportsDisabledWorldClocks()) {
+                baos.write((byte) (clock.getEnabled() ? 0x01 : 0x00));
             }
 
             return baos.toByteArray();
@@ -1582,17 +1562,27 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     protected int getFindDeviceInterval() {
-        VibrationProfile findBand = HuamiCoordinator.getVibrationProfile(getDevice().getAddress(), HuamiVibrationPatternNotificationType.FIND_BAND);
+        final VibrationProfile findBand = HuamiCoordinator.getVibrationProfile(
+                getDevice().getAddress(),
+                HuamiVibrationPatternNotificationType.FIND_BAND,
+                supportsDeviceDefaultVibrationProfiles()
+        );
         int findDeviceInterval = 0;
 
-        for(int len : findBand.getOnOffSequence())
-            findDeviceInterval += len;
+        if (findBand != null) {
+            // It can be null if the device supports continuous find mode
+            // If that's the case, this function shouldn't even have been called
+            for(int len : findBand.getOnOffSequence())
+                findDeviceInterval += len;
 
-        if(findBand.getRepeat() > 0)
-            findDeviceInterval *= findBand.getRepeat();
+            if(findBand.getRepeat() > 0)
+                findDeviceInterval *= findBand.getRepeat();
 
-        if(findDeviceInterval > 10000) // 10 seconds, about as long as Mi Fit allows
+            if(findDeviceInterval > 10000) // 10 seconds, about as long as Mi Fit allows
+                findDeviceInterval = 10000;
+        } else {
             findDeviceInterval = 10000;
+        }
 
         return findDeviceInterval;
     }
@@ -1893,18 +1883,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             case HuamiDeviceEvent.MTU_REQUEST:
                 int mtu = (value[2] & 0xff) << 8 | value[1] & 0xff;
                 LOG.info("device announced MTU of " + mtu);
-                Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-                if (!prefs.getBoolean(PREF_ALLOW_HIGH_MTU, false)) {
-                    break;
-                }
-                if (mtu < 23) {
-                    LOG.error("Device announced unreasonable low MTU of " + mtu + ", ignoring");
-                    break;
-                }
-                mMTU = mtu;
-                if (huami2021ChunkedEncoder != null) {
-                    huami2021ChunkedEncoder.setMTU(mtu);
-                }
+                setMtu(mtu);
                 /*
                  * not really sure if this would make sense, is this event already a proof of a successful MTU
                  * negotiation initiated by the Huami device, and acknowledged by the phone? do we really have to
@@ -2114,15 +2093,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
         super.onMtuChanged(gatt, mtu, status);
 
-        final Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-
-        if (!prefs.getBoolean(PREF_ALLOW_HIGH_MTU, false)) {
-            LOG.warn("Ignoring MTU change to {}", mtu);
-            return;
-        }
-
         LOG.info("MTU changed to {}", mtu);
-        this.mMTU = mtu;
+        setMtu(mtu);
     }
 
     protected void acknowledgeFindPhone() {
@@ -2772,21 +2744,12 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                     setRotateWristToSwitchInfo(builder);
                     break;
                 case ActivityUser.PREF_USER_STEPS_GOAL:
+                case ActivityUser.PREF_USER_CALORIES_BURNT:
+                case ActivityUser.PREF_USER_SLEEP_DURATION:
+                case ActivityUser.PREF_USER_GOAL_WEIGHT_KG:
+                case ActivityUser.PREF_USER_GOAL_STANDING_TIME_HOURS:
+                case ActivityUser.PREF_USER_GOAL_FAT_BURN_TIME_MINUTES:
                     setFitnessGoal(builder);
-                    break;
-                case PREF_SCREEN_ON_ON_NOTIFICATIONS:
-                    setScreenOnOnNotification(builder);
-                    break;
-                case PREF_SCREEN_BRIGHTNESS:
-                    setScreenBrightness(builder);
-                    break;
-                case PREF_SCREEN_TIMEOUT:
-                    setScreenTimeout(builder);
-                    break;
-                case PREF_ALWAYS_ON_DISPLAY_MODE:
-                case PREF_ALWAYS_ON_DISPLAY_START:
-                case PREF_ALWAYS_ON_DISPLAY_END:
-                    setAlwaysOnDisplay(builder);
                     break;
                 case MiBandConst.PREF_NIGHT_MODE:
                 case MiBandConst.PREF_NIGHT_MODE_START:
@@ -2855,6 +2818,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                 case PREF_HUAMI_VIBRATION_PROFILE_IDLE_ALERTS:
                 case PREF_HUAMI_VIBRATION_PROFILE_EVENT_REMINDER:
                 case PREF_HUAMI_VIBRATION_PROFILE_FIND_BAND:
+                case PREF_HUAMI_VIBRATION_PROFILE_TODO_LIST:
+                case PREF_HUAMI_VIBRATION_PROFILE_SCHEDULE:
                 case PREF_HUAMI_VIBRATION_COUNT_APP_ALERTS:
                 case PREF_HUAMI_VIBRATION_COUNT_INCOMING_CALL:
                 case PREF_HUAMI_VIBRATION_COUNT_INCOMING_SMS:
@@ -2863,6 +2828,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                 case PREF_HUAMI_VIBRATION_COUNT_IDLE_ALERTS:
                 case PREF_HUAMI_VIBRATION_COUNT_EVENT_REMINDER:
                 case PREF_HUAMI_VIBRATION_COUNT_FIND_BAND:
+                case PREF_HUAMI_VIBRATION_COUNT_TODO_LIST:
+                case PREF_HUAMI_VIBRATION_COUNT_SCHEDULE:
                 case PREF_HUAMI_VIBRATION_TRY_APP_ALERTS:
                 case PREF_HUAMI_VIBRATION_TRY_INCOMING_CALL:
                 case PREF_HUAMI_VIBRATION_TRY_INCOMING_SMS:
@@ -2871,6 +2838,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                 case PREF_HUAMI_VIBRATION_TRY_IDLE_ALERTS:
                 case PREF_HUAMI_VIBRATION_TRY_EVENT_REMINDER:
                 case PREF_HUAMI_VIBRATION_TRY_FIND_BAND:
+                case PREF_HUAMI_VIBRATION_TRY_TODO_LIST:
+                case PREF_HUAMI_VIBRATION_TRY_SCHEDULE:
                     setVibrationPattern(builder, config);
                     break;
                 case PREF_HEARTRATE_ACTIVITY_MONITORING:
@@ -2881,20 +2850,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                 case PREF_HEARTRATE_ALERT_LOW_THRESHOLD:
                     setHeartrateAlert(builder);
                     break;
-                case PREF_HEARTRATE_SLEEP_BREATHING_QUALITY_MONITORING:
-                    setHeartrateSleepBreathingQualityMonitoring(builder);
-                    break;
-                case PREF_SPO2_ALL_DAY_MONITORING:
-                    setSPO2AllDayMonitoring(builder);
-                    break;
-                case PREF_SPO2_LOW_ALERT_THRESHOLD:
-                    setSPO2AlertThreshold(builder);
-                    break;
                 case PREF_HEARTRATE_STRESS_MONITORING:
                     setHeartrateStressMonitoring(builder);
-                    break;
-                case PREF_HEARTRATE_STRESS_RELAXATION_REMINDER:
-                    setHeartrateStressRelaxationReminder(builder);
                     break;
                 case PasswordCapabilityImpl.PREF_PASSWORD:
                 case PasswordCapabilityImpl.PREF_PASSWORD_ENABLED:
@@ -2933,11 +2890,22 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         final HuamiVibrationPatternNotificationType notificationType = HuamiVibrationPatternNotificationType.valueOf(notificationTypeName);
         final boolean isTry = preferenceKey.startsWith(PREF_HUAMI_VIBRATION_TRY_PREFIX);
 
-        final VibrationProfile vibrationProfile = HuamiCoordinator.getVibrationProfile(getDevice().getAddress(), notificationType);
+        final VibrationProfile vibrationProfile = HuamiCoordinator.getVibrationProfile(
+                getDevice().getAddress(),
+                notificationType,
+                supportsDeviceDefaultVibrationProfiles()
+        );
 
         setVibrationPattern(builder, notificationType, isTry, vibrationProfile);
 
         return this;
+    }
+
+    /**
+     * Whether the device supports built-in default vibration profiles.
+     */
+    protected boolean supportsDeviceDefaultVibrationProfiles() {
+        return false;
     }
 
     /**
@@ -2949,9 +2917,14 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
      * @param profile          the {@link VibrationProfile}
      */
     protected void setVibrationPattern(final TransactionBuilder builder,
-                                     final HuamiVibrationPatternNotificationType notificationType,
-                                     final boolean test,
-                                     final VibrationProfile profile) {
+                                       final HuamiVibrationPatternNotificationType notificationType,
+                                       final boolean test,
+                                       final VibrationProfile profile) {
+        if (profile == null) {
+            LOG.error("Vibration profile is null for {}", notificationType);
+            return;
+        }
+
         final int MAX_TOTAL_LENGTH_MS = 10_000; // 10 seconds, about as long as Mi Fit allows
 
         // The on-off sequence, until the max total length is reached
@@ -2977,6 +2950,10 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     protected List<Short> truncateVibrationsOnOff(final VibrationProfile profile, final int limitMillis) {
+        if (profile == null) {
+            return Collections.emptyList();
+        }
+
         int totalLengthMs = 0;
 
         // The on-off sequence, until the max total length is reached
@@ -3301,11 +3278,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         } else {
             writeToConfiguration(builder,HuamiService.COMMAND_DISABLE_GOAL_NOTIFICATION);
         }
-        return this;
-    }
-
-    protected HuamiSupport setAlwaysOnDisplay(TransactionBuilder builder) {
-        LOG.warn("Always on display not implemented");
         return this;
     }
 
@@ -3812,24 +3784,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         return this;
     }
 
-    protected HuamiSupport setScreenOnOnNotification(TransactionBuilder builder) {
-        LOG.warn("Function not implemented");
-
-        return this;
-    }
-
-    protected HuamiSupport setScreenBrightness(TransactionBuilder builder) {
-        LOG.warn("Function not implemented");
-
-        return this;
-    }
-
-    protected HuamiSupport setScreenTimeout(TransactionBuilder builder) {
-        LOG.warn("Function not implemented");
-
-        return this;
-    }
-
     protected HuamiSupport setLanguage(TransactionBuilder builder) {
         String localeString = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getString("language", "auto");
         if (localeString == null || localeString.equals("auto")) {
@@ -3978,11 +3932,19 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
     }
 
-    protected void writeToChunked2021(TransactionBuilder builder, short type, byte[] data, boolean encrypt) {
+    public void writeToChunked2021(TransactionBuilder builder, short type, byte data, boolean encrypt) {
+        writeToChunked2021(builder, type, new byte[]{data}, encrypt);
+    }
+
+    public void writeToChunked2021(TransactionBuilder builder, short type, byte[] data, boolean encrypt) {
         huami2021ChunkedEncoder.write(builder, type, data, force2021Protocol(), encrypt);
     }
 
-    protected void writeToChunked2021(final String taskName, short type, byte[] data, boolean encrypt) {
+    public void writeToChunked2021(final String taskName, short type, byte data, boolean encrypt) {
+        writeToChunked2021(taskName, type, new byte[]{data}, encrypt);
+    }
+
+    public void writeToChunked2021(final String taskName, short type, byte[] data, boolean encrypt) {
         try {
             final TransactionBuilder builder = performInitialized(taskName);
             writeToChunked2021(builder, type, data, encrypt);
@@ -4016,11 +3978,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     public HuamiSupport requestDisplayItems(TransactionBuilder builder) {
-        LOG.warn("Function not implemented");
-        return this;
-    }
-
-    protected HuamiSupport requestShortcuts(TransactionBuilder builder) {
         LOG.warn("Function not implemented");
         return this;
     }
@@ -4066,7 +4023,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     public void phase3Initialize(TransactionBuilder builder) {
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+        final HuamiCoordinator coordinator = getCoordinator();
 
         LOG.info("phase3Initialize...");
 
@@ -4094,7 +4051,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             setHeartrateMeasurementInterval(builder, HuamiCoordinator.getHeartRateMeasurementInterval(getDevice().getAddress()));
             sendReminders(builder);
             setWorldClocks(builder);
-            for (final HuamiVibrationPatternNotificationType type : HuamiVibrationPatternNotificationType.values()) {
+            for (final HuamiVibrationPatternNotificationType type : coordinator.getVibrationPatternNotificationTypes(getDevice())) {
                 final String typeKey = type.name().toLowerCase(Locale.ROOT);
                 setVibrationPattern(builder, HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_PREFIX + typeKey);
             }
@@ -4116,16 +4073,50 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         return mMTU;
     }
 
+    protected void setMtu(final int mtu) {
+        final Prefs prefs = getDevicePrefs();
+        if (!prefs.getBoolean(PREF_ALLOW_HIGH_MTU, false)) {
+            LOG.warn("High MTU is not allowed, ignoring");
+            return;
+        }
+
+        if (mtu < 23) {
+            LOG.error("Device announced unreasonable low MTU of {}, ignoring", mtu);
+            return;
+        }
+
+        this.mMTU = mtu;
+        if (huami2021ChunkedEncoder != null) {
+            huami2021ChunkedEncoder.setMTU(mtu);
+        }
+    }
+
     public int getActivitySampleSize() {
         return mActivitySampleSize;
+    }
+
+    public TimeUnit getFetchOperationsTimeUnit() {
+        // This is configurable because using seconds was causing issues on Amazfit GTR 3
+        // However, using minutes can cause issues while fetching workouts shorter than 1 minute
+        final Prefs devicePrefs = getDevicePrefs();
+        final boolean truncate = devicePrefs.getBoolean("huami_truncate_fetch_operation_timestamps", true);
+        return truncate ? TimeUnit.MINUTES : TimeUnit.SECONDS;
     }
 
     public boolean force2021Protocol() {
         return GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean("force_new_protocol", false);
     }
 
+    protected HuamiCoordinator getCoordinator() {
+        return (HuamiCoordinator) DeviceHelper.getInstance().getCoordinator(gbDevice);
+    }
+
+    protected Prefs getDevicePrefs() {
+        return new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+    }
+
     @Override
-    public void handle2021Payload(int type, byte[] payload) {
+    public void handle2021Payload(short type, byte[] payload) {
         if (type == Huami2021Service.CHUNKED2021_ENDPOINT_COMPAT) {
             LOG.info("got configuration data");
             type = 0;

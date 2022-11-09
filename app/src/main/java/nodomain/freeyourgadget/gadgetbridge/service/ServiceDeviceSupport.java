@@ -103,6 +103,11 @@ public class ServiceDeviceSupport implements DeviceSupport {
     }
 
     @Override
+    public boolean getImplicitCallbackModify() {
+        return delegate.getImplicitCallbackModify();
+    }
+
+    @Override
     public void dispose() {
         delegate.dispose();
     }
@@ -303,11 +308,11 @@ public class ServiceDeviceSupport implements DeviceSupport {
     }
 
     @Override
-    public void onPhoneFound() {
+    public void onFindPhone(final boolean start) {
         if (checkBusy("phone found")) {
             return;
         }
-        delegate.onPhoneFound();
+        delegate.onFindPhone(start);
     }
 
     @Override

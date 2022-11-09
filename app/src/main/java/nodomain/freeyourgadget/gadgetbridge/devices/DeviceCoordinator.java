@@ -385,7 +385,7 @@ public interface DeviceCoordinator {
     /**
      * Indicates the maximum number of reminder slots available in the device.
      */
-    int getReminderSlotCount();
+    int getReminderSlotCount(GBDevice device);
 
     /**
      * Indicates the maximum number of slots available for world clocks in the device.
@@ -396,6 +396,12 @@ public interface DeviceCoordinator {
      * Indicates the maximum label length for a world clock in the device.
      */
     int getWorldClocksLabelLength();
+
+    /**
+     * Indicates whether the device supports disabled world clocks that can be enabled through
+     * a menu on the device.
+     */
+    boolean supportsDisabledWorldClocks();
 
     /**
      * Indicates whether the device has an led which supports custom colors

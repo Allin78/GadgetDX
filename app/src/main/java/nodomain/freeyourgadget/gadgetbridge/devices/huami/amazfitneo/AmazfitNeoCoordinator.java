@@ -88,12 +88,7 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
     }
 
     @Override
-    public int getWorldClocksLabelLength() {
-        return 3; // neo has 3 letter city codes
-    }
-
-    @Override
-    public int getReminderSlotCount() {
+    public int getReminderSlotCount(final GBDevice device) {
         return 0; // Neo does not support reminders
     }
 
@@ -114,6 +109,7 @@ public class AmazfitNeoCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_device_actions,
                 R.xml.devicesettings_high_mtu,
                 R.xml.devicesettings_overwrite_settings_on_connection,
+                R.xml.devicesettings_huami2021_fetch_operation_time_unit,
                 R.xml.devicesettings_transliteration
         };
     }

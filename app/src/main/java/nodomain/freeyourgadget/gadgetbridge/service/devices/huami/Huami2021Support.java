@@ -17,61 +17,27 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami;
 
 import static org.apache.commons.lang3.ArrayUtils.subarray;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LANGUAGE;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_LANGUAGE_AUTO;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT_AUTO;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.*;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService.SUCCESS;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_NAME;
 import static nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions.fromUint16;
 import static nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions.fromUint8;
 import static nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions.mapTimeZone;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.ALWAYS_ON_DISPLAY_MODE;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.ALWAYS_ON_DISPLAY_SCHEDULED_END;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.ALWAYS_ON_DISPLAY_SCHEDULED_START;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.BLUETOOTH_CONNECTED_ADVERTISING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.DATE_FORMAT;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.DISPLAY_CALLER;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.DND_MODE;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.DND_SCHEDULED_END;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.DND_SCHEDULED_START;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.FITNESS_GOAL_NOTIFICATION;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.FITNESS_GOAL_STEPS;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.HEART_RATE_ALL_DAY_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.HEART_RATE_HIGH_ALERTS;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.HEART_RATE_LOW_ALERTS;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.INACTIVITY_WARNINGS_DND_ENABLED;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.INACTIVITY_WARNINGS_DND_SCHEDULED_END;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.INACTIVITY_WARNINGS_DND_SCHEDULED_START;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.INACTIVITY_WARNINGS_ENABLED;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.INACTIVITY_WARNINGS_SCHEDULED_END;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.INACTIVITY_WARNINGS_SCHEDULED_START;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.LANGUAGE;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.LANGUAGE_FOLLOW_PHONE;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.LIFT_WRIST_MODE;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.LIFT_WRIST_RESPONSE_SENSITIVITY;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.LIFT_WRIST_SCHEDULED_END;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.LIFT_WRIST_SCHEDULED_START;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.NIGHT_MODE_MODE;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.NIGHT_MODE_SCHEDULED_END;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.NIGHT_MODE_SCHEDULED_START;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.PASSWORD_ENABLED;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.PASSWORD_TEXT;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SCREEN_BRIGHTNESS;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SCREEN_ON_ON_NOTIFICATIONS;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SCREEN_TIMEOUT;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SLEEP_BREATHING_QUALITY_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SLEEP_HIGH_ACCURACY_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SPO2_ALL_DAY_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.SPO2_LOW_ALERT;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.STRESS_MONITORING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.STRESS_RELAXATION_REMINDER;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.TEMPERATURE_UNIT;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.THIRD_PARTY_HR_SHARING;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigArg.TIME_FORMAT;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigSetter;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Config.ConfigType;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.FITNESS_GOAL_CALORIES;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.FITNESS_GOAL_FAT_BURN_TIME;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.FITNESS_GOAL_SLEEP;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.FITNESS_GOAL_STANDING_TIME;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.FITNESS_GOAL_STEPS;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.FITNESS_GOAL_WEIGHT;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.HEART_RATE_ALL_DAY_MONITORING;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.LANGUAGE;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.LANGUAGE_FOLLOW_PHONE;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.PASSWORD_ENABLED;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.PASSWORD_TEXT;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.SLEEP_HIGH_ACCURACY_MONITORING;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.TEMPERATURE_UNIT;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.TIME_FORMAT;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigGroup;
 
 import android.Manifest;
 import android.content.Intent;
@@ -80,6 +46,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
+import android.os.Handler;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -106,7 +73,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
+import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
@@ -115,15 +85,11 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicContr
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLift;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLiftSensitivity;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.AlwaysOnDisplay;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband3.MiBand3Coordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.miband.DoNotDisturb;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.VibrationProfile;
@@ -150,13 +116,16 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.Fet
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2021;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.AbstractZeppOsService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsFileUploadService;
 import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
-import nodomain.freeyourgadget.gadgetbridge.util.CheckSums;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
+import nodomain.freeyourgadget.gadgetbridge.util.MapUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
@@ -170,6 +139,14 @@ public abstract class Huami2021Support extends HuamiSupport {
     // Tracks whether realtime HR monitoring is already started, so we can just
     // send CONTINUE commands
     private boolean heartRateRealtimeStarted;
+
+    // Services
+    private final ZeppOsFileUploadService fileUploadService = new ZeppOsFileUploadService(this);
+    private final ZeppOsConfigService configService = new ZeppOsConfigService(this);
+    private final Map<Short, AbstractZeppOsService> mServiceMap = new HashMap<Short, AbstractZeppOsService>() {{
+        put(fileUploadService.getEndpoint(), fileUploadService);
+        put(configService.getEndpoint(), configService);
+    }};
 
     public Huami2021Support() {
         this(LOG);
@@ -189,11 +166,42 @@ public abstract class Huami2021Support extends HuamiSupport {
         return (byte) 0x80;
     }
 
+    /**
+     * Do not reset the gatt callback implicitly, as that would interrupt operations.
+     * See https://codeberg.org/Freeyourgadget/Gadgetbridge/pulls/2912 for more information.
+     */
+    @Override
+    public boolean getImplicitCallbackModify() {
+        return false;
+    }
+
+    @Override
+    public void onSendConfiguration(final String config) {
+        final ZeppOsConfigService.ConfigSetter configSetter = configService.newSetter();
+        final Prefs prefs = getDevicePrefs();
+
+        try {
+            if (configService.setConfig(prefs, config, configSetter)) {
+                // If the ConfigSetter was able to set the config, just write it and return
+                final TransactionBuilder builder;
+                builder = performInitialized("Sending configuration for option: " + config);
+                configSetter.write(builder);
+                builder.queue(getQueue());
+
+                return;
+            }
+
+            super.onSendConfiguration(config);
+        } catch (final Exception e) {
+            GB.toast("Error setting configuration", Toast.LENGTH_LONG, GB.ERROR, e);
+        }
+    }
+
     @Override
     public void onTestNewFunction() {
         try {
             final TransactionBuilder builder = performInitialized("test");
-
+            //requestMTU(247);
             builder.queue(getQueue());
         } catch (final Exception e) {
             LOG.error("Failed to test new function", e);
@@ -209,17 +217,31 @@ public abstract class Huami2021Support extends HuamiSupport {
         writeToChunked2021("ack find phone", CHUNKED2021_ENDPOINT_FIND_DEVICE, cmd, true);
     }
 
+    protected void stopFindPhone() {
+        LOG.info("Stopping find phone");
+
+        writeToChunked2021("found phone", CHUNKED2021_ENDPOINT_FIND_DEVICE, FIND_PHONE_STOP_FROM_PHONE, true);
+    }
+
+    @Override
+    public void onFindDevice(final boolean start) {
+        if (getCoordinator().supportsContinuousFindDevice()) {
+            sendFindDeviceCommand(start);
+        } else {
+            // Vibrate band periodically
+            super.onFindDevice(start);
+        }
+    }
+
     @Override
     protected void sendFindDeviceCommand(boolean start) {
-        if (!start) {
-            return;
-        }
+        final byte findBandCommand = start ? FIND_BAND_START : FIND_BAND_STOP_FROM_PHONE;
 
-        LOG.info("Sending one-shot find band");
+        LOG.info("Sending find band {}", start);
 
         try {
             final TransactionBuilder builder = performInitialized("find huami 2021");
-            writeToChunked2021(builder, CHUNKED2021_ENDPOINT_FIND_DEVICE, new byte[]{FIND_BAND_ONESHOT}, true);
+            writeToChunked2021(builder, CHUNKED2021_ENDPOINT_FIND_DEVICE, findBandCommand, true);
             builder.queue(getQueue());
         } catch (IOException e) {
             LOG.error("error while sending find Huami 2021 device command", e);
@@ -227,12 +249,14 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    public void onPhoneFound() {
-        LOG.info("Sending phone found");
+    public void onFindPhone(final boolean start) {
+        LOG.info("Find phone: {}", start);
 
-        final byte[] cmd = new byte[]{FIND_PHONE_STOP_FROM_PHONE};
+        findPhoneStarted = start;
 
-        writeToChunked2021("found phone", CHUNKED2021_ENDPOINT_FIND_DEVICE, cmd, true);
+        if (!start) {
+            stopFindPhone();
+        }
     }
 
     @Override
@@ -308,14 +332,17 @@ public abstract class Huami2021Support extends HuamiSupport {
         buf.putInt(calendarEventSpec.timestamp);
         buf.putInt(calendarEventSpec.timestamp + calendarEventSpec.durationInSeconds);
 
+        // Remind
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
+        // Repeat
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
+        // ?
         buf.put((byte) 0xff); // ?
         buf.put((byte) 0xff); // ?
         buf.put((byte) 0xff); // ?
@@ -327,6 +354,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
         buf.put((byte) 0x00); // ?
+        // TODO: Description here
 
         writeToChunked2021("delete calendar event", CHUNKED2021_ENDPOINT_CALENDAR, buf.array(), false);
     }
@@ -413,19 +441,29 @@ public abstract class Huami2021Support extends HuamiSupport {
     protected Huami2021Support requestBatteryInfo(TransactionBuilder builder) {
         LOG.debug("Requesting Battery Info");
 
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_BATTERY, new byte[]{BATTERY_REQUEST}, false);
+        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_BATTERY, BATTERY_REQUEST, false);
 
         return this;
     }
 
     @Override
     protected Huami2021Support setFitnessGoal(final TransactionBuilder builder) {
-        final int fitnessGoal = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_STEPS_GOAL, ActivityUser.defaultUserStepsGoal);
-        LOG.info("Setting Fitness Goal to {}", fitnessGoal);
+        final int goalSteps = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_STEPS_GOAL, ActivityUser.defaultUserStepsGoal);
+        final int goalCalories = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_CALORIES_BURNT, ActivityUser.defaultUserCaloriesBurntGoal);
+        final int goalSleep = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_SLEEP_DURATION, ActivityUser.defaultUserSleepDurationGoal);
+        final int goalWeight = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_GOAL_WEIGHT_KG, ActivityUser.defaultUserGoalWeightKg);
+        final int goalStandingTime = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_GOAL_STANDING_TIME_HOURS, ActivityUser.defaultUserGoalStandingTimeHours);
+        final int goalFatBurnTime = GBApplication.getPrefs().getInt(ActivityUser.PREF_USER_GOAL_FAT_BURN_TIME_MINUTES, ActivityUser.defaultUserFatBurnTimeMinutes);
+        LOG.info("Setting Fitness Goals to steps={}, calories={}, sleep={}, weight={}, standingTime={}, fatBurn={}", goalSteps, goalCalories, goalSleep, goalWeight, goalStandingTime, goalFatBurnTime);
 
-        new ConfigSetter(ConfigType.HEALTH)
-                .setInt(FITNESS_GOAL_STEPS, fitnessGoal)
-                .write(this, builder);
+        configService.newSetter()
+                .setInt(FITNESS_GOAL_STEPS, goalSteps)
+                .setShort(FITNESS_GOAL_CALORIES, (short) goalCalories)
+                .setShort(FITNESS_GOAL_SLEEP, (short) (goalSleep * 60))
+                .setShort(FITNESS_GOAL_WEIGHT, (short) goalWeight)
+                .setShort(FITNESS_GOAL_STANDING_TIME, (short) (goalStandingTime))
+                .setShort(FITNESS_GOAL_FAT_BURN_TIME, (short) goalFatBurnTime)
+                .write(builder);
 
         return this;
     }
@@ -483,13 +521,6 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    protected Huami2021Support setWearLocation(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("Function not implemented");
-        return this;
-    }
-
-    @Override
     protected Huami2021Support setPassword(final TransactionBuilder builder) {
         final boolean passwordEnabled = HuamiCoordinator.getPasswordEnabled(gbDevice.getAddress());
         final String password = HuamiCoordinator.getPassword(gbDevice.getAddress());
@@ -501,10 +532,10 @@ public abstract class Huami2021Support extends HuamiSupport {
             return this;
         }
 
-        new ConfigSetter(ConfigType.LOCKSCREEN)
+        configService.newSetter()
                 .setBoolean(PASSWORD_ENABLED, passwordEnabled)
                 .setString(PASSWORD_TEXT, password)
-                .write(this, builder);
+                .write(builder);
 
         return this;
     }
@@ -616,6 +647,10 @@ public abstract class Huami2021Support extends HuamiSupport {
             // app package
             if (notificationSpec.sourceAppId != null) {
                 baos.write(notificationSpec.sourceAppId.getBytes(StandardCharsets.UTF_8));
+            } else {
+                // Send the GB package name, otherwise the last notification icon will
+                // be used wrongly (eg. when receiving an SMS)
+                baos.write(BuildConfig.APPLICATION_ID.getBytes(StandardCharsets.UTF_8));
             }
             baos.write(0);
 
@@ -673,7 +708,7 @@ public abstract class Huami2021Support extends HuamiSupport {
     protected Huami2021Support requestReminders(final TransactionBuilder builder) {
         LOG.info("Requesting reminders");
 
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_REMINDERS, new byte[]{REMINDERS_CMD_REQUEST}, false);
+        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_REMINDERS, REMINDERS_CMD_REQUEST, false);
 
         return this;
     }
@@ -681,8 +716,9 @@ public abstract class Huami2021Support extends HuamiSupport {
     @Override
     protected void sendReminderToDevice(final TransactionBuilder builder, int position, final Reminder reminder) {
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
-        if (position + 1 > coordinator.getReminderSlotCount()) {
-            LOG.error("Reminder for position {} is over the limit of {} reminders", position, coordinator.getReminderSlotCount());
+        final int reminderSlotCount = coordinator.getReminderSlotCount(getDevice());
+        if (position + 1 > reminderSlotCount) {
+            LOG.error("Reminder for position {} is over the limit of {} reminders", position, reminderSlotCount);
             return;
         }
 
@@ -749,9 +785,8 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    protected void sendWorldClocks(final TransactionBuilder builder,
-                                   final List<? extends WorldClock> clocks) {
-        // TODO not yet supported by the official app, but menu option shows up on the band
+    protected boolean isWorldClocksEncrypted() {
+        return true;
     }
 
     @Override
@@ -868,9 +903,9 @@ public abstract class Huami2021Support extends HuamiSupport {
     protected Huami2021Support setHeartrateSleepSupport(final TransactionBuilder builder) {
         final boolean enableHrSleepSupport = MiBandCoordinator.getHeartrateSleepSupport(gbDevice.getAddress());
 
-        new ConfigSetter(ConfigType.HEALTH)
+        configService.newSetter()
                 .setBoolean(SLEEP_HIGH_ACCURACY_MONITORING, enableHrSleepSupport)
-                .write(this, builder);
+                .write(builder);
 
         return this;
     }
@@ -914,101 +949,17 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    protected Huami2021Support setHeartrateActivityMonitoring(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("setHeartrateActivityMonitoring not implemented");
-        return null;
-    }
-
-    @Override
-    protected Huami2021Support setHeartrateAlert(final TransactionBuilder builder) {
-        final int hrAlertThresholdHigh = HuamiCoordinator.getHeartrateAlertHighThreshold(gbDevice.getAddress());
-        final int hrAlertThresholdLow = HuamiCoordinator.getHeartrateAlertLowThreshold(gbDevice.getAddress());
-
-        LOG.info("Setting heart rate alert thresholds to {}, {}", hrAlertThresholdHigh, hrAlertThresholdLow);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setByte(HEART_RATE_HIGH_ALERTS, (byte) hrAlertThresholdHigh)
-                .setByte(HEART_RATE_LOW_ALERTS, (byte) hrAlertThresholdLow)
-                .write(this, builder);
-
-        return null;
-    }
-
-    @Override
-    protected HuamiSupport setHeartrateSleepBreathingQualityMonitoring(TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getHeartrateSleepBreathingQualityMonitoring(gbDevice.getAddress());
-        LOG.info("Setting stress relaxation reminder to {}", enable);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(SLEEP_BREATHING_QUALITY_MONITORING, enable)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected HuamiSupport setSPO2AllDayMonitoring(TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getSPO2AllDayMonitoring(gbDevice.getAddress());
-        LOG.info("Setting SPO2 All-day monitoring to {}", enable);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(SPO2_ALL_DAY_MONITORING, enable)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected HuamiSupport setSPO2AlertThreshold(TransactionBuilder builder) {
-        final int spo2threshold = HuamiCoordinator.getSPO2AlertThreshold(gbDevice.getAddress());
-        LOG.info("Setting SPO2 alert threshold to {}", spo2threshold);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setByte(SPO2_LOW_ALERT, (byte) spo2threshold)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setHeartrateStressMonitoring(final TransactionBuilder builder) {
-        final boolean enableHrStressMonitoring = HuamiCoordinator.getHeartrateStressMonitoring(gbDevice.getAddress());
-        LOG.info("Setting heart rate stress monitoring to {}", enableHrStressMonitoring);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(STRESS_MONITORING, enableHrStressMonitoring)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected HuamiSupport setHeartrateStressRelaxationReminder(TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getHeartrateStressRelaxationReminder(gbDevice.getAddress());
-        LOG.info("Setting stress relaxation reminder to {}", enable);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(STRESS_RELAXATION_REMINDER, enable)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected HuamiSupport setHeartrateMeasurementInterval(TransactionBuilder builder, int minutes) {
-        new ConfigSetter(ConfigType.HEALTH)
+    protected HuamiSupport setHeartrateMeasurementInterval(final TransactionBuilder builder, final int minutes) {
+        configService.newSetter()
                 .setByte(HEART_RATE_ALL_DAY_MONITORING, (byte) minutes)
-                .write(this, builder);
+                .write(builder);
 
         return this;
     }
 
     @Override
-    public Huami2021Support sendFactoryReset(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("sendFactoryReset not implemented");
-        return null;
+    protected boolean supportsDeviceDefaultVibrationProfiles() {
+        return true;
     }
 
     @Override
@@ -1026,7 +977,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         buf.put(VIBRATION_PATTERN_SET);
         buf.put(notificationType.getCode());
-        buf.put((byte) 0x01);
+        buf.put((byte) (profile != null ? 1 : 0)); // 1 for custom, 0 for device default
         buf.put((byte) (test ? 1 : 0));
         buf.put((byte) (onOff.size() / 2));
 
@@ -1067,48 +1018,8 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    protected Huami2021Support setDateDisplay(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("Request GPS version not implemented");
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setDateFormat(final TransactionBuilder builder) {
-        final String dateFormat = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getString("dateformat", "MM/dd/yyyy");
-        if (dateFormat == null) {
-            return this;
-        }
-
-        switch (dateFormat) {
-            case "YYYY/MM/DD":
-            case "yyyy/mm/dd":
-            case "YYYY.MM.DD":
-            case "yyyy.mm.dd":
-            case "MM/DD/YYYY":
-            case "MM.DD.YYYY":
-            case "mm/dd/yyyy":
-            case "mm.dd.yyyy":
-            case "DD/MM/YYYY":
-            case "DD.MM.YYYY":
-            case "dd/mm/yyyy":
-            case "dd.mm.yyyy":
-                break;
-            default:
-                LOG.warn("unsupported date format " + dateFormat);
-                return this;
-        }
-
-        new ConfigSetter(ConfigType.SYSTEM)
-                .setString(DATE_FORMAT, dateFormat.replace("/", ".").toLowerCase(Locale.ROOT))
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
     protected Huami2021Support setTimeFormat(final TransactionBuilder builder) {
-        final GBPrefs gbPrefs = new GBPrefs(new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress())));
+        final GBPrefs gbPrefs = new GBPrefs(getDevicePrefs());
         final String timeFormat = gbPrefs.getTimeFormat();
 
         // FIXME: This "works", but the band does not update when the setting changes, so we don't do anything
@@ -1126,144 +1037,79 @@ public abstract class Huami2021Support extends HuamiSupport {
             timeFormatByte = 0x00;
         }
 
-        new ConfigSetter(ConfigType.SYSTEM)
+        configService.newSetter()
                 .setByte(TIME_FORMAT, timeFormatByte)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setGoalNotification(final TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getGoalNotification(gbDevice.getAddress());
-        LOG.info("Setting goal notification to {}", enable);
-
-        // TODO confirm this works
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(FITNESS_GOAL_NOTIFICATION, enable)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setAlwaysOnDisplay(final TransactionBuilder builder) {
-        final AlwaysOnDisplay alwaysOnDisplay = HuamiCoordinator.getAlwaysOnDisplay(gbDevice.getAddress());
-        LOG.info("Setting always on display mode {}", alwaysOnDisplay);
-
-        final byte aodByte;
-        switch (alwaysOnDisplay) {
-            case AUTOMATIC:
-                aodByte = 0x01;
-                break;
-            case SCHEDULED:
-                aodByte = 0x02;
-                break;
-            case ALWAYS:
-                aodByte = 0x03;
-                break;
-            case OFF:
-            default:
-                aodByte = 0x00;
-                break;
-        }
-
-        final Date start = HuamiCoordinator.getAlwaysOnDisplayStart(gbDevice.getAddress());
-        final Date end = HuamiCoordinator.getAlwaysOnDisplayEnd(gbDevice.getAddress());
-
-        new ConfigSetter(ConfigType.DISPLAY)
-                .setByte(ALWAYS_ON_DISPLAY_MODE, aodByte)
-                .setHourMinute(ALWAYS_ON_DISPLAY_SCHEDULED_START, start)
-                .setHourMinute(ALWAYS_ON_DISPLAY_SCHEDULED_END, end)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setActivateDisplayOnLiftWrist(final TransactionBuilder builder) {
-        final ActivateDisplayOnLift displayOnLift = HuamiCoordinator.getActivateDisplayOnLiftWrist(getContext(), gbDevice.getAddress());
-        LOG.info("Setting activate display on lift wrist to {}", displayOnLift);
-
-        final byte liftWristByte;
-        switch (displayOnLift) {
-            case SCHEDULED:
-                liftWristByte = 0x01;
-                break;
-            case ON:
-                liftWristByte = 0x02;
-                break;
-            case OFF:
-            default:
-                liftWristByte = 0x00;
-                break;
-        }
-
-        final Date start = HuamiCoordinator.getDisplayOnLiftStart(gbDevice.getAddress());
-        final Date end = HuamiCoordinator.getDisplayOnLiftEnd(gbDevice.getAddress());
-
-        new ConfigSetter(ConfigType.DISPLAY)
-                .setByte(LIFT_WRIST_MODE, liftWristByte)
-                .setHourMinute(LIFT_WRIST_SCHEDULED_START, start)
-                .setHourMinute(LIFT_WRIST_SCHEDULED_END, end)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setActivateDisplayOnLiftWristSensitivity(final TransactionBuilder builder) {
-        final ActivateDisplayOnLiftSensitivity sensitivity = HuamiCoordinator.getDisplayOnLiftSensitivity(gbDevice.getAddress());
-        LOG.info("Setting activate display on lift wrist sensitivity to {}", sensitivity);
-
-        final byte sensitivityByte;
-        switch (sensitivity) {
-            case SENSITIVE:
-                sensitivityByte = 0x01;
-                break;
-            case NORMAL:
-            default:
-                sensitivityByte = 0x00;
-                break;
-        }
-
-        new ConfigSetter(ConfigType.DISPLAY)
-                .setByte(LIFT_WRIST_RESPONSE_SENSITIVITY, sensitivityByte)
-                .write(this, builder);
+                .write(builder);
 
         return this;
     }
 
     @Override
     protected Huami2021Support setDisplayItems(final TransactionBuilder builder) {
-        setDisplayItems2021(builder, false);
+        final Prefs prefs = getDevicePrefs();
+
+        setDisplayItems2021(
+                builder,
+                DISPLAY_ITEMS_MENU,
+                new ArrayList<>(prefs.getList(ZeppOsConfigService.getPrefPossibleValuesKey(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE), Collections.emptyList())),
+                new ArrayList<>(prefs.getList(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE, Collections.emptyList()))
+        );
         return this;
     }
 
     @Override
     protected Huami2021Support setShortcuts(final TransactionBuilder builder) {
-        setDisplayItems2021(builder, true);
+        final Prefs prefs = getDevicePrefs();
+
+        setDisplayItems2021(
+                builder,
+                DISPLAY_ITEMS_SHORTCUTS,
+                new ArrayList<>(prefs.getList(ZeppOsConfigService.getPrefPossibleValuesKey(HuamiConst.PREF_SHORTCUTS_SORTABLE), Collections.emptyList())),
+                new ArrayList<>(prefs.getList(HuamiConst.PREF_SHORTCUTS_SORTABLE, Collections.emptyList()))
+        );
+        return this;
+    }
+
+    protected Huami2021Support setControlCenter(final TransactionBuilder builder) {
+        final Prefs prefs = getDevicePrefs();
+
+        setDisplayItems2021(
+                builder,
+                DISPLAY_ITEMS_CONTROL_CENTER,
+                new ArrayList<>(prefs.getList(ZeppOsConfigService.getPrefPossibleValuesKey(HuamiConst.PREF_CONTROL_CENTER_SORTABLE), Collections.emptyList())),
+                new ArrayList<>(prefs.getList(HuamiConst.PREF_CONTROL_CENTER_SORTABLE, Collections.emptyList()))
+        );
         return this;
     }
 
     private void setDisplayItems2021(final TransactionBuilder builder,
-                                     final boolean isShortcuts) {
-        final Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-        final List<String> allSettings;
-        List<String> enabledList;
-        final byte menuType;
+                                     final byte menuType,
+                                     final List<String> allSettings,
+                                     List<String> enabledList) {
+        final boolean isMainMenu = menuType == DISPLAY_ITEMS_MENU;
+        final boolean isShortcuts = menuType == DISPLAY_ITEMS_SHORTCUTS;
+        final boolean hasMoreSection;
+        final Map<String, String> idMap;
 
-        if (isShortcuts) {
-            menuType = Huami2021Service.DISPLAY_ITEMS_SHORTCUTS;
-            allSettings = new ArrayList<>(prefs.getList(HuamiConst.PREF_ALL_SHORTCUTS, Collections.emptyList()));
-            enabledList = new ArrayList<>(prefs.getList(HuamiConst.PREF_SHORTCUTS_SORTABLE, Collections.emptyList()));
-            LOG.info("Setting shortcuts");
-        } else {
-            menuType = Huami2021Service.DISPLAY_ITEMS_MENU;
-            allSettings = new ArrayList<>(prefs.getList(HuamiConst.PREF_ALL_DISPLAY_ITEMS, Collections.emptyList()));
-            enabledList = new ArrayList<>(prefs.getList(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE, Collections.emptyList()));
-            LOG.info("Setting menu items");
+        switch (menuType) {
+            case DISPLAY_ITEMS_MENU:
+                LOG.info("Setting menu items");
+                hasMoreSection = getCoordinator().mainMenuHasMoreSection();
+                idMap = MapUtils.reverse(Huami2021MenuType.displayItemNameLookup);
+                break;
+            case DISPLAY_ITEMS_SHORTCUTS:
+                LOG.info("Setting shortcuts");
+                hasMoreSection = false;
+                idMap = MapUtils.reverse(Huami2021MenuType.shortcutsNameLookup);
+                break;
+            case DISPLAY_ITEMS_CONTROL_CENTER:
+                LOG.info("Setting control center");
+                hasMoreSection = false;
+                idMap = MapUtils.reverse(Huami2021MenuType.controlCenterNameLookup);
+                break;
+            default:
+                LOG.warn("Unknown menu type {}", menuType);
+                return;
         }
 
         if (allSettings.isEmpty()) {
@@ -1271,9 +1117,9 @@ public abstract class Huami2021Support extends HuamiSupport {
             return;
         }
 
-        if (!isShortcuts && !enabledList.contains("00000013")) {
+        if (isMainMenu && !enabledList.contains("settings")) {
             // Settings can't be disabled
-            enabledList.add("00000013");
+            enabledList.add("settings");
         }
 
         if (isShortcuts && enabledList.size() > 10) {
@@ -1285,7 +1131,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         LOG.info("Setting display items (shortcuts={}): {}", isShortcuts, enabledList);
 
         int numItems = allSettings.size();
-        if (!isShortcuts) {
+        if (hasMoreSection) {
             // Exclude the "more" item from the main menu, since it's not a real item
             numItems--;
         }
@@ -1301,10 +1147,19 @@ public abstract class Huami2021Support extends HuamiSupport {
         byte pos = 0;
         boolean inMoreSection = false;
 
-        for (final String id : enabledList) {
-            if (id.equals("more")) {
+        // IDs are 8-char hex strings, in upper case
+        final Pattern ID_REGEX = Pattern.compile("^[0-9A-F]{8}$");
+
+        for (final String name : enabledList) {
+            if (name.equals("more")) {
                 inMoreSection = true;
                 pos = 0;
+                continue;
+            }
+
+            final String id = idMap.containsKey(name) ? idMap.get(name) : name;
+            if (!ID_REGEX.matcher(id).find()) {
+                LOG.error("Screen item id '{}' is not 8-char hex string", id);
                 continue;
             }
 
@@ -1327,8 +1182,14 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         // Set all disabled items
         pos = 0;
-        for (final String id : allSettings) {
-            if (enabledList.contains(id) || id.equals("more")) {
+        for (final String name : allSettings) {
+            if (enabledList.contains(name) || name.equals("more")) {
+                continue;
+            }
+
+            final String id = idMap.containsKey(name) ? idMap.get(name) : name;
+            if (!ID_REGEX.matcher(id).find()) {
+                LOG.error("Screen item id '{}' is not 8-char hex string", id);
                 continue;
             }
 
@@ -1341,134 +1202,6 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
 
         writeToChunked2021(builder, CHUNKED2021_ENDPOINT_DISPLAY_ITEMS, buf.array(), true);
-    }
-
-    @Override
-    protected Huami2021Support setWorkoutActivityTypes(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("Function not implemented");
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setBeepSounds(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("Function not implemented");
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setRotateWristToSwitchInfo(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("Function not implemented");
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setDisplayCaller(final TransactionBuilder builder) {
-        // TODO: Make this configurable
-
-        LOG.info("Enabling caller display");
-
-        new ConfigSetter(ConfigType.SYSTEM)
-                .setBoolean(DISPLAY_CALLER, true)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setDoNotDisturb(final TransactionBuilder builder) {
-        final DoNotDisturb doNotDisturb = HuamiCoordinator.getDoNotDisturb(gbDevice.getAddress());
-        LOG.info("Setting do not disturb to {}", doNotDisturb);
-
-        final byte dndByte;
-        switch (doNotDisturb) {
-            case SCHEDULED:
-                dndByte = 0x01;
-                break;
-            case AUTOMATIC:
-                dndByte = 0x02;
-                break;
-            case ALWAYS:
-                dndByte = 0x03;
-                break;
-            case OFF:
-            default:
-                dndByte = 0x00;
-                break;
-        }
-
-        final Date start = HuamiCoordinator.getDoNotDisturbStart(gbDevice.getAddress());
-        final Date end = HuamiCoordinator.getDoNotDisturbEnd(gbDevice.getAddress());
-
-        new ConfigSetter(ConfigType.SYSTEM)
-                .setByte(DND_MODE, dndByte)
-                .setHourMinute(DND_SCHEDULED_START, start)
-                .setHourMinute(DND_SCHEDULED_END, end)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setNightMode(final TransactionBuilder builder) {
-        final String nightMode = MiBand3Coordinator.getNightMode(gbDevice.getAddress());
-        LOG.info("Setting night mode to {}", nightMode);
-
-        final byte nightModeByte;
-        switch (nightMode) {
-            case MiBandConst.PREF_NIGHT_MODE_SUNSET:
-                nightModeByte = 0x01;
-                break;
-            case MiBandConst.PREF_NIGHT_MODE_SCHEDULED:
-                nightModeByte = 0x02;
-                break;
-            case MiBandConst.PREF_NIGHT_MODE_OFF:
-            default:
-                nightModeByte = 0x00;
-        }
-
-        final Date start = MiBand3Coordinator.getNightModeStart(gbDevice.getAddress());
-        final Date end = MiBand3Coordinator.getNightModeEnd(gbDevice.getAddress());
-
-        new ConfigSetter(ConfigType.SYSTEM)
-                .setByte(NIGHT_MODE_MODE, nightModeByte)
-                .setHourMinute(NIGHT_MODE_SCHEDULED_START, start)
-                .setHourMinute(NIGHT_MODE_SCHEDULED_END, end)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setInactivityWarnings(final TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getInactivityWarnings(gbDevice.getAddress());
-        LOG.info("Setting inactivity warnings to {}", enable);
-
-        final Date intervalStart = HuamiCoordinator.getInactivityWarningsStart(gbDevice.getAddress());
-        final Date intervalEnd = HuamiCoordinator.getInactivityWarningsEnd(gbDevice.getAddress());
-        boolean enableDnd = HuamiCoordinator.getInactivityWarningsDnd(gbDevice.getAddress());
-        final Date dndStart = HuamiCoordinator.getInactivityWarningsDndStart(gbDevice.getAddress());
-        final Date dndEnd = HuamiCoordinator.getInactivityWarningsDndEnd(gbDevice.getAddress());
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(INACTIVITY_WARNINGS_ENABLED, enable)
-                .setHourMinute(INACTIVITY_WARNINGS_SCHEDULED_START, intervalStart)
-                .setHourMinute(INACTIVITY_WARNINGS_SCHEDULED_END, intervalEnd)
-                .setBoolean(INACTIVITY_WARNINGS_DND_ENABLED, enableDnd)
-                .setHourMinute(INACTIVITY_WARNINGS_DND_SCHEDULED_START, dndStart)
-                .setHourMinute(INACTIVITY_WARNINGS_DND_SCHEDULED_END, dndEnd)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setDisconnectNotification(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
-        LOG.warn("Function not implemented");
-        return this;
     }
 
     @Override
@@ -1487,52 +1220,9 @@ public abstract class Huami2021Support extends HuamiSupport {
                 break;
         }
 
-        new ConfigSetter(ConfigType.SYSTEM)
+        configService.newSetter()
                 .setByte(TEMPERATURE_UNIT, unitByte)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setBandScreenUnlock(final TransactionBuilder builder) {
-        // Supported by the Mi Band 7 through the band, but not configurable through the app
-        LOG.warn("Function not implemented");
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setScreenOnOnNotification(final TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getScreenOnOnNotification(gbDevice.getAddress());
-        LOG.info("Set Screen On on notification = {}", enable);
-
-        new ConfigSetter(ConfigType.DISPLAY)
-                .setBoolean(SCREEN_ON_ON_NOTIFICATIONS, enable)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setScreenBrightness(final TransactionBuilder builder) {
-        final int brightness = HuamiCoordinator.getScreenBrightness(gbDevice.getAddress());
-        LOG.info("Setting band screen brightness to {}", brightness);
-
-        new ConfigSetter(ConfigType.DISPLAY)
-                .setShort(SCREEN_BRIGHTNESS, (byte) brightness)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setScreenTimeout(final TransactionBuilder builder) {
-        final int timeout = HuamiCoordinator.getScreenTimeout(gbDevice.getAddress());
-        LOG.info("Setting band screen timeout to {}", timeout);
-
-        new ConfigSetter(ConfigType.DISPLAY)
-                .setByte(SCREEN_TIMEOUT, (byte) timeout)
-                .write(this, builder);
+                .write(builder);
 
         return this;
     }
@@ -1544,34 +1234,10 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         LOG.info("Setting device language to {}", localeString);
 
-        new ConfigSetter(ConfigType.LANGUAGE)
+        configService.newSetter()
                 .setByte(LANGUAGE, getLanguageId())
                 .setBoolean(LANGUAGE_FOLLOW_PHONE, localeString.equals("auto"))
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setExposeHRThirdParty(final TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getExposeHRThirdParty(gbDevice.getAddress());
-        LOG.info("Setting exposure of HR to third party apps to {}", enable);
-
-        new ConfigSetter(ConfigType.HEALTH)
-                .setBoolean(THIRD_PARTY_HR_SHARING, enable)
-                .write(this, builder);
-
-        return this;
-    }
-
-    @Override
-    protected Huami2021Support setBtConnectedAdvertising(final TransactionBuilder builder) {
-        final boolean enable = HuamiCoordinator.getBtConnectedAdvertising(gbDevice.getAddress());
-        LOG.info("Setting connected advertisement to: {}", enable);
-
-        new ConfigSetter(ConfigType.BLUETOOTH)
-                .setBoolean(BLUETOOTH_CONNECTED_ADVERTISING, enable)
-                .write(this, builder);
+                .write(builder);
 
         return this;
     }
@@ -1595,7 +1261,6 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     protected Huami2021Support requestGPSVersion(final TransactionBuilder builder) {
-        // Not supported by the Mi Band 7 at least
         LOG.warn("Request GPS version not implemented");
         return this;
     }
@@ -1633,7 +1298,6 @@ public abstract class Huami2021Support extends HuamiSupport {
         return this;
     }
 
-    @Override
     protected Huami2021Support requestShortcuts(final TransactionBuilder builder) {
         LOG.info("Requesting shortcuts");
 
@@ -1647,23 +1311,56 @@ public abstract class Huami2021Support extends HuamiSupport {
         return this;
     }
 
+    protected Huami2021Support requestControlCenter(final TransactionBuilder builder) {
+        LOG.info("Requesting shortcuts");
+
+        writeToChunked2021(
+                builder,
+                CHUNKED2021_ENDPOINT_DISPLAY_ITEMS,
+                new byte[]{DISPLAY_ITEMS_CMD_REQUEST, DISPLAY_ITEMS_CONTROL_CENTER},
+                true
+        );
+
+        return this;
+    }
+
+    protected void requestMTU(final TransactionBuilder builder) {
+        writeToChunked2021(
+                builder,
+                CHUNKED2021_ENDPOINT_CONNECTION,
+                CONNECTION_CMD_MTU_REQUEST,
+                false
+        );
+    }
+
+    protected void requestCapabilityReminders(final TransactionBuilder builder) {
+        writeToChunked2021(
+                builder,
+                CHUNKED2021_ENDPOINT_REMINDERS,
+                REMINDERS_CMD_CAPABILITIES_REQUEST,
+                false
+        );
+    }
+
     @Override
     public void phase2Initialize(final TransactionBuilder builder) {
         LOG.info("2021 phase2Initialize...");
+        requestMTU(builder);
         requestBatteryInfo(builder);
     }
 
     @Override
     public void phase3Initialize(final TransactionBuilder builder) {
+        final Huami2021Coordinator coordinator = getCoordinator();
+
         LOG.info("2021 phase3Initialize...");
         setUserInfo(builder);
 
-        for (final ConfigType configType : ConfigType.values()) {
-            // FIXME: Request only supported args?
-            requestConfig(builder, configType);
-        }
+        configService.requestAllConfigs(builder);
+        requestCapabilityReminders(builder);
+        fileUploadService.requestCapability(builder);
 
-        for (final HuamiVibrationPatternNotificationType type : HuamiVibrationPatternNotificationType.values()) {
+        for (final HuamiVibrationPatternNotificationType type : coordinator.getVibrationPatternNotificationTypes(gbDevice)) {
             // FIXME: Can we read these from the band?
             final String typeKey = type.name().toLowerCase(Locale.ROOT);
             setVibrationPattern(builder, HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_PREFIX + typeKey);
@@ -1672,6 +1369,9 @@ public abstract class Huami2021Support extends HuamiSupport {
         requestCannedMessages(builder);
         requestDisplayItems(builder);
         requestShortcuts(builder);
+        if (coordinator.supportsControlCenter()) {
+            requestControlCenter(builder);
+        }
         requestAlarms(builder);
         //requestReminders(builder);
     }
@@ -1692,13 +1392,23 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    public void handle2021Payload(final int type, final byte[] payload) {
+    protected Huami2021Coordinator getCoordinator() {
+        return (Huami2021Coordinator) DeviceHelper.getInstance().getCoordinator(gbDevice);
+    }
+
+    @Override
+    public void handle2021Payload(final short type, final byte[] payload) {
         if (payload == null || payload.length == 0) {
             LOG.warn("Empty or null payload for {}", String.format("0x%04x", type));
             return;
         }
 
         LOG.debug("Got 2021 payload for {}: {}", String.format("0x%04x", type), GB.hexdump(payload));
+
+        if (mServiceMap.containsKey(type)) {
+            mServiceMap.get(type).handlePayload(payload);
+            return;
+        }
 
         switch (type) {
             case CHUNKED2021_ENDPOINT_ALARMS:
@@ -1712,12 +1422,6 @@ public abstract class Huami2021Support extends HuamiSupport {
                 return;
             case CHUNKED2021_ENDPOINT_COMPAT:
                 LOG.warn("Unexpected compat payload {}", GB.hexdump(payload));
-                return;
-            case CHUNKED2021_ENDPOINT_CONFIG:
-                handle2021Config(payload);
-                return;
-            case CHUNKED2021_ENDPOINT_ICONS:
-                handle2021Icons(payload);
                 return;
             case CHUNKED2021_ENDPOINT_WEATHER:
                 handle2021Weather(payload);
@@ -1745,6 +1449,9 @@ public abstract class Huami2021Support extends HuamiSupport {
                 return;
             case CHUNKED2021_ENDPOINT_CANNED_MESSAGES:
                 handle2021CannedMessages(payload);
+                return;
+            case CHUNKED2021_ENDPOINT_CONNECTION:
+                handle2021Connection(payload);
                 return;
             case CHUNKED2021_ENDPOINT_USER_INFO:
                 handle2021UserInfo(payload);
@@ -1933,94 +1640,6 @@ public abstract class Huami2021Support extends HuamiSupport {
         // TODO update database?
     }
 
-    private void requestConfig(final TransactionBuilder builder,
-                               final ConfigType config,
-                               final List<Huami2021Config.ConfigArg> args) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        baos.write(CONFIG_CMD_REQUEST);
-        baos.write(args.isEmpty() ? CONFIG_REQUEST_TYPE_ALL : CONFIG_REQUEST_TYPE_SPECIFIC);
-        baos.write(config.getValue());
-        baos.write(args.size());
-        for (final Huami2021Config.ConfigArg arg : args) {
-            baos.write(arg.getCode());
-        }
-
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CONFIG, baos.toByteArray(), true);
-    }
-
-    private void requestConfig(final TransactionBuilder builder, final ConfigType config) {
-        requestConfig(builder, config, Huami2021Config.ConfigArg.getAllArgsForConfigType(config));
-    }
-
-    protected void handle2021Config(final byte[] payload) {
-        switch (payload[0]) {
-            case CONFIG_CMD_ACK:
-                LOG.info("Configuration ACK, status = {}", payload[1]);
-                return;
-
-            case CONFIG_CMD_RESPONSE:
-                if (payload[1] != 1) {
-                    LOG.warn("Configuration response not success: {}", payload[1]);
-                    return;
-                }
-
-                handle2021ConfigResponse(payload);
-                return;
-            default:
-                LOG.warn("Unexpected configuration payload byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    private void handle2021ConfigResponse(final byte[] payload) {
-        final ConfigType configType = ConfigType.fromValue(payload[2]);
-        if (configType == null) {
-            LOG.warn("Unknown config type {}", String.format("0x%02x", payload[2]));
-            return;
-        }
-
-        int numConfigs = payload[5] & 0xff;
-
-        LOG.info("Got {} configs for {}", numConfigs, configType);
-
-        final Map<String, Object> prefs = new Huami2021Config.ConfigParser(configType)
-                .parse(numConfigs, subarray(payload, 6, payload.length));
-
-        if (prefs == null) {
-            return;
-        }
-
-        final GBDeviceEventUpdatePreferences eventUpdatePreferences = new GBDeviceEventUpdatePreferences(prefs);
-        evaluateGBDeviceEvent(eventUpdatePreferences);
-
-        if (isInitialized()) {
-            final TransactionBuilder builder;
-            boolean hasAutoConfigsToSend = false;
-
-            try {
-                builder = performInitialized("set auto band configs");
-            } catch (final Exception e) {
-                LOG.error("Failed to set auto band configs", e);
-                return;
-            }
-
-            if (prefs.containsKey(PREF_LANGUAGE) && prefs.get(PREF_LANGUAGE).equals(PREF_LANGUAGE_AUTO)) {
-                // Band is reporting automatic language, we need to send the actual language
-                setLanguage(builder);
-                hasAutoConfigsToSend = true;
-            }
-            if (prefs.containsKey(PREF_TIMEFORMAT) && prefs.get(PREF_TIMEFORMAT).equals(PREF_TIMEFORMAT_AUTO)) {
-                // Band is reporting automatic time format, we need to send the actual time format
-                setTimeFormat(builder);
-                hasAutoConfigsToSend = true;
-            }
-
-            if (hasAutoConfigsToSend) {
-                builder.queue(getQueue());
-            }
-        }
-    }
-
     protected void handle2021Workout(final byte[] payload) {
         switch (payload[0]) {
             case WORKOUT_CMD_APP_OPEN:
@@ -2081,28 +1700,42 @@ public abstract class Huami2021Support extends HuamiSupport {
             return;
         }
 
-        final String allScreensPrefKey;
         final String prefKey;
+        final Map<String, String> idMap;
         switch (payload[1]) {
             case DISPLAY_ITEMS_MENU:
                 LOG.info("Got {} display items", numberScreens);
-                allScreensPrefKey = HuamiConst.PREF_ALL_DISPLAY_ITEMS;
                 prefKey = HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE;
+                idMap = Huami2021MenuType.displayItemNameLookup;
                 break;
             case DISPLAY_ITEMS_SHORTCUTS:
                 LOG.info("Got {} shortcuts", numberScreens);
-                allScreensPrefKey = HuamiConst.PREF_ALL_SHORTCUTS;
                 prefKey = HuamiConst.PREF_SHORTCUTS_SORTABLE;
+                idMap = Huami2021MenuType.shortcutsNameLookup;
+                break;
+            case DISPLAY_ITEMS_CONTROL_CENTER:
+                LOG.info("Got {} control center", numberScreens);
+                prefKey = HuamiConst.PREF_CONTROL_CENTER_SORTABLE;
+                idMap = Huami2021MenuType.controlCenterNameLookup;
                 break;
             default:
                 LOG.error("Unknown display items type {}", String.format("0x%x", payload[1]));
                 return;
         }
+        final String allScreensPrefKey = ZeppOsConfigService.getPrefPossibleValuesKey(prefKey);
+
+        final boolean menuHasMoreSection;
+
+        if (payload[1] == DISPLAY_ITEMS_MENU) {
+            menuHasMoreSection = getCoordinator().mainMenuHasMoreSection();
+        } else {
+            menuHasMoreSection = false;
+        }
 
         final String[] mainScreensArr = new String[numberScreens];
         final String[] moreScreensArr = new String[numberScreens];
         final List<String> allScreens = new LinkedList<>();
-        if (payload[1] == DISPLAY_ITEMS_MENU) {
+        if (menuHasMoreSection) {
             // The band doesn't report the "more" screen, so we add it
             allScreens.add("more");
         }
@@ -2110,8 +1743,8 @@ public abstract class Huami2021Support extends HuamiSupport {
         for (int i = 0; i < numberScreens; i++) {
             // Screen IDs are sent as literal hex strings
             final String screenId = new String(subarray(payload, 4 + i * 12, 4 + i * 12 + 8));
-
-            allScreens.add(screenId);
+            final String screenNameOrId = idMap.containsKey(screenId) ? idMap.get(screenId) : screenId;
+            allScreens.add(screenNameOrId);
 
             final int screenSectionVal = payload[4 + i * 12 + 9];
             final int screenPosition = payload[4 + i * 12 + 10];
@@ -2127,14 +1760,14 @@ public abstract class Huami2021Support extends HuamiSupport {
                         LOG.warn("Duplicate position {} for main section", screenPosition);
                     }
                     //LOG.debug("mainScreensArr[{}] = {}", screenPosition, screenKey);
-                    mainScreensArr[screenPosition] = screenId;
+                    mainScreensArr[screenPosition] = screenNameOrId;
                     break;
                 case DISPLAY_ITEMS_SECTION_MORE:
                     if (moreScreensArr[screenPosition] != null) {
                         LOG.warn("Duplicate position {} for more section", screenPosition);
                     }
                     //LOG.debug("moreScreensArr[{}] = {}", screenPosition, screenKey);
-                    moreScreensArr[screenPosition] = screenId;
+                    moreScreensArr[screenPosition] = screenNameOrId;
                     break;
                 case DISPLAY_ITEMS_SECTION_DISABLED:
                     // Ignore disabled screens
@@ -2146,20 +1779,26 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
 
         final List<String> screens = new ArrayList<>(Arrays.asList(mainScreensArr));
-        if (payload[1] == DISPLAY_ITEMS_MENU) {
+        if (menuHasMoreSection) {
             screens.add("more");
             screens.addAll(Arrays.asList(moreScreensArr));
         }
         screens.removeAll(Collections.singleton(null));
 
-        final String allScrensPrefValue = StringUtils.join(",", allScreens.toArray(new String[0])).toString();
+        final String allScreensPrefValue = StringUtils.join(",", allScreens.toArray(new String[0])).toString();
         final String prefValue = StringUtils.join(",", screens.toArray(new String[0])).toString();
         final GBDeviceEventUpdatePreferences eventUpdatePreferences = new GBDeviceEventUpdatePreferences()
-                .withPreference(allScreensPrefKey, allScrensPrefValue)
+                .withPreference(allScreensPrefKey, allScreensPrefValue)
                 .withPreference(prefKey, prefValue);
 
         evaluateGBDeviceEvent(eventUpdatePreferences);
     }
+
+    /**
+     * A handler to schedule the find phone event.
+     */
+    private final Handler findPhoneHandler = new Handler();
+    private boolean findPhoneStarted;
 
     protected void handle2021FindDevice(final byte[] payload) {
         final GBDeviceEventFindPhone findPhoneEvent = new GBDeviceEventFindPhone();
@@ -2170,13 +1809,34 @@ public abstract class Huami2021Support extends HuamiSupport {
                 return;
             case FIND_PHONE_START:
                 LOG.info("Find Phone Start");
-                acknowledgeFindPhone(); // FIXME: premature
-                findPhoneEvent.event = GBDeviceEventFindPhone.Event.START;
-                evaluateGBDeviceEvent(findPhoneEvent);
+                acknowledgeFindPhone(); // FIXME: Premature, but the band will only send the mode after we ack
+
+                // Delay the find phone start, because we might get the FIND_PHONE_MODE
+                findPhoneHandler.postDelayed(() -> {
+                    findPhoneEvent.event = GBDeviceEventFindPhone.Event.START;
+                    evaluateGBDeviceEvent(findPhoneEvent);
+                }, 1500);
+
+                break;
+            case FIND_BAND_STOP_FROM_BAND:
+                LOG.info("Find Band Stop from Band");
                 break;
             case FIND_PHONE_STOP_FROM_BAND:
                 LOG.info("Find Phone Stop");
                 findPhoneEvent.event = GBDeviceEventFindPhone.Event.STOP;
+                evaluateGBDeviceEvent(findPhoneEvent);
+                break;
+            case FIND_PHONE_MODE:
+                findPhoneHandler.removeCallbacksAndMessages(null);
+
+                final int mode = payload[1] & 0xff; // 0 to only vibrate, 1 to ring
+                LOG.info("Find Phone Mode: {}", mode);
+                if (findPhoneStarted) {
+                    // Already started, just change the mode
+                    findPhoneEvent.event = mode == 1 ? GBDeviceEventFindPhone.Event.RING : GBDeviceEventFindPhone.Event.VIBRATE;
+                } else {
+                    findPhoneEvent.event = mode == 1 ? GBDeviceEventFindPhone.Event.START : GBDeviceEventFindPhone.Event.START_VIBRATE;
+                }
                 evaluateGBDeviceEvent(findPhoneEvent);
                 break;
             default:
@@ -2233,17 +1893,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         if (path.startsWith("/weather/")) {
             final Huami2021Weather.Response response = Huami2021Weather.handleHttpRequest(path, query);
-
-            if (response != null) {
-                replyHttpSuccess(requestId, 200, response.toJson());
-            } else {
-                final Huami2021Weather.Response notFoundResponse = new Huami2021Weather.ErrorResponse(
-                        -2001,
-                        "Not found"
-                );
-                replyHttpSuccess(requestId, 404, notFoundResponse.toJson());
-            }
-
+            replyHttpSuccess(requestId, response.getHttpStatusCode(), response.toJson());
             return;
         }
 
@@ -2388,12 +2038,12 @@ public abstract class Huami2021Support extends HuamiSupport {
                     return;
                 }
                 int pos = 1 + packageName.length() + 1;
-                // payload[pos] = 0x08?
+                final byte iconFormat = payload[pos];
                 pos++;
                 int width = BLETypeConversions.toUint16(subarray(payload, pos, pos + 2));
                 pos += 2;
                 int height = BLETypeConversions.toUint16(subarray(payload, pos, pos + 2));
-                sendIconForPackage(packageName, width, height);
+                sendIconForPackage(packageName, iconFormat, width, height);
                 return;
             default:
                 LOG.warn("Unexpected notification byte {}", String.format("0x%02x", payload[0]));
@@ -2413,33 +2063,6 @@ public abstract class Huami2021Support extends HuamiSupport {
         writeToChunked2021("ack notification reply", CHUNKED2021_ENDPOINT_NOTIFICATIONS, buf.array(), true);
     }
 
-    // Package names for which icon is being sent
-    // FIXME: This only handles 1 icon at a time
-    private String queuedIconPackage;
-    // Encoded TGA565 bytes
-    private byte[] queuedIconBytes;
-    // Keep track of the last time we queued an icon, as a failsafe. If somehow we didn't get the ack
-    // after 10 seconds, we'll allow another icon to be sent
-    private long queuedIconTimeMillis = 0;
-
-    protected void handle2021Icons(final byte[] payload) {
-        switch (payload[0]) {
-            case ICONS_CMD_SEND_RESPONSE:
-                LOG.info("Band acknowledged icon send request: {}", GB.hexdump(payload));
-                // FIXME: The bytes probably mean something..
-                sendNextQueuedIconData();
-                return;
-            case ICONS_CMD_DATA_ACK:
-                LOG.info("Band acknowledged icon icon data: {}", GB.hexdump(payload));
-                // After the icon is sent to the band, we need to ACK it on the notifications
-                // FIXME: The bytes probably mean something..
-                ackNotificationAfterIconSent();
-                return;
-            default:
-                LOG.warn("Unexpected icons byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
     protected void handle2021Weather(final byte[] payload) {
         switch (payload[0]) {
             case WEATHER_CMD_DEFAULT_LOCATION_ACK:
@@ -2450,43 +2073,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
     }
 
-    private void sendNextQueuedIconData() {
-        if (queuedIconPackage == null) {
-            LOG.error("No queued icon to send");
-            return;
-        }
-
-        if (queuedIconBytes == null) {
-            LOG.error("No icon bytes for {}", queuedIconPackage);
-            return;
-        }
-
-        LOG.info("Sending icon data for {}", queuedIconPackage);
-
-        // The band always sends a full 8192 chunk, with zeroes at the end if bytes < 8192
-        final ByteBuffer buf = ByteBuffer.allocate(10 + queuedIconBytes.length);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(ICONS_CMD_DATA_SEND);
-        buf.put((byte) 0x03); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x08); // ?
-        buf.put((byte) 0x17); // ?
-        buf.put(queuedIconBytes);
-
-        writeToChunked2021("send icon data", CHUNKED2021_ENDPOINT_ICONS, buf.array(), false);
-    }
-
-    private void ackNotificationAfterIconSent() {
-        if (queuedIconPackage == null) {
-            LOG.error("No queued icon to ack");
-            return;
-        }
-
+    private void ackNotificationAfterIconSent(final String queuedIconPackage) {
         LOG.info("Acknowledging icon send for {}", queuedIconPackage);
 
         final ByteBuffer buf = ByteBuffer.allocate(1 + queuedIconPackage.length() + 1 + 1);
@@ -2496,21 +2083,31 @@ public abstract class Huami2021Support extends HuamiSupport {
         buf.put((byte) 0x00);
         buf.put((byte) 0x01);
 
-        queuedIconPackage = null;
-        queuedIconBytes = null;
-
         writeToChunked2021("ack icon send", CHUNKED2021_ENDPOINT_NOTIFICATIONS, buf.array(), true);
     }
 
-    private void sendIconForPackage(final String packageName, final int width, final int height) {
+    private void sendIconForPackage(final String packageName, final byte iconFormat, final int width, final int height) {
         if (getMTU() < 247) {
             LOG.warn("Sending icons requires high MTU, current MTU is {}", getMTU());
             return;
         }
 
-        if (queuedIconPackage != null && System.currentTimeMillis() - queuedIconTimeMillis < 10_000L) {
-            LOG.warn("Icon for {} already queued, not sending icon for {}", queuedIconPackage, packageName);
-            return;
+        // Without the expected tga id and format string they seem to get corrupted,
+        // but the encoding seems to actually be the same...?
+        final String format;
+        final String tgaId;
+        switch (iconFormat) {
+            case 0x04:
+                format = "TGA_RGB565_GCNANOLITE";
+                tgaId = "SOMHP";
+                break;
+            case 0x08:
+                format = "TGA_RGB565_DAVE2D";
+                tgaId = "SOMH6";
+                break;
+            default:
+                LOG.error("Unknown icon format {}", String.format("0x%02x", iconFormat));
+                return;
         }
 
         final Drawable icon;
@@ -2524,19 +2121,11 @@ public abstract class Huami2021Support extends HuamiSupport {
         final Bitmap bmp = BitmapUtil.toBitmap(icon);
 
         // The TGA needs to have this ID, or the band does not accept it
-        final byte[] tgaId = new byte[46];
-        System.arraycopy("SOMH6".getBytes(StandardCharsets.UTF_8), 0, tgaId, 0, 5);
+        final byte[] tgaIdBytes = new byte[46];
+        System.arraycopy(tgaId.getBytes(StandardCharsets.UTF_8), 0, tgaIdBytes, 0, 5);
 
-        final byte[] tga565 = BitmapUtil.convertToTgaRGB565(bmp, width, height, tgaId);
+        final byte[] tga565 = BitmapUtil.convertToTgaRGB565(bmp, width, height, tgaIdBytes);
 
-        if (tga565.length > 8192) {
-            // FIXME: Pretty sure we can't send more than 8KB in a single request,
-            // but don't know how it's supposed to be encoded
-            LOG.error("TGA output is too large: {}", tga565.length);
-            return;
-        }
-
-        final String format = "TGA_RGB565_DAVE2D";
         final String url = String.format(
                 Locale.ROOT,
                 "notification://logo?app_id=%s&width=%d&height=%d&format=%s",
@@ -2547,27 +2136,44 @@ public abstract class Huami2021Support extends HuamiSupport {
         );
         final String filename = String.format("logo_%s.tga", packageName.replace(".", "_"));
 
-        final ByteBuffer buf = ByteBuffer.allocate(2 + url.length() + 1 + filename.length() + 1 + 4 + 4);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(ICONS_CMD_SEND_REQUEST);
-        buf.put((byte) 0x00);
-        buf.put(url.getBytes(StandardCharsets.UTF_8));
-        buf.put((byte) 0x00);
-        buf.put(filename.getBytes(StandardCharsets.UTF_8));
-        buf.put((byte) 0x00);
-        buf.putInt(tga565.length);
-        buf.putInt(CheckSums.getCRC32(tga565));
+        fileUploadService.sendFile(
+                url,
+                filename,
+                tga565,
+                new ZeppOsFileUploadService.Callback() {
+                    @Override
+                    public void onFinish(final boolean success) {
+                        LOG.info("Finished sending icon, success={}", success);
+                        if (success) {
+                            ackNotificationAfterIconSent(packageName);
+                        }
+                    }
+
+                    @Override
+                    public void onProgress(final int progress) {
+                        LOG.trace("Icon send progress: {}", progress);
+                    }
+                }
+        );
 
         LOG.info("Queueing icon for {}", packageName);
-        queuedIconPackage = packageName;
-        queuedIconBytes = tga565;
-        queuedIconTimeMillis = System.currentTimeMillis();
-
-        writeToChunked2021("send icon send request", CHUNKED2021_ENDPOINT_ICONS, buf.array(), false);
     }
 
     protected void handle2021Reminders(final byte[] payload) {
         switch (payload[0]) {
+            case REMINDERS_CMD_CAPABILITIES_RESPONSE:
+                LOG.info("Reminder capability, status = {}", payload[1]);
+                if (payload[1] != 1) {
+                    LOG.warn("Reminder capability unexpected status");
+                    return;
+                }
+                final int numReminders = payload[2] & 0xff;
+                final GBDeviceEventUpdatePreferences eventUpdatePreferences = new GBDeviceEventUpdatePreferences(
+                        REMINDERS_PREF_CAPABILITY,
+                        numReminders
+                );
+                evaluateGBDeviceEvent(eventUpdatePreferences);
+                return;
             case REMINDERS_CMD_CREATE_ACK:
                 LOG.info("Reminder create ACK, status = {}", payload[1]);
                 return;
@@ -2768,6 +2374,23 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
 
         evaluateGBDeviceEvent(gbDeviceEventUpdatePreferences);
+    }
+
+    protected void handle2021Connection(final byte[] payload) {
+        switch (payload[0]) {
+            case CONNECTION_CMD_MTU_RESPONSE:
+                final int mtu = BLETypeConversions.toUint16(payload, 1) + 3;
+                LOG.info("Device announced MTU change: {}", mtu);
+                setMtu(mtu);
+                return;
+            case CONNECTION_CMD_UNKNOWN_3:
+                // Some ping? Band sometimes sends 0x03, phone replies with 0x04
+                LOG.info("Got unknown 3, replying with unknown 4");
+                writeToChunked2021("respond connection unknown 4", CHUNKED2021_ENDPOINT_CONNECTION, CONNECTION_CMD_UNKNOWN_4, false);
+                return;
+        }
+
+        LOG.warn("Unexpected connection payload byte {}", String.format("0x%02x", payload[0]));
     }
 
     protected void handle2021UserInfo(final byte[] payload) {

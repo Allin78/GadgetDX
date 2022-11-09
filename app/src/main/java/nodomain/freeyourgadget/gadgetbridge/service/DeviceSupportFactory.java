@@ -44,6 +44,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.galaxy_buds.GalaxyBu
 import nodomain.freeyourgadget.gadgetbridge.service.devices.hplus.HPlusSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitband5.AmazfitBand5Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitband7.AmazfitBand7Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipLiteSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbips.AmazfitBipSLiteSupport;
@@ -57,6 +58,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr.Ama
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr2.AmazfitGTR2Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr2.AmazfitGTR2eSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr3.AmazfitGTR3Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr4.AmazfitGTR4Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts.AmazfitGTSSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts2.AmazfitGTS2MiniSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts2.AmazfitGTS2Support;
@@ -189,8 +191,12 @@ public class DeviceSupportFactory {
                 return new ServiceDeviceSupport(new AmazfitGTS3Support());
             case AMAZFITGTR3:
                 return new ServiceDeviceSupport(new AmazfitGTR3Support());
+            case AMAZFITGTR4:
+                return new ServiceDeviceSupport(new AmazfitGTR4Support());
             case MIBAND7:
                 return new ServiceDeviceSupport(new MiBand7Support());
+            case AMAZFITBAND7:
+                return new ServiceDeviceSupport(new AmazfitBand7Support());
             case AMAZFITBIP:
                 return new ServiceDeviceSupport(new AmazfitBipSupport());
             case AMAZFITBIP_LITE:
@@ -317,6 +323,7 @@ public class DeviceSupportFactory {
             case GALAXY_BUDS_LIVE:
                 return new ServiceDeviceSupport(new GalaxyBudsDeviceSupport());
             case GALAXY_BUDS_PRO:
+            case GALAXY_BUDS2:
                 return new ServiceDeviceSupport(new GalaxyBudsDeviceSupport(), ServiceDeviceSupport.Flags.BUSY_CHECKING);
             case SONY_WH_1000XM3:
                 return new ServiceDeviceSupport(new SonyHeadphonesSupport());
@@ -325,6 +332,10 @@ public class DeviceSupportFactory {
             case SONY_WF_SP800N:
                 return new ServiceDeviceSupport(new SonyHeadphonesSupport(), ServiceDeviceSupport.Flags.BUSY_CHECKING);
             case SONY_WF_1000XM3:
+                return new ServiceDeviceSupport(new SonyHeadphonesSupport());
+            case SONY_WH_1000XM2:
+                return new ServiceDeviceSupport(new SonyHeadphonesSupport());
+            case SONY_WF_1000XM4:
                 return new ServiceDeviceSupport(new SonyHeadphonesSupport());
             case VESC_NRF:
             case VESC_HM10:
