@@ -57,6 +57,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsCalibrationActivity;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
@@ -776,6 +777,19 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
                     cannedMessagesSpec.type = CannedMessagesSpec.TYPE_GENERIC;
                     cannedMessagesSpec.cannedMessages = messages.toArray(new String[0]);
                     GBApplication.deviceService().onSetCannedMessages(cannedMessagesSpec);
+                    return true;
+                }
+            });
+        }
+
+        final Preference handsCalibration = findPreference("hands_calibration");
+        if (handsCalibration != null) {
+            handsCalibration.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    final Intent intent = new Intent(getContext(), WithingsCalibrationActivity.class);
+                    intent.putExtra(GBDevice.EXTRA_DEVICE, device);
+                    startActivity(intent);
                     return true;
                 }
             });

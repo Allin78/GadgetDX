@@ -5,6 +5,10 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -12,6 +16,7 @@ import android.os.Build;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +105,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger logger = LoggerFactory.getLogger(WithingsSteelHRDeviceSupport.class);
     public static final String LAST_ACTIVITY_SYNC = "lastActivitySync";
     public static final String HANDS_CALIBRATION_CMD = "withings_hands_calibration";
+    public static final String START_HANDS_CALIBRATION_CMD = "start_withings_hands_calibration";
+    public static final String STOP_HANDS_CALIBRATION_CMD = "stop_withings_hands_calibration";
     private MessageBuilder messageBuilder;
     private LiveWorkoutHandler liveWorkoutHandler;
     private ConversationQueue conversationQueue;
@@ -111,6 +118,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     private ActivityUser activityUser;
     private NotificationProvider notificationProvider;
     private IncomingMessageHandlerFactory incomingMessageHandlerFactory;
+    private final BroadcastReceiver commandReceiver;
     private int mtuSize;
 
     public WithingsSteelHRDeviceSupport() {
@@ -124,6 +132,31 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ATTRIBUTE);
         addANCSService();
         activityUser = new ActivityUser();
+
+        IntentFilter commandFilter = new IntentFilter(HANDS_CALIBRATION_CMD);
+        commandReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction() == null) {
+                    return;
+                }
+
+                switch (intent.getAction()) {
+                    case HANDS_CALIBRATION_CMD:
+                        logger.info("Got hands calibration command");
+                        break;
+                    case START_HANDS_CALIBRATION_CMD:
+                        logger.info("Got start hands calibration command");
+                        break;
+                    case STOP_HANDS_CALIBRATION_CMD:
+                        logger.info("Got stop hands calibration command");
+                        break;
+                }
+            }
+        };
+
+        LocalBroadcastManager.getInstance(GBApplication.getContext()).registerReceiver(commandReceiver, commandFilter);
     }
 
     @Override
@@ -203,17 +236,18 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_WORKOUT_SCREEN_LIST), new WorkoutScreenListHandler(this));
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(getLastSyncTimestamp());
+            ActivitySampleHandler activitySampleHandler = new ActivitySampleHandler(this);
             message = new WithingsMessage(WithingsMessageType.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
-            addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
+            addSimpleConversationToQueue(message, activitySampleHandler);
             message = new WithingsMessage(WithingsMessageType.GET_MOVEMENT_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
-            addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
+            addSimpleConversationToQueue(message, activitySampleHandler);
             message = new WithingsMessage(WithingsMessageType.GET_HEARTRATE_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
-            addSimpleConversationToQueue(message, new ActivitySampleHandler(this));
+            addSimpleConversationToQueue(message, activitySampleHandler);
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SYNC_OK));
         } catch (Exception e) {
             logger.error("Could not synchronize! ", e);
