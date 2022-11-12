@@ -1993,4 +1993,10 @@
     <string name="supercars_turbo_speed_label">Turbo Speed</string>
     <string name="supercars_lights_label">Lights</string>
     <string name="supercars_lights_blinking_label">Blinking</string>
+    <string name="withings_calibration_text_hours">Please use the dial below to align the hour hand to the 12.</string>
+    <string name="withings_calibration_text_minutes">Now use the dial to align the minute hand to the 12.</string>
+    <string name="withings_calibration_text_activity_target">Finally align the activity hand to 100%. Please be aware that this hand only moves clockwise.</string>
+    <string name="withings_bt_calibration_previous">Previous</string>
+    <string name="withings_bt_calibration_next">Next</string>
+    <string name="withings_calibration_ok">OK</string>
 </resources>

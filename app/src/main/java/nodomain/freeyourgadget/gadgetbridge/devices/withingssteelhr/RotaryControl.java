@@ -4,22 +4,22 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 
-/**
- * Lots of this code has been provided by Milos Marinkovic here https://github.com/milosmns/circular-slider-android.
- * I just simplified things a little for the needs in GB.
- */
 public class RotaryControl extends View {
 
     public interface RotationListener {
-        void onRotation(double pos);
+        void onRotation(short movementAmount);
     }
+
+    private Path circlePath;
 
     private int controlPointX;
     private int controlPointY;
@@ -37,6 +37,7 @@ public class RotaryControl extends View {
     private double angle ;
     private boolean isControlPointSelected = false;
     private Paint paint = new Paint();
+    private Paint controlPointPaint = new Paint();
     private RotationListener rotationListener;
 
     public RotaryControl(Context context) {
@@ -56,7 +57,7 @@ public class RotaryControl extends View {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.RotaryControl, defStyleAttr, 0);
 
         startAngle = a.getFloat(R.styleable.RotaryControl_start_angle, (float) Math.PI / 2);
-        angle = a.getFloat(R.styleable.RotaryControl_angle, (float) Math.PI / 2);
+        angle = startAngle;
         controlPointSize = a.getDimensionPixelSize(R.styleable.RotaryControl_controlpoint_size, 50);
         controlPointColor = a.getColor(R.styleable.RotaryControl_controlpoint_color, Color.GRAY);
         lineThickness = a.getDimensionPixelSize(R.styleable.RotaryControl_line_thickness, 20);
@@ -90,49 +91,70 @@ public class RotaryControl extends View {
 
         drawRotationCircle(canvas);
         drawControlPoint(canvas);
+
     }
 
     private void drawControlPoint(Canvas canvas) {
         controlPointX = (int) (controlCenterX + controlRadius * Math.cos(angle));
         controlPointY = (int) (controlCenterY - controlRadius * Math.sin(angle));
-        paint.setColor(controlPointColor);
-        paint.setStyle(Paint.Style.FILL);
-        canvas.drawCircle(controlPointX, controlPointY, controlPointSize, paint);
+        controlPointPaint.setColor(controlPointColor);
+        controlPointPaint.setStyle(Paint.Style.FILL);
+        controlPointPaint.setAlpha(128);
+        Path controlPointPath = new Path();
+        controlPointPath.addCircle(controlPointX, controlPointY, controlPointSize, Path.Direction.CW);
+        canvas.drawPath(controlPointPath, controlPointPaint);
     }
 
     private void drawRotationCircle(Canvas canvas) {
-        paint.setColor(lineColor);
+        DashPathEffect dashPath = new DashPathEffect(new float[]{8,22}, (float)1.0);
+        paint.setPathEffect(dashPath);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(lineThickness);
         paint.setAntiAlias(true);
-        canvas.drawCircle(controlCenterX, controlCenterY, controlRadius, paint);
+        paint.setColor(lineColor);
+        circlePath = new Path();
+        circlePath.addCircle(controlCenterX, controlCenterY, controlRadius, Path.Direction.CW);
+        canvas.drawPath(circlePath, paint);
     }
 
-    private void updateRotationPosition(int touchX, int touchY) {
-        int distanceX = touchX - controlCenterX;
-        int distanceY = controlCenterY - touchY;
+    private void updateRotationPosition(double touchX, double touchY) {
+        double distanceX = touchX - controlCenterX;
+        double distanceY = controlCenterY - touchY;
         double c = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-        angle = Math.acos(distanceX / c);
-
+        double currentAngle = Math.acos(distanceX / c);
         if (distanceY < 0) {
-            angle = -angle;
+            currentAngle = -currentAngle;
         }
 
-        if (rotationListener != null) {
-            rotationListener.onRotation((angle - startAngle) / (2 * Math.PI));
+        int movementAmount = (int) ((currentAngle - angle) * 100);
+
+        int i = (int) movementAmount;
+        if (movementAmount != 0) {
+            if (Math.abs(movementAmount) > 15) {
+                movementAmount /= movementAmount;
+            }
+
+            rotationListener.onRotation((short) -movementAmount);
         }
+
+        angle = currentAngle;
     }
 
     public void setRotationListener(RotationListener listener) {
         rotationListener = listener;
     }
 
+    public void reset() {
+        angle = startAngle;
+        invalidate();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN: {
-                int x = (int) ev.getX();
-                int y = (int) ev.getY();
+                double x = ev.getX();
+                double y = ev.getY();
                 if (x < controlPointX + controlPointSize && x > controlPointX - controlPointSize && y < controlPointY + controlPointSize && y > controlPointY - controlPointSize) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     isControlPointSelected = true;
@@ -143,8 +165,8 @@ public class RotaryControl extends View {
 
             case MotionEvent.ACTION_MOVE: {
                 if (isControlPointSelected) {
-                    int x = (int) ev.getX();
-                    int y = (int) ev.getY();
+                    double x = ev.getX();
+                    double y = ev.getY();
                     updateRotationPosition(x, y);
                 }
                 break;

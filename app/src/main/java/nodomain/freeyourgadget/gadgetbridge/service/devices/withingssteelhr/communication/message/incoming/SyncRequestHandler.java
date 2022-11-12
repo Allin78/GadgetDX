@@ -1,7 +1,10 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.ExpectedResponse;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 
 public class SyncRequestHandler implements IncomingMessageHandler {
 
@@ -13,6 +16,8 @@ public class SyncRequestHandler implements IncomingMessageHandler {
 
     @Override
     public void handleMessage(Message message) {
-        support.doSync();
+        support.sendToDevice(new WithingsMessage(WithingsMessageType.INITIAL_CONNECT));
+        support.sendToDevice(new WithingsMessage(WithingsMessageType.SYNC_RESPONSE));
+        support.sendToDevice(new WithingsMessage(WithingsMessageType.SYNC_OK));
     }
 }

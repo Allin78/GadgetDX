@@ -14,6 +14,7 @@ public final class WithingsMessageType {
     public static final short INITIAL_CONNECT = 273;
     public static final short START_HANDS_CALIBRATION = 286;
     public static final short STOP_HANDS_CALIBRATION = 287;
+    public static final short MOVE_HAND = 284;
     public static final short SET_ACTIVITY_TARGET = 1290;
     public static final short SET_USER = 1282;
     public static final short GET_USER = 1283;

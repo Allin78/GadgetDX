@@ -49,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.MoveHand;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandlerFactory;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.LiveWorkoutHandler;
@@ -134,6 +135,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         activityUser = new ActivityUser();
 
         IntentFilter commandFilter = new IntentFilter(HANDS_CALIBRATION_CMD);
+        commandFilter.addAction(START_HANDS_CALIBRATION_CMD);
+        commandFilter.addAction(STOP_HANDS_CALIBRATION_CMD);
         commandReceiver = new BroadcastReceiver() {
 
             @Override
@@ -144,13 +147,16 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
                 switch (intent.getAction()) {
                     case HANDS_CALIBRATION_CMD:
-                        logger.info("Got hands calibration command");
+                        MoveHand moveHand = new MoveHand();
+                        moveHand.setHand(intent.getShortExtra("hand", (short)1));
+                        moveHand.setMovement(intent.getShortExtra("movementAmount", (short)1));
+                        sendToDevice(new WithingsMessage(WithingsMessageType.MOVE_HAND, moveHand));
                         break;
                     case START_HANDS_CALIBRATION_CMD:
-                        logger.info("Got start hands calibration command");
+                        sendToDevice(new WithingsMessage(WithingsMessageType.START_HANDS_CALIBRATION));
                         break;
                     case STOP_HANDS_CALIBRATION_CMD:
-                        logger.info("Got stop hands calibration command");
+                        sendToDevice(new WithingsMessage(WithingsMessageType.STOP_HANDS_CALIBRATION));
                         break;
                 }
             }
