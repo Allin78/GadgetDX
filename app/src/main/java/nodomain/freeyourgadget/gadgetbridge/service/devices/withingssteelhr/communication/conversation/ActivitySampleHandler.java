@@ -13,6 +13,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySamp
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.ActivityEntry;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.ActivitySampleHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.WithingsActivityType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivitySampleCalories;
@@ -98,7 +99,6 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
 
         activityEntry = new ActivityEntry();
         activityEntry.setTimestamp((int)(((ActivitySampleTime)data).getDate().getTime()/1000));
-        activityEntry.setRawKind(ActivityKind.TYPE_UNKNOWN);
     }
 
     private void handleWorkoutType(WithingsStructure data) {
@@ -181,6 +181,9 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
             WithingsSteelHRSampleProvider provider = new WithingsSteelHRSampleProvider(device, dbHandler.getDaoSession());
             sample.setDeviceId(deviceId);
             sample.setUserId(userId);
+            if (sample.getRawKind() < 1 && sample.getHeartRate() > 0) {
+                sample = ActivitySampleHelper.mergeIfNecessary(provider, sample);
+            }
             provider.addGBActivitySample(sample);
         } catch (Exception ex) {
             logger.warn("Error saving current activity data: " + ex.getLocalizedMessage());

@@ -19,6 +19,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySamp
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.ActivitySampleHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveHeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
@@ -56,14 +57,13 @@ public class LiveHeartrateHandler implements IncomingMessageHandler {
         WithingsSteelHRActivitySample sample = new WithingsSteelHRActivitySample();
         sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
         sample.setHeartRate(heartRate);
-        sample.setRawIntensity(ActivitySample.NOT_MEASURED);
-        sample.setRawKind(MiBandSampleProvider.TYPE_ACTIVITY);
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(support.getDevice(), dbHandler.getDaoSession()).getId();
             WithingsSteelHRSampleProvider provider = new WithingsSteelHRSampleProvider(support.getDevice(), dbHandler.getDaoSession());
             sample.setDeviceId(deviceId);
             sample.setUserId(userId);
+            sample = ActivitySampleHelper.mergeIfNecessary(provider, sample);
             provider.addGBActivitySample(sample);
         } catch (Exception ex) {
             logger.warn("Error saving current heart rate: " + ex.getLocalizedMessage());

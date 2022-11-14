@@ -3,7 +3,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.act
 public class ActivityEntry {
     private int timestamp;
     private int duration;
-    private int rawKind;
+    private int rawKind = -1;
     private int heartrate;
     private int steps;
     private int calories;

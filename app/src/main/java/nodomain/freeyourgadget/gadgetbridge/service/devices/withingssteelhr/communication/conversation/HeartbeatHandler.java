@@ -16,6 +16,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsStee
 import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.ActivitySampleHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.HeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.LiveHeartRate;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
@@ -52,13 +53,13 @@ public class HeartbeatHandler extends AbstractResponseHandler {
         WithingsSteelHRActivitySample sample = new WithingsSteelHRActivitySample();
         sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
         sample.setHeartRate(heartRate);
-        logger.info("Current heart rate is: " + sample.getHeartRate() + " BPM");
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(device, dbHandler.getDaoSession()).getId();
             WithingsSteelHRSampleProvider provider = new WithingsSteelHRSampleProvider(device, dbHandler.getDaoSession());
             sample.setDeviceId(deviceId);
             sample.setUserId(userId);
+            sample = ActivitySampleHelper.mergeIfNecessary(provider, sample);
             provider.addGBActivitySample(sample);
             Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
                     .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
