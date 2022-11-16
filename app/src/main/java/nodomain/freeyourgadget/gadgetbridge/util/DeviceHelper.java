@@ -135,6 +135,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWF1000XM4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xwatch.XWatchCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.zetime.ZeTimeCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.mgcool.MGCoolDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.DeviceAttributes;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -353,6 +354,7 @@ public class DeviceHelper {
         result.add(new BinarySensorCoordinator());
         result.add(new FlipperZeroCoordinator());
         result.add(new SuperCarsCoordinator());
+        result.add(new MGCoolDeviceCoordinator());
 
         return result;
     }

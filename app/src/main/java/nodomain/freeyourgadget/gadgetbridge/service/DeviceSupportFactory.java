@@ -88,6 +88,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.LefunDeviceSup
 import nodomain.freeyourgadget.gadgetbridge.service.devices.lenovo.watchxplus.WatchXPlusDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.liveview.LiveviewSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.makibeshr3.MakibesHR3DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.mgcool.MGCoolDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miband.MiBandSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.mijia_lywsd02.MijiaLywsd02Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.miscale2.MiScale2DeviceSupport;
@@ -349,7 +350,9 @@ public class DeviceSupportFactory {
             case FLIPPER_ZERO:
                 return new ServiceDeviceSupport(new FlipperZeroSupport());
             case SUPER_CARS:
-                    return new ServiceDeviceSupport(new SuperCarsSupport());
+                return new ServiceDeviceSupport(new SuperCarsSupport());
+            case MGCOOL_A4F7:
+                return new ServiceDeviceSupport(new MGCoolDeviceSupport());
         }
         return null;
     }

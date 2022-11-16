@@ -47,7 +47,7 @@
                 android:defaultValue="true"
                 android:icon="@drawable/ic_touch"
                 android:key="pref_galaxy_buds_lock_touch"
-                android:title="@string/prefs_touch_lock_buds2" />
+                android:title="Something here" />
             <ListPreference
                 android:defaultValue="0"
                 android:dependency="pref_galaxy_buds_lock_touch"
