@@ -37,6 +37,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
@@ -216,6 +217,10 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     case GBDevice.ACTION_DEVICE_CHANGED: {
                         LOG.info("ACTION_DEVICE_CHANGED " + (gbDevice!=null ? gbDevice.getStateString():""));
                         addReceiveHistory("\n================================================\nACTION_DEVICE_CHANGED "+gbDevice.getStateString()+" "+(new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.US)).format(Calendar.getInstance().getTime())+"\n================================================\n");
+                        LOG.info("Status change: " + gbDevice.getStateString());
+                        if (gbDevice.getState() == GBDevice.State.NOT_CONNECTED) {
+                            stopLocationUpdate();
+                        }
                     }
                 }
             }
