@@ -187,8 +187,6 @@ public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
         settings.add(R.xml.devicesettings_high_mtu);
         if (BuildConfig.INTERNET_ACCESS)
             settings.add(R.xml.devicesettings_device_internet_access);
-        settings.add(R.xml.devicesettings_device_gps_update);
-        settings.add(R.xml.devicesettings_device_gps_update_interval);
         settings.add(R.xml.devicesettings_device_intents);
         settings.add(R.xml.devicesettings_sync_calendar);
         // must be a better way of doing this?

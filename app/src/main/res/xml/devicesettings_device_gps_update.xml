@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreference
-        android:defaultValue="false"
-        android:icon="@drawable/ic_gps_location"
-        android:key="banglejs_gps_update"
-        android:summary="Use the gps data of the phone to overwrite the gps data of the bangle device"
-        android:title="Use phone gps data" />
-</androidx.preference.PreferenceScreen>
