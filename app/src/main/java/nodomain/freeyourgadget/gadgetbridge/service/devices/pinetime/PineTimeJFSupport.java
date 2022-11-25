@@ -477,6 +477,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         requestDeviceInfo(builder);
+        setLanguage();
         onSetTime();
         builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_EVENT), true);
         BluetoothGattCharacteristic alertNotificationEventCharacteristic = getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
@@ -497,6 +498,15 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             builder.requestMtu(256);
         }
         return builder;
+    }
+
+    private void setLanguage() {
+        TransactionBuilder builder = new TransactionBuilder("set language");
+
+        byte[] language = Locale.getDefault().getLanguage().getBytes();
+
+        builder.write(getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_LANGUAGE), language);
+        builder.queue(getQueue());
     }
 
     @Override

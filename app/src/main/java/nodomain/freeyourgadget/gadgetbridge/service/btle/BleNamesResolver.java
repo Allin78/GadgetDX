@@ -186,6 +186,7 @@ public class BleNamesResolver {
 		mCharacteristics.put("00002a0e-0000-1000-8000-00805f9b34fb", "Time Zone");
 		mCharacteristics.put("00002a07-0000-1000-8000-00805f9b34fb", "Tx Power Level");
 		mCharacteristics.put("00002a45-0000-1000-8000-00805f9b34fb", "Unread Alert Status");
+		mCharacteristics.put("00002aa2-0000-1000-8000-00805f9b34fb", "Language Code");
 		
 		mCharacteristics.put("14702856-620a-3973-7c78-9cfff0876abd", "(Propr: HPLUS Control)");
 		mCharacteristics.put("14702853-620a-3973-7c78-9cfff0876abd", "(Propr: HPLUS Measurements)");
