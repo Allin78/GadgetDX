@@ -120,7 +120,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     private NotificationProvider notificationProvider;
     private IncomingMessageHandlerFactory incomingMessageHandlerFactory;
     private final BroadcastReceiver commandReceiver;
-    private int mtuSize;
+    private int mtuSize = 115;
 
     public WithingsSteelHRDeviceSupport() {
         super(logger);
@@ -621,7 +621,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             Date currentDate = new Date();
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(currentDate.getTime());
-            c.add(Calendar.DAY_OF_MONTH, -1);
+            c.add(Calendar.DAY_OF_MONTH, -2);
             return c.getTimeInMillis();
         }
     }

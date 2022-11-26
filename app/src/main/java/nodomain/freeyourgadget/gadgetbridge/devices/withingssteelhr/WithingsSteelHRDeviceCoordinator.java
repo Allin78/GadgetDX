@@ -69,6 +69,11 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
     }
 
     @Override
+    public boolean supportsRemSleep() {
+        return true;
+    }
+
+    @Override
     public boolean supportsActivityDataFetching() {
         return true;
     }
