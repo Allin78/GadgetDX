@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitband7;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts4;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,22 +24,23 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021FirmwareInfo;
 
-public class AmazfitBand7FirmwareInfo extends Huami2021FirmwareInfo {
+public class AmazfitGTS4FirmwareInfo extends Huami2021FirmwareInfo {
     private static final Map<Integer, String> crcToVersion = new HashMap<Integer, String>() {{
+        // firmware
     }};
 
-    public AmazfitBand7FirmwareInfo(final byte[] bytes) {
+    public AmazfitGTS4FirmwareInfo(final byte[] bytes) {
         super(bytes);
     }
 
     @Override
     public String deviceName() {
-        return HuamiConst.AMAZFIT_BAND7_NAME;
+        return HuamiConst.AMAZFIT_GTS4_NAME;
     }
 
     @Override
     public boolean isGenerallyCompatibleWith(final GBDevice device) {
-        return isHeaderValid() && device.getType() == DeviceType.AMAZFITBAND7;
+        return isHeaderValid() && device.getType() == DeviceType.AMAZFITGTS4;
     }
 
     @Override

@@ -14,20 +14,24 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr4;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.huami;
 
 import android.content.Context;
 import android.net.Uri;
 
-import java.io.IOException;
+import nodomain.freeyourgadget.gadgetbridge.devices.miband.AbstractMiBandFWInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr4.AmazfitGTR4FWHelper;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Support;
+public abstract class AbstractHuami2021FWInstallHandler extends AbstractMiBandFWInstallHandler {
+    public AbstractHuami2021FWInstallHandler(final Uri uri, final Context context) {
+        super(uri, context);
+    }
 
-public class AmazfitGTR4Support extends Huami2021Support {
     @Override
-    public HuamiFWHelper createFWHelper(final Uri uri, final Context context) throws IOException {
-        return new AmazfitGTR4FWHelper(uri, context);
+    public void onStartInstall(GBDevice device) {
+        // Unset the firmware bytes
+        // Huami2021 firmwares are large (> 130MB). With the current architecture, the update operation
+        // will re-read them to memory, and we run out-of-memory.
+        helper.unsetFwBytes();
     }
 }

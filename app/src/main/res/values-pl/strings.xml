@@ -220,7 +220,7 @@
     <string name="weeksteps_today_steps_description">Kroków dziś, cel: %1$s</string>
     <string name="pref_title_dont_ack_transfer">Nie przesyłaj danych aktywności ACK</string>
     <string name="pref_summary_dont_ack_transfers">Jeśli transmisja danych nie zostanie potwierdzona przez opaskę, dane dotyczące aktywności nie zostaną wyczyszczone. Przydatne, jeśli GB jest używany razem z innymi aplikacjami.</string>
-    <string name="pref_summary_keep_data_on_device">Dane aktywności będą zachowane na Mi Band nawet po synchronizacji. Jest to przydatne, gdy Gadgetbridge jest używany razem z innymi aplikacjami.</string>
+    <string name="pref_summary_keep_data_on_device">Dane aktywności będą zachowane na urządzeniu nawet po synchronizacji. Jest to przydatne, gdy Gadgetbridge jest używany razem z innymi aplikacjami.</string>
     <string name="pref_summary_low_latency_fw_update">Może pomóc na urządzeniach gdzie aktualizacja kończy się błędem.</string>
     <string name="live_activity_steps_history">Historia kroków</string>
     <string name="live_activity_current_steps_per_minute">Aktualnie kroków/min</string>
@@ -1696,11 +1696,11 @@
     <string name="prefs_spo2_monitoring_description">Automatyczne monitorowanie poziomu tlenu we krwi przez cały dzień</string>
     <string name="prefs_spo2_alert_threshold">Próg alarmowy SPO2</string>
     <string name="pref_sleep_breathing_quality_monitoring">Monitorowanie jakości oddechu podczas snu</string>
-    <string name="fw_upgrade_notice_miband7">Właśnie zamierzasz zainstalować oprogramowanie układowe %s na swoim Xiaomi Smart Band 7.
+    <string name="fw_upgrade_notice_miband7">Zamierzasz zainstalować oprogramowanie %s na swoim Xiaomi Smart Band 7.
 \n
-\nPo instalacji pliku .zip Twoja opaska zostanie ponownie uruchomiona.
+\nTwoja opaska uruchomi się ponownie po zainstalowaniu pliku .zip.
 \n
-\nKONTYNUUJ NA WŁASNE RYZYKO!</string>
+\nROBISZ TO NA WŁASNĄ ODPOWIEDZIALNOŚĆ!</string>
     <string name="open_fw_installer_connect_maximum_one_device">Proszę podłączyć TYLKO JEDNO urządzenie, do którego chcesz wysłać plik.</string>
     <string name="pref_header_connection">Połączenie</string>
     <string name="pref_header_display">Wyświetlanie</string>
@@ -1945,4 +1945,24 @@
     <string name="devicetype_super_cars">Shell Racing</string>
     <string name="devicetype_amazfit_gtr_lite">Amazfit GTR Lite</string>
     <string name="watchface_setting_button_move_hands">Poruszaj rękoma</string>
+    <string name="hrZoneWarmUp">Rozgrzewka</string>
+    <string name="hrZoneFatBurn">Spalanie tłuszczu</string>
+    <string name="elevationGain">Wzrost wysokości</string>
+    <string name="elevationLoss">Spadek wysokości</string>
+    <string name="HeartRateZones">Strefy tętna</string>
+    <string name="pref_header_authentication">Uwierzytelnianie</string>
+    <string name="abstract_chart_fragment_kind_rem_sleep">Sen w fazie REM</string>
+    <string name="TrainingEffect">Efekt treningu</string>
+    <string name="currentWorkoutLoad">Obciążenie treningu</string>
+    <string name="maximumOxygenUptake">Maksymalny pobór tlenu</string>
+    <string name="devicetype_sony_wh_1000xm2">Sony WH-1000XM2</string>
+    <string name="pref_chart_sleep_lines_limit">Ile wierszy sesji snu pokazać przed ich przewinięciem</string>
+    <string name="supercars_lights_blinking_label">Mruganie</string>
+    <string name="hrZoneAnaerobic">Ćwiczenia beztlenowe</string>
+    <string name="devicetype_sony_wf_1000xm4">Sony WF-1000XM4</string>
+    <string name="hrZoneNa">N/A</string>
+    <string name="hrZoneAerobic">Aerobik</string>
+    <string name="sports_activity_confirm_delete_title">Usuń %d aktywności</string>
+    <string name="sports_activity_confirm_delete_description">Czy na pewno chcesz usunąć %d aktywności\?</string>
+    <string name="accuracy">Dokładność</string>
 </resources>

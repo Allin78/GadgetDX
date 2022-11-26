@@ -16,9 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgtr4;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,10 +25,9 @@ import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021FirmwareInfo;
 
 public class AmazfitGTR4FirmwareInfo extends Huami2021FirmwareInfo {
-    private static final Logger LOG = LoggerFactory.getLogger(AmazfitGTR4FirmwareInfo.class);
-
     private static final Map<Integer, String> crcToVersion = new HashMap<Integer, String>() {{
         // firmware
+        put(1699, "3.17.0.2");
     }};
 
     public AmazfitGTR4FirmwareInfo(final byte[] bytes) {
@@ -41,11 +37,6 @@ public class AmazfitGTR4FirmwareInfo extends Huami2021FirmwareInfo {
     @Override
     public String deviceName() {
         return HuamiConst.AMAZFIT_GTR4_NAME;
-    }
-
-    @Override
-    public byte[] getExpectedFirmwareHeader() {
-        return new byte[]{(byte) 0x51, (byte) 0x71, (byte) 0x9c}; // Probably bogus, only checked against 1 firmware files
     }
 
     @Override

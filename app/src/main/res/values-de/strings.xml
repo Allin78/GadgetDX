@@ -78,7 +78,7 @@
     <string name="pref_title_notification_filter">Bitte nicht stören</string>
     <string name="pref_summary_notification_filter">Alle Benachrichtigungen blockieren, wenn \"Nicht stören\" auf dem Telefon aktiviert ist</string>
     <string name="pref_title_transliteration">Sonderzeichen umschreiben</string>
-    <string name="pref_summary_transliteration">Zum Umschreiben von Sonderzeichen aktivieren, falls dein Gerät keine Unterstützung für bestimmte Zeichen hat (z.B. ü-&gt;ue)</string>
+    <string name="pref_summary_transliteration">Aktiviere diese Option, wenn dein Gerät die Schriftart für deine Sprache nicht unterstützt</string>
     <string name="always">Immer</string>
     <string name="when_screen_off">Wenn der Bildschirm aus ist</string>
     <string name="never">Niemals</string>
@@ -137,7 +137,7 @@
     <string name="pref_summary_pebble_enable_applogs">Schreibt Protokolle von Armbanduhranwendungen in Gadgetbridge-Protokolle (erfordert erneute Verbindung)</string>
     <string name="pref_title_pebble_always_ack_pebblekit">PebbleKit Nachrichten direkt bestätigen</string>
     <string name="pref_summary_pebble_always_ack_pebblekit">Nachrichten, die an externe Drittanbieteranwendungen geschickt werden, immer und sofort bestätigen</string>
-    <string name="pref_title_pebble_reconnect_attempts">Erneute Verbindungsversuche</string>
+    <string name="pref_title_pebble_reconnect_attempts">Wiederholte Verbindungsversuche</string>
     <string name="pref_title_unit_system">Einheiten</string>
     <string name="pref_title_timeformat">Zeitformat</string>
     <string name="pref_title_screentime">Zeit der aktiven Bildschirmanzeige</string>
@@ -620,7 +620,7 @@
     <string name="pref_summary_contextual_arabic">Aktivieren, um kontextabhängiges Arabisch zu unterstützen</string>
     <string name="preferences_rtl_settings">Unterstützung für linksläufigen Text (RTL)</string>
     <string name="share_log">Protokoll teilen</string>
-    <string name="share_log_warning">Bitte beachte, in den Protokoll Dateien von Gadgetbridge können personenbezogene Informationen enthalten sein. Dies können Gesundheitsdaten, eindeutige Identifikatoren (wie die MAC-Adresse eines Geräts), Musikpräferenzen und mehr sein. Erwäge die Datei zu bearbeiten und diese Informationen zu entfernen, bevor du die Datei in einem Fehlerbericht öffentlich zur Verfügung stellst.</string>
+    <string name="share_log_warning">Bitte beachte, in den Protokolldateien von Gadgetbridge können personenbezogene Informationen enthalten sein. Dies können Gesundheitsdaten, eindeutige Identifikatoren (wie die MAC-Adresse eines Geräts), Musikpräferenzen und mehr sein. Erwäge die Datei zu bearbeiten und diese Informationen zu entfernen, bevor du die Datei in einem Fehlerbericht öffentlich zur Verfügung stellst.</string>
     <string name="title_activity_notification_filter">Benachrichtigungsfilter</string>
     <string name="edittext_notification_filter_words_hint">Gewünschte Wörter eingeben, neue Zeile für jedes Wort</string>
     <string name="toast_notification_filter_saved_successfully">Benachrichtigungsfilter gespeichert</string>
@@ -645,7 +645,7 @@
     <string name="activity_prefs_alarm_min_heart_rate">Niedrige Herzfrequenzschwelle</string>
     <string name="zetime_title_heartrate">Herzfrequenz-Menü</string>
     <string name="zetime_title_heart_rate_alarm">Herzfrequenz Alarm</string>
-    <string name="zetime_heart_rate_alarm_enable">Herzfrequenz Alarm aktivieren</string>
+    <string name="zetime_heart_rate_alarm_enable">Herzfrequenzalarm aktivieren</string>
     <string name="zetime_date_format">Datumsformat</string>
     <string name="zetime_date_format_1">JJ/MM/TT</string>
     <string name="zetime_date_format_2">TT/MM/JJ</string>
@@ -851,7 +851,7 @@
     <string name="hr_appname_commute">Pendeln</string>
     <string name="devicetype_amazfit_bips">Amazfit Bip S</string>
     <string name="pref_summary_relax_firmware_checks">Firmwareüberprüfung deaktivieren</string>
-    <string name="pref_title_relax_firmware_checks">Zum flashen von Firmware, die nicht für dieses Gerät bestimmt ist aktivieren (auf eigenes Risiko)</string>
+    <string name="pref_title_relax_firmware_checks">Aktiviere diese Option, wenn du eine Firmware flashen möchten, die nicht für dein Gerät bestimmt ist (auf eigene Gefahr)</string>
     <string name="pref_qhybrid_title_widget_draw_circles">Widget-Kreise zeichnen</string>
     <string name="pref_header_auto_fetch">Automatischer Abruf</string>
     <string name="pref_qhybrid_save_raw_activity_files">Raw Activity Dateien speichern</string>
@@ -933,7 +933,7 @@
 \nHinweis: Die .res Datei muss nicht installiert werden, wenn es die gleiche Datei ist, die schon zuvor installiert wurde.
 \n
 \nINSTALLATION AUF EIGENE GEFAHR!</string>
-    <string name="companiondevice_pairing_details">Aktiviert die CompanionDevice API Unterstützung (funktioniert nur bei Android 8 und neuer). Erhöht die Zuverlässigkeit der Verbindung, wenn der Dienst im Hintergrund neu gestartet werden muss. Benötigt ein neues Paaren der Geräte mit Gadgetbridge um zu funktionieren</string>
+    <string name="companiondevice_pairing_details">Aktiviert die neue CompanionDevice-API-Unterstützung (funktioniert nur bei Android 8 und neuer). Erhöht die Zuverlässigkeit der Verbindung, wenn der Dienst im Hintergrund neu gestartet werden muss. Benötigt eine erneute Kopplung mit Gadgetbridge, um zu funktionieren</string>
     <string name="error_location_enabled_mandatory">Standort muss für den Gerätescan aktiviert sein</string>
     <string name="ignore_bonded_devices_description">Bei aktiver Option werden Geräte ignoriert, die beim Scan schon verbunden/gepaart sind</string>
     <string name="ignore_bonded_devices">Ignoriere verbundene Geräte</string>
@@ -1059,7 +1059,7 @@
     <string name="sonyswr12_settings_low_vibration">Geringe Vibration aktiviert</string>
     <string name="sonyswr12_settings_stamina">Der Energiesparmodus ist aktiviert</string>
     <string name="sonyswr12_settings_alarm_interval">Intelligentes Alarmintervall in Minuten</string>
-    <string name="sonyswr12_settings_low_vibration_summary">Aktivieren Sie eine geringe Vibrationsintensität auf dem Band</string>
+    <string name="sonyswr12_settings_low_vibration_summary">Aktiviere eine geringe Vibrationsintensität auf dem Band</string>
     <string name="sonyswr12_settings_stamina_summary">Der Energiesparmodus schaltet die regelmäßige automatische Messung der Herzfrequenz aus und verlängert so die Arbeitszeit</string>
     <string name="sonyswr12_settings_alarm_interval_summary">Das intelligente Alarmintervall ist das Intervall vor dem installierten Alarm. In diesem Intervall versucht das Gerät, die leichteste Schlafphase zu erkennen, um den Benutzer zu wecken</string>
     <string name="chart_get_active_and_synchronize">Führe einige Aktivitäten durch und synchronisiere das Gerät.</string>
@@ -1311,8 +1311,8 @@
     <string name="watchface_widget_type_2nd_tz">Zweite Zeitzone</string>
     <string name="watchface_widget_type_calories">Kalorien</string>
     <string name="watchface_widget_type_battery">Akku</string>
-    <string name="watchface_setting_power_saving_hands">Bewegungserkennung deaktivieren wenn Uhr nicht getragen</string>
-    <string name="watchface_setting_power_saving_display">Bildschirmaktualisierungen deaktivieren wenn Uhr nicht getragen</string>
+    <string name="watchface_setting_power_saving_hands">Bewegungserkennung deaktivieren, wenn Uhr nicht getragen wird</string>
+    <string name="watchface_setting_power_saving_display">Bildschirmaktualisierungen deaktivieren, wenn Uhr nicht getragen wird</string>
     <string name="pref_summary_huami_force_new_protocol">Aktivieren, wenn das Gerät nach einem Firmware-Upgrade keine Verbindung mehr herstellt</string>
     <string name="pref_title_huami_force_new_protocol">Neues Auth-Protokoll</string>
     <string name="menuitem_flashlight">Taschenlampe</string>
@@ -1468,7 +1468,7 @@
     <string name="toast_app_must_be_selected">App muss zum Konfigurieren ausgewählt sein</string>
     <string name="prefs_pressure_relief">Druckentlastung mit Umgebungsgeräuschen</string>
     <string name="pressure_relief_summary">Verhindert Druckgefühl in den Ohren, wenn Active Noise Cancelling nicht verwendet wird</string>
-    <string name="mi2_prefs_do_not_disturb_lift_wrist">Im Ruhemodes Anzeige beim Anheben aktivieren</string>
+    <string name="mi2_prefs_do_not_disturb_lift_wrist">Anzeige beim Anheben auch während „Bitte nicht stören“ aktivieren</string>
     <string name="watchface_dialog_widget_update_timeout">Aktualisierungszeit in Minuten</string>
     <string name="device_card_activity_card_title">Aktivitätsinfo in der Geräteübersicht</string>
     <string name="device_card_activity_card_title_summary">Auswahl der Aktivitätsinfos in der Geräteübersicht</string>
@@ -1680,7 +1680,7 @@
     <string name="prefs_ambient_volume_left">Umgebungslautstärke links</string>
     <string name="prefs_ambient_volume_right">Umgebungslautstärke rechts</string>
     <string name="prefs_customize_ambient_sound_summary">An Umgebungsgeräusche anpassen</string>
-    <string name="prefs_ambient_sound_during_call_summary">Eigene Stimme während des Anrufs hören</string>
+    <string name="prefs_ambient_sound_during_call_summary">Eigene Stimme bei Anrufen deutlich hören</string>
     <string name="prefs_ambient_settings_title">Optionen Umgebungsgeräusche</string>
     <string name="prefs_active_noise_cancelling_level">Stufe der aktiven Geräuschunterdrückung</string>
     <string name="prefs_active_noise_cancelling_level_high">Hoch</string>
@@ -1960,4 +1960,123 @@
     <string name="anaerobicTrainingEffect">Anaerober Effekt</string>
     <string name="TrainingEffect">Trainingseffekt</string>
     <string name="maximumOxygenUptake">Maximale Sauerstoffaufnahme</string>
+    <string name="pref_chart_sleep_lines_limit">Anzahl der Schlafeinheiten bis geblättert werden muss</string>
+    <string name="elevationLoss">Höhenverlust</string>
+    <string name="elevationGain">Höhengewinn</string>
+    <string name="devicetype_sony_wh_1000xm2">Sony WH-1000XM2</string>
+    <string name="devicetype_sony_wf_1000xm4">Sony WF-1000XM4</string>
+    <string name="balanced">Ausgewogen</string>
+    <string name="dual_band">Dual Band</string>
+    <string name="low_power_gps">Stromsparendes GPS</string>
+    <string name="gps">GPS</string>
+    <string name="gps_bds">GPS + BDS</string>
+    <string name="gps_gnolass">GPS + GLONASS</string>
+    <string name="speed_first">Priorität auf Geschwindigkeit</string>
+    <string name="pref_cover_to_mute">Abdecken zum Stummschalten</string>
+    <string name="pref_workout_detection_title">Trainingserkennung</string>
+    <string name="pref_workout_detection_summary">Training automatisch erkennen</string>
+    <string name="pref_workout_detection_categories_summary">Trainingskategorien, die automatisch erkannt werden sollen</string>
+    <string name="pref_workout_detection_alert_summary">Benachrichtigen, wenn ein Training erkannt wird</string>
+    <string name="pref_workout_detection_alert_title">Hinweis</string>
+    <string name="pref_sleep_mode_smart_enable_summary">Schlafmodus automatisch aktivieren, wenn du das Gerät im Schlaf trägst</string>
+    <string name="prefs_weardirection">Tragerichtung</string>
+    <string name="prefs_always_on_display_follow_watchface">Stil folgt Zifferblatt</string>
+    <string name="prefs_control_center">Kontrollzentrum</string>
+    <string name="prefs_control_center_summary">Wähle die Elemente im Dropdown-Menü des Kontrollzentrums</string>
+    <string name="activity_prefs_goal_fat_burn_time_minutes">Tagesziel: Fettverbrennungszeit in Minuten</string>
+    <string name="activity_type_indoor_walking">Indoor-Gehen</string>
+    <string name="devicetype_amazfit_gtr4">Amazfit GTR 4</string>
+    <string name="menuitem_calendar">Kalender</string>
+    <string name="menuitem_todo">Aufgaben</string>
+    <string name="menuitem_voice_memos">Sprachnotizen</string>
+    <string name="menuitem_sun_moon">Sonne &amp; Mond</string>
+    <string name="menuitem_one_tap_measuring">Messen mit einem Tastendruck</string>
+    <string name="menuitem_phone">Telefon</string>
+    <string name="menuitem_theater_mode">Theatermodus</string>
+    <string name="menuitem_volume">Lautstärke</string>
+    <string name="menuitem_brightness">Helligkeit</string>
+    <string name="pref_screen_auto_brightness_summary">Anpassung der Bildschirmhelligkeit an das Umgebungslicht</string>
+    <string name="pref_gps_band">GPS-Band</string>
+    <string name="power_saving">Energiesparmodus</string>
+    <string name="custom">Benutzerdefiniert</string>
+    <string name="pref_gps_satellite_search">Satellitensuche</string>
+    <string name="pref_vibrate_for_alert">Vibration für Warnung</string>
+    <string name="prefs_always_on_display_style">Stil</string>
+    <string name="pref_gps_header">GPS</string>
+    <string name="pref_crown_vibration">Vibration der Krone</string>
+    <string name="accuracy">Genauigkeit</string>
+    <string name="pref_sleep_mode_sleep_screen_title">Schlafbildschirm</string>
+    <string name="buttons_on_right">Tasten auf der rechten Seite</string>
+    <string name="menuitem_offline_voice">Offline Stimme</string>
+    <string name="menuitem_screen_always_lit">Bildschirm leuchtet immer</string>
+    <string name="pref_header_sound_vibration">Ton &amp; Vibration</string>
+    <string name="single_band">Single Band</string>
+    <string name="gps_galileo">GPS + GALILEO</string>
+    <string name="pref_text_to_speech">Text in Sprache</string>
+    <string name="offline_voice_respond_turn_wrist">Reagiert beim Drehen des Handgelenks</string>
+    <string name="offline_voice_respond_screen_on">Reagieren bei eingeschaltetem Bildschirm</string>
+    <string name="offline_voice_response_during_screen_lighting">Reagieren bei Bildschirmbeleuchtung</string>
+    <string name="pref_agps_expiry_reminder_enabled">AGPS-Ablauferinnerung</string>
+    <string name="pref_agps_expiry_reminder_time">AGPS-Ablauferinnerungszeit</string>
+    <string name="all_satellites">Alle Satelliten</string>
+    <string name="fw_upgrade_notice_amazfit_gtr4">Du bist dabei, die Firmware %s auf deine Amazfit GTR 4 zu installieren.
+\n
+\nDeine Uhr wird nach der Installation der .zip Datei neu starten.
+\n
+\nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="pref_gps_mode_preset">GPS-Modus</string>
+    <string name="pref_workout_detection_sensitivity">Empfindlichkeit</string>
+    <string name="pref_enable_unsupported_settings_title">Nicht unterstützte Einstellungen aktivieren</string>
+    <string name="menuitem_bluetooth">Bluetooth</string>
+    <string name="pref_header_offline_voice">Offline Stimme</string>
+    <string name="pref_agps_header">AGPS</string>
+    <string name="pref_sleep_mode_title">Schlafmodus</string>
+    <string name="vibration_profile_default">Standard</string>
+    <string name="pref_screen_notification_profile_schedule">Zeitplan</string>
+    <string name="seconds_25">25 Sekunden</string>
+    <string name="pref_enable_unsupported_settings_summary">Dadurch wird der Zugriff auf alle verfügbaren Einstellungen ermöglicht, auch wenn diese vom Gerät nicht unterstützt werden. Dies kann zu Instabilität und Abstürzen auf dem Gerät führen.</string>
+    <string name="pref_gps_combination">GPS-Kombination</string>
+    <string name="activity_prefs_goal_standing_time_minutes">Tagesziel: Stehzeit in Minuten</string>
+    <string name="pref_alert_tone">Warnton</string>
+    <string name="pref_workout_detection_categories_title">Trainingskategorien</string>
+    <string name="buttons_on_left">Tasten auf der linken Seite</string>
+    <string name="pref_screen_notification_profile_todo_list">Aufgabenliste</string>
+    <string name="activity_type_pool_swimming">Schwimmen im Pool</string>
+    <string name="menuitem_wifi">WLAN</string>
+    <string name="menuitem_lockscreen">Sperrbildschirm</string>
+    <string name="sony_speak_to_chat_sensitivity_standard">Standard</string>
+    <string name="pref_screen_auto_brightness_title">Automatische Helligkeit</string>
+    <string name="pref_sleep_mode_smart_enable_title">Intelligent aktivieren</string>
+    <string name="pref_sleep_mode_sleep_screen_summary">Schlafbildschirm anzeigen, wenn der Bildschirm während des Ruhezustands aufgeweckt wird, um Ablenkungen zu verringern</string>
+    <string name="activity_prefs_target_weight_kg">Zielgewicht in kg</string>
+    <string name="menuitem_membership_cards">Mitgliedskarten</string>
+    <string name="menuitem_eject_water">Wasser auswerfen</string>
+    <string name="menuitem_unsupported">[NICHT UNTERSTÜTZT] %s</string>
+    <string name="pref_title_lower_button_short_press_action">Untere Taste kurzes Drücken</string>
+    <string name="pref_title_upper_button_long_press_action">Obere Taste langes Drücken</string>
+    <string name="accuracy_first">Priorität auf Genauigkeit</string>
+    <string name="pref_huami_truncate_fetch_operation_timestamps_title">Zeitstempel des Abrufvorgangs kürzen</string>
+    <string name="pref_huami_truncate_fetch_operation_timestamps_summary">Kürze die Zeitstempel der Abrufvorgänge auf Minuten. Deaktiviere diese Einstellung, um die Zeitstempel in Sekunden beizubehalten, wenn du Probleme beim Abrufen sehr kurzer Workouts hast.</string>
+    <string name="debugactivity_confirm_remove_device_preferences_title">Geräteeinstellungen entfernen\?</string>
+    <string name="debugactivity_confirm_remove_device_preferences">Dadurch werden die Geräteeinstellungen für alle angeschlossenen Geräte zurückgesetzt. Bist du sicher\?</string>
+    <string name="pref_summary_notification_media_ignores_application_list">Medienbenachrichtigungen vor der App-Liste verarbeiten. Wenn diese Voreinstellung nicht aktiviert ist, müssen Medien-Apps in der App-Liste zugelassen sein, damit die Mediensteuerung auf dem Gerät funktioniert.</string>
+    <string name="pref_title_notification_media_ignores_application_list">Medienbenachrichtigungen ignorieren die App-Liste</string>
+    <string name="fw_upgrade_notice_amazfit_band7">Du bist dabei, die Firmware %s auf dein Amazfit Band 7 zu installieren.
+\n
+\nDein Band wird nach der Installation der .zip-Datei neu starten.
+\n
+\nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="devicetype_amazfit_band7">Amazfit Band 7</string>
+    <string name="function_enabled">Aktiviert</string>
+    <string name="world_clock_code">Code</string>
+    <string name="devicetype_amazfit_gts4">Amazfit GTS 4</string>
+    <string name="pref_title_touch_spotify_official_app">Spotify (nur offizielle App)</string>
+    <string name="pref_title_touch_spotify_galaxy_app">Spotify (nur Galaxy Wearable App)</string>
+    <string name="fw_upgrade_notice_amazfit_gts4">Du bist dabei, die Firmware %s auf deine Amazfit GTS 4 zu installieren.
+\n
+\nDeine Uhr wird nach der Installation der .zip Datei neu starten.
+\n
+\nINSTALLATION AUF EIGENE GEFAHR!</string>
+    <string name="devicetype_galaxybuds_2">Galaxy Buds2</string>
+    <string name="prefs_touch_lock_buds2">Berührungssteuerung</string>
 </resources>
