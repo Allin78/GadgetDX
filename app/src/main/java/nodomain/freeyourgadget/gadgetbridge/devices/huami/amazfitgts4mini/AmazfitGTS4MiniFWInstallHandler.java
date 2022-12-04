@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr4;
+package nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini;
 
 import android.content.Context;
 import android.net.Uri;
@@ -27,23 +27,23 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuami2021FWInstallHandler;
 
-class AmazfitGTR4FWInstallHandler extends AbstractHuami2021FWInstallHandler {
-    AmazfitGTR4FWInstallHandler(final Uri uri, final Context context) {
+class AmazfitGTS4MiniFWInstallHandler extends AbstractHuami2021FWInstallHandler {
+    AmazfitGTS4MiniFWInstallHandler(final Uri uri, final Context context) {
         super(uri, context);
     }
 
     @Override
     protected String getFwUpgradeNotice() {
-        return mContext.getString(R.string.fw_upgrade_notice_amazfit_gtr4, helper.getHumanFirmwareVersion());
+        return mContext.getString(R.string.fw_upgrade_notice_amazfit_gts4_mini, helper.getHumanFirmwareVersion());
     }
 
     @Override
     protected AbstractMiBandFWHelper createHelper(final Uri uri, final Context context) throws IOException {
-        return new AmazfitGTR4FWHelper(uri, context);
+        return new AmazfitGTS4MiniFWHelper(uri, context);
     }
 
     @Override
     protected boolean isSupportedDeviceType(final GBDevice device) {
-        return device.getType() == DeviceType.AMAZFITGTR4;
+        return device.getType() == DeviceType.AMAZFITGTS4MINI;
     }
 }

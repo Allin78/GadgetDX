@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgtr4;
+package nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
@@ -25,15 +25,14 @@ import androidx.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuami2021FWInstallHandler;
 
-public class AmazfitGTR4Coordinator extends Huami2021Coordinator {
-    private static final Logger LOG = LoggerFactory.getLogger(AmazfitGTR4Coordinator.class);
+public class AmazfitGTS4MiniCoordinator extends Huami2021Coordinator {
+    private static final Logger LOG = LoggerFactory.getLogger(AmazfitGTS4MiniCoordinator.class);
 
     @NonNull
     @Override
@@ -41,8 +40,8 @@ public class AmazfitGTR4Coordinator extends Huami2021Coordinator {
         try {
             final BluetoothDevice device = candidate.getDevice();
             final String name = device.getName();
-            if (name != null && name.startsWith(HuamiConst.AMAZFIT_GTR4_NAME)) {
-                return DeviceType.AMAZFITGTR4;
+            if (name != null && name.startsWith(HuamiConst.AMAZFIT_GTS4_MINI_NAME)) {
+                return DeviceType.AMAZFITGTS4MINI;
             }
         } catch (final Exception e) {
             LOG.error("unable to check device support", e);
@@ -53,27 +52,12 @@ public class AmazfitGTR4Coordinator extends Huami2021Coordinator {
 
     @Override
     public DeviceType getDeviceType() {
-        return DeviceType.AMAZFITGTR4;
+        return DeviceType.AMAZFITGTS4MINI;
     }
 
     @Override
     public AbstractHuami2021FWInstallHandler findInstallHandler(final Uri uri, final Context context) {
-        final AmazfitGTR4FWInstallHandler handler = new AmazfitGTR4FWInstallHandler(uri, context);
+        final AmazfitGTS4MiniFWInstallHandler handler = new AmazfitGTS4MiniFWInstallHandler(uri, context);
         return handler.isValid() ? handler : null;
-    }
-
-    @Override
-    public boolean supportsContinuousFindDevice() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsControlCenter() {
-        return true;
-    }
-
-    @Override
-    public boolean supportsToDoList() {
-        return true;
     }
 }
