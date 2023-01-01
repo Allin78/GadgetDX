@@ -384,7 +384,7 @@ public class DiscoveryActivity extends AbstractGBActivity implements AdapterView
                 deviceCandidates.add(candidate);
             }
             deviceCandidateAdapter.notifyDataSetChanged();
-            return true;
+            return deviceType.isSupported();
         }
         return false;
     }
