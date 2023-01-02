@@ -1,43 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <PreferenceScreen
+    <ListPreference
+        android:defaultValue="0"
+        android:entries="@array/galaxy_pro_noise_controls_options"
+        android:entryValues="@array/galaxy_pro_noise_controls_options_values"
         android:icon="@drawable/ic_surround"
-        android:key="pref_galaxy_buds_pro_noise_control_preference"
-        android:persistent="false"
-        android:title="@string/prefs_noise_control">
-        <PreferenceCategory android:title="@string/prefs_noise_control">
-
-            <ListPreference
-                android:defaultValue="0"
-                android:entries="@array/galaxy_pro_noise_controls_options"
-                android:entryValues="@array/galaxy_pro_noise_controls_options_values"
-                android:icon="@drawable/ic_surround"
-                android:key="pref_galaxy_buds_pro_noise_control"
-                android:summary="%s"
-                android:title="@string/prefs_noise_control" />
-
-            <ListPreference
-                android:defaultValue="0"
-                android:dependency="pref_galaxy_buds_pro_noise_control"
-                android:entries="@array/galaxy_pro_anc_level_options"
-                android:entryValues="@array/galaxy_pro_anc_level_values"
-                android:icon="@drawable/ic_surround"
-                android:key="pref_galaxy_buds_pro_anc_level"
-                android:summary="%s"
-                android:title="@string/prefs_active_noise_cancelling_level" />
-
-
-            <SeekBarPreference
-                android:icon="@drawable/ic_volume_up"
-                android:key="pref_galaxy_buds_ambient_volume"
-                android:max="3"
-                android:min="0"
-                android:title="@string/prefs_ambient_volume"
-                app:showSeekBarValue="false" />
-
-        </PreferenceCategory>
-    </PreferenceScreen>
+        android:key="pref_galaxy_buds_pro_noise_control"
+        android:summary="%s"
+        android:title="@string/prefs_noise_control" />
     <ListPreference
         android:defaultValue="0"
         android:entries="@array/galaxy_buds_live_equalizer_modes"
