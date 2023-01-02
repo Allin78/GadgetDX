@@ -43,6 +43,7 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBuds2ProDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4.AmazfitGTS4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini.AmazfitGTS4MiniCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyLinkBudsSCoordinator;
@@ -345,6 +346,7 @@ public class DeviceHelper {
         result.add(new GalaxyBudsLiveDeviceCoordinator());
         result.add(new GalaxyBudsProDeviceCoordinator());
         result.add(new GalaxyBuds2DeviceCoordinator());
+        result.add(new GalaxyBuds2ProDeviceCoordinator());
         result.add(new VescCoordinator());
         result.add(new SonyLinkBudsSCoordinator());
         result.add(new SonyWH1000XM3Coordinator());
