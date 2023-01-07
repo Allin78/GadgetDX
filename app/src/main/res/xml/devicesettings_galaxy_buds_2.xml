@@ -38,7 +38,7 @@
         <PreferenceCategory android:title="@string/prefs_ambient_sound">
             <SwitchPreference
                 android:defaultValue="false"
-                android:icon="@drawable/ic_hearing"
+                android:icon="@drawable/ic_phone"
                 android:key="pref_galaxy_buds_ambient_mode_during_call"
                 android:summary="@string/prefs_ambient_sound_during_call_summary"
                 android:title="@string/prefs_ambient_sound_during_call_title" />
@@ -47,8 +47,7 @@
                 android:defaultValue="false"
                 android:icon="@drawable/ic_hearing"
                 android:key="pref_galaxy_buds_ambient_sound"
-                android:summary="@string/prefs_customize_ambient_sound_summary"
-                android:title="@string/prefs_ambient_sound" />
+                android:title="@string/prefs_customize_ambient_sound_summary" />
 
             <SeekBarPreference
                 android:defaultValue="1"
