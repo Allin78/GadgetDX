@@ -100,24 +100,31 @@ public class GBLocationManager {
         Map<LocationProviderType, AbstractLocationProvider> providerMap = providers.get(eventHandler);
         if (gpsType == null) {
             for (LocationProviderType providerType: providerMap.keySet()) {
-                if (!providerMap.containsKey(providerType)) return;
                 stopProvider(context, providerMap.get(providerType));
+                providerMap.remove(providerType);
             }
+        } else {
+            stopProvider(context, providerMap.get(gpsType));
+            providerMap.remove(gpsType);
         }
+        if (providers.get(eventHandler).size() == 0)
+            providers.remove(eventHandler);
+        updateNotification(context);
     }
 
-    private static void stopProvider(final Context context, AbstractLocationProvider locationProvider) {
-        if (locationProvider != null) {
-            LOG.warn("EventHandler not registered");
-
-            locationProvider.stop(context);
-        }
-
+    private static void updateNotification(final Context context){
         if (!providers.isEmpty()) {
             GB.createGpsNotification(context, providers.size());
         } else {
             GB.removeGpsNotification(context);
         }
+    }
+
+    private static void stopProvider(final Context context, AbstractLocationProvider locationProvider) {
+        if (locationProvider != null) {
+            locationProvider.stop(context);
+        }
+        LOG.debug("Remaining providers: " + providers.size());
     }
 
     public static void stopAll(final Context context) {
