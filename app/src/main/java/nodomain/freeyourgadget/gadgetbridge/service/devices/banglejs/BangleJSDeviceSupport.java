@@ -916,8 +916,17 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             int intervalLength = devicePrefs.getInt(PREF_DEVICE_GPS_UPDATE_INTERVAL, 10000);
             LOG.info("Setup location listener with an update interval of " + intervalLength + " ms");
 
-            GBLocationManager.start(getContext(), this, LocationProviderType.GPS, intervalLength);
-            GBLocationManager.start(getContext(), this, LocationProviderType.NETWORK, intervalLength);
+            try {
+                GBLocationManager.start(getContext(), this, LocationProviderType.GPS, intervalLength);
+            } catch (IllegalArgumentException e) {
+                LOG.warn("GPS provider could not be started", e);
+            }
+
+            try {
+                GBLocationManager.start(getContext(), this, LocationProviderType.NETWORK, intervalLength);
+            } catch (IllegalArgumentException e) {
+                LOG.warn("NETWORK provider could not be started", e);
+            }
         } else {
             LOG.debug("Phone gps data update is deactivated in the settings");
         }
