@@ -182,7 +182,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void stopLocationUpdate() {
-        GBLocationManager.stop(getContext(), this, null);
+        LOG.info("Stop location updates");
+        GBLocationManager.stop(getContext(), this);
         gpsUpdateSetup = false;
     }
 
