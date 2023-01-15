@@ -58,7 +58,7 @@ public class GBLocationManager {
             return;
         }
 
-        GB.createGpsNotification(context, providers.size() + 1);
+        GB.createGpsNotification(context, providers.size());
 
         final GBLocationListener locationListener = new GBLocationListener(eventHandler);
         final AbstractLocationProvider locationProvider;
