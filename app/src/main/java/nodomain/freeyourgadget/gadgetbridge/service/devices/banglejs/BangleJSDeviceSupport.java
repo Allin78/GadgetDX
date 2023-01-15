@@ -936,7 +936,12 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("speed", location.getSpeed());
             if (location.hasBearing()) o.put("course", location.getBearing());
             o.put("time", new Date().getTime());
-            o.put("satellites", 0);
+            if (location.getExtras() != null) {
+                LOG.debug("Found number of satellites: " + location.getExtras().getInt("satellites", -1));
+                o.put("satellites",location.getExtras().getInt("satellites"));
+            } else {
+                o.put("satellites", 0);
+            }
             o.put("hdop", location.getAccuracy());
             o.put("externalSource", true);
             LOG.debug("Sending gps valu: " + o.toString());
