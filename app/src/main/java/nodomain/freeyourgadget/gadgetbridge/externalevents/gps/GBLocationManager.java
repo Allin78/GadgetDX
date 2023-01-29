@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,14 +100,17 @@ public class GBLocationManager {
         if (!providers.containsKey(eventHandler)) return;
         Map<LocationProviderType, AbstractLocationProvider> providerMap = providers.get(eventHandler);
         if (gpsType == null) {
+            Set<LocationProviderType> toBeRemoved = new HashSet<>();
             for (LocationProviderType providerType: providerMap.keySet()) {
                 stopProvider(context, providerMap.get(providerType));
-                providerMap.remove(providerType);
+                toBeRemoved.add(providerType);
             }
+            toBeRemoved.forEach(c->{providerMap.remove(c);});
         } else {
             stopProvider(context, providerMap.get(gpsType));
             providerMap.remove(gpsType);
         }
+        LOG.debug("Remaining providers: " + providers.size());
         if (providers.get(eventHandler).size() == 0)
             providers.remove(eventHandler);
         updateNotification(context);
@@ -124,7 +128,6 @@ public class GBLocationManager {
         if (locationProvider != null) {
             locationProvider.stop(context);
         }
-        LOG.debug("Remaining providers: " + providers.size());
     }
 
     public static void stopAll(final Context context) {
