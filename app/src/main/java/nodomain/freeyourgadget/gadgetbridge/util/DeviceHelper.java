@@ -47,6 +47,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.asteroidos.AsteroidOSDeviceC
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4.AmazfitGTS4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini.AmazfitGTS4MiniCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfittrex2.AmazfitTRex2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.pinecil.PinecilCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyLinkBudsSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.supercars.SuperCarsCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.FitProDeviceCoordinator;
@@ -191,9 +192,10 @@ public class DeviceHelper {
      * Returns the list of all available devices that are supported by Gadgetbridge.
      * Note that no state is known about the returned devices. Even if one of those
      * devices is connected, it will report the default not-connected state.
-     *
+     * <p>
      * Clients interested in the "live" devices being managed should use the class
      * DeviceManager.
+     *
      * @param context
      * @return
      */
@@ -336,6 +338,7 @@ public class DeviceHelper {
         result.add(new MakibesHR3Coordinator());
         result.add(new BangleJSCoordinator());
         result.add(new TLW64Coordinator());
+        result.add(new PinecilCoordinator());
         result.add(new PineTimeJFCoordinator());
         result.add(new SG2Coordinator());
         result.add(new LefunDeviceCoordinator());
@@ -388,6 +391,7 @@ public class DeviceHelper {
     /**
      * Converts a known device from the database to a GBDevice.
      * Note: The device might not be supported anymore, so callers should verify that.
+     *
      * @param dbDevice
      * @return
      */
@@ -415,6 +419,7 @@ public class DeviceHelper {
     /**
      * Attempts to removing the bonding with the given device. Returns true
      * if bonding was supposedly successful and false if anything went wrong
+     *
      * @param device
      * @return
      */

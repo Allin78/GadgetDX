@@ -27,23 +27,21 @@ import android.content.Context;
 import android.widget.Toast;
 
 import java.lang.reflect.Constructor;
-import java.util.EnumSet;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.asteroidos.AsteroidOSDeviceSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.binary_sensor.BinarySensorSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.fitpro.FitProDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.binary_sensor.BinarySensorSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGB6900DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.CasioGBX100DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.domyos.DomyosT540Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.fitpro.FitProDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.flipper.zero.support.FlipperZeroSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.galaxy_buds.GalaxyBudsDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.hplus.HPlusSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitband5.AmazfitBand5Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitband7.AmazfitBand7Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitbip.AmazfitBipLiteSupport;
@@ -98,6 +96,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.no1f1.No1F1Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.nothing.Ear1Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.nut.NutSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.pinecil.PinecilDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pinetime.PineTimeJFSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qc35.QC35BaseSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
@@ -174,7 +173,7 @@ public class DeviceSupportFactory {
         }
     }
 
-    private ServiceDeviceSupport createServiceDeviceSupport(GBDevice device){
+    private ServiceDeviceSupport createServiceDeviceSupport(GBDevice device) {
         switch (device.getType()) {
             case PEBBLE:
                 return new ServiceDeviceSupport(new PebbleSupport());
@@ -358,9 +357,11 @@ public class DeviceSupportFactory {
             case FLIPPER_ZERO:
                 return new ServiceDeviceSupport(new FlipperZeroSupport());
             case SUPER_CARS:
-                    return new ServiceDeviceSupport(new SuperCarsSupport());
+                return new ServiceDeviceSupport(new SuperCarsSupport());
             case ASTEROIDOS:
                 return new ServiceDeviceSupport(new AsteroidOSDeviceSupport());
+            case PINECIL:
+                return new ServiceDeviceSupport(new PinecilDeviceSupport());
         }
         return null;
     }
