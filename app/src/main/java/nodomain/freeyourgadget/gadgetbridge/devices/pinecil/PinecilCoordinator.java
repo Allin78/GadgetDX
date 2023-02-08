@@ -48,7 +48,7 @@ public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public String getManufacturer() {
-        return "PINE64";
+        return "Pine64";
     }
 
     @NonNull
@@ -68,9 +68,15 @@ public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
 
-        // TODO: Is there a better way to identify the device?
-        String name = candidate.getName();
-        return name != null && name.startsWith("Pinecil") ? DeviceType.PINECIL : DeviceType.UNKNOWN;
+        /* The latest versions of the IronOS firmware should advertise the bulk data service.
+         * Checking the device name as a fallback. This may also become unreliable in the future
+         * in case the device name is made configurable. */
+        if (candidate.supportsService(PinecilConstants.UUID_SERVICE_BULK_DATA)
+                || (candidate.getName() != null && candidate.getName().startsWith("Pinecil"))) {
+            return DeviceType.PINECIL;
+        }
+
+        return DeviceType.UNKNOWN;
     }
 
     @Override
