@@ -22,7 +22,6 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.location.Location;
 
 import org.slf4j.Logger;
 
@@ -37,8 +36,6 @@ import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.Logging;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
-import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
 import nodomain.freeyourgadget.gadgetbridge.service.AbstractDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.CheckInitializedAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBleProfile;
@@ -56,10 +53,11 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBlePro
  */
 public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport implements GattCallback, GattServerCallback {
     private BtLEQueue mQueue;
-    private Map<UUID, BluetoothGattCharacteristic> mAvailableCharacteristics;
+    // First UUID is service UUID, second UUID is UUID of characteristic.
+    private final Map<UUID, Map<UUID, BluetoothGattCharacteristic>> mAvailableCharacteristics = new HashMap<>();
     private final Set<UUID> mSupportedServices = new HashSet<>(4);
     private final Set<BluetoothGattService> mSupportedServerServices = new HashSet<>(4);
-    private Logger logger;
+    private final Logger logger;
 
     private final List<AbstractBleProfile<?>> mSupportedProfiles = new ArrayList<>();
     public static final String BASE_UUID = "0000%s-0000-1000-8000-00805f9b34fb"; //this is common for all BTLE devices. see http://stackoverflow.com/questions/18699251/finding-out-android-bluetooth-le-gatt-profiles
@@ -148,7 +146,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
 
     public ServerTransactionBuilder performServer(String taskName) throws IOException {
         if (!isConnected()) {
-            if(!connect()) {
+            if (!connect()) {
                 throw new IOException("1: Unable to connect to device: " + getDevice());
             }
         }
@@ -158,9 +156,10 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
     /**
      * Ensures that the device is connected and (only then) performs the actions of the given
      * transaction builder.
-     *
+     * <p>
      * In contrast to {@link #performInitialized(String)}, no initialization sequence is performed
      * with the device, only the actions of the given builder are executed.
+     *
      * @param transaction
      * @throws IOException
      * @see {@link #performInitialized(String)}
@@ -178,6 +177,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
      * Performs the actions of the given transaction as soon as possible,
      * that is, before any other queued transactions, but after the actions
      * of the currently executing transaction.
+     *
      * @param builder
      */
     public void performImmediately(TransactionBuilder builder) throws IOException {
@@ -208,6 +208,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
 
     /**
      * Subclasses should call this method to add server services they support.
+     *
      * @param service
      */
     protected void addSupportedServerService(BluetoothGattService service) {
@@ -218,16 +219,43 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
      * Returns the characteristic matching the given UUID. Only characteristics
      * are returned whose service is marked as supported.
      *
-     * @param uuid
+     * @param uuid UUID of the characteristic
      * @return the characteristic for the given UUID or <code>null</code>
      * @see #addSupportedService(UUID)
+     * @see #getCharacteristic(UUID, UUID)
      */
     public BluetoothGattCharacteristic getCharacteristic(UUID uuid) {
         synchronized (characteristicsMonitor) {
-            if (mAvailableCharacteristics == null) {
-                return null;
+
+            for (Map<UUID, BluetoothGattCharacteristic> characteristics : mAvailableCharacteristics.values()) {
+                BluetoothGattCharacteristic characteristic = characteristics.get(uuid);
+                if (characteristic != null) {
+                    return characteristic;
+                }
             }
-            return mAvailableCharacteristics.get(uuid);
+            return null;
+        }
+    }
+
+    /**
+     * Returns the characteristic matching the given UUID in a given service. Only characteristics
+     * are returned whose service is marked as supported.
+     * <p>
+     * Usually it should not be necessary to provide service UUID in addition to the characteristic
+     * UUID, since the characteristic UUID should be unique, but for some devices the characteristic
+     * UUIDs are only unique in the scope of their service. (Looking at you, Pinecil!)
+     *
+     * @param serviceUUID UUID of the service
+     * @param uuid        UUID of the characteristic
+     * @return the characteristic for the given UUID or <code>null</code>
+     * @see #addSupportedService(UUID)
+     * @see #getCharacteristic(UUID)
+     */
+    public BluetoothGattCharacteristic getCharacteristic(UUID serviceUUID, UUID uuid) {
+        synchronized (characteristicsMonitor) {
+
+            Map<UUID, BluetoothGattCharacteristic> characteristics = mAvailableCharacteristics.get(serviceUUID);
+            return characteristics == null ? null : characteristics.get(uuid);
         }
     }
 
@@ -237,7 +265,6 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             return;
         }
         Set<UUID> supportedServices = getSupportedServices();
-        Map<UUID, BluetoothGattCharacteristic> newCharacteristics = new HashMap<>();
         for (BluetoothGattService service : discoveredGattServices) {
             if (supportedServices.contains(service.getUuid())) {
                 logger.debug("discovered supported service: " + BleNamesResolver.resolveServiceName(service.getUuid().toString()) + ": " + service.getUuid());
@@ -251,10 +278,9 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
                     intmAvailableCharacteristics.put(characteristic.getUuid(), characteristic);
                     logger.info("    characteristic: " + BleNamesResolver.resolveCharacteristicName(characteristic.getUuid().toString()) + ": " + characteristic.getUuid());
                 }
-                newCharacteristics.putAll(intmAvailableCharacteristics);
 
                 synchronized (characteristicsMonitor) {
-                    mAvailableCharacteristics = newCharacteristics;
+                    mAvailableCharacteristics.put(service.getUuid(), intmAvailableCharacteristics);
                 }
             } else {
                 logger.debug("discovered unsupported service: " + BleNamesResolver.resolveServiceName(service.getUuid().toString()) + ": " + service.getUuid());
