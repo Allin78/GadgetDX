@@ -23,12 +23,14 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,8 +55,11 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBlePro
  */
 public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport implements GattCallback, GattServerCallback {
     private BtLEQueue mQueue;
-    // First UUID is service UUID, second UUID is UUID of characteristic.
-    private final Map<UUID, Map<UUID, BluetoothGattCharacteristic>> mAvailableCharacteristics = new HashMap<>();
+    /* First UUID is service UUID, second UUID is UUID of characteristic. LinkedHashMap is explicitly
+     * used here to preserve insertion order.
+     * See https://codeberg.org/Freeyourgadget/Gadgetbridge/pulls/3045 for the reason for this.
+     */
+    private final LinkedHashMap<UUID, Map<UUID, BluetoothGattCharacteristic>> mAvailableCharacteristics = new LinkedHashMap<>();
     private final Set<UUID> mSupportedServices = new HashSet<>(4);
     private final Set<BluetoothGattService> mSupportedServerServices = new HashSet<>(4);
     private final Logger logger;
@@ -227,7 +232,13 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
     public BluetoothGattCharacteristic getCharacteristic(UUID uuid) {
         synchronized (characteristicsMonitor) {
 
-            for (Map<UUID, BluetoothGattCharacteristic> characteristics : mAvailableCharacteristics.values()) {
+            /* We need to iterate in reverse order.
+             * See https://codeberg.org/Freeyourgadget/Gadgetbridge/pulls/3045 for the reason for this.
+             */
+            UUID[] services = mAvailableCharacteristics.keySet().toArray(new UUID[0]);
+            ArrayUtils.reverse(services);
+            for (UUID service : services) {
+                Map<UUID, BluetoothGattCharacteristic> characteristics = mAvailableCharacteristics.get(service);
                 BluetoothGattCharacteristic characteristic = characteristics.get(uuid);
                 if (characteristic != null) {
                     return characteristic;
