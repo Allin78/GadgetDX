@@ -197,7 +197,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_auto_awesome"
-            android:key="prefs_galaxy_buds_seamless_connection"
+            android:key="pref_galaxy_buds_pro_seamless_connection"
             android:summary="@string/prefs_seamless_connection_switch_summary"
             android:title="@string/prefs_seamless_connection_switch_title" />
 
