@@ -2003,4 +2003,5 @@
     <string name="supercars_lights_label">Lights</string>
     <string name="supercars_lights_blinking_label">Blinking</string>
     <string name="devicetype_asteroidos">AsteroidOS</string>
+    <string name="devicetype_card10">card10</string>
 </resources>

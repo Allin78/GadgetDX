@@ -129,6 +129,7 @@ public enum DeviceType {
     FLIPPER_ZERO(520, R.drawable.ic_device_flipper, R.drawable.ic_device_flipper_disabled, R.string.devicetype_flipper_zero),
     SUPER_CARS(530, R.drawable.ic_device_supercars, R.drawable.ic_device_supercars_disabled, R.string.devicetype_super_cars),
     ASTEROIDOS(540, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_asteroidos),
+    CARD10(560, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_card10),
     TEST(1000, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_test);
 
     private final int key;
