@@ -19,6 +19,9 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.card10;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.card10.Card10Constants;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -97,6 +101,10 @@ public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
         // mark the device as initialized
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
 
+        if (GBApplication.getPrefs().getBoolean("datetime_synconconnect", true)) {
+            writeTime(builder);
+        }
+
         return builder;
     }
 
@@ -118,21 +126,18 @@ public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onSetTime() {
+        writeTime(null);
+    }
 
-        // Why is this method never called?
-
-        LOG.info("onSetTime");
-        try {
-            TransactionBuilder builder = performInitialized("onSetTime");
-            ByteBuffer buffer = ByteBuffer.allocate(8);
-            buffer.putLong(System.currentTimeMillis());
-            byte[] time = buffer.array();
-            builder.write(getCharacteristic(Card10Constants.UUID_CHARACTERISTIC_TIME_UPDATE), time);
-            builder.queue(getQueue());
-        } catch (IOException e) {
-            LOG.error("Can't set time", e);
+    private void writeTime(@Nullable TransactionBuilder builder) {
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.putLong(System.currentTimeMillis());
+        byte[] time = buffer.array();
+        if (builder == null) {
+            write("onSetTime", new CDPair(Card10Constants.UUID_CHARACTERISTIC_TIME_UPDATE, time));
+        } else {
+            write(builder, new CDPair(Card10Constants.UUID_CHARACTERISTIC_TIME_UPDATE, time));
         }
-
     }
 
     @Override
@@ -152,34 +157,46 @@ public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
 
                 @Override
                 public void run() {
-                    try {
-                        TransactionBuilder builder = performInitialized("onFindDevice");
-                        // see https://firmware.card10.badge.events.ccc.de/bluetooth/card10.html#vibra-characteristic
-                        // byte[] vibraData = {(byte) 250, (byte) 0}; // LSB first
-                        byte[] vibraData = BLETypeConversions.fromUint16(250);
+                    // see https://firmware.card10.badge.events.ccc.de/bluetooth/card10.html#vibra-characteristic
+                    // byte[] vibraData = {(byte) 250, (byte) 0}; // LSB first
+                    byte[] vibraData = BLETypeConversions.fromUint16(250);
 
-                        builder.write(getCharacteristic(Card10Constants.UUID_CHARACTERISTIC_VIBRA), vibraData);
-                        byte[] flashData = flash ? rocketsOn : flashOff;
-                        builder.write(getCharacteristic(Card10Constants.UUID_CHARACTERISTIC_ROCKETS), flashData);
-                        flash = !flash;
-                        builder.queue(getQueue());
-                    } catch (IOException e) {
-                        LOG.error("Can't vibrate", e);
-                        onFindDevice(false);
-                    }
+                    byte[] flashData = flash ? rocketsOn : flashOff;
+                    flash = !flash;
+
+                    write("onFindDevice",
+                            new CDPair(Card10Constants.UUID_CHARACTERISTIC_VIBRA, vibraData),
+                            new CDPair(Card10Constants.UUID_CHARACTERISTIC_ROCKETS, flashData)
+                    );
+
                 }
             }, 0, 1000);
         } else {
             vibraTimer.cancel();
+            write("turnOffRockets",
+                    new CDPair(Card10Constants.UUID_CHARACTERISTIC_ROCKETS, flashOff));
+        }
+    }
 
-            try {
-                TransactionBuilder builder = performInitialized("onFindDevice");
-                builder.write(getCharacteristic(Card10Constants.UUID_CHARACTERISTIC_ROCKETS), flashOff);
-                builder.queue(getQueue());
-            } catch (IOException e) {
-                LOG.error("Can't turn off flashlight", e);
-            }
+    private void setPersonalState(@NonNull PersonalState personalState) {
+        LOG.debug("Setting personal state to " + personalState);
+        write("setPersonalState",
+                new CDPair(Card10Constants.UUID_CHARACTERISTIC_PERSONAL_STATE, personalState.getCommand()));
+    }
 
+    private void write(@NonNull String taskName, @NonNull CDPair... pairs) {
+        try {
+            TransactionBuilder builder = performInitialized(taskName);
+            write(builder, pairs);
+            builder.queue(getQueue());
+        } catch (IOException e) {
+            LOG.error("Unable to execute task " + taskName, e);
+        }
+    }
+
+    private void write(@NonNull TransactionBuilder builder, @NonNull CDPair... pairs) {
+        for (CDPair pair : pairs) {
+            builder.write(getCharacteristic(pair.getCharacteristic()), pair.getData());
         }
     }
 }
