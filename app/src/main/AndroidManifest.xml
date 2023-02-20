@@ -702,6 +702,10 @@
             android:exported="true" />
 
         <activity
+            android:name=".devices.card10.ControlActivity"
+            android:exported="true" />
+
+        <activity
             android:name=".devices.binary_sensor.activity.DataActivity"
             android:exported="true" />
 

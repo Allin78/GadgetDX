@@ -123,12 +123,12 @@ public class Card10Coordinator extends AbstractDeviceCoordinator {
 
     @Override
     public boolean supportsAppsManagement() {
-        return false;
+        return true;
     }
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {
-        return null;
+        return ControlActivity.class;
     }
 
     @Override
@@ -151,6 +151,5 @@ public class Card10Coordinator extends AbstractDeviceCoordinator {
         // The card10 has a battery, but it is not possible to get the charge level.
         return 0;
     }
-
 
 }

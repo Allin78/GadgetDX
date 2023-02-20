@@ -1,6 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.card10;
 
-enum PersonalState {
+public enum Card10PersonalState {
 
     NONE(new byte[]{(byte) 0, (byte) 0}),
     NO_CONTACT(new byte[]{(byte) 1, (byte) 0}),
@@ -10,7 +10,7 @@ enum PersonalState {
 
     private final byte[] command;
 
-    PersonalState(byte[] command) {
+    Card10PersonalState(byte[] command) {
         this.command = command;
     }
 

@@ -18,9 +18,14 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.card10;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +52,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.Dev
 public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(Card10DeviceSupport.class);
+
+    public static final String COMMAND_CONFIGURE = "nodomain.freeyourgadget.gadgetbridge.card10.command.CONFIGURE";
+    public static final String PERSONAL_STATE = "PERSONAL_STATE";
 
     private final DeviceInfoProfile<Card10DeviceSupport> deviceInfoProfile;
     private final GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
@@ -97,6 +105,11 @@ public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
         // Error executing 'the bind value at index 2 is null'java.lang.IllegalArgumentException: the bind value at index 2 is null
         getDevice().setFirmwareVersion("N/A");
         getDevice().setFirmwareVersion2("N/A");
+
+        LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(getContext());
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(COMMAND_CONFIGURE);
+        broadcastManager.registerReceiver(commandReceiver, filter);
 
         // mark the device as initialized
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
@@ -178,10 +191,22 @@ public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private void setPersonalState(@NonNull PersonalState personalState) {
-        LOG.debug("Setting personal state to " + personalState);
+    BroadcastReceiver commandReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(COMMAND_CONFIGURE)) {
+                int personalState = intent.getIntExtra(PERSONAL_STATE, -1);
+                if (personalState >= 0) {
+                    setPersonalState(Card10PersonalState.values()[personalState]);
+                }
+            }
+        }
+    };
+
+    private void setPersonalState(@NonNull Card10PersonalState card10PersonalState) {
+        LOG.debug("Setting personal state to " + card10PersonalState);
         write("setPersonalState",
-                new CDPair(Card10Constants.UUID_CHARACTERISTIC_PERSONAL_STATE, personalState.getCommand()));
+                new CDPair(Card10Constants.UUID_CHARACTERISTIC_PERSONAL_STATE, card10PersonalState.getCommand()));
     }
 
     private void write(@NonNull String taskName, @NonNull CDPair... pairs) {
@@ -199,4 +224,11 @@ public class Card10DeviceSupport extends AbstractBTLEDeviceSupport {
             builder.write(getCharacteristic(pair.getCharacteristic()), pair.getData());
         }
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(commandReceiver);
+    }
+
 }
