@@ -26,8 +26,6 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
@@ -52,8 +50,6 @@ public class Card10Coordinator extends AbstractDeviceCoordinator {
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        LOG.info(candidate.getName());
-        LOG.info(Arrays.toString(candidate.getServiceUuids()));
         try {
             if (candidate.getName() != null && candidate.getName().startsWith("card10-")) {
                 return DeviceType.CARD10;
