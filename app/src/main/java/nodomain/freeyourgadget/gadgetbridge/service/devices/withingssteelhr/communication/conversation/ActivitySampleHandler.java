@@ -103,7 +103,6 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
 
     private void handleWorkoutType(WithingsStructure data) {
         WithingsActivityType activityType = WithingsActivityType.fromCode(((WorkoutType)data).getActivityType());
-        logger.info("Got activity category " + activityType);
         activityEntry.setRawKind(activityType.toActivityKind());
     }
 
@@ -137,7 +136,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
         switch (((ActivitySampleSleep)data).getSleepType()) {
             case 0:
                 sleepType = ActivityKind.TYPE_LIGHT_SLEEP;
-                activityEntry.setRawIntensity(25);
+                activityEntry.setRawIntensity(0);
                 break;
             case 2:
                 sleepType = ActivityKind.TYPE_DEEP_SLEEP;
@@ -152,7 +151,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
                 activityEntry.setRawIntensity(50);
         }
 
-        activityEntry.setRawKind(sleepType);
+            activityEntry.setRawKind(sleepType);
     }
 
     private void handleCalories1(WithingsStructure data) {

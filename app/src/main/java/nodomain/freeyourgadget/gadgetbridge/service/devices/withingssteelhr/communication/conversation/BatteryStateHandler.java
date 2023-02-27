@@ -19,6 +19,10 @@ public class BatteryStateHandler extends AbstractResponseHandler {
     }
 
     private void handleBatteryState(BatteryValues batteryValues) {
+        if (batteryValues == null) {
+            return;
+        }
+
         GBDeviceEventBatteryInfo batteryInfo = new GBDeviceEventBatteryInfo();
         batteryInfo.level = batteryValues.getPercent();
         switch (batteryValues.getStatus()) {

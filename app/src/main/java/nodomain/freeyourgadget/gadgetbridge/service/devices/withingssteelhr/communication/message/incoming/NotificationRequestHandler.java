@@ -3,6 +3,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationProvider;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class NotificationRequestHandler implements IncomingMessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(NotificationRequestHandler.class);
@@ -33,15 +35,21 @@ public class NotificationRequestHandler implements IncomingMessageHandler {
 
     @Override
     public void handleMessage(Message message) {
-        SourceAppId appId = message.getStructureByType(SourceAppId.class);
-        ImageMetaData imageMetaData = message.getStructureByType(ImageMetaData.class);
-        Message reply = new WithingsMessage(WithingsMessageType.GET_NOTIFICATION);
-        reply.addDataStructure(appId);
-        reply.addDataStructure(imageMetaData);
-        ImageData imageData = new ImageData();
-        imageData.setImageData(getImageData(appId.getAppId()));
-        reply.addDataStructure(imageData);
-        support.sendToDevice(reply);
+        try {
+            SourceAppId appId = message.getStructureByType(SourceAppId.class);
+            ImageMetaData imageMetaData = message.getStructureByType(ImageMetaData.class);
+            Message reply = new WithingsMessage(WithingsMessageType.GET_NOTIFICATION);
+            reply.addDataStructure(appId);
+            reply.addDataStructure(imageMetaData);
+            ImageData imageData = new ImageData();
+            imageData.setImageData(getImageData(appId.getAppId()));
+            reply.addDataStructure(imageData);
+            logger.info("Sending reply to notification request: " + reply);
+            support.sendToDevice(reply);
+        } catch (Exception e) {
+            logger.error("Failed to respond to notification request.", e);
+            GB.toast("Failed to respond to notification request:" + e.getMessage(), Toast.LENGTH_LONG, GB.WARN);
+        }
     }
 
     private byte[] getImageData(String sourceAppId) {
@@ -65,6 +73,7 @@ public class NotificationRequestHandler implements IncomingMessageHandler {
                     appIconCache.put(sourceAppId, imageData);
                 } catch (PackageManager.NameNotFoundException e) {
                     logger.error("Error while updating notification icons", e);
+                    imageData = new byte[0];
                 }
             } else {
                 imageData = new byte[0];

@@ -50,6 +50,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilde
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.MoveHand;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.SimpleHexToByteMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandlerFactory;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.LiveWorkoutHandler;
@@ -60,7 +61,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.BatteryStateHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.Conversation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.ConversationQueue;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.HeartbeatHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.HeartRateHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.ResponseHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.SetupFinishedHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.conversation.SimpleConversation;
@@ -215,7 +216,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     public void doSync() {
-        if (syncInProgress) {
+        if (syncInProgress || !shoudSync()) {
             return;
         }
 
@@ -254,7 +255,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
             addSimpleConversationToQueue(message, activitySampleHandler);
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SYNC_OK));
         } catch (Exception e) {
             logger.error("Could not synchronize! ", e);
             conversationQueue.clear();
@@ -409,7 +409,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     public void onHeartRateTest() {
         conversationQueue.clear();
-        addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_HR), new HeartbeatHandler(this));
+        addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_HR), new HeartRateHandler(this));
         conversationQueue.send();
     }
 
@@ -467,6 +467,10 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onTestNewFunction() {
+        String hexMessage = "0105080015050900111006040102030507000000000000000000";
+        conversationQueue.clear();
+        addSimpleConversationToQueue(new SimpleHexToByteMessage(hexMessage));
+        conversationQueue.send();
     }
 
     @Override
@@ -528,7 +532,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     void onAuthenticationFinished() {
-        if (!firstTimeConnect && shoudSync()) {
+        if (!firstTimeConnect) {
+            addScreenListCommands();
             doSync();
         } else {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_ANCS_STATUS, new AncsStatus(true)));
@@ -606,6 +611,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         conversation.setRequest(message);
         conversationQueue.addConversation(conversation);
     }
+
     private void saveLastSyncTimestamp(@NonNull long timestamp) {
         SharedPreferences.Editor editor = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()).edit();
         editor.putLong(LAST_ACTIVITY_SYNC, timestamp);
@@ -628,8 +634,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     private boolean shoudSync() {
         long lastSynced = getLastSyncTimestamp();
-        int quarterOfAnHourMillis = 15 * 60 * 1000;
-        return new Date().getTime() - lastSynced > quarterOfAnHourMillis;
+        int fiveMinuteMillis = 5 * 60 * 1000;
+        return new Date().getTime() - lastSynced > fiveMinuteMillis;
     }
 
     private User getUser() {
@@ -650,60 +656,39 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         settings.setId(0xff);
         settings.setIdOnDevice((byte)6);
         message.addDataStructure(settings);
+
         settings = new ScreenSettings();
         settings.setId(0x3d);
         settings.setIdOnDevice((byte)1);
         message.addDataStructure(settings);
+
         settings = new ScreenSettings();
         settings.setId(0x33);
         settings.setIdOnDevice((byte)4);
         message.addDataStructure(settings);
+
         settings = new ScreenSettings();
         settings.setId(0x2d);
         settings.setIdOnDevice((byte)2);
         message.addDataStructure(settings);
+
         settings = new ScreenSettings();
         settings.setId(0x2a);
         settings.setIdOnDevice((byte)3);
         message.addDataStructure(settings);
+
         settings = new ScreenSettings();
         settings.setId(0x26);
         settings.setIdOnDevice((byte)7);
         message.addDataStructure(settings);
+
         settings = new ScreenSettings();
         settings.setId(0x39);
         settings.setIdOnDevice((byte)9);
         message.addDataStructure(settings);
+
         message.addDataStructure(new EndOfTransmission());
         addSimpleConversationToQueue(message);
-    }
-
-    private void sendDistanceUnit() {
-        Message message = new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.DISTANCE, UserUnitConstants.UNIT_KM));
-        sendToDevice(message);
-    }
-
-    private void sendTimeFormat() {
-        GBPrefs gbPrefs = new GBPrefs(new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress())));
-        String timeFormat = gbPrefs.getTimeFormat();
-        short format = UserUnitConstants.UNIT_12H;
-        if (timeFormat.equals(DeviceSettingsPreferenceConst.PREF_TIMEFORMAT_24H)) {
-            format = UserUnitConstants.UNIT_24H;
-        }
-
-        Message message = new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.CLOCK_MODE, format));
-        sendToDevice(message);
-    }
-
-    private void sendUserInfo() {
-        Message message = new WithingsMessage(WithingsMessageType.SET_USER);
-        message.addDataStructure(getUser());
-        sendToDevice(message);
-    }
-
-    private void sendActivityTarget() {
-        Message message = new WithingsMessage(WithingsMessageType.SET_ACTIVITY_TARGET, new ActivityTarget(activityUser.getStepsGoal()));
-        sendToDevice(message);
     }
 
     private void setWorkoutActivityTypes() {

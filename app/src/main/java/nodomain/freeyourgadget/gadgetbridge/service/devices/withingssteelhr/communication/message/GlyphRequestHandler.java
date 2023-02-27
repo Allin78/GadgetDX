@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.widget.Toast;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.IconHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
@@ -11,8 +15,10 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageMetaData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class GlyphRequestHandler implements IncomingMessageHandler {
+    private static final Logger logger = LoggerFactory.getLogger(GlyphRequestHandler.class);
     private final WithingsSteelHRDeviceSupport support;
 
     public GlyphRequestHandler(WithingsSteelHRDeviceSupport support) {
@@ -21,15 +27,21 @@ public class GlyphRequestHandler implements IncomingMessageHandler {
 
     @Override
     public void handleMessage(Message message) {
-        GlyphId glyphId = message.getStructureByType(GlyphId.class);
-        ImageMetaData imageMetaData = message.getStructureByType(ImageMetaData.class);
-        Message reply = new WithingsMessage(WithingsMessageType.GET_UNICODE_GLYPH);
-        reply.addDataStructure(glyphId);
-        reply.addDataStructure(imageMetaData);
-        ImageData imageData = new ImageData();
-        imageData.setImageData(createUnicodeImage(glyphId.getUnicode(), imageMetaData));
-        reply.addDataStructure(imageData);
-        support.sendToDevice(reply);
+        try {
+            GlyphId glyphId = message.getStructureByType(GlyphId.class);
+            ImageMetaData imageMetaData = message.getStructureByType(ImageMetaData.class);
+            Message reply = new WithingsMessage(WithingsMessageType.GET_UNICODE_GLYPH);
+            reply.addDataStructure(glyphId);
+            reply.addDataStructure(imageMetaData);
+            ImageData imageData = new ImageData();
+            imageData.setImageData(createUnicodeImage(glyphId.getUnicode(), imageMetaData));
+            reply.addDataStructure(imageData);
+            logger.info("Sending reply to glyph request: " + reply);
+            support.sendToDevice(reply);
+        } catch (Exception e) {
+            logger.error("Failed to respond to glyph request.", e);
+            GB.toast("Failed to respond to glyph request:" + e.getMessage(), Toast.LENGTH_LONG, GB.WARN);
+        }
     }
 
     private byte[] createUnicodeImage(long unicode, ImageMetaData metaData) {

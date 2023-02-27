@@ -34,6 +34,7 @@ public class IncomingMessageHandlerFactory {
         IncomingMessageHandler handler = handlers.get(message.getType());
         switch (message.getType()) {
             case WithingsMessageType.START_LIVE_WORKOUT:
+            case WithingsMessageType.STOP_LIVE_WORKOUT:
             case WithingsMessageType.GET_WORKOUT_GPS_STATUS:
                 if (handler == null) {
                     handlers.put(message.getType(), new LiveWorkoutHandler(support));

@@ -4,8 +4,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public abstract class AbstractMessage implements Message {
 
@@ -72,5 +74,9 @@ public abstract class AbstractMessage implements Message {
     private void addEndOfMessageBytes(ByteBuffer buffer) {
         buffer.putShort((short)256);
         buffer.putShort((short)0);
+    }
+
+    public String toString() {
+        return GB.hexdump(this.getRawData()).toLowerCase(Locale.ROOT);
     }
 }

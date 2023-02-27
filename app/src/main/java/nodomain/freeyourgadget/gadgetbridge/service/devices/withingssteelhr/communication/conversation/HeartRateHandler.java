@@ -22,10 +22,10 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WithingsStructure;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
 
-public class HeartbeatHandler extends AbstractResponseHandler {
-    private static final Logger logger = LoggerFactory.getLogger(HeartbeatHandler.class);
+public class HeartRateHandler extends AbstractResponseHandler {
+    private static final Logger logger = LoggerFactory.getLogger(HeartRateHandler.class);
 
-    public HeartbeatHandler(WithingsSteelHRDeviceSupport support) {
+    public HeartRateHandler(WithingsSteelHRDeviceSupport support) {
         super(support);
     }
 
