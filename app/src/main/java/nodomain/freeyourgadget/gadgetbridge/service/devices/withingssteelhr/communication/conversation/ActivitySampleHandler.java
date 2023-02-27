@@ -3,6 +3,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.com
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -32,6 +33,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(ActivitySampleHandler.class);
     private ActivityEntry activityEntry;
+    private List<WithingsSteelHRActivitySample> samples = new ArrayList<>();
 
     public ActivitySampleHandler(WithingsSteelHRDeviceSupport support) {
         super(support);
@@ -174,6 +176,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
         sample.setCalories(activityEntry.getCalories());
         sample.setDistance(activityEntry.getDistance());
         sample.setRawIntensity(activityEntry.getRawIntensity());
+        samples.add(sample);
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             Long userId = DBHelper.getUser(dbHandler.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(device, dbHandler.getDaoSession()).getId();

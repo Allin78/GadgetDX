@@ -24,7 +24,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.test.TestHelperUtils;
 
-public class MessageHandlerTest {
+public class MessageBuilderTest {
 
     @Mock
     private MessageFactory messageFactoryMock;
@@ -64,7 +64,7 @@ public class MessageHandlerTest {
         boolean result = messageBuilder2Test.buildMessage(data);
 
         // assert;
-        assertFalse(result);
+        assertTrue(result);
         verify(messageFactoryMock, times(1)).createMessageFromRawData(data);
         verifyZeroInteractions(supportMock);
     }
@@ -98,7 +98,7 @@ public class MessageHandlerTest {
 
         // assert;
         assertFalse(result1);
-        assertFalse(result2);
+        assertTrue(result2);
         verify(messageFactoryMock, never()).createMessageFromRawData(data1);
         verify(messageFactoryMock, never()).createMessageFromRawData(data2);
         verify(messageFactoryMock, times(1)).createMessageFromRawData(dataComplete);

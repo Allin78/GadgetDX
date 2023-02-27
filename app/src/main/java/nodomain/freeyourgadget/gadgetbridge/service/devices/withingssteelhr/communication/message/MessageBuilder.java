@@ -27,6 +27,8 @@ public class MessageBuilder {
     public synchronized boolean buildMessage(byte[] rawData) {
         if (pendingMessage == null && rawData[0] == 0x01) {
             pendingMessage = new ByteArrayOutputStream();
+        } else if (pendingMessage == null) {
+            return false;
         }
 
         try {

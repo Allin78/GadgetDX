@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class DataStructureFactory {
 
@@ -81,8 +82,8 @@ public class DataStructureFactory {
                 case WithingsStructureType.CHALLENGE_RESPONSE:
                     structure = new ChallengeResponse();
                     break;
-                case WithingsStructureType.ACTIVITY_SAMPLE_RECOVERY:
-                    structure = new ProbeReply();
+                case WithingsStructureType.ACTIVITY_SAMPLE_UNKNOWN:
+                    structure = new ActivitySampleUnknown();
                     break;
                 case WithingsStructureType.END_OF_TRANSMISSION:
                     structure = new EndOfTransmission();
@@ -132,9 +133,13 @@ public class DataStructureFactory {
         while(remainingBytes > 3) {
             short structureLength = (short) BLETypeConversions.toInt16(rawData[3], rawData[2]);
             remainingBytes -= (structureLength + HEADER_SIZE);
-            result.add(Arrays.copyOfRange(rawData, 0, structureLength + HEADER_SIZE));
-            if (remainingBytes > 0) {
-                rawData = Arrays.copyOfRange(rawData, structureLength + HEADER_SIZE, rawData.length);
+            try {
+                result.add(Arrays.copyOfRange(rawData, 0, structureLength + HEADER_SIZE));
+                if (remainingBytes > 0) {
+                    rawData = Arrays.copyOfRange(rawData, structureLength + HEADER_SIZE, rawData.length);
+                }
+            } catch (Exception e) {
+                logger.warn("Splitting of data failed: " + GB.hexdump(rawData));
             }
         }
 

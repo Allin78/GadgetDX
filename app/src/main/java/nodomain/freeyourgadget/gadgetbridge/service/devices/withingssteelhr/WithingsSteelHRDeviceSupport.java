@@ -49,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.MoveHand;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.SimpleHexToByteMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
@@ -111,6 +112,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     public static final String STOP_HANDS_CALIBRATION_CMD = "stop_withings_hands_calibration";
     private MessageBuilder messageBuilder;
     private LiveWorkoutHandler liveWorkoutHandler;
+    private ActivitySampleHandler activitySampleHandler;
     private ConversationQueue conversationQueue;
     private boolean firstTimeConnect;
     private BluetoothGattCharacteristic notificationSourceCharacteristic;
@@ -186,6 +188,10 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+        if (syncInProgress) {
+            return;
+        }
+
         mtuSize = mtu;
         if (firstTimeConnect) {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.INITIAL_CONNECT));
@@ -220,6 +226,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             return;
         }
 
+        activitySampleHandler = new ActivitySampleHandler(this);
         conversationQueue.clear();
         syncInProgress = true;
         try {
@@ -243,13 +250,17 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_WORKOUT_SCREEN_LIST), new WorkoutScreenListHandler(this));
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(getLastSyncTimestamp());
-            ActivitySampleHandler activitySampleHandler = new ActivitySampleHandler(this);
             message = new WithingsMessage(WithingsMessageType.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
+            message.addDataStructure(new ActivityType(6));
             addSimpleConversationToQueue(message, activitySampleHandler);
             message = new WithingsMessage(WithingsMessageType.GET_MOVEMENT_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
+            addSimpleConversationToQueue(message, activitySampleHandler);
+            message = new WithingsMessage(WithingsMessageType.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
+            message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
+            message.addDataStructure(new ActivityType(5));
             addSimpleConversationToQueue(message, activitySampleHandler);
             message = new WithingsMessage(WithingsMessageType.GET_HEARTRATE_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
@@ -273,7 +284,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             return true;
         }
 
-        UUID characteristicUUID = characteristic.getUuid();
         byte[] data = characteristic.getValue();
 
         boolean complete = messageBuilder.buildMessage(data);
@@ -294,14 +304,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
         notificationProvider.notifyClient(notificationSpec);
-    }
-
-    @Override
-    public void onDeleteNotification(int id) {
-    }
-
-    @Override
-    public void onSetTime() {
     }
 
     @Override
@@ -338,11 +340,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public boolean onCharacteristicReadRequest(BluetoothDevice device, int requestId, int offset, BluetoothGattCharacteristic characteristic) {
-        return super.onCharacteristicReadRequest(device, requestId, offset, characteristic);
-    }
-
-    @Override
     public boolean onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
         if (characteristic.getUuid().equals(WithingsUUID.CONTROL_POINT_CHARACTERISTIC_UUID)) {
             GetNotificationAttributes request = new GetNotificationAttributes();
@@ -354,56 +351,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onSetCallState(CallSpec callSpec) {
-    }
-
-    @Override
-    public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
-    }
-
-    @Override
-    public void onSetMusicState(MusicStateSpec stateSpec) {
-    }
-
-    @Override
-    public void onSetMusicInfo(MusicSpec musicSpec) {
-    }
-
-    @Override
-    public void onEnableRealtimeSteps(boolean enable) {
-    }
-
-    @Override
-    public void onInstallApp(Uri uri) {
-    }
-
-    @Override
-    public void onAppInfoReq() {
-    }
-
-    @Override
-    public void onAppStart(UUID uuid, boolean start) {
-    }
-
-    @Override
-    public void onAppDelete(UUID uuid) {
-    }
-
-    @Override
-    public void onAppConfiguration(UUID appUuid, String config, Integer id) {
-    }
-
-    @Override
-    public void onAppReorder(UUID[] uuids) {
-    }
-
-    @Override
     public void onFetchRecordedData(int dataTypes) {
         doSync();
-    }
-
-    @Override
-    public void onReset(int flags) {
     }
 
     @Override
@@ -627,7 +576,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             Date currentDate = new Date();
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(currentDate.getTime());
-            c.add(Calendar.DAY_OF_MONTH, -2);
+            c.add(Calendar.DAY_OF_MONTH, -1);
             return c.getTimeInMillis();
         }
     }

@@ -1,5 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity;
 
+import android.media.AudioTimestamp;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +12,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.WithingsSteelHRActivitySamp
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 
 /**
- * This class is needed for sleep tracking as the wthings steel HR sends heartrate while sleeping in an extra activity.
+ * This class is needed for sleep tracking as the withings steel HR sends heartrate while sleeping in an extra activity.
  * This leads to breaking the sleep session in the sleep calculation of GB.
  */
 public class SleepActivitySampleHelper {
@@ -22,32 +24,33 @@ public class SleepActivitySampleHelper {
             return sample;
         }
 
-        WithingsSteelHRActivitySample sleepSample = getLastSleepSample(provider, sample.getTimestamp());
-        if (sleepSample != null) {
-            sample = doMerge(sleepSample, sample);
+        WithingsSteelHRActivitySample overlappingSample = getOverlappingSample(provider, (int)sample.getTimestamp());
+        if (overlappingSample != null) {
+            sample = doMerge(overlappingSample, sample);
         }
 
         return sample;
     }
 
-    private static WithingsSteelHRActivitySample getLastSleepSample(WithingsSteelHRSampleProvider provider, long timestamp) {
-        List<WithingsSteelHRActivitySample> samples = provider.getActivitySamples((int)timestamp - 500, (int)timestamp);
+    private static WithingsSteelHRActivitySample getOverlappingSample(WithingsSteelHRSampleProvider provider, long timestamp) {
+        List<WithingsSteelHRActivitySample> samples = provider.getActivitySamples((int)timestamp - 120, (int)timestamp);
         if (samples.isEmpty()) {
             return null;
         }
 
         WithingsSteelHRActivitySample lastSample = samples.get(samples.size() - 1);
-        if (isOverlappingSleepSample(lastSample)) {
+        if (isOverlappingSleepSample(lastSample, (int)timestamp)) {
             return lastSample;
         } else {
             return null;
         }
     }
 
-    private static boolean isOverlappingSleepSample(WithingsSteelHRActivitySample lastSample) {
+    private static boolean isOverlappingSleepSample(WithingsSteelHRActivitySample lastSample, int timestamp) {
         return (lastSample.getRawKind() == ActivityKind.TYPE_LIGHT_SLEEP
                 || lastSample.getRawKind() == ActivityKind.TYPE_DEEP_SLEEP
-                || lastSample.getRawKind() == ActivityKind.TYPE_REM_SLEEP);
+                || lastSample.getRawKind() == ActivityKind.TYPE_REM_SLEEP)
+                && (lastSample.getTimestamp() <= timestamp && (lastSample.getTimestamp() + lastSample.getDuration()) >= timestamp);
     }
 
     private static boolean shouldMerge(WithingsSteelHRActivitySample sample) {
