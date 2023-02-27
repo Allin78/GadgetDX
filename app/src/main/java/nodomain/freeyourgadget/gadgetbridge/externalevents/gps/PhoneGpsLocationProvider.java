@@ -41,9 +41,17 @@ public class PhoneGpsLocationProvider extends AbstractLocationProvider {
     public PhoneGpsLocationProvider(LocationListener locationListener) {
         super(locationListener);
     }
+    public PhoneGpsLocationProvider(LocationListener locationListener, int intervalTime) {
+        super(locationListener);
+    }
 
     @Override
     void start(final Context context) {
+        start(context, INTERVAL_MIN_TIME);
+    }
+
+    @Override
+    void start(Context context, int interval) {
         LOG.info("Starting phone gps location provider");
 
         if (!GB.checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) && !GB.checkPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -55,14 +63,14 @@ public class PhoneGpsLocationProvider extends AbstractLocationProvider {
         locationManager.removeUpdates(getLocationListener());
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                INTERVAL_MIN_TIME,
+                interval,
                 INTERVAL_MIN_DISTANCE,
                 getLocationListener(),
                 Looper.getMainLooper()
         );
 
         final Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        LOG.debug("Last known location: {}", lastKnownLocation);
+        LOG.debug("Last known gps location: {}", lastKnownLocation);
     }
 
     @Override

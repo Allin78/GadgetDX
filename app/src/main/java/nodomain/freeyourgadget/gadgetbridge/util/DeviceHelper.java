@@ -43,7 +43,12 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.asteroidos.AsteroidOSDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4.AmazfitGTS4Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini.AmazfitGTS4MiniCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfittrex2.AmazfitTRex2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyLinkBudsSCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.soflow.SoFlowCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.supercars.SuperCarsCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.FitProDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.UnknownDeviceCoordinator;
@@ -56,12 +61,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.flipper.zero.FlipperZeroCoor
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBudsDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBudsLiveDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBudsProDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBuds2ProDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.EXRIZUK8Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.HPlusCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.MakibesF68Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.Q8Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.SG2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitband5.AmazfitBand5Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitband7.AmazfitBand7Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbips.AmazfitBipSLiteCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts2.AmazfitGTS2MiniCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts2.AmazfitGTS2eCoordinator;
@@ -289,6 +296,7 @@ public class DeviceHelper {
         result.add(new AmazfitPopCoordinator());
         result.add(new AmazfitPopProCoordinator());
         result.add(new AmazfitBand5Coordinator());
+        result.add(new AmazfitBand7Coordinator());
         result.add(new AmazfitNeoCoordinator());
         result.add(new MiBand3Coordinator());
         result.add(new MiBand4Coordinator());
@@ -297,8 +305,10 @@ public class DeviceHelper {
         result.add(new MiBand7Coordinator());
         result.add(new AmazfitGTS3Coordinator());
         result.add(new AmazfitGTS4Coordinator());
+        result.add(new AmazfitGTS4MiniCoordinator());
         result.add(new AmazfitGTR3Coordinator());
         result.add(new AmazfitGTR4Coordinator());
+        result.add(new AmazfitTRex2Coordinator());
         result.add(new MiBand2HRXCoordinator());
         result.add(new MiBand2Coordinator()); // Note: MiBand2 and all of the above  must come before MiBand because detection is hacky, atm
         result.add(new MiBandCoordinator());
@@ -343,7 +353,9 @@ public class DeviceHelper {
         result.add(new GalaxyBudsLiveDeviceCoordinator());
         result.add(new GalaxyBudsProDeviceCoordinator());
         result.add(new GalaxyBuds2DeviceCoordinator());
+        result.add(new GalaxyBuds2ProDeviceCoordinator());
         result.add(new VescCoordinator());
+        result.add(new SonyLinkBudsSCoordinator());
         result.add(new SonyWH1000XM3Coordinator());
         result.add(new SonyWH1000XM4Coordinator());
         result.add(new SonyWFSP800NCoordinator());
@@ -354,6 +366,8 @@ public class DeviceHelper {
         result.add(new BinarySensorCoordinator());
         result.add(new FlipperZeroCoordinator());
         result.add(new SuperCarsCoordinator());
+        result.add(new AsteroidOSDeviceCoordinator());
+        result.add(new SoFlowCoordinator());
 
         result.add(new WithingsSteelHRDeviceCoordinator());
         return result;

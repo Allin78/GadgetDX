@@ -40,7 +40,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
@@ -75,8 +74,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -470,6 +467,30 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     public void activateWatchface(String appName) {
         queueWrite(new SelectedThemePutRequest(this, appName));
+    }
+
+    public void startAppOnWatch(String appName) {
+        try {
+            JSONObject jsonObject = new JSONObject()
+                    .put("push", new JSONObject()
+                            .put("set", new JSONObject()
+                                    .put("customWatchFace._.config.start_app", appName)
+                            )
+                    );
+            queueWrite(new JsonPutRequest(jsonObject, this));
+        } catch (JSONException e) {
+            LOG.warn("Couldn't start app on watch: " + e.getMessage());
+        }
+    }
+
+    public void downloadAppToCache(UUID uuid) {
+        LOG.info("Going to download app with UUID " + uuid.toString());
+        for (ApplicationInformation appInfo : installedApplications) {
+            if (UUID.nameUUIDFromBytes(appInfo.getAppName().getBytes(StandardCharsets.UTF_8)).equals(uuid)) {
+                LOG.info("Going to download app with name " + appInfo.getAppName() + " and handle " + appInfo.getFileHandle());
+                downloadFile(FileHandle.APP_CODE.getMajorHandle(), appInfo.getFileHandle(), appInfo.getAppName(), false, true);
+            }
+        }
     }
 
     private void setVibrationStrengthFromConfig() {
@@ -906,15 +927,18 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
         }
     }
 
-    private void handleFileDownload(FileHandle handle, byte[] file) {
+    private void handleFileDownload(String name, byte[] file, boolean toCache) {
         Intent resultIntent = new Intent(QHybridSupport.QHYBRID_ACTION_DOWNLOADED_FILE);
-        File outputFile = new File(getContext().getExternalFilesDir("download"), handle.name() + "_" + System.currentTimeMillis() + ".bin");
+        File outputFile = new File(getContext().getExternalFilesDir("download"), name + "_" + System.currentTimeMillis() + ".bin");
         try {
             FileOutputStream fos = new FileOutputStream(outputFile);
             fos.write(file);
             fos.close();
             resultIntent.putExtra("EXTRA_SUCCESS", true);
             resultIntent.putExtra("EXTRA_PATH", outputFile.getAbsolutePath());
+            resultIntent.putExtra("EXTRA_NAME", name);
+            resultIntent.putExtra("EXTRA_TOCACHE", toCache);
+            LOG.info("Wrote downloaded file to " + outputFile.getAbsolutePath());
         } catch (IOException e) {
             LOG.error("Error while downloading file", e);
             resultIntent.putExtra("EXTRA_SUCCESS", false);
@@ -988,21 +1012,21 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     }
 
     @Override
-    public void downloadFile(final FileHandle handle, boolean fileIsEncrypted) {
+    public void downloadFile(byte majorHandle, byte minorHandle, String name, boolean fileIsEncrypted, boolean toCache) {
         if (fileIsEncrypted) {
-            queueWrite((FileEncryptedInterface) new FileEncryptedGetRequest(handle, this) {
+            queueWrite((FileEncryptedInterface) new FileEncryptedGetRequest(majorHandle, minorHandle, this) {
                 @Override
                 public void handleFileData(byte[] fileData) {
                     LOG.debug("downloaded encrypted file");
-                    handleFileDownload(handle, fileData);
+                    handleFileDownload(name, fileData, toCache);
                 }
             });
         } else {
-            queueWrite(new FileGetRawRequest(handle, this) {
+            queueWrite(new FileGetRawRequest(majorHandle, minorHandle, this) {
                 @Override
                 public void handleFileRawData(byte[] fileData) {
                     LOG.debug("downloaded regular file");
-                    handleFileDownload(handle, fileData);
+                    handleFileDownload(name, fileData, toCache);
                 }
             });
         }
@@ -1551,23 +1575,63 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
 
     private void setActivityRecognition(){
         SharedPreferences prefs = getDeviceSpecificPreferences();
-        String modeRunning = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING, "none");
-        String modeBiking = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING, "none");
-        String modeWalking = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING, "none");
-        String modeRowing = prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING, "none");
+        boolean runningEnabled = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ENABLED, false);
+        boolean runningAskFirst = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ASK_FIRST, false);
+        int runningMinutes = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_MINUTES, "3"));
+        boolean bikingEnabled = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ENABLED, false);
+        boolean bikingAskFirst = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ASK_FIRST, false);
+        int bikingMinutes = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_MINUTES, "5"));
+        boolean walkingEnabled = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ENABLED, false);
+        boolean walkingAskFirst = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ASK_FIRST, false);
+        int walkingMinutes = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_MINUTES, "10"));
+        boolean rowingEnabled = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ENABLED, false);
+        boolean rowingAskFirst = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ASK_FIRST, false);
+        int rowingMinutes = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_MINUTES, "3"));
+
+        if (runningMinutes < 1) runningMinutes = 1;
+        if (runningMinutes > 255) runningMinutes = 255;
+        if (bikingMinutes < 1) bikingMinutes = 1;
+        if (bikingMinutes > 255) bikingMinutes = 255;
+        if (walkingMinutes < 1) walkingMinutes = 1;
+        if (walkingMinutes > 255) walkingMinutes = 255;
+        if (rowingMinutes < 1) rowingMinutes = 1;
+        if (rowingMinutes > 255) rowingMinutes = 255;
 
         FitnessConfigItem fitnessConfigItem = new FitnessConfigItem(
-                !modeRunning.equals("none"),
-                modeRunning.equals("ask"),
-                !modeBiking.equals("none"),
-                modeBiking.equals("ask"),
-                !modeWalking.equals("none"),
-                modeWalking.equals("ask"),
-                !modeRowing.equals("none"),
-                modeRowing.equals("ask")
+                runningEnabled,
+                runningAskFirst,
+                runningMinutes,
+                bikingEnabled,
+                bikingAskFirst,
+                bikingMinutes,
+                walkingEnabled,
+                walkingAskFirst,
+                walkingMinutes,
+                rowingEnabled,
+                rowingAskFirst,
+                rowingMinutes
         );
 
         queueWrite((FileEncryptedInterface) new ConfigurationPutRequest(fitnessConfigItem, this));
+    }
+
+    private void setInactivityWarning(){
+        SharedPreferences prefs = getDeviceSpecificPreferences();
+        boolean enabled = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_INACTIVITY_ENABLE, false);
+        int threshold = Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_INACTIVITY_THRESHOLD, "60"));
+        String start = prefs.getString(DeviceSettingsPreferenceConst.PREF_INACTIVITY_START, "06:00");
+        String end = prefs.getString(DeviceSettingsPreferenceConst.PREF_INACTIVITY_END, "22:00");
+
+        int startHour = Integer.parseInt(start.split(":")[0]);
+        int startMinute = Integer.parseInt(start.split(":")[1]);
+        int endHour = Integer.parseInt(end.split(":")[0]);
+        int endMinute = Integer.parseInt(end.split(":")[1]);
+
+        InactivityWarningItem inactivityWarningItem = new InactivityWarningItem(
+                startHour, startMinute, endHour, endMinute, threshold, enabled
+        );
+
+        queueWrite((FileEncryptedInterface) new ConfigurationPutRequest(inactivityWarningItem, this));
     }
 
     @Override
@@ -1601,11 +1665,25 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             case SettingsActivity.PREF_MEASUREMENT_SYSTEM:
                 setUnitsConfig();
                 break;
-            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING:
-            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING:
-            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING:
-            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ENABLED:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ASK_FIRST:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_MINUTES:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ENABLED:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ASK_FIRST:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_MINUTES:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ENABLED:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ASK_FIRST:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_MINUTES:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ENABLED:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ASK_FIRST:
+            case DeviceSettingsPreferenceConst.PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_MINUTES:
                 setActivityRecognition();
+                break;
+            case DeviceSettingsPreferenceConst.PREF_INACTIVITY_ENABLE:
+            case DeviceSettingsPreferenceConst.PREF_INACTIVITY_THRESHOLD:
+            case DeviceSettingsPreferenceConst.PREF_INACTIVITY_START:
+            case DeviceSettingsPreferenceConst.PREF_INACTIVITY_END:
+                setInactivityWarning();
                 break;
         }
     }
@@ -1858,6 +1936,9 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             if (UUID.nameUUIDFromBytes(appInfo.getAppName().getBytes(StandardCharsets.UTF_8)).equals(uuid)) {
                 return appInfo.getAppName();
             }
+        }
+        if (uuid.equals(UUID.nameUUIDFromBytes("workoutApp".getBytes(StandardCharsets.UTF_8)))) {
+            return "workoutApp";
         }
         return null;
     }

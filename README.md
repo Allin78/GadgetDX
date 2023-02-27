@@ -36,9 +36,9 @@ vendor's servers.
 	- [Bip Lite](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-Lite), [Bip S](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-S), [Bip U](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-U) [**\[!\]**](#special-pairing-procedures)
 	- [Cor](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cor), [Cor 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cor-2)
 	- [GTR](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-3), [GTR 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-4) [**\[!\]**](#special-pairing-procedures)
-	- [GTS](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-3), [GTS 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-4) [**\[!\]**](#special-pairing-procedures) 
+	- [GTS](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-3), [GTS 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-4), [GTS 4 Mini](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-4-Mini) [**\[!\]**](#special-pairing-procedures) 
 	- [Neo](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Neo) [**\[!\]**](#special-pairing-procedures) 
-	- T-Rex [**\[!\]**](#special-pairing-procedures)
+	- T-Rex, [T-Rex 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/T-Rex-2) [**\[!\]**](#special-pairing-procedures)
 	- Verge Lite [**\[!\]**](#special-pairing-procedures)
 	- [X ](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-5) [**\[!\]**](#special-pairing-procedures)
 - [Bangle.js](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Bangle.js)
@@ -60,6 +60,8 @@ vendor's servers.
     - [Galaxy Buds](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#user-content-galaxy-buds)
     - [Galaxy Buds Live](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#user-content-galaxy-buds-live)
     - [Galaxy Buds Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds-pro)
+    - [Galaxy Buds2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds2)
+    - [Galaxy Buds2 Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds2-pro)
 
 - [HPlus Devices (e.g. ZeBand)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/HPlus)
 - ID115
@@ -86,6 +88,7 @@ vendor's servers.
 - Roidmi, Roidmi 3, Mojietu 3 (Bluetooth FM Transmitters)
 - [SMA](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/SMA) Q2 (SMA-Q2-OSS Firmware)
 - [Sony Headphones](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)
+	- LinkBuds S
 	- WH-1000XM2, WH-1000XM3, WH-1000XM4
 	- WF-SP800N
 	- WF-1000XM3, WF-1000XM4

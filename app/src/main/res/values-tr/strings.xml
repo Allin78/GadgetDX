@@ -2086,4 +2086,49 @@
 \n
 \nİLERLEMENİZ DURUMUNDA RİSK SİZE AİTTİR!</string>
     <string name="devicetype_amazfit_gts4">Amazfit GTS 4</string>
+    <string name="fw_upgrade_notice_amazfit_gts4_mini">Amazfit GTS 4 Mini aygıtınıza %s ürün yazılımını kurmak üzeresiniz.
+\n
+\nBilekliğiniz .zip dosyasını kurduktan sonra yeniden başlatılacak.
+\n
+\nİLERLEMENİZ DURUMUNDA RİSK SİZE AİTTİR!</string>
+    <string name="devicetype_amazfit_gts4_mini">Amazfit GTS 4 Mini</string>
+    <string name="devicetype_sony_linkbuds_s">Sony LinkBuds S</string>
+    <string name="pref_header_intent_api">Amaç API\'si</string>
+    <string name="intent_api_allow_activity_sync_title">Etkinlik eşzamanlama tetikleyicisine izin ver</string>
+    <string name="intent_api_allow_activity_sync_summary">Amaç API\'si aracılığıyla etkinlik eşzamanlamasının tetiklenmesine izin verin</string>
+    <string name="intent_api_allow_trigger_export_title">Veri tabanı dışa aktarmaya izin ver</string>
+    <string name="intent_api_allow_trigger_export_summary">Amaç API\'si aracılığıyla veri tabanı dışa aktarmanın tetiklenmesine izin verin</string>
+    <string name="intent_api_broadcast_export_title">Veri tabanı dışa aktarmada yayın gönder</string>
+    <string name="intent_api_broadcast_export_summary">Veri tabanı dışa aktarma işlemi tamamlandığında bir amaç yayınlayın</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_off">Gürültü Engelleme, Kapalı</string>
+    <string name="sony_ambient_sound_control_button_mode_as_off">Ortam Sesi, Kapalı</string>
+    <string name="sony_quick_access_double_tap">Hızlı Erişim (Çift Dokunuş)</string>
+    <string name="sony_ambient_sound_control_button_modes">Ortam Sesi Denetim Düğmesi Modları</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as_off">Gürültü Engelleme, Ortam Sesi, Kapalı</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as">Gürültü Engelleme, Ortam Sesi</string>
+    <string name="sony_quick_access_triple_tap">Hızlı Erişim (Üç Dokunuş)</string>
+    <string name="menuitem_wechat_pay">WeChat Pay</string>
+    <string name="pref_agps_update_time">AGPS Güncelleme Zamanı</string>
+    <string name="pref_agps_expire_time">AGPS Sona Erme Zamanı</string>
+    <string name="appmanager_watchface_activate">Etkinleştir</string>
+    <string name="appmanager_app_start">Başlat</string>
+    <string name="appmanager_app_download">Önbelleğe indir</string>
+    <string name="appmanager_downloaded_to_cache">%s önbelleğe indirildi</string>
+    <string name="appmanager_download_started">Uygulama indirme başladı</string>
+    <string name="appmanager_download_app_error">Uygulama indirilirken hata oluştu</string>
+    <string name="devicetype_asteroidos">AsteroidOS</string>
+    <string name="devicetype_amazfit_trex_2">Amazfit T-Rex 2</string>
+    <string name="fw_upgrade_notice_amazfit_trex2">Amazfit T-Rex 2 aygıtınıza %s ürün yazılımını kurmak üzeresiniz.
+\n
+\nBilekliğiniz .zip dosyasını kurduktan sonra yeniden başlatılacak.
+\n
+\nİLERLEMENİZ DURUMUNDA RİSK SİZE AİTTİR!</string>
+    <string name="pref_workout_detection_ask_first_summary">Bu egzersizi algılarken saat üzerinden onay iste</string>
+    <string name="pref_workout_detection_enabled_summary">Bu egzersizin otomatik olarak algılanmasını etkinleştir</string>
+    <string name="pref_workout_detection_time">Algılamadan önceki etkin dakikalar</string>
+    <string name="pref_workout_detection_enabled">Algılama etkin</string>
+    <string name="pref_workout_detection_ask_first">Önce bana sor</string>
+    <string name="pref_workout_detection_time_summary">Egzersizin algılanmadan önce devam etmesi gereken dakika miktarı</string>
+    <string name="activity_type_rowing">Kürek Çekme</string>
+    <string name="georgian">Gürcüce</string>
 </resources>

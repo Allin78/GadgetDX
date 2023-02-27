@@ -102,6 +102,9 @@
     <string name="appmanager_cached_watchapps_watchfaces">Apps in cache</string>
     <string name="appmanager_installed_watchapps">Installed apps</string>
     <string name="appmanager_installed_watchfaces">Installed watchfaces</string>
+    <string name="appmanager_watchface_activate">Activate</string>
+    <string name="appmanager_app_start">Start</string>
+    <string name="appmanager_app_download">Download to cache</string>
     <string name="appmananger_app_delete">Delete</string>
     <string name="appmananger_app_delete_cache">Delete and remove from cache</string>
     <string name="appmananger_app_reinstall">Reinstall</string>
@@ -117,6 +120,9 @@
     <string name="app_configure">Configure</string>
     <string name="app_move_to_top">Move to top</string>
     <string name="appmanager_item_outdated">(outdated)</string>
+    <string name="appmanager_download_started">App download started</string>
+    <string name="appmanager_downloaded_to_cache">Downloaded %s to cache</string>
+    <string name="appmanager_download_app_error">Error downloading app</string>
     <!-- Strings related to AppBlacklist -->
     <string name="title_activity_notification_management">Notification settings</string>
     <string name="blacklist_all_for_notifications">Blacklist all for notifications</string>
@@ -151,8 +157,10 @@
     <string name="fw_upgrade_notice_miband7">You are about to install the %s firmware on your Xiaomi Smart Band 7.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gts3">You are about to install the %s firmware on your Amazfit GTS 3.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gts4">You are about to install the %s firmware on your Amazfit GTS 4.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfit_gts4_mini">You are about to install the %s firmware on your Amazfit GTS 4 Mini.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gtr3">You are about to install the %s firmware on your Amazfit GTR 3.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gtr4">You are about to install the %s firmware on your Amazfit GTR 4.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfit_trex2">You are about to install the %s firmware on your Amazfit T-Rex 2.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_band7">You are about to install the %s firmware on your Amazfit Band 7.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfitx">You are about to install the %s firmware on your Amazfit X.\n\nPlease make sure to install the .fw file, and after that the .res file. Your band will reboot after installing the .fw file.\n\nNote: You do not have to install .res if it is exactly the same as the one previously installed.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfitneo">You are about to install the %s firmware on your Amazfit Neo.
@@ -270,6 +278,7 @@
     <string name="pref_title_canned_messages_dismisscall">Call Dismissal</string>
     <string name="pref_title_canned_messages_set">Update on device</string>
     <string name="pref_header_development">Developer options</string>
+    <string name="pref_header_intent_api">Intent API</string>
     <string name="pref_header_authentication">Authentication</string>
     <string name="pref_title_development_miaddr">Mi Band address</string>
     <string name="pref_title_pebble_settings">Pebble settings</string>
@@ -454,6 +463,8 @@
     <string name="pref_agps_header">AGPS</string>
     <string name="pref_agps_expiry_reminder_enabled">AGPS Expiry Reminder</string>
     <string name="pref_agps_expiry_reminder_time">AGPS Expiry Reminder Time</string>
+    <string name="pref_agps_update_time">AGPS Update Time</string>
+    <string name="pref_agps_expire_time">AGPS Expire Time</string>
     <string name="pref_workout_start_on_phone_title">Fitness app tracking</string>
     <string name="pref_workout_start_on_phone_summary">Start/stop fitness app tracking on phone when a GPS workout is started on the band</string>
     <string name="pref_workout_send_gps_title">Send GPS during workout</string>
@@ -465,6 +476,12 @@
     <string name="pref_workout_detection_alert_title">Alert</string>
     <string name="pref_workout_detection_alert_summary">Notify when a workout is detected</string>
     <string name="pref_workout_detection_sensitivity">Sensitivity</string>
+    <string name="pref_workout_detection_enabled">Detection enabled</string>
+    <string name="pref_workout_detection_enabled_summary">Enable automatic detection of this workout</string>
+    <string name="pref_workout_detection_ask_first">Ask me first</string>
+    <string name="pref_workout_detection_ask_first_summary">Require on-watch confirmation when detecting this workout</string>
+    <string name="pref_workout_detection_time">Active minutes before detection</string>
+    <string name="pref_workout_detection_time_summary">The amount of minutes the workout must be ongoing before detecting it</string>
     <string name="pref_sleep_mode_title">Sleep Mode</string>
     <string name="pref_sleep_mode_sleep_screen_title">Sleep Screen</string>
     <string name="pref_sleep_mode_sleep_screen_summary">Show the Sleep Screen when waking the screen during sleep mode, to reduce distractions</string>
@@ -894,6 +911,7 @@
     <string name="norwegian_bokmal">Norwegian Bokmål</string>
     <string name="spanish">Spanish</string>
     <string name="russian">Russian</string>
+    <string name="georgian">Georgian</string>
     <string name="german">German</string>
     <string name="bengali">Bengali</string>
     <string name="czech">Czech</string>
@@ -1106,6 +1124,7 @@
     <string name="activity_type_football">Football</string>
     <string name="activity_type_rugby">Rugby</string>
     <string name="activity_type_rowing_machine">Rowing Machine</string>
+    <string name="activity_type_rowing">Rowing</string>
     <string name="activity_type_cricket">Cricket</string>
     <string name="activity_type_baseball">Baseball</string>
     <string name="activity_type_basketball">Basketball</string>
@@ -1118,6 +1137,7 @@
     <string name="activity_type_strength_training">Strength Training</string>
     <string name="activity_type_dance">Dance</string>
     <string name="activity_type_indoor_fitness">Indoor Fitness</string>
+    <string name="activity_type_gymnastics">Gymnastics</string>
     <string name="activity_type_hiit">High-intensity Interval Training</string>
     <string name="activity_type_core_training">Core Training</string>
     <string name="activity_type_stretching">Stretching</string>
@@ -1126,13 +1146,12 @@
     <string name="activity_type_volleyball">Volleyball</string>
     <string name="activity_type_table_tennis">Table Tennis</string>
     <string name="activity_type_bowling">Bowling</string>
+    <string name="activity_type_boxing">Boxing</string>
     <string name="activity_type_kickboxing">Kickboxing</string>
     <string name="activity_type_street_dance">Street Dance</string>
     <string name="activity_type_indoor_ice_skating">Indoor Ice Skating</string>
-    <string name="activity_type_gymnastics">Gymnastics</string>
     <string name="activity_type_dancing">Dancing</string>
     <string name="activity_type_zumba">Zumba</string>
-    <string name="activity_type_boxing">Boxing</string>
     <string name="activity_type_skiing">Skiing</string>
     <string name="activity_type_snowboarding">snowboarding</string>
     <string name="activity_type_riding">Horseback Riding</string>
@@ -1181,8 +1200,10 @@
     <string name="devicetype_miband7">Xiaomi Smart Band 7</string>
     <string name="devicetype_amazfit_gts3">Amazfit GTS 3</string>
     <string name="devicetype_amazfit_gts4">Amazfit GTS 4</string>
+    <string name="devicetype_amazfit_gts4_mini">Amazfit GTS 4 Mini</string>
     <string name="devicetype_amazfit_gtr3">Amazfit GTR 3</string>
     <string name="devicetype_amazfit_gtr4">Amazfit GTR 4</string>
+    <string name="devicetype_amazfit_trex_2">Amazfit T-Rex 2</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
     <string name="devicetype_amazfit_band7">Amazfit Band 7</string>
     <string name="devicetype_amazfit_neo">Amazfit Neo</string>
@@ -1246,6 +1267,7 @@
     <string name="devicetype_sony_wf_sp800n">Sony WF-SP800N</string>
     <string name="devicetype_sony_wf_1000xm3">Sony WF-1000XM3</string>
     <string name="devicetype_sony_wf_1000xm4">Sony WF-1000XM4</string>
+    <string name="devicetype_sony_linkbuds_s">Sony LinkBuds S</string>
     <string name="devicetype_binary_sensor">Binary sensor</string>
     <string name="choose_auto_export_location">Choose export location</string>
     <string name="notification_channel_name">General</string>
@@ -1272,6 +1294,7 @@
     <string name="menuitem_compass">Compass</string>
     <string name="menuitem_settings">Settings</string>
     <string name="menuitem_alipay">Alipay</string>
+    <string name="menuitem_wechat_pay">WeChat Pay</string>
     <string name="preferences_qhybrid_settings">Q Hybrid Settings</string>
     <string name="menuitem_music">Music</string>
     <string name="menuitem_more">More</string>
@@ -1726,6 +1749,8 @@
     <string name="devicetype_galaxybuds">Galaxy Buds</string>
     <string name="devicetype_galaxybuds_live">Galaxy Buds Live</string>
     <string name="devicetype_galaxybuds_pro">Galaxy Buds Pro</string>
+    <string name="devicetype_galaxybuds_2">Galaxy Buds2</string>
+    <string name="devicetype_galaxybuds_2_pro">Galaxy Buds2 Pro</string>
     <string name="nothing_prefs_inear_summary">Play/pause the music depending if you wear the earbuds</string>
     <string name="nothing_prefs_inear_title">In-Ear detection</string>
     <string name="prefs_in_ear_detection_summary">Play calls through your earbuds when they are in your ears</string>
@@ -1744,6 +1769,7 @@
     <string name="prefs_game_mode">Game mode</string>
     <string name="prefs_game_mode_summary">Only if your phone supports game mode</string>
     <string name="prefs_touch_lock">Touch Lock</string>
+    <string name="prefs_touch_lock_buds2">Touch controls</string>
     <string name="prefs_touch_lock_summary">Disable touch events</string>
     <string name="prefs_galaxy_buds_experimental">Experimental</string>
     <string name="prefs_seamless_connection_switch_title">Seamless connection switch</string>
@@ -1931,15 +1957,6 @@
     <!-- Translators: the ### indicate number of digits, keep intact -->
     <string name="distance_format_feet">###ft</string>
 
-    <string name="prefs_activity_recognition">Activity recognition settings</string>
-    <string name="pref_activity_recognize_running">recognize running</string>
-    <string name="pref_activity_recognize_biking">recognize biking</string>
-    <string name="pref_activity_recognize_walking">recognize walking</string>
-    <string name="pref_activity_recognize_rowing">recognize rowing</string>
-    <string name="pref_activity_recognition_mode_none">none</string>
-    <string name="pref_activity_recognition_mode_ask">ask</string>
-    <string name="pref_activity_recognition_mode_auto">auto</string>
-
     <string name="menuitem_menu">Menu</string>
     <string name="fossil_hr_button_config_info">Some buttons cannot be configured because their functions are hard-coded in the watch firmware.\n\nWarning: long-pressing the upper button when a watchface from the official Fossil app is installed will also toggle between showing/hiding widgets.</string>
     <string name="pref_title_opentracks_packagename">OpenTracks package name</string>
@@ -1986,15 +2003,22 @@
     <string name="step_streaks_achievements_sharing_title">Steps Achievements</string>
     <string name="prefs_hourly_chime">Hourly chime</string>
     <string name="prefs_hourly_chime_summary">The watch will beep once an hour</string>
-    <string name="devicetype_galaxybuds_2">Galaxy Buds2</string>
-    <string name="prefs_touch_lock_buds2">Touch controls</string>
     <string name="devicetype_flipper_zero">Flipper zero</string>
     <string name="activity_prefs_allow_bluetooth_intent_api">Bluetooth Intent API</string>
     <string name="activity_prefs_summary_allow_bluetooth_intent_api">Allow controlling Bluetooth connection via Intent API</string>
+    <string name="intent_api_allow_activity_sync_title">Allow activity sync trigger</string>
+    <string name="intent_api_allow_activity_sync_summary">Allow triggering activity sync via Intent API</string>
+    <string name="intent_api_allow_trigger_export_title">Allow database export</string>
+    <string name="intent_api_allow_trigger_export_summary">Allow triggering database export via Intent API</string>
+    <string name="intent_api_broadcast_export_title">Broadcast on database export</string>
+    <string name="intent_api_broadcast_export_summary">Broadcast an intent when database export finishes</string>
     <string name="devicetype_super_cars">Shell Racing</string>
     <string name="supercars_turbo_speed_label">Turbo Speed</string>
     <string name="supercars_lights_label">Lights</string>
     <string name="supercars_lights_blinking_label">Blinking</string>
+    <string name="devicetype_asteroidos">AsteroidOS</string>
+    <string name="devicetype_soflow_s06">SoFlow SO6</string>
+    <string name="pref_title_lock_unlock">Lock</string>
     <string name="withings_calibration_text_hours">Please use the dial below to align the hour hand to the 12.</string>
     <string name="withings_calibration_text_minutes">Now use the dial to align the minute hand to the 12.</string>
     <string name="withings_calibration_text_activity_target">Finally align the activity hand to 100%. Please be aware that this hand only moves clockwise.</string>

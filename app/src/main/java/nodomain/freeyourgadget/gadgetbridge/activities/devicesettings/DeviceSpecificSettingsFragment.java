@@ -444,10 +444,18 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_HYBRID_HR_FORCE_WHITE_COLOR);
         addPreferenceHandlerFor(PREF_HYBRID_HR_SAVE_RAW_ACTIVITY_FILES);
         addPreferenceHandlerFor(PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS);
-        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING);
-        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING);
-        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING);
-        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ENABLED);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ASK_FIRST);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_MINUTES);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ENABLED);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ASK_FIRST);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_MINUTES);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ENABLED);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ASK_FIRST);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_MINUTES);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ENABLED);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ASK_FIRST);
+        addPreferenceHandlerFor(PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_MINUTES);
 
         addPreferenceHandlerFor(PREF_SONYSWR12_STAMINA);
         addPreferenceHandlerFor(PREF_SONYSWR12_LOW_VIBRATION);
@@ -486,6 +494,7 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_GALAXY_BUDS_TOUCH_RIGHT_SWITCH);
 
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
+        addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);
         addPreferenceHandlerFor(PREF_SONY_FOCUS_VOICE);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_LEVEL);
         addPreferenceHandlerFor(PREF_SONY_SOUND_POSITION);
@@ -502,6 +511,8 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_SONY_PAUSE_WHEN_TAKEN_OFF);
         addPreferenceHandlerFor(PREF_SONY_BUTTON_MODE_LEFT);
         addPreferenceHandlerFor(PREF_SONY_BUTTON_MODE_RIGHT);
+        addPreferenceHandlerFor(PREF_SONY_QUICK_ACCESS_DOUBLE_TAP);
+        addPreferenceHandlerFor(PREF_SONY_QUICK_ACCESS_TRIPLE_TAP);
         addPreferenceHandlerFor(PREF_SONY_AUTOMATIC_POWER_OFF);
         addPreferenceHandlerFor(PREF_SONY_NOTIFICATION_VOICE_GUIDE);
         addPreferenceHandlerFor(PREF_SONY_SPEAK_TO_CHAT);
@@ -545,6 +556,8 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_OFFLINE_VOICE_RESPOND_SCREEN_ON);
         addPreferenceHandlerFor(PREF_OFFLINE_VOICE_RESPONSE_DURING_SCREEN_LIGHTING);
         addPreferenceHandlerFor(PREF_OFFLINE_VOICE_LANGUAGE);
+
+        addPreferenceHandlerFor("lock");
 
         String sleepTimeState = prefs.getString(PREF_SLEEP_TIME, PREF_DO_NOT_DISTURB_OFF);
         boolean sleepTimeScheduled = sleepTimeState.equals(PREF_DO_NOT_DISTURB_SCHEDULED);

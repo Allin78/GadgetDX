@@ -16,7 +16,7 @@
     <string name="controlcenter_delete_device_dialogmessage">此操作将删除该设备和所有相关的数据！</string>
     <string name="controlcenter_navigation_drawer_open">打开导航菜单</string>
     <string name="controlcenter_navigation_drawer_close">关闭导航菜单</string>
-    <string name="controlcenter_snackbar_need_longpress">长按此卡片则断开连接</string>
+    <string name="controlcenter_snackbar_need_longpress">长按此卡片以断开连接</string>
     <string name="controlcenter_snackbar_disconnecting">正在断开</string>
     <string name="controlcenter_snackbar_connecting">正在连接…</string>
     <string name="controlcenter_snackbar_requested_screenshot">获取设备屏幕截图</string>
@@ -527,7 +527,7 @@
     <string name="lack_of_step">缺少步数：%1$d</string>
     <string name="overstep">超过步数：%1$d</string>
     <string name="live_activity_max_heart_rate">当前／最大心率：%1$d / %2$d</string>
-    <string name="you_slept">您睡了 %1$s 到 %2$s</string>
+    <string name="you_slept">您从 %1$s 睡到了 %2$s</string>
     <string name="you_did_not_sleep">您没有睡觉</string>
     <string name="mi3_prefs_band_screen_unlock">手环屏幕解锁</string>
     <string name="mi3_prefs_band_screen_unlock_summary">滑动以解锁手环屏幕</string>
@@ -934,7 +934,7 @@
     <string name="error_exporting_device_preferences">导出设备特定首选项时遇到错误</string>
     <string name="pref_check_permission_status_summary">检查并要求尚未获得的权限即使并非立刻需要。若您的设备的确不支持此类功能，也可禁用。不进行授权可能会导致问题！</string>
     <string name="pref_check_permission_status">检查权限状态</string>
-    <string name="device_requires_key">需要按键，长按可进入</string>
+    <string name="device_requires_key">需要密钥，长按可进入</string>
     <string name="device_is_currently_bonded">已经绑定过了</string>
     <string name="companiondevice_pairing">CompanionDevice 配对</string>
     <string name="require_location_provider">必须启动定位</string>
@@ -1692,7 +1692,7 @@
     <string name="pref_title_banglejs_text_bitmap">作为位图的文本</string>
     <string name="pref_summary_banglejs_text_bitmap">如果无法使用手表的字体呈现单词，请将其呈现为 Gadgetbridge 中的位图，并在手表上显示位图</string>
     <string name="pref_summary_device_intents">允许 Bangle.js 手表应用发送 Android 意图，并允许 Android 上的其他应用（如 Tasker）使用 com.banglejs.uart.tx 意图向 Bangle.js 发送数据。需要“能在其他应用前显示”权限。</string>
-    <string name="pref_title_device_intents">允许意向</string>
+    <string name="pref_title_device_intents">允许意图</string>
     <string name="pref_title_device_internet_access">允许互联网访问</string>
     <string name="pref_summary_device_internet_access">允许此设备上的应用访问互联网</string>
     <string name="pref_workout_start_on_phone_title">健身应用追踪</string>
@@ -1811,8 +1811,8 @@
     <string name="controlcenter_get_heartrate_measurement">获取心率测量值</string>
     <string name="pref_write_logfiles_not_available">文件日志初始化失败，写日志文件目前不可用。请尝试重新启动应用程序，然诺再次初始化日志文件。</string>
     <string name="devicetype_binary_sensor">二进制传感器</string>
-    <string name="application_name_banglejs_nightly">Bangle.js Gadgetbridge (每页编译版)</string>
-    <string name="title_activity_controlcenter_banglejs_nightly">Bangle.js Gadgetbridge (每页编译版)</string>
+    <string name="application_name_banglejs_nightly">Bangle.js Gadgetbridge (每夜编译版)</string>
+    <string name="title_activity_controlcenter_banglejs_nightly">Bangle.js Gadgetbridge (每夜编译版)</string>
     <string name="about_activity_title_banglejs_nightly">关于Bangle.js Gadgetbridge (每夜编译版)</string>
     <string name="gadgetbridge_running_banglejs_nightly">Bangle.js 每夜编译版正在运行中</string>
     <string name="about_description_banglejs_nightly">Bangle.js 的 Android 配套应用程序构建在 Gadgetbridge 项目之上，增加了 Internet 访问。
@@ -2072,4 +2072,49 @@
 \n
 \n风险自担！</string>
     <string name="devicetype_amazfit_gts4">跃我 GTS 4</string>
+    <string name="fw_upgrade_notice_amazfit_gts4_mini">您即将在您的 跃我 GTS 4 Mini 上安装 %s 固件。
+\n
+\n您的手环将会在安装了 .zip 文件后自动重启。
+\n
+\n风险自担！</string>
+    <string name="devicetype_amazfit_gts4_mini">跃我 GTS 4 Mini</string>
+    <string name="devicetype_sony_linkbuds_s">索尼 LinkBuds S</string>
+    <string name="pref_header_intent_api">意图接口</string>
+    <string name="intent_api_allow_activity_sync_title">允许活动同步触发器</string>
+    <string name="intent_api_allow_activity_sync_summary">允许通过意图 API 触发活动同步</string>
+    <string name="intent_api_allow_trigger_export_summary">允许通过意图 API 触发数据库导出</string>
+    <string name="intent_api_broadcast_export_title">数据库导出时广播</string>
+    <string name="intent_api_allow_trigger_export_title">允许数据库导出</string>
+    <string name="intent_api_broadcast_export_summary">数据库导出完成后广播意图</string>
+    <string name="sony_ambient_sound_control_button_modes">环境声控制按钮模式</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as_off">降噪，环境音，关闭</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_off">降噪，关闭</string>
+    <string name="sony_ambient_sound_control_button_mode_as_off">环境音，关闭</string>
+    <string name="sony_quick_access_double_tap">快速访问（双击）</string>
+    <string name="sony_quick_access_triple_tap">快速访问（三连击）</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as">降噪，环境音</string>
+    <string name="menuitem_wechat_pay">微信支付</string>
+    <string name="pref_agps_expire_time">AGPS 过期时间</string>
+    <string name="pref_agps_update_time">AGPS 更新时间</string>
+    <string name="appmanager_app_download">下载到缓存</string>
+    <string name="appmanager_download_started">开始下载应用程序</string>
+    <string name="appmanager_downloaded_to_cache">已下载 %s 到缓存</string>
+    <string name="appmanager_download_app_error">下载应用程序时出错</string>
+    <string name="appmanager_watchface_activate">启用</string>
+    <string name="appmanager_app_start">开始</string>
+    <string name="devicetype_asteroidos">AsteroidOS</string>
+    <string name="fw_upgrade_notice_amazfit_trex2">您即将在您的 跃我 T-Rex 2 上安装 %s 固件。
+\n
+\n您的手环将会在安装了 .zip 文件后重启。
+\n
+\n风险自担！</string>
+    <string name="devicetype_amazfit_trex_2">跃我 T-Rex 2</string>
+    <string name="pref_workout_detection_enabled_summary">对此锻炼启用自动检测</string>
+    <string name="pref_workout_detection_enabled">检测已开启</string>
+    <string name="pref_workout_detection_ask_first">先询问我</string>
+    <string name="pref_workout_detection_ask_first_summary">检测到该锻炼时，需要在手表上进行确认</string>
+    <string name="pref_workout_detection_time">检测前几分钟的活动</string>
+    <string name="pref_workout_detection_time_summary">锻炼必须持续多少分钟才能检测到它</string>
+    <string name="activity_type_rowing">赛艇</string>
+    <string name="georgian">乔治亚</string>
 </resources>

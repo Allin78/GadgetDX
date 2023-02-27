@@ -2061,4 +2061,48 @@
 \nGelang Anda akan dinyalakan ulang setelah memasang berkas .zip.
 \n
 \nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="fw_upgrade_notice_amazfit_gts4_mini">Anda akan memasang perangkat tegar %s pada Amazfit GTS 4 Mini Anda.
+\n
+\nGelang Anda akan dinyalakan ulang setelah memasang berkas .zip.
+\n
+\nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="devicetype_amazfit_gts4_mini">Amazfit GTS 4 Mini</string>
+    <string name="devicetype_sony_linkbuds_s">Sony LinkBuds S</string>
+    <string name="intent_api_broadcast_export_title">Siarkan pada pengeksporan basis data</string>
+    <string name="pref_header_intent_api">API Intent</string>
+    <string name="intent_api_allow_activity_sync_title">Perbolehkan pemicuan penyinkronan aktivitas</string>
+    <string name="intent_api_allow_activity_sync_summary">Perbolehkan memicu penyinkronan aktivitas melalui API Intent</string>
+    <string name="intent_api_allow_trigger_export_title">Perbolehkan pengeksporan basis data</string>
+    <string name="intent_api_allow_trigger_export_summary">Perbolehkan memicu pengeksporan basis data melalui API Intent</string>
+    <string name="intent_api_broadcast_export_summary">Siarkan intent ketika pengeksporan basis data selesai</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as_off">Pembatalan Kebisingan, Suara Sekitar, Mati</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as">Pembatalan Kebisingan, Suara Sekitar</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_off">Pembatalan Kebisingan, Mati</string>
+    <string name="sony_quick_access_double_tap">Akses Cepat (Ketuk Dua Kali)</string>
+    <string name="sony_quick_access_triple_tap">Akses Cepat (Ketuk Tiga Kali)</string>
+    <string name="sony_ambient_sound_control_button_modes">Mode Tombol Kontrol Suara Sekitar</string>
+    <string name="sony_ambient_sound_control_button_mode_as_off">Suara Sekitar, Mati</string>
+    <string name="menuitem_wechat_pay">WeChat Pay</string>
+    <string name="pref_agps_update_time">Waktu Pembaruan AGPS</string>
+    <string name="pref_agps_expire_time">Waktu Kedaluwarsa AGPS</string>
+    <string name="appmanager_app_start">Mulai</string>
+    <string name="appmanager_downloaded_to_cache">%s telah diunduh ke tembolok</string>
+    <string name="appmanager_download_app_error">Terjadi kesalahan mengunduh aplikasi</string>
+    <string name="appmanager_watchface_activate">Aktifkan</string>
+    <string name="appmanager_app_download">Unduh ke tembolok</string>
+    <string name="appmanager_download_started">Pengunduhan aplikasi dimulai</string>
+    <string name="devicetype_asteroidos">AsteroidOS</string>
+    <string name="fw_upgrade_notice_amazfit_trex2">Anda akan memasang perangkat tegar %s pada Amazfit T-Rex 2 Anda.
+\n
+\nGelang Anda akan dinyalakan ulang setelah memasang berkas .zip.
+\n
+\nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="devicetype_amazfit_trex_2">Amazfit T-Rex 2</string>
+    <string name="pref_workout_detection_enabled_summary">Aktifkan deteksi otomatis untuk olahraga ini</string>
+    <string name="pref_workout_detection_ask_first">Tanyakan saya terlebih dahulu</string>
+    <string name="pref_workout_detection_ask_first_summary">Membutuhkan konfirmasi pada jam ketika mendeteksi olahraga ini</string>
+    <string name="pref_workout_detection_time">Menit aktif sebelum deteksi</string>
+    <string name="activity_type_rowing">Mendayung</string>
+    <string name="pref_workout_detection_time_summary">Jumlah menit olahraga harus berlangsung sebelum mendeteksinya</string>
+    <string name="pref_workout_detection_enabled">Deteksi diaktifkan</string>
 </resources>

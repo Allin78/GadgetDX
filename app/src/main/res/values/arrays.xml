@@ -521,6 +521,7 @@
         <item>@string/menuitem_breathing</item>
         <item>@string/menuitem_flashlight</item>
         <item>@string/menuitem_alipay</item>
+        <item>@string/menuitem_nfc</item>
     </string-array>
 
     <string-array name="pref_miband6_display_items_values">
@@ -549,6 +550,7 @@
         <item>@string/p_menuitem_breathing</item>
         <item>@string/p_menuitem_flashlight</item>
         <item>@string/p_menuitem_alipay</item>
+        <item>@string/p_menuitem_nfc</item>
     </string-array>
 
     <string-array name="pref_miband6_display_items_default">
@@ -758,6 +760,8 @@
         <item>@string/menuitem_workout</item>
         <item>@string/menuitem_workout_status</item>
         <item>@string/menuitem_worldclock</item>
+        <item>@string/menuitem_alipay</item>
+        <item>@string/menuitem_wechat_pay</item>
         <!-- dummy item -->
         <item>@string/menuitem_more</item>
     </string-array>
@@ -800,6 +804,8 @@
         <item>workout</item>
         <item>workout_status</item>
         <item>worldclock</item>
+        <item>alipay</item>
+        <item>wechat_pay</item>
         <!-- dummy item -->
         <item>more</item>
     </string-array>
@@ -2814,16 +2820,28 @@
         <item>volume_control</item>
     </string-array>
 
-    <string-array name="fossil_hr_activity_recognition_modes">
-        <item>@string/pref_activity_recognition_mode_none</item>
-        <item>@string/pref_activity_recognition_mode_ask</item>
-        <item>@string/pref_activity_recognition_mode_auto</item>
+    <string-array name="sony_quick_access_names">
+        <item>@string/off</item>
+        <item>@string/pref_title_touch_spotify</item>
     </string-array>
 
-    <string-array name="fossil_hr_activity_recognition_mode_values">
-        <item>mode_none</item>
-        <item>mode_ask</item>
-        <item>mode_auto</item>
+    <string-array name="sony_quick_access_values">
+        <item>off</item>
+        <item>spotify</item>
+    </string-array>
+
+    <string-array name="sony_ambient_sound_control_button_mode_names">
+        <item>@string/sony_ambient_sound_control_button_mode_nc_as_off</item>
+        <item>@string/sony_ambient_sound_control_button_mode_nc_as</item>
+        <item>@string/sony_ambient_sound_control_button_mode_nc_off</item>
+        <item>@string/sony_ambient_sound_control_button_mode_as_off</item>
+    </string-array>
+
+    <string-array name="sony_ambient_sound_control_button_mode_values">
+        <item>nc_as_off</item>
+        <item>nc_as</item>
+        <item>nc_off</item>
+        <item>as_off</item>
     </string-array>
 
     <string-array name="fitness_tracking_apps_package_names">
@@ -2840,6 +2858,7 @@
         <item>@string/estonian</item>
         <item>@string/extended_ascii</item>
         <item>@string/french</item>
+        <item>@string/georgian</item>
         <item>@string/german</item>
         <item>@string/greek</item>
         <item>@string/hebrew</item>
@@ -2861,6 +2880,7 @@
         <item>estonian</item>
         <item>extended_ascii</item>
         <item>french</item>
+        <item>georgian</item>
         <item>german</item>
         <item>greek</item>
         <item>hebrew</item>

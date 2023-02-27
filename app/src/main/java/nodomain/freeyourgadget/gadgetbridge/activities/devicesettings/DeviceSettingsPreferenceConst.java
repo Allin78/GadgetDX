@@ -70,6 +70,9 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_VIBRATION_STRENGH_PERCENTAGE = "vibration_strength";
     public static final String PREF_RELAX_FIRMWARE_CHECKS = "relax_firmware_checks";
 
+    public static final String PREF_DEVICE_GPS_UPDATE = "banglejs_gps_update";
+    public static final String PREF_DEVICE_GPS_UPDATE_INTERVAL = "banglejs_gps_update_interval";
+
     public static final String PREF_DEVICE_INTERNET_ACCESS = "device_internet_access";
     public static final String PREF_DEVICE_INTENTS = "device_intents";
 
@@ -85,11 +88,18 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HYBRID_HR_DRAW_WIDGET_CIRCLES = "widget_draw_circles";
     public static final String PREF_HYBRID_HR_SAVE_RAW_ACTIVITY_FILES = "save_raw_activity_files";
     public static final String PREF_HYBRID_HR_DANGEROUS_EXTERNAL_INTENTS = "dangerous_external_intents";
-    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING = "activity_recognize_running";
-    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING = "activity_recognize_biking";
-    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING = "activity_recognize_walking";
-    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING = "activity_recognize_rowing";
-
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ENABLED = "activity_recognize_running_enabled";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_ASK_FIRST = "activity_recognize_running_ask_first";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_RUNNING_MINUTES = "activity_recognize_running_minutes";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ENABLED = "activity_recognize_biking_enabled";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_ASK_FIRST = "activity_recognize_biking_ask_first";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_BIKING_MINUTES = "activity_recognize_biking_minutes";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ENABLED = "activity_recognize_walking_enabled";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_ASK_FIRST = "activity_recognize_walking_ask_first";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_WALKING_MINUTES = "activity_recognize_walking_minutes";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ENABLED = "activity_recognize_rowing_enabled";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_ASK_FIRST = "activity_recognize_rowing_ask_first";
+    public static final String PREF_HYBRID_HR_ACTIVITY_RECOGNITION_ROWING_MINUTES = "activity_recognize_rowing_minutes";
 
     public static final String PREF_ACTIVATE_DISPLAY_ON_LIFT = "activate_display_on_lift_wrist";
     public static final String PREF_DISPLAY_ON_LIFT_START = "display_on_lift_start";
@@ -189,6 +199,8 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_GPS_SATELLITE_SEARCH = "pref_gps_satellite_search";
     public static final String PREF_AGPS_EXPIRY_REMINDER_ENABLED = "pref_agps_expiry_reminder_enabled";
     public static final String PREF_AGPS_EXPIRY_REMINDER_TIME = "pref_agps_expiry_reminder_time";
+    public static final String PREF_AGPS_UPDATE_TIME = "pref_agps_update_time";
+    public static final String PREF_AGPS_EXPIRE_TIME = "pref_agps_expire_time";
 
     public static final String PREF_FIND_PHONE = "prefs_find_phone";
     public static final String PREF_FIND_PHONE_DURATION = "prefs_find_phone_duration";
@@ -250,6 +262,7 @@ public class DeviceSettingsPreferenceConst {
 
     public static final String PREF_SONY_AUDIO_CODEC = "pref_sony_audio_codec";
     public static final String PREF_SONY_AMBIENT_SOUND_CONTROL = "pref_sony_ambient_sound_control";
+    public static final String PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE = "pref_sony_ambient_sound_control_button_mode";
     public static final String PREF_SONY_FOCUS_VOICE = "pref_sony_focus_voice";
     public static final String PREF_SONY_AMBIENT_SOUND_LEVEL = "pref_sony_ambient_sound_level";
     public static final String PREF_SONY_NOISE_OPTIMIZER_START = "pref_sony_noise_optimizer_start";
@@ -271,6 +284,8 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SONY_PAUSE_WHEN_TAKEN_OFF = "pref_sony_pause_when_taken_off";
     public static final String PREF_SONY_BUTTON_MODE_LEFT = "pref_sony_button_mode_left";
     public static final String PREF_SONY_BUTTON_MODE_RIGHT = "pref_sony_button_mode_right";
+    public static final String PREF_SONY_QUICK_ACCESS_DOUBLE_TAP = "pref_sony_quick_access_double_tap";
+    public static final String PREF_SONY_QUICK_ACCESS_TRIPLE_TAP = "pref_sony_quick_access_triple_tap";
     public static final String PREF_SONY_AUTOMATIC_POWER_OFF = "pref_sony_automatic_power_off";
     public static final String PREF_SONY_NOTIFICATION_VOICE_GUIDE = "pref_sony_notification_voice_guide";
     public static final String PREF_SONY_SPEAK_TO_CHAT = "pref_sony_speak_to_chat";

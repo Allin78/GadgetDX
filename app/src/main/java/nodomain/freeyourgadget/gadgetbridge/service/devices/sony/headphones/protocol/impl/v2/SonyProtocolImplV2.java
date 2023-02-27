@@ -32,12 +32,14 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInf
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControl;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControlButtonMode;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AudioUpsampling;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AutomaticPowerOff;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.ButtonModes;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.EqualizerCustomBands;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.EqualizerPreset;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.PauseWhenTakenOff;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.QuickAccess;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SoundPosition;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SurroundMode;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.TouchSensor;
@@ -114,7 +116,7 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
                 PayloadTypeV2.AUDIO_CODEC_REQUEST.getMessageType(),
                 new byte[]{
                         PayloadTypeV2.AUDIO_CODEC_REQUEST.getCode(),
-                        (byte) 0x00
+                        (byte) 0x02
                 }
         );
     }
@@ -201,10 +203,34 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
                         PayloadTypeV1.AUTOMATIC_POWER_OFF_BUTTON_MODE_SET.getCode(),
                         (byte) 0x03,
                         (byte) 0x02,
-                        config.getModeLeft().getCode(),
-                        config.getModeRight().getCode()
+                        encodeButtonMode(config.getModeLeft()),
+                        encodeButtonMode(config.getModeRight())
                 }
         );
+    }
+
+    @Override
+    public Request getQuickAccess() {
+        LOG.warn("Quick access not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request setQuickAccess(final QuickAccess quickAccess) {
+        LOG.warn("Quick access not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request getAmbientSoundControlButtonMode() {
+        LOG.warn("Ambient sound control button modes not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request setAmbientSoundControlButtonMode(final AmbientSoundControlButtonMode ambientSoundControlButtonMode) {
+        LOG.warn("Ambient sound control button modes not implemented for V2");
+        return null;
     }
 
     @Override
@@ -325,6 +351,7 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
         final PayloadTypeV2 payloadType = PayloadTypeV2.fromCode(messageType, payload[0]);
 
         switch (payloadType) {
+            case AUDIO_CODEC_REPLY:
             case AUDIO_CODEC_NOTIFY:
                 return handleAudioCodec(payload);
             case BATTERY_LEVEL_NOTIFY:
@@ -477,8 +504,8 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
             return Collections.emptyList();
         }
 
-        final ButtonModes.Mode modeLeft = ButtonModes.Mode.fromCode(payload[3]);
-        final ButtonModes.Mode modeRight = ButtonModes.Mode.fromCode(payload[4]);
+        final ButtonModes.Mode modeLeft = decodeButtonMode(payload[3]);
+        final ButtonModes.Mode modeRight = decodeButtonMode(payload[4]);
 
         if (modeLeft == null || modeRight == null) {
             LOG.warn("Unknown button mode codes {}", String.format("%02x %02x", payload[3], payload[4]));
@@ -531,7 +558,7 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
             return Collections.emptyList();
         }
 
-        if (payload[1] != 0x03) {
+        if (payload[1] != 0x02) {
             LOG.warn("Not audio codec, ignoring");
             return Collections.emptyList();
         }

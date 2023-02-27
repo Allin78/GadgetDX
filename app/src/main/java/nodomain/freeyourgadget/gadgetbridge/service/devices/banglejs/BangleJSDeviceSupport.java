@@ -16,6 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs;
 
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALLOW_HIGH_MTU;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANGLEJS_TEXT_BITMAP;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANGLEJS_TEXT_BITMAP_SIZE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_GPS_UPDATE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_GPS_UPDATE_INTERVAL;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTENTS;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTERNET_ACCESS;
+import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.getUser;
+
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
@@ -27,6 +36,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
@@ -36,8 +47,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -54,6 +65,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,18 +73,21 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SimpleTimeZone;
+import java.util.Timer;
 import java.util.UUID;
-import java.lang.reflect.Field;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
+import de.greenrobot.dao.query.QueryBuilder;
 import io.wax911.emojify.Emoji;
 import io.wax911.emojify.EmojiManager;
 import io.wax911.emojify.EmojiUtils;
-import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -84,18 +99,18 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicContr
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncState;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncStateDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationManager;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.LocationProviderType;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
-import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
-import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
@@ -105,22 +120,16 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiPhoneGpsStatus;
 import nodomain.freeyourgadget.gadgetbridge.util.EmojiConverter;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ALLOW_HIGH_MTU;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANGLEJS_TEXT_BITMAP_SIZE;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTERNET_ACCESS;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTENTS;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANGLEJS_TEXT_BITMAP;
-import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.*;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
+import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
+import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 
 public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSDeviceSupport.class);
@@ -137,14 +146,24 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private String receiveHistory = "";
     private boolean realtimeHRM = false;
     private boolean realtimeStep = false;
-    private int realtimeHRMInterval = 30*60;
+    /// How often should activity data be sent - in seconds
+    private int realtimeHRMInterval = 10;
     /// Last battery percentage reported (or -1) to help with smoothing reported battery levels
     private int lastBatteryPercent = -1;
 
     private final LimitedQueue/*Long*/ mNotificationReplyAction = new LimitedQueue(16);
 
+    private Boolean gpsUpdateSetup = false;
+    private Timer gpsPositionTimer;
+    private final int gpsUpdateTimerInterval = 1000;
+
+    // this stores the globalUartReceiver (for uart.tx intents)
+    private BroadcastReceiver globalUartReceiver = null;
+
     /// Maximum amount of characters to store in receiveHistory
     public static final int MAX_RECEIVE_HISTORY_CHARS = 100000;
+    /// Used to avoid spamming logs with ACTION_DEVICE_CHANGED messages
+    static String lastStateString;
 
     // Local Intents - for app manager communication
     public static final String BANGLEJS_COMMAND_TX = "banglejs_command_tx";
@@ -158,6 +177,26 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
         registerLocalIntents();
         registerGlobalIntents();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        stopGlobalUartReceiver();
+        stopLocationUpdate();
+    }
+
+    private void stopGlobalUartReceiver(){
+        if(globalUartReceiver != null){
+            GBApplication.getContext().unregisterReceiver(globalUartReceiver); // remove uart.tx intent listener
+        }
+    }
+
+
+    private void stopLocationUpdate() {
+        LOG.info("Stop location updates");
+        GBLocationManager.stop(getContext(), this);
+        gpsUpdateSetup = false;
     }
 
     private void addReceiveHistory(String s) {
@@ -191,8 +230,15 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                         break;
                     }
                     case GBDevice.ACTION_DEVICE_CHANGED: {
-                        LOG.info("ACTION_DEVICE_CHANGED " + (gbDevice!=null ? gbDevice.getStateString():""));
-                        addReceiveHistory("\n================================================\nACTION_DEVICE_CHANGED "+gbDevice.getStateString()+" "+(new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.US)).format(Calendar.getInstance().getTime())+"\n================================================\n");
+                        String stateString = (gbDevice!=null ? gbDevice.getStateString():"");
+                        if (!stateString.equals(lastStateString)) {
+                          lastStateString = stateString;
+                          LOG.info("ACTION_DEVICE_CHANGED " + stateString);
+                          addReceiveHistory("\n================================================\nACTION_DEVICE_CHANGED "+stateString+" "+(new SimpleDateFormat("yyyy-mm-dd hh:mm:ss", Locale.US)).format(Calendar.getInstance().getTime())+"\n================================================\n");
+                        }
+                        if (gbDevice!=null && gbDevice.getState() == GBDevice.State.NOT_CONNECTED) {
+                            stopLocationUpdate();
+                        }
                     }
                 }
             }
@@ -203,7 +249,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private void registerGlobalIntents() {
         IntentFilter commandFilter = new IntentFilter();
         commandFilter.addAction(BANGLE_ACTION_UART_TX);
-        BroadcastReceiver commandReceiver = new BroadcastReceiver() {
+        globalUartReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 switch (intent.getAction()) {
@@ -236,7 +282,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 }
             }
         };
-        GBApplication.getContext().registerReceiver(commandReceiver, commandFilter);
+        GBApplication.getContext().registerReceiver(globalUartReceiver, commandFilter);
     }
 
     @Override
@@ -272,6 +318,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         lastBatteryPercent = -1;
 
         LOG.info("Initialization Done");
+
+        requestBangleGPSPowerStatus();
 
         return builder;
     }
@@ -406,12 +454,16 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             // JSON - we hope!
             try {
                 JSONObject json = new JSONObject(line);
-                LOG.info("UART RX JSON parsed successfully");
-                handleUartRxJSON(json);
+                if (json.has("t")) {
+                    handleUartRxJSON(json);
+                    LOG.info("UART RX JSON parsed successfully");
+                } else
+                    LOG.warn("UART RX JSON parsed but doesn't contain 't' - ignoring");
             } catch (JSONException e) {
                 LOG.info("UART RX JSON parse failure: "+ e.getLocalizedMessage());
                 GB.toast(getContext(), "Malformed JSON from Bangle.js: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
             }
+
         } else {
             LOG.info("UART RX line started with "+(int)line.charAt(0)+" - ignoring");
         }
@@ -741,7 +793,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                             idsList.add(id);
                         }
                     }
-                    if(idsList.size() == states.size()) return;
+
                     //remove all elements not in ids from database (we don't have them)
                     for(CalendarSyncState calendarSyncState : states) {
                         long id = calendarSyncState.getCalendarEntryId();
@@ -757,9 +809,19 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     GB.toast("Database Error while forcefully syncing Calendar", Toast.LENGTH_SHORT, GB.ERROR, e1);
                 }
                 //force a syncCalendar now, send missing events
-                Intent in = new Intent(this.getContext().getApplicationContext(), CalendarReceiver.class);
-                in.setAction("android.intent.action.PROVIDER_CHANGED");
-                this.getContext().getApplicationContext().sendBroadcast(in);
+                Context context = GBApplication.getContext();
+                Intent intent = new Intent("FORCE_CALENDAR_SYNC");
+                intent.setPackage(BuildConfig.APPLICATION_ID);
+                GBApplication.getContext().sendBroadcast(intent);
+            } break;
+            case "gps_power": {
+                boolean status = json.getBoolean("status");
+                LOG.info("Got gps power status: " + status);
+                if (status) {
+                    setupGPSUpdateTimer();
+                } else {
+                    stopLocationUpdate();
+                }
             } break;
             default : {
                 LOG.info("UART RX JSON packet type '"+packetType+"' not understood.");
@@ -791,8 +853,30 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             // check to see if we get more data - if so, increase out MTU for sending
             if (allowHighMTU && chars.length > mtuSize)
                 mtuSize = chars.length;
+            // Scan for flow control characters
+            for (int i=0;i<chars.length;i++) {
+                boolean ignoreChar = false;
+                if (chars[i]==19 /* XOFF */) {
+                    getQueue().setPaused(true);
+                    LOG.info("RX: XOFF");
+                    ignoreChar = true;
+                }
+                if (chars[i]==17 /* XON */) {
+                    getQueue().setPaused(false);
+                    LOG.info("RX: XON");
+                    ignoreChar = true;
+                }
+                if (ignoreChar) {
+                    // remove char from the array. Generally only one XON/XOFF per stream so creating a new array each time is fine
+                    byte[] c = new byte[chars.length - 1];
+                    System.arraycopy(chars, 0, c, 0, i); // copy before
+                    System.arraycopy(chars, i+1, c, i, chars.length - i - 1); // copy after
+                    chars = c;
+                    i--; // back up one (because we deleted it)
+                }
+            }
             String packetStr = new String(chars);
-            LOG.info("RX: " + packetStr);
+            LOG.debug("RX: " + packetStr);
             // logging
             addReceiveHistory(packetStr);
             // split into input lines
@@ -825,6 +909,73 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
       uartTx(builder, cmd+"\n");
     }
 
+    void requestBangleGPSPowerStatus() {
+        try {
+            JSONObject o = new JSONObject();
+            o.put("t", "is_gps_active");
+            LOG.debug("Requesting gps power status: " + o.toString());
+            uartTxJSON("is_gps_active", o);
+        } catch (JSONException e) {
+            GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+        }
+    }
+
+    void setupGPSUpdateTimer() {
+        if (gpsUpdateSetup) {
+            LOG.debug("GPS position timer is already setup");
+            return;
+        }
+        Prefs devicePrefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        if(devicePrefs.getBoolean(PREF_DEVICE_GPS_UPDATE, false)) {
+            int intervalLength = devicePrefs.getInt(PREF_DEVICE_GPS_UPDATE_INTERVAL, 10000);
+            LOG.info("Setup location listener with an update interval of " + intervalLength + " ms");
+
+            try {
+                GBLocationManager.start(getContext(), this, LocationProviderType.GPS, intervalLength);
+            } catch (IllegalArgumentException e) {
+                LOG.warn("GPS provider could not be started", e);
+            }
+
+            try {
+                GBLocationManager.start(getContext(), this, LocationProviderType.NETWORK, intervalLength);
+            } catch (IllegalArgumentException e) {
+                LOG.warn("NETWORK provider could not be started", e);
+            }
+        } else {
+            LOG.debug("Phone gps data update is deactivated in the settings");
+        }
+    }
+
+    @Override
+    public void onSetGpsLocation(final Location location) {
+        if (!GBApplication.getPrefs().getBoolean("use_updated_location_if_available", false)) return;
+        LOG.debug("new location: " + location.toString());
+        JSONObject o = new JSONObject();
+        try {
+            o.put("t", "gps");
+            o.put("lat", location.getLatitude());
+            o.put("lon", location.getLongitude());
+            o.put("alt", location.getAltitude());
+            o.put("speed", location.getSpeed());
+            if (location.hasBearing()) o.put("course", location.getBearing());
+            o.put("time", new Date().getTime());
+            if (location.getExtras() != null) {
+                LOG.debug("Found number of satellites: " + location.getExtras().getInt("satellites", -1));
+                o.put("satellites",location.getExtras().getInt("satellites"));
+            } else {
+                o.put("satellites", 0);
+            }
+            o.put("hdop", location.getAccuracy());
+            o.put("externalSource", true);
+            LOG.debug("Sending gps valu: " + o.toString());
+            uartTxJSON("gps", o);
+        } catch (JSONException e) {
+            GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
+        }
+    }
+
+
+
     @Override
     public boolean useAutoConnect() {
         return true;
@@ -845,6 +996,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     public String renderUnicodeAsImage(String txt) {
+        // FIXME: it looks like we could implement this as customStringFilter now so it happens automatically
         if (txt==null) return null;
         // Simple conversions
         txt = txt.replaceAll("…", "...");
@@ -858,6 +1010,12 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         boolean needsTranslate = false;
         for (int i=0;i<txt.length();i++) {
             char ch = txt.charAt(i);
+            // Special cases where we can just use a built-in character...
+            // Based on https://op.europa.eu/en/web/eu-vocabularies/formex/physical-specifications/character-encoding
+            if (ch=='–' || ch=='‐' || ch=='—') ch='-';
+            else if (ch=='‘' || ch=='’' || ch =='‚' || ch=='‛' || ch=='′' || ch=='ʹ') ch='\'';
+            else if (ch=='“' || ch=='”' || ch =='„' || ch=='‟' || ch=='″') ch='"';
+            // chars which break words up
             if (" -_/:.,?!'\"&*()".indexOf(ch)>=0) {
                 // word split
                 if (needsTranslate) { // convert word
@@ -923,8 +1081,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             TransactionBuilder builder = performInitialized("setTime");
             transmitTime(builder);
             //TODO: once we have a common strategy for sending events (e.g. EventHandler), remove this call from here. Meanwhile it does no harm.
-            // = we should genaralize the pebble calender code
-            //sendCalendarEvents();
+            // = we should generalize the pebble calender code
             forceCalendarSync();
             builder.queue(getQueue());
         } catch (Exception e) {
@@ -974,11 +1131,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
-}
-
-    @Override
-    public void onSetCannedMessages(CannedMessagesSpec cannedMessagesSpec) {
-
     }
 
     @Override
@@ -1038,36 +1190,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onInstallApp(Uri uri) {
-
-    }
-
-    @Override
-    public void onAppInfoReq() {
-
-    }
-
-    @Override
-    public void onAppStart(UUID uuid, boolean start) {
-
-    }
-
-    @Override
-    public void onAppDelete(UUID uuid) {
-
-    }
-
-    @Override
-    public void onAppConfiguration(UUID appUuid, String config, Integer id) {
-
-    }
-
-    @Override
-    public void onAppReorder(UUID[] uuids) {
-
-    }
-
-    @Override
     public void onFetchRecordedData(int dataTypes) {
         if (dataTypes == RecordedDataTypes.TYPE_DEBUGLOGS) {
             File dir;
@@ -1090,16 +1212,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 LOG.warn("Could not write to file", e);
             }
         }
-    }
-
-    @Override
-    public void onReset(int flags) {
-
-    }
-
-    @Override
-    public void onHeartRateTest() {
-
     }
 
     @Override
@@ -1134,16 +1246,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onScreenshotReq() {
-
-    }
-
-    @Override
-    public void onEnableHeartRateSleepSupport(boolean enable) {
-
-    }
-
-    @Override
     public void onSetHeartRateMeasurementInterval(int seconds) {
         realtimeHRMInterval = seconds;
         transmitActivityStatus();
@@ -1158,9 +1260,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("type", calendarEventSpec.type); //implement this too? (sunrise and set)
             o.put("timestamp", calendarEventSpec.timestamp);
             o.put("durationInSeconds", calendarEventSpec.durationInSeconds);
-            o.put("title", calendarEventSpec.title);
-            o.put("description", calendarEventSpec.description);
-            o.put("location", calendarEventSpec.location);
+            o.put("title", renderUnicodeAsImage(calendarEventSpec.title));
+            o.put("description", renderUnicodeAsImage(calendarEventSpec.description));
+            o.put("location", renderUnicodeAsImage(calendarEventSpec.location));
             o.put("calName", calendarEventSpec.calName);
             o.put("color", calendarEventSpec.color);
             o.put("allDay", calendarEventSpec.allDay);
@@ -1180,21 +1282,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
-    }
-
-    @Override
-    public void onSendConfiguration(String config) {
-
-    }
-
-    @Override
-    public void onReadConfiguration(String config) {
-
-    }
-
-    @Override
-    public void onTestNewFunction() {
-
     }
 
     @Override
@@ -1412,41 +1499,4 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    /*
-     * Sending all events together, not used for now, keep for future reference
-     */
-    private void sendCalendarEvents() {
-        //Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-        //TODO set a limit as number in the preferences?
-        //int availableSlots = prefs.getInt(PREF_CALENDAR_EVENTS_MAX, 0);
-        int availableSlots = 6;
-
-        try {
-            CalendarManager upcomingEvents = new CalendarManager(getContext(), getDevice().getAddress());
-            List<CalendarEvent> mEvents = upcomingEvents.getCalendarEventList();
-            JSONObject cal = new JSONObject();
-            JSONArray events = new JSONArray();
-
-            cal.put("t", "calendarevents");
-
-            for (CalendarEvent mEvt : mEvents) {
-                if(availableSlots<1) break;
-                JSONObject o = new JSONObject();
-                o.put("timestamp", mEvt.getBeginSeconds());
-                o.put("durationInSeconds", mEvt.getDurationSeconds());
-                o.put("title", mEvt.getTitle());
-                //avoid making the message too long
-                //o.put("description", mEvt.getDescription());
-                o.put("location", mEvt.getLocation());
-                o.put("allDay", mEvt.isAllDay());
-                events.put(o);
-                availableSlots--;
-            }
-            cal.put("events", events);
-            uartTxJSON("sendCalendarEvents", cal);
-            LOG.info("sendCalendarEvents: sent " + events.length());
-        } catch(JSONException e) {
-            LOG.info("JSONException: " + e.getLocalizedMessage());
-        }
-    }
 }

@@ -26,30 +26,11 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSett
 
 public class ButtonModes {
     public enum Mode {
-        OFF((byte) 0xff),
-        AMBIENT_SOUND_CONTROL((byte) 0x00),
-        PLAYBACK_CONTROL((byte) 0x20),
-        VOLUME_CONTROL((byte) 0x10);
-
-        private final byte code;
-
-        Mode(final byte code) {
-            this.code = code;
-        }
-
-        public byte getCode() {
-            return this.code;
-        }
-
-        public static Mode fromCode(final byte code) {
-            for (ButtonModes.Mode value : ButtonModes.Mode.values()) {
-                if (value.getCode() == code) {
-                    return value;
-                }
-            }
-
-            return null;
-        }
+        OFF,
+        AMBIENT_SOUND_CONTROL,
+        PLAYBACK_CONTROL,
+        VOLUME_CONTROL,
+        ;
     }
 
     final Mode left;

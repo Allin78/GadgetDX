@@ -1,5 +1,56 @@
 ### Changelog
 
+#### 0.73.0
+* Initial support for Amazfit T-Rex 2
+* Initial support for AsteroidOS watches
+* Initial support for Sony LinkBuds S
+* Initial support for Galaxy Buds2 Pro
+* Initial support for SoFlow S06(just for lock and unlock, needs key)
+* Fossil/Skagen Hybrids: Fix truncation of notifications
+* Fossil/Skagen Hybrids: Fix washed out colors in imported watchfaces
+* Fossil/Skagen Hybrids: Allow launching watch apps from app manager
+* Fossil/Skagen Hybrids: Fix activity parser
+* Fossil/Skagen Hybrids: Add app/watchface downloading from watch to app manager
+* Fossil/Skagen Hybrids: Fix crash on empty or multi-byte unicode alarm texts
+* Fossil/Skagen Hybrids: Implement inactivity warnings
+* Fossil/Skagen Hybrids: Remove obsolete debug message
+* Mi Band 6: Add NFC display item
+* Zepp OS: Fix Alipay and WeChat Pay display item and shortcuts
+* Amazfit GTR 4/GTS 4: Support for AGPS Updates
+* Bangle.js: Stop sending bitmaps for common characters that already have good enough equivalents on the watch
+* Bangle.js: Stop toast warning message appearing when starting the app loader
+* Bangle.js: Increase default realtime HRM/step interval to 10 seconds
+* Bangle.js: Support additional values for GPS event
+* Sony WF-1000XM4: Fix battery updates while connected
+* Sony WF-1000XM4: Fix audio codec
+* Add Georgian Transliteration
+
+
+#### 0.72.0
+* Initial support for Amazfit GTR 4/GTS 4/GTS 4 Mini
+* Initial support for Amazfit Band 7
+* Initial support for Galaxy Buds 2
+* Initial Support for Sony WH-1000XM2/WF-1000XM4
+* Sony headphones: Fix pause when taken off
+* Sony Headphones: Fix setting surround mode
+* Zepp OS: Map strength training, basketball and cricket activity types
+* Zepp OS: Add World Clocks
+* Zepp OS: Fix notification icons larger than 56x56px
+* Zepp OS: Fix notification icons for work profile apps
+* Zepp OS: Fix notification icon for SMS
+* Zepp OS: Fix app and watchface install
+* Zepp OS: Fix NPE when no weather data is available
+* Amazfit GTR 2: Fix activate display upon lift only working when scheduled
+* Bangle.js: Fix calendar sync
+* InfiniTime: Fix weather
+* InfiniTime: Add support for local time service
+* InfiniTime: Add world clock support
+* Skagen Gen 6 Hybrid HR: Add support for 38mm watches
+* Complete rewrite of new device discovery
+* Add Intent API to trigger activity sync and DB export
+* Allow media notifications to bypass app list
+* Debug Activity: Add confirmation dialog before removing device preferences
+
 #### 0.71.3
 * Fossil/Skagen Hybrids: Update known watch app versions
 * Skagen Hybrids: Allow firmware installation

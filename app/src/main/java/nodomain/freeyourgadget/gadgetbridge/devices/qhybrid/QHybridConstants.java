@@ -22,7 +22,7 @@ import java.util.Map;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 
 public final class QHybridConstants {
-    public static final String HYBRIDHR_WATCHFACE_VERSION = "1.8";
+    public static final String HYBRIDHR_WATCHFACE_VERSION = "1.9";
     public static final int HYBRID_HR_WATCHFACE_WIDGET_SIZE = 76;
 
     public static Map<String, String> KNOWN_WAPP_VERSIONS = new HashMap<String, String>() {
@@ -30,15 +30,15 @@ public final class QHybridConstants {
             put("buddyChallengeApp", "2.10");
             put("commuteApp", "2.5");
             put("launcherApp", "3.9");
-            put("musicApp", "3.11");
+            put("musicApp", "3.13");
             put("notificationsPanelApp", "3.7");
             put("ringPhoneApp", "3.8");
             put("settingApp", "3.13");
-            put("stopwatchApp", "3.6");
+            put("stopwatchApp", "3.8");
             put("timerApp", "3.9");
             put("weatherApp", "3.11");
             put("wellnessApp", "3.16");
-            put("AlexaApp", "3.10");
+            put("AlexaApp", "3.11");
         }
     };
 

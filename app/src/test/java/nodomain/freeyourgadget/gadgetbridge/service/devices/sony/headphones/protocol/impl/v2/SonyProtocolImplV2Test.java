@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.v2;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.SonyTestUtils.assertRequest;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.SonyTestUtils.handleMessage;
@@ -70,7 +71,8 @@ public class SonyProtocolImplV2Test {
 
     @Test
     public void getAudioCodec() {
-        // TODO
+        final Request requestEnabled = protocol.getAudioCodec();
+        assertRequest(requestEnabled, "3e:0c:01:00:00:00:02:12:02:23:3c");
     }
 
     @Test
@@ -325,6 +327,7 @@ public class SonyProtocolImplV2Test {
             final Object modePrefValue = entry.getKey()
                     .toPreferences()
                     .get(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_MODE);
+            assertNotNull(modePrefValue);
             assertEquals(modePrefValue, event.preferences.get(DeviceSettingsPreferenceConst.PREF_SONY_EQUALIZER_MODE));
         }
     }

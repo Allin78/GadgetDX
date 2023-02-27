@@ -2076,4 +2076,49 @@ Temps de sommeil préféré en heures</string>
 \n
 \nA VOS RISQUES ET PÉRILS !</string>
     <string name="devicetype_amazfit_gts4">Amazfit GTS 4</string>
+    <string name="fw_upgrade_notice_amazfit_gts4_mini">Vous êtes sur le point d\'installer le micro-logiciel %s dans votre Amazfit GTS 4 Mini.
+\n
+\nVotre bracelet redémarrera une fois le fichier .zip installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="devicetype_amazfit_gts4_mini">Amazfit GTS 4 Mini</string>
+    <string name="devicetype_sony_linkbuds_s">Sony LinkBuds S</string>
+    <string name="pref_header_intent_api">API vocale</string>
+    <string name="intent_api_allow_trigger_export_summary">Permettre le déclenchement de l\'export de la base de données via l\'API vocale</string>
+    <string name="intent_api_allow_activity_sync_title">Permettre le déclenchement de la sync.</string>
+    <string name="intent_api_allow_activity_sync_summary">Permettre le déclenchement de la sync via l\'API vocale</string>
+    <string name="intent_api_allow_trigger_export_title">Autoriser l\'export de la base de données</string>
+    <string name="intent_api_broadcast_export_title">Diffusion sur un export de la base de données</string>
+    <string name="intent_api_broadcast_export_summary">Diffuser une commande vocale quand l\'export de la base de données est fini</string>
+    <string name="sony_ambient_sound_control_button_modes">Modes des boutons de contrôle du son ambiant</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as_off">Annulation de bruit, Son ambiant, Éteint</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_as">Annulation de bruit, Son Ambiant</string>
+    <string name="sony_ambient_sound_control_button_mode_nc_off">Annulation de Bruit, Éteint</string>
+    <string name="sony_ambient_sound_control_button_mode_as_off">Son Ambiant, Éteint</string>
+    <string name="sony_quick_access_double_tap">Accès rapide (Double Appui)</string>
+    <string name="sony_quick_access_triple_tap">Accès Rapide (Triple Appui)</string>
+    <string name="menuitem_wechat_pay">Paiement WeChat</string>
+    <string name="pref_agps_update_time">Mise à jour de l\'heure AGPS</string>
+    <string name="pref_agps_expire_time">Heure d\'expiration AGPS</string>
+    <string name="appmanager_app_start">Démarrer</string>
+    <string name="appmanager_app_download">Télécharger en cache</string>
+    <string name="appmanager_downloaded_to_cache">Téléchargé %s dans le cache</string>
+    <string name="appmanager_download_app_error">Erreur en téléchargeant l\'app</string>
+    <string name="appmanager_download_started">Téléchargement de l\'app démarré</string>
+    <string name="appmanager_watchface_activate">Activer</string>
+    <string name="devicetype_asteroidos">AsteroidOS</string>
+    <string name="devicetype_amazfit_trex_2">Amazfit T-Rex 2</string>
+    <string name="fw_upgrade_notice_amazfit_trex2">Vous êtes sur le point d\'installer le micro-logiciel %s dans votre Amazfit T-Rex 2.
+\n
+\nVotre bracelet redémarrera une fois le fichier .zip installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
+    <string name="pref_workout_detection_ask_first">Me demander d\'abord</string>
+    <string name="pref_workout_detection_ask_first_summary">Demander une confirmation sur le bracelet quand un exercice est détecté</string>
+    <string name="pref_workout_detection_time">Minutes d\'activité avant la détection</string>
+    <string name="pref_workout_detection_enabled_summary">Permettre la détection automatique de cet exercice</string>
+    <string name="pref_workout_detection_enabled">Détection activée</string>
+    <string name="pref_workout_detection_time_summary">Le nombre de minutes pendant lesquelles l\'exercice doit être en cours pour le détecter</string>
+    <string name="activity_type_rowing">Rameur</string>
+    <string name="georgian">Georgien</string>
 </resources>

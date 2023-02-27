@@ -19,6 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami;
 
+import android.app.Notification;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
@@ -275,7 +276,6 @@ import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_NAME;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_WEIGHT_KG;
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivityUser.PREF_USER_YEAR_OF_BIRTH;
-import static nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions.fromUint8;
 import static nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL;
 
 public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements Huami2021Handler {
@@ -403,15 +403,56 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         return weatherSpec.windSpeedAsBeaufort() + ""; // cast to string
     }
 
-    public byte[] getTimeBytes(final Calendar calendar, final TimeUnit precision) {
-        final byte[] bytes = BLETypeConversions.shortCalendarToRawBytes(calendar);
-
-        if (precision != TimeUnit.MINUTES && precision != TimeUnit.SECONDS) {
-            throw new IllegalArgumentException("Unsupported precision, only MINUTES and SECONDS are supported");
+    /**
+     * Returns the given date/time (calendar) as a byte sequence, suitable for sending to the
+     * Mi Band 2 (or derivative). The band appears to not handle DST offsets, so we simply add this
+     * to the timezone.
+     *
+     * @param calendar
+     * @param precision
+     * @return
+     */
+    public byte[] getTimeBytes(Calendar calendar, TimeUnit precision) {
+        byte[] bytes;
+        if (precision == TimeUnit.MINUTES) {
+            bytes = BLETypeConversions.shortCalendarToRawBytes(calendar);
+        } else if (precision == TimeUnit.SECONDS) {
+            bytes = calendarToRawBytes(calendar);
+        } else {
+            throw new IllegalArgumentException("Unsupported precision, only MINUTES and SECONDS are supported till now");
         }
-        final byte seconds = precision == TimeUnit.SECONDS ? fromUint8(calendar.get(Calendar.SECOND)) : 0;
-        final byte tz = BLETypeConversions.mapTimeZone(calendar, BLETypeConversions.TZ_FLAG_INCLUDE_DST_IN_TZ);
-        return BLETypeConversions.join(bytes, new byte[]{seconds, tz});
+        byte[] tail = new byte[] { 0, BLETypeConversions.mapTimeZone(calendar, BLETypeConversions.TZ_FLAG_INCLUDE_DST_IN_TZ) };
+        // 0 = adjust reason bitflags? or DST offset?? , timezone
+//        byte[] tail = new byte[] { 0x2 }; // reason
+        byte[] all = BLETypeConversions.join(bytes, tail);
+        return all;
+    }
+
+    /**
+     * Converts a timestamp to the byte sequence to be sent to the current time characteristic
+     *
+     * @param timestamp
+     * @return
+     * @see GattCharacteristic#UUID_CHARACTERISTIC_CURRENT_TIME
+     */
+    public static byte[] calendarToRawBytes(Calendar timestamp) {
+        // MiBand2:
+        // year,year,month,dayofmonth,hour,minute,second,dayofweek,0,0,tz
+
+        byte[] year = BLETypeConversions.fromUint16(timestamp.get(Calendar.YEAR));
+        return new byte[] {
+                year[0],
+                year[1],
+                BLETypeConversions.fromUint8(timestamp.get(Calendar.MONTH) + 1),
+                BLETypeConversions.fromUint8(timestamp.get(Calendar.DATE)),
+                BLETypeConversions.fromUint8(timestamp.get(Calendar.HOUR_OF_DAY)),
+                BLETypeConversions.fromUint8(timestamp.get(Calendar.MINUTE)),
+                BLETypeConversions.fromUint8(timestamp.get(Calendar.SECOND)),
+                BLETypeConversions.dayOfWeekToRawBytes(timestamp),
+                0, // fractions256 (not set)
+                // 0 (DST offset?) Mi2
+                // k (tz) Mi2
+        };
     }
 
     public Calendar fromTimeBytes(byte[] bytes) {
@@ -420,12 +461,17 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     public HuamiSupport setCurrentTimeWithService(TransactionBuilder builder) {
-        GregorianCalendar now = BLETypeConversions.createCalendar();
-        byte[] head = BLETypeConversions.calendarToRawBytes(now);
-        byte[] tail = new byte[] { 0, BLETypeConversions.mapTimeZone(now, BLETypeConversions.TZ_FLAG_INCLUDE_DST_IN_TZ) };
-        byte[] bytes = BLETypeConversions.join(head, tail);
+        final Calendar now = createCalendar();
+        byte[] bytes = getTimeBytes(now, TimeUnit.SECONDS);
         builder.write(getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_CURRENT_TIME), bytes);
         return this;
+    }
+
+    /**
+     * Allow for the calendar to be overridden to a fixed date, for tests.
+     */
+    protected Calendar createCalendar() {
+        return BLETypeConversions.createCalendar();
     }
 
     /**
@@ -654,16 +700,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
     }
 
-    @Override
-    public void onAddCalendarEvent(CalendarEventSpec calendarEventSpec) {
-        // not supported
-    }
-
-    @Override
-    public void onDeleteCalendarEvent(byte type, long id) {
-        // not supported
-    }
-
     protected HuamiSupport setPassword(final TransactionBuilder builder) {
         final boolean passwordEnabled = HuamiCoordinator.getPasswordEnabled(gbDevice.getAddress());
         final String password = HuamiCoordinator.getPassword(gbDevice.getAddress());
@@ -822,11 +858,13 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
     }
 
-    @Override
-    public void onNotification(NotificationSpec notificationSpec) {
-        final boolean hasExtraHeader = notificationHasExtraHeader();
-        final int maxLength = notificationMaxLength();
-
+    /**
+     * Contains the logic to build the text content that will be sent to the device.
+     * Some huami devices will omit some of the content.
+     * @param notificationSpec
+     * @return
+     */
+    public String getNotificationBody(NotificationSpec notificationSpec) {
         String senderOrTitle = StringUtils.getFirstOf(notificationSpec.sender, notificationSpec.title);
 
         String message = StringUtils.truncate(senderOrTitle, 32) + "\0";
@@ -839,6 +877,16 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         if (notificationSpec.body == null && notificationSpec.subject == null) {
             message += " "; // if we have no body we have to send at least something on some devices, else they reboot (Bip S)
         }
+
+        return message;
+    }
+
+    @Override
+    public void onNotification(NotificationSpec notificationSpec) {
+        final boolean hasExtraHeader = notificationHasExtraHeader();
+        final int maxLength = notificationMaxLength();
+
+        String message = getNotificationBody(notificationSpec);
 
         try {
             TransactionBuilder builder = performInitialized("new notification");
@@ -1169,11 +1217,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         } catch (final IOException e) {
             throw new RuntimeException("This should never happen", e);
         }
-    }
-
-    @Override
-    public void onDeleteNotification(int id) {
-
     }
 
     @Override
@@ -1599,11 +1642,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     @Override
-    public void onSetConstantVibration(int intensity) {
-
-    }
-
-    @Override
     public void onFetchRecordedData(int dataTypes) {
         try {
             new FetchActivityOperation(this).perform();
@@ -1634,36 +1672,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         } catch (IOException ex) {
             GB.toast(getContext(), "Firmware cannot be installed: " + ex.getMessage(), Toast.LENGTH_LONG, GB.ERROR, ex);
         }
-    }
-
-    @Override
-    public void onAppInfoReq() {
-        // not supported
-    }
-
-    @Override
-    public void onAppStart(UUID uuid, boolean start) {
-        // not supported
-    }
-
-    @Override
-    public void onAppDelete(UUID uuid) {
-        // not supported
-    }
-
-    @Override
-    public void onAppConfiguration(UUID uuid, String config, Integer id) {
-        // not supported
-    }
-
-    @Override
-    public void onAppReorder(UUID[] uuids) {
-        // not supported
-    }
-
-    @Override
-    public void onScreenshotReq() {
-        // not supported
     }
 
     // this could go though onion code with preferred notification, but I this should work on all huami devices
@@ -2862,11 +2870,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         } catch (IOException e) {
             GB.toast("Error setting configuration", Toast.LENGTH_LONG, GB.ERROR, e);
         }
-    }
-
-    @Override
-    public void onReadConfiguration(String config) {
-
     }
 
     @Override

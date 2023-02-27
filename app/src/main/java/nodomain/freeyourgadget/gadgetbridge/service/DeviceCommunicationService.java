@@ -61,6 +61,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.CMWeatherReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.DeviceSettingsReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.GenericWeatherReceiver;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.IntentApiReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.LineageOsWeatherReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.MusicPlaybackReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.OmniJawsObserver;
@@ -133,6 +134,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SE
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_WORLD_CLOCKS;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_START;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_STARTAPP;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_DOWNLOADAPP;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_TEST_NEW_FUNCTION;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_ALARMS;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_APP_CONFIG;
@@ -328,6 +330,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     private GenericWeatherReceiver mGenericWeatherReceiver = null;
     private OmniJawsObserver mOmniJawsObserver = null;
     private final DeviceSettingsReceiver deviceSettingsReceiver = new DeviceSettingsReceiver();
+    private final IntentApiReceiver intentApiReceiver = new IntentApiReceiver();
 
     private final String[] mMusicActions = {
             "com.android.music.metachanged",
@@ -496,6 +499,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         final IntentFilter deviceSettingsIntentFilter = new IntentFilter();
         deviceSettingsIntentFilter.addAction(DeviceSettingsReceiver.COMMAND);
         registerReceiver(deviceSettingsReceiver, deviceSettingsIntentFilter);
+
+        registerReceiver(intentApiReceiver, intentApiReceiver.buildFilter());
     }
 
     private DeviceSupportFactory getDeviceSupportFactory() {
@@ -843,6 +848,11 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 deviceSupport.onAppStart(uuid, start);
                 break;
             }
+            case ACTION_DOWNLOADAPP: {
+                UUID uuid = (UUID) intent.getSerializableExtra(EXTRA_APP_UUID);
+                deviceSupport.onAppDownload(uuid);
+                break;
+            }
             case ACTION_DELETEAPP: {
                 UUID uuid = (UUID) intent.getSerializableExtra(EXTRA_APP_UUID);
                 deviceSupport.onAppDelete(uuid);
@@ -1087,7 +1097,6 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         return false;
     }
 
-
     private void setReceiversEnableState(boolean enable, boolean initialized, FeatureSet features, List <GBDevice> devicesWithCalendar) {
         LOG.info("Setting broadcast receivers to: " + enable);
 
@@ -1106,6 +1115,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                         CalendarReceiver receiver = new CalendarReceiver(deviceWithCalendar);
                         registerReceiver(receiver, calendarIntentFilter);
                         mCalendarReceiver.add(receiver);
+                        // Add a receiver to allow us to quickly force as calendar sync (without having to provide data)
+                        registerReceiver(receiver, new IntentFilter("FORCE_CALENDAR_SYNC"));
                     }
                 }
             }
@@ -1294,6 +1305,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
 
         unregisterReceiver(bluetoothCommandReceiver);
         unregisterReceiver(deviceSettingsReceiver);
+        unregisterReceiver(intentApiReceiver);
     }
 
     @Override
