@@ -703,7 +703,9 @@
 
         <activity
             android:name=".devices.card10.ControlActivity"
-            android:exported="true" />
+            android:label="@string/devicetype_card10"
+            android:launchMode="singleTop"
+            android:parentActivityName=".activities.ControlCenterv2" />
 
         <activity
             android:name=".devices.binary_sensor.activity.DataActivity"
