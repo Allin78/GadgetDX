@@ -42,7 +42,6 @@ public class WithingsStructureType {
     // There are two structure types containing information about calories:
     public static final short ACTIVITY_SAMPLE_CALORIES = 1544;
     public static final short ACTIVITY_SAMPLE_CALORIES_2 = 1546;
-    public static final short ACTIVITY_TYPE = 1301;
     // No idea what this is, however it is in the response to requesting activities:
     public static final short ACTIVITY_SAMPLE_UNKNOWN = 1547;
     public static final short WORKOUT_TYPE = 2409;

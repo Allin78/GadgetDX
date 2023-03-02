@@ -114,7 +114,7 @@ public class DataStructureFactory {
                     break;
                 default:
                     structure = null;
-                    logger.warn("Received yet unknown structure type: " + structureTypeFromResponse);
+                    logger.info("Received yet unknown structure type: " + structureTypeFromResponse);
             }
 
             if (structure != null) {

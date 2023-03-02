@@ -9,6 +9,7 @@ public class ActivityEntry {
     private int calories;
     private int distance;
     private int rawIntensity;
+    private boolean isHeartrate;
 
     public int getTimestamp() {
         return timestamp;
@@ -30,7 +31,7 @@ public class ActivityEntry {
         return heartrate;
     }
 
-    public void setHeartrate(int heartrate) {
+    public void setIsHeartrate(int heartrate) {
         this.heartrate = heartrate;
     }
 
@@ -72,5 +73,13 @@ public class ActivityEntry {
 
     public void setRawIntensity(int rawIntensity) {
         this.rawIntensity = rawIntensity;
+    }
+
+    public boolean isHeartrate() {
+        return isHeartrate;
+    }
+
+    public void setIsHeartrate(boolean heartrate) {
+        isHeartrate = heartrate;
     }
 }

@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Build;
 import android.widget.Toast;
 
@@ -27,21 +26,15 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
@@ -49,12 +42,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.ServerTransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ActivityType;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.MoveHand;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.SimpleHexToByteMessage;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandlerFactory;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.LiveWorkoutHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.activity.WithingsActivityType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsServerAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.WithingsUUID;
@@ -79,6 +66,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ImageMetaData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Locale;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.MoveHand;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.Probe;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ProbeOsVersion;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.ScreenSettings;
@@ -90,17 +78,19 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures.WorkoutScreen;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.ExpectedResponse;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.Message;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageFactory;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageBuilder;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.MessageFactory;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.SimpleHexToByteMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.WithingsMessageType;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.IncomingMessageHandlerFactory;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.message.incoming.LiveWorkoutHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.GetNotificationAttributes;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.GetNotificationAttributesResponse;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationProvider;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationSource;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
-import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
-import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
@@ -229,6 +219,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         activitySampleHandler = new ActivitySampleHandler(this);
         conversationQueue.clear();
         syncInProgress = true;
+        getDevice().setBusyTask("Syncing");
         try {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.INITIAL_CONNECT));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_ANCS_STATUS));
@@ -252,15 +243,10 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             c.setTimeInMillis(getLastSyncTimestamp());
             message = new WithingsMessage(WithingsMessageType.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
-            message.addDataStructure(new ActivityType(6));
             addSimpleConversationToQueue(message, activitySampleHandler);
             message = new WithingsMessage(WithingsMessageType.GET_MOVEMENT_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
             message.addDataStructure(new TypeVersion());
-            addSimpleConversationToQueue(message, activitySampleHandler);
-            message = new WithingsMessage(WithingsMessageType.GET_ACTIVITY_SAMPLES, ExpectedResponse.EOT);
-            message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
-            message.addDataStructure(new ActivityType(5));
             addSimpleConversationToQueue(message, activitySampleHandler);
             message = new WithingsMessage(WithingsMessageType.GET_HEARTRATE_SAMPLES, ExpectedResponse.EOT);
             message.addDataStructure(new GetActivitySamples(c.getTimeInMillis() / 1000, (short) 0));
@@ -363,39 +349,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onEnableRealtimeHeartRateMeasurement(boolean enable) {
-        logger.debug("onEnableRealtimeHeartRateMeasurement");
-    }
-
-    @Override
-    public void onFindDevice(boolean start) {
-    }
-
-    @Override
-    public void onSetConstantVibration(int integer) {
-    }
-
-    @Override
-    public void onScreenshotReq() {
-    }
-
-    @Override
-    public void onEnableHeartRateSleepSupport(boolean enable) {
-    }
-
-    @Override
-    public void onSetHeartRateMeasurementInterval(int seconds) {
-    }
-
-    @Override
-    public void onAddCalendarEvent(CalendarEventSpec calendarEventSpec) {
-    }
-
-    @Override
-    public void onDeleteCalendarEvent(byte type, long id) {
-    }
-
-    @Override
     public void onSendConfiguration(String config) {
         try {
             switch (config) {
@@ -411,19 +364,11 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onReadConfiguration(String config) {
-    }
-
-    @Override
     public void onTestNewFunction() {
         String hexMessage = "0105080015050900111006040102030507000000000000000000";
         conversationQueue.clear();
         addSimpleConversationToQueue(new SimpleHexToByteMessage(hexMessage));
         conversationQueue.send();
-    }
-
-    @Override
-    public void onSendWeather(WeatherSpec weatherSpec) {
     }
 
     @Override
@@ -477,6 +422,11 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     public void finishSync() {
         syncInProgress = false;
+        if (getDevice().isBusy()) {
+            getDevice().unsetBusyTask();
+            getDevice().sendDeviceUpdateIntent(getContext());
+        }
+        activitySampleHandler.onSyncFinished();
         saveLastSyncTimestamp(new Date().getTime());
     }
 
@@ -576,7 +526,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             Date currentDate = new Date();
             Calendar c = Calendar.getInstance();
             c.setTimeInMillis(currentDate.getTime());
-            c.add(Calendar.DAY_OF_MONTH, -1);
+            c.add(Calendar.HOUR, - 10);
             return c.getTimeInMillis();
         }
     }

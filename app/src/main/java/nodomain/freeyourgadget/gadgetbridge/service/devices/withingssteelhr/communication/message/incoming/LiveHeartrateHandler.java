@@ -38,7 +38,6 @@ public class LiveHeartrateHandler implements IncomingMessageHandler {
             return;
         }
 
-
         WithingsStructure structure = data.get(0);
         int heartRate = 0;
         if (structure instanceof LiveHeartRate) {
