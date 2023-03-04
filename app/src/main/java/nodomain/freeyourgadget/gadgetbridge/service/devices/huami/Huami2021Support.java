@@ -937,6 +937,12 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     public byte[] getTimeBytes(final Calendar calendar, final TimeUnit precision) {
+        if (precision == TimeUnit.MINUTES) {
+            calendar.add(Calendar.MINUTE, 1);
+        } else {
+            calendar.add(Calendar.SECOND, 1);
+        }
+
         final byte[] bytes = BLETypeConversions.shortCalendarToRawBytes(calendar);
 
         if (precision != TimeUnit.MINUTES && precision != TimeUnit.SECONDS) {
