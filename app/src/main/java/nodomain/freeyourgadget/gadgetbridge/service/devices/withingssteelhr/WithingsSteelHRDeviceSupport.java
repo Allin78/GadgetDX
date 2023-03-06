@@ -178,10 +178,6 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
-        if (syncInProgress) {
-            return;
-        }
-
         mtuSize = mtu;
         if (firstTimeConnect) {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.INITIAL_CONNECT));
@@ -212,15 +208,15 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     public void doSync() {
-        if (syncInProgress || !shoudSync()) {
-            return;
-        }
-
         activitySampleHandler = new ActivitySampleHandler(this);
         conversationQueue.clear();
-        syncInProgress = true;
-        getDevice().setBusyTask("Syncing");
         try {
+            if (syncInProgress || !shoudSync()) {
+                return;
+            }
+
+            getDevice().setBusyTask("Syncing");
+            syncInProgress = true;
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.INITIAL_CONNECT));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_ANCS_STATUS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_BATTERY_STATUS), new BatteryStateHandler(this));
@@ -328,6 +324,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     public boolean onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
         if (characteristic.getUuid().equals(WithingsUUID.CONTROL_POINT_CHARACTERISTIC_UUID)) {
+            logger.debug("Got GetNotificationAttributesRequest: " + GB.hexdump(value));
             GetNotificationAttributes request = new GetNotificationAttributes();
             request.deserialize(value);
             notificationProvider.handleNotificationAttributeRequest(request);
@@ -381,12 +378,21 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             return;
         }
 
-        TransactionBuilder builder = createTransactionBuilder("conversation");
-        builder.setGattCallback(this);
-        BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
-        byte[] rawData = message.getRawData();
-        builder.writeChunkedData(characteristic, rawData, mtuSize - 4);
-        builder.queue(getQueue());
+        try {
+            TransactionBuilder builder = createTransactionBuilder("conversation");
+            builder.setGattCallback(this);
+            BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
+            if (characteristic == null) {
+                logger.info("Characteristic with UUID " + WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID + " not found.");
+                return;
+            }
+
+            byte[] rawData = message.getRawData();
+            builder.writeChunkedData(characteristic, rawData, mtuSize - 4);
+            builder.queue(getQueue());
+        } catch (Exception e) {
+            logger.warn("Could not send message because of " + e.getMessage());
+        }
     }
 
     public void sendAncsNotificationSourceNotification(NotificationSource notificationSource) {
@@ -533,8 +539,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     private boolean shoudSync() {
         long lastSynced = getLastSyncTimestamp();
-        int fiveMinuteMillis = 5 * 60 * 1000;
-        return new Date().getTime() - lastSynced > fiveMinuteMillis;
+        int minuteInMillis = 60 * 1000;
+        return new Date().getTime() - lastSynced > minuteInMillis;
     }
 
     private User getUser() {

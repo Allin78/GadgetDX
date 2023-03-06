@@ -52,7 +52,6 @@ public class GetNotificationAttributes {
             requestedNotificationAttribute.deserialize(rawAttributeData);
             attributes.add(requestedNotificationAttribute);
         }
-
     }
 
     public byte[] serialize() {

@@ -10,6 +10,7 @@ import java.util.Map;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.WithingsSteelHRDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class NotificationProvider {
 
@@ -41,6 +42,7 @@ public class NotificationProvider {
     }
 
     public void handleNotificationAttributeRequest(GetNotificationAttributes request) {
+        logger.debug("Request has ID: " + request.getNotificationUID());
         NotificationSpec spec = pendingNotifications.get(request.getNotificationUID());
         if (spec == null) {
             logger.info("No pending notification with notificationUID " + request.getNotificationUID());
@@ -55,6 +57,7 @@ public class NotificationProvider {
 
         GetNotificationAttributesResponse response = new GetNotificationAttributesResponse(request.getNotificationUID());
         List<RequestedNotificationAttribute> requestedAttributes = request.getAttributes();
+        logger.debug(requestedAttributes.size() + " attributes requested.");
 
         boolean complete = false;
 
@@ -62,6 +65,7 @@ public class NotificationProvider {
             NotificationAttribute attribute = new NotificationAttribute();
             attribute.setAttributeID(requestedAttribute.getAttributeID());
             attribute.setAttributeMaxLength(requestedAttribute.getAttributeMaxLength());
+            logger.debug("Handling attribute " + attribute.getAttributeID() + " with maxLength " + attribute.getAttributeLength());
             String value = "";
             if (requestedAttribute.getAttributeID() == 0) {
                 value = spec.sourceAppId;
@@ -72,11 +76,11 @@ public class NotificationProvider {
             }
             if (requestedAttribute.getAttributeID() == 2) {
                 complete = true;
-                value = spec.title != null? spec.title : (spec.subject != null? spec.subject : "");
+                value = spec.title != null? spec.title : (spec.subject != null? spec.subject : " ");
             }
             if (requestedAttribute.getAttributeID() == 3) {
                 complete = true;
-                value = (spec.body != null? spec.body : "");
+                value = (spec.body != null? spec.body : " ");
             }
 
             if (value != null) {
@@ -90,6 +94,7 @@ public class NotificationProvider {
                 }
             }
 
+            logger.debug("Sending attribute " + attribute.getAttributeID() + " with value " + attribute.getValue());
             response.addAttribute(attribute);
         }
 
