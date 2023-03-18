@@ -26,6 +26,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.view.MenuItem;
@@ -70,7 +71,7 @@ public class DataManagementActivity extends AbstractGBActivity {
         setContentView(R.layout.activity_data_management);
 
         TextView dbPath = findViewById(R.id.activity_data_management_path);
-        dbPath.setText(getExternalPath());
+        dbPath.setText(FileUtils.getExportFilesDirString());
 
         Button exportDBButton = findViewById(R.id.exportDataButton);
         exportDBButton.setOnClickListener(new View.OnClickListener() {
@@ -92,11 +93,7 @@ public class DataManagementActivity extends AbstractGBActivity {
             @Override
             public void onClick(View v) {
                 File export_path = null;
-                try {
-                    export_path = FileUtils.getExternalFilesDir();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                export_path = FileUtils.getExportFilesDir();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(DataManagementActivity.this);
                 builder.setTitle("Export/Import directory content:");
@@ -112,6 +109,15 @@ public class DataManagementActivity extends AbstractGBActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
 
+            }
+        });
+
+        Button exportImportSettingsButton = findViewById(R.id.exportImportSettingsButton);
+        exportImportSettingsButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DataManagementActivity.this, DataManagementPreferencesActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -138,7 +144,7 @@ public class DataManagementActivity extends AbstractGBActivity {
         });
 
         TextView dbPath2 = findViewById(R.id.activity_data_management_path2);
-        dbPath2.setText(getExternalPath());
+        dbPath2.setText(FileUtils.getExportFilesDirString());
 
         Button cleanExportDirectoryButton = findViewById(R.id.cleanExportDirectoryButton);
         cleanExportDirectoryButton.setOnClickListener(new View.OnClickListener() {
@@ -151,8 +157,6 @@ public class DataManagementActivity extends AbstractGBActivity {
         Prefs prefs = GBApplication.getPrefs();
         boolean autoExportEnabled = prefs.getBoolean(GBPrefs.AUTO_EXPORT_ENABLED, false);
         int autoExportInterval = prefs.getInt(GBPrefs.AUTO_EXPORT_INTERVAL, 0);
-        //returns an ugly content://...
-        //String autoExportLocation = prefs.getString(GBPrefs.AUTO_EXPORT_LOCATION, "");
 
         int testExportVisibility = (autoExportInterval > 0 && autoExportEnabled) ? View.VISIBLE : View.GONE;
         boolean isExportEnabled = autoExportInterval > 0 && autoExportEnabled;
@@ -161,7 +165,7 @@ public class DataManagementActivity extends AbstractGBActivity {
 
         TextView autoExportLocation_path = findViewById(R.id.autoExportLocation_path);
         autoExportLocation_path.setVisibility(testExportVisibility);
-        autoExportLocation_path.setText(getAutoExportLocationUserString() + " (" + getAutoExportLocationPreferenceString() + ")" );
+        autoExportLocation_path.setText(FileUtils.getExportFilesDirString());
 
         TextView autoExportEnabled_label = findViewById(R.id.autoExportEnabled);
         if (isExportEnabled) {
@@ -193,107 +197,75 @@ public class DataManagementActivity extends AbstractGBActivity {
         }
 
         final Context context = getApplicationContext();
-        Button testExportDBButton = findViewById(R.id.testExportDBButton);
-        testExportDBButton.setVisibility(testExportVisibility);
-        testExportDBButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendBroadcast(new Intent(context, PeriodicExporter.class));
-                GB.toast(context,
-                        context.getString(R.string.activity_DB_test_export_message),
-                        Toast.LENGTH_SHORT, GB.INFO);
-            }
-        });
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
-    private String getAutoExportLocationPreferenceString() {
-        String autoExportLocation = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
-        if (autoExportLocation == null) {
-            return "";
-        }
-        return autoExportLocation;
-    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        TextView dbPath = findViewById(R.id.activity_data_management_path);
+        dbPath.setText(FileUtils.getExportFilesDirString());
 
-    private String getAutoExportLocationUri() {
-        String autoExportLocation = getAutoExportLocationPreferenceString();
-        if (autoExportLocation == null) {
-            return "";
-        }
-        Uri uri = Uri.parse(autoExportLocation);
-        try {
+        int oldDBVisibility = hasOldActivityDatabase() ? View.VISIBLE : View.GONE;
+        TextView deleteOldActivityTitle = findViewById(R.id.mergeOldActivityDataTitle);
+        deleteOldActivityTitle.setVisibility(oldDBVisibility);
 
-            return AndroidUtils.getFilePath(getApplicationContext(), uri);
-        } catch (IllegalArgumentException e) {
-            LOG.error("getFilePath did not work, trying to resolve content provider path");
-            try {
-                Cursor cursor = getContentResolver().query(
-                        uri,
-                        new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME},
-                        null, null, null, null
-                );
-                if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
-                }
-            } catch (Exception exception) {
-                LOG.error("Error getting export path", exception);
-            }
-        }
-        return "";
-    }
+        TextView dbPath2 = findViewById(R.id.activity_data_management_path2);
+        dbPath2.setText(FileUtils.getExportFilesDirString());
 
-    private String getAutoExportLocationUserString() {
-        String location = getAutoExportLocationUri();
-        if (location == "") {
-            return getString(R.string.activity_db_management_autoexport_location);
+
+        GBApplication gbApp = GBApplication.app();
+        Prefs prefs = GBApplication.getPrefs();
+        boolean autoExportEnabled = prefs.getBoolean(GBPrefs.AUTO_EXPORT_ENABLED, false);
+        int autoExportInterval = prefs.getInt(GBPrefs.AUTO_EXPORT_INTERVAL, 0);
+
+        int testExportVisibility = (autoExportInterval > 0 && autoExportEnabled) ? View.VISIBLE : View.GONE;
+        boolean isExportEnabled = autoExportInterval > 0 && autoExportEnabled;
+        TextView autoExportLocation_label = findViewById(R.id.autoExportLocation_label);
+        autoExportLocation_label.setVisibility(testExportVisibility);
+
+        TextView autoExportLocation_path = findViewById(R.id.autoExportLocation_path);
+        autoExportLocation_path.setVisibility(testExportVisibility);
+        autoExportLocation_path.setText(FileUtils.getExportFilesDirString());
+
+        TextView autoExportEnabled_label = findViewById(R.id.autoExportEnabled);
+        if (isExportEnabled) {
+            autoExportEnabled_label.setText(getString(R.string.activity_db_management_autoexport_enabled_yes));
+        } else {
+            autoExportEnabled_label.setText(getString(R.string.activity_db_management_autoexport_enabled_no));
         }
-        return location;
+
+        TextView autoExportScheduled = findViewById(R.id.autoExportScheduled);
+        autoExportScheduled.setVisibility(testExportVisibility);
+        long setAutoExportScheduledTimestamp = gbApp.getAutoExportScheduledTimestamp();
+        if (setAutoExportScheduledTimestamp > 0) {
+            autoExportScheduled.setText(getString(R.string.activity_db_management_autoexport_scheduled_yes,
+                    DateTimeUtils.formatDateTime(new Date(setAutoExportScheduledTimestamp))));
+        } else {
+            autoExportScheduled.setText(getResources().getString(R.string.activity_db_management_autoexport_scheduled_no));
+        }
+
+        TextView autoExport_lastTime_label = findViewById(R.id.autoExport_lastTime_label);
+        long lastAutoExportTimestamp = gbApp.getLastAutoExportTimestamp();
+
+        autoExport_lastTime_label.setVisibility(View.GONE);
+        autoExport_lastTime_label.setText(getString(R.string.autoExport_lastTime_label,
+                DateTimeUtils.formatDateTime(new Date(lastAutoExportTimestamp))));
+
+        if (lastAutoExportTimestamp > 0) {
+            autoExport_lastTime_label.setVisibility(testExportVisibility);
+            autoExport_lastTime_label.setVisibility(testExportVisibility);
+        }
     }
 
     private boolean hasOldActivityDatabase() {
         return new DBHelper(this).existsDB("ActivityDatabase");
     }
 
-    private String getExternalPath() {
-        try {
-            return FileUtils.getExternalFilesDir().getAbsolutePath();
-        } catch (Exception ex) {
-            LOG.warn("Unable to get external files dir", ex);
-        }
-        return getString(R.string.dbmanagementactivvity_cannot_access_export_path);
-    }
-
-    private void exportShared() {
-        try {
-            File myPath = FileUtils.getExternalFilesDir();
-            File myFile = new File(myPath, "Export_preference");
-            ImportExportSharedPreferences.exportToFile(sharedPrefs, myFile, null);
-        } catch (IOException ex) {
-            GB.toast(this, getString(R.string.dbmanagementactivity_error_exporting_shared, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
-        }
-        try (DBHandler lockHandler = GBApplication.acquireDB()) {
-            List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
-            for (Device dbDevice : activeDevices) {
-                SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
-                if (sharedPrefs != null) {
-                    File myPath = FileUtils.getExternalFilesDir();
-                    File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
-                    try {
-                        ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, myFile, null);
-                    } catch (Exception ignore) {
-                        // some devices no not have device specific preferences
-                    }
-                }
-            }
-        } catch (Exception e) {
-            GB.toast("Error exporting device specific preferences", Toast.LENGTH_SHORT, GB.ERROR, e);
-        }
-    }
-
     private void importShared() {
         try {
-            File myPath = FileUtils.getExternalFilesDir();
+            File myPath = FileUtils.getExportFilesDir();
             File myFile = new File(myPath, "Export_preference");
             ImportExportSharedPreferences.importFromFile(sharedPrefs, myFile);
         } catch (Exception ex) {
@@ -305,7 +277,7 @@ public class DataManagementActivity extends AbstractGBActivity {
             for (Device dbDevice : activeDevices) {
                 SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
                 if (sharedPrefs != null) {
-                    File myPath = FileUtils.getExternalFilesDir();
+                    File myPath = FileUtils.getExportFilesDir();
                     File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
 
                     if (!myFile.exists()) { //first try to use file in new format de_ad_be_af, if doesn't exist use old format de:at:be:af
@@ -336,13 +308,11 @@ public class DataManagementActivity extends AbstractGBActivity {
                 .setPositiveButton(R.string.activity_DB_ExportButton, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            exportShared();
-                            DBHelper helper = new DBHelper(DataManagementActivity.this);
-                            File dir = FileUtils.getExternalFilesDir();
-                            File destFile = helper.exportDB(dbHandler, dir);
-                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_exported_to, destFile.getAbsolutePath()), Toast.LENGTH_LONG, GB.INFO);
-                        } catch (Exception ex) {
+                        try{
+                            FileUtils.performFullExport(DataManagementActivity.this);
+                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_exported_to, FileUtils.getExportFilesDirString()), Toast.LENGTH_LONG, GB.INFO);
+                        } catch(Exception ex)
+                        {
                             GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_exporting_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
                         }
                     }
@@ -366,7 +336,7 @@ public class DataManagementActivity extends AbstractGBActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         try (DBHandler dbHandler = GBApplication.acquireDB()) {
                             DBHelper helper = new DBHelper(DataManagementActivity.this);
-                            File dir = FileUtils.getExternalFilesDir();
+                            File dir = FileUtils.getExportFilesDir();
                             SQLiteOpenHelper sqLiteOpenHelper = dbHandler.getHelper();
                             File sourceFile = new File(dir, sqLiteOpenHelper.getDatabaseName());
                             helper.importDB(dbHandler, sourceFile);
@@ -444,12 +414,10 @@ public class DataManagementActivity extends AbstractGBActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try {
-                            File externalFilesDir = FileUtils.getExternalFilesDir();
-                            String autoexportFile = getAutoExportLocationUri();
+                            File externalFilesDir = FileUtils.getExportFilesDir();
                             for (File file : externalFilesDir.listFiles()) {
                                 if (file.isFile() &&
-                                        (!FileUtils.getExtension(file.toString()).toLowerCase().equals("gpx")) && //keep GPX files
-                                        (!file.toString().equals(autoexportFile)) // do not remove autoexport
+                                        (!FileUtils.getExtension(file.toString()).toLowerCase().equals("gpx"))  //keep GPX files
                                 ) {
                                     LOG.debug("Deleting file: " + file);
                                     try {

@@ -19,8 +19,12 @@ package nodomain.freeyourgadget.gadgetbridge.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -34,14 +38,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.documentfile.provider.DocumentFile;
+
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBEnvironment;
+import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.DataManagementActivity;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 
 public class FileUtils {
     // Don't use slf4j here -- would be a bootstrapping problem
@@ -182,6 +194,68 @@ public class FileUtils {
             }
         }
         throw new IOException("no writable external directory found");
+    }
+
+    public static File getExportFilesDir() {
+        String exportLocation = GBApplication.getPrefs().getString(GBPrefs.EXPORT_LOCATION, getDefaultExportFilesDirString());
+        return new File(Uri.parse(exportLocation).getPath());
+    }
+
+    public static String getExportFilesDirString() {
+        return getExportFilesDir().toString();
+    }
+
+    public static File getDefaultExportFilesDir() {
+        return new File(Environment.getExternalStorageDirectory(), "backups/gadgebridge");
+    }
+
+    public static String getDefaultExportFilesDirString() {
+        return getDefaultExportFilesDir().toString();
+    }
+
+    public static void performFullExport(Context context) throws Exception
+    {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if(prefs.getBoolean("include_database", true))
+            exportDatabase(context);
+
+        if(prefs.getBoolean("include_global_settings", true))
+            exportSharedPreferences(prefs);
+
+        if(prefs.getBoolean("include_device_settings",true))
+            exportDeviceSharedPreferences(prefs);
+
+    }
+
+    public static void exportDatabase(Context context) throws Exception
+    {
+        DBHandler dbHandler = GBApplication.acquireDB();
+        DBHelper helper = new DBHelper(context);
+        File dir = FileUtils.getExportFilesDir();
+        File destFile = helper.exportDB(dbHandler, dir);
+    }
+
+    public static void exportSharedPreferences(SharedPreferences sharedPrefs) throws IOException {
+        File myPath = FileUtils.getExportFilesDir();
+        File myFile = new File(myPath, "Export_preference");
+        ImportExportSharedPreferences.exportToFile(sharedPrefs, myFile, null);
+    }
+
+    public static void exportDeviceSharedPreferences(SharedPreferences sharedPrefs) throws Exception {
+        DBHandler lockHandler = GBApplication.acquireDB();
+        List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
+        for (Device dbDevice : activeDevices) {
+            SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+            if (sharedPrefs != null) {
+                File myPath = FileUtils.getExportFilesDir();
+                File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
+                try {
+                    ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, myFile, null);
+                } catch (Exception ignore) {
+                    // some devices no not have device specific preferences
+                }
+            }
+        }
     }
 
     /**

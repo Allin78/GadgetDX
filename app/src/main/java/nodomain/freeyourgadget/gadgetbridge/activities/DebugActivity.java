@@ -87,6 +87,7 @@ import nodomain.freeyourgadget.gadgetbridge.adapter.SpinnerWithIconAdapter;
 import nodomain.freeyourgadget.gadgetbridge.adapter.SpinnerWithIconItem;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.database.PeriodicExporter;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
@@ -255,6 +256,18 @@ public class DebugActivity extends AbstractGBActivity {
             @Override
             public void onClick(View v) {
                 GBApplication.deviceService().onReset(GBDeviceProtocol.RESET_FLAGS_REBOOT);
+            }
+        });
+
+        Button testExportDBButton = findViewById(R.id.testExportDBButton);
+        testExportDBButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = getApplicationContext();
+                sendBroadcast(new Intent(context, PeriodicExporter.class));
+                GB.toast(context,
+                        context.getString(R.string.activity_DB_test_export_message),
+                        Toast.LENGTH_SHORT, GB.INFO);
             }
         });
 

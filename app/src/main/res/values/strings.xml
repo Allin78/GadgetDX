@@ -487,6 +487,13 @@
     <string name="pref_sleep_mode_sleep_screen_summary">Show the Sleep Screen when waking the screen during sleep mode, to reduce distractions</string>
     <string name="pref_sleep_mode_smart_enable_title">Smart Enable</string>
     <string name="pref_sleep_mode_smart_enable_summary">Enable the sleep mode automatically when wearing the band during sleep</string>
+    <!-- Data Management preferences   -->
+    <string name="pref_title_export_location">Export Location</string>
+    <string name="pref_header_export_included">Included in export</string>
+    <string name="pref_title_include_global_settings">Global settings</string>
+    <string name="pref_title_device_settings">Device-specific settings</string>
+    <string name="pref_title_include_database">Database</string>
+    <string name="activity_prefs_data_management">Export/Import options</string>
     <!-- Auto export preferences -->
     <string name="pref_header_auto_export">Auto export</string>
     <string name="pref_title_auto_export_enabled">Auto export enabled</string>

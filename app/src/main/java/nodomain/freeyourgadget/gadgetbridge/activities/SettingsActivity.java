@@ -73,6 +73,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+import nodomain.freeyourgadget.gadgetbridge.util.SAFFileUtils;
 
 public class SettingsActivity extends AbstractSettingsActivity {
     private static final Logger LOG = LoggerFactory.getLogger(SettingsActivity.class);
@@ -297,48 +298,15 @@ public class SettingsActivity extends AbstractSettingsActivity {
             }
         });
 
-
-        pref = findPreference(GBPrefs.AUTO_EXPORT_LOCATION);
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        pref = findPreference("pref_data_management_options");
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             public boolean onPreferenceClick(Preference preference) {
-                Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                i.setType("application/x-sqlite3");
-                i.addCategory(Intent.CATEGORY_OPENABLE);
-                i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                String title = getApplicationContext().getString(R.string.choose_auto_export_location);
-                startActivityForResult(Intent.createChooser(i, title), FILE_REQUEST_CODE);
+                Intent intent = new Intent(SettingsActivity.this, DataManagementPreferencesActivity.class);
+                startActivity(intent);
                 return true;
             }
         });
-        pref.setSummary(getAutoExportLocationSummary());
 
-        pref = findPreference(GBPrefs.AUTO_EXPORT_INTERVAL);
-        pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object autoExportInterval) {
-                String summary = String.format(
-                        getApplicationContext().getString(R.string.pref_summary_auto_export_interval),
-                        Integer.valueOf((String) autoExportInterval));
-                preference.setSummary(summary);
-                boolean auto_export_enabled = GBApplication.getPrefs().getBoolean(GBPrefs.AUTO_EXPORT_ENABLED, false);
-                PeriodicExporter.scheduleAlarm(getApplicationContext(), Integer.valueOf((String) autoExportInterval), auto_export_enabled);
-                return true;
-            }
-        });
-        int autoExportInterval = GBApplication.getPrefs().getInt(GBPrefs.AUTO_EXPORT_INTERVAL, 0);
-        String summary = String.format(
-                getApplicationContext().getString(R.string.pref_summary_auto_export_interval),
-                (int) autoExportInterval);
-        pref.setSummary(summary);
-
-        findPreference(GBPrefs.AUTO_EXPORT_ENABLED).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object autoExportEnabled) {
-                int autoExportInterval = GBApplication.getPrefs().getInt(GBPrefs.AUTO_EXPORT_INTERVAL, 0);
-                PeriodicExporter.scheduleAlarm(getApplicationContext(), autoExportInterval, (boolean) autoExportEnabled);
-                return true;
-            }
-        });
 
         pref = findPreference("auto_fetch_interval_limit");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -353,7 +321,7 @@ public class SettingsActivity extends AbstractSettingsActivity {
         });
 
         int autoFetchInterval = GBApplication.getPrefs().getInt("auto_fetch_interval_limit", 0);
-        summary = String.format(
+        String summary = String.format(
                 getApplicationContext().getString(R.string.pref_auto_fetch_limit_fetches_summary),
                 autoFetchInterval);
         pref.setSummary(summary);
@@ -482,54 +450,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
         public void onNothingSelected(AdapterView<?> arg0) {
             // TODO Auto-generated method stub
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == FILE_REQUEST_CODE && intent != null) {
-            Uri uri = intent.getData();
-            getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            PreferenceManager
-                    .getDefaultSharedPreferences(this)
-                    .edit()
-                    .putString(GBPrefs.AUTO_EXPORT_LOCATION, uri.toString())
-                    .apply();
-            String summary = getAutoExportLocationSummary();
-            findPreference(GBPrefs.AUTO_EXPORT_LOCATION).setSummary(summary);
-            boolean autoExportEnabled = GBApplication
-                    .getPrefs().getBoolean(GBPrefs.AUTO_EXPORT_ENABLED, false);
-            int autoExportPeriod = GBApplication
-                    .getPrefs().getInt(GBPrefs.AUTO_EXPORT_INTERVAL, 0);
-            PeriodicExporter.scheduleAlarm(getApplicationContext(), autoExportPeriod, autoExportEnabled);
-        }
-    }
-
-    /*
-    Either returns the file path of the selected document, or the display name, or an empty string
-     */
-    public String getAutoExportLocationSummary() {
-        String autoExportLocation = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
-        if (autoExportLocation == null) {
-            return "";
-        }
-        Uri uri = Uri.parse(autoExportLocation);
-        try {
-            return AndroidUtils.getFilePath(getApplicationContext(), uri);
-        } catch (IllegalArgumentException e) {
-            try {
-                Cursor cursor = getContentResolver().query(
-                        uri,
-                        new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME},
-                        null, null, null, null
-                );
-                if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
-                }
-            } catch (Exception fdfsdfds) {
-                LOG.warn("fuck");
-            }
-        }
-        return "";
     }
 
     /*

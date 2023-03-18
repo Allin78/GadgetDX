@@ -132,6 +132,14 @@
                 android:text="Set Weather" />
 
             <Button
+                android:id="@+id/testExportDBButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal"
+                android:text="@string/activity_DB_test_export_button" />
+
+            <Button
                 android:id="@+id/factoryResetButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="export_location"
+        android:title="@string/pref_title_export_location"
+        android:summary="%s" />
+
+    <PreferenceCategory
+        android:title="@string/pref_header_auto_export">
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="false"
+            android:key="auto_export_enabled"
+            android:title="@string/pref_title_auto_export_enabled" />
+        <EditTextPreference
+            android:dependency="auto_export_enabled"
+            android:inputType="number"
+            android:key="auto_export_interval"
+            android:defaultValue="3"
+            android:maxLength="3"
+            android:title="@string/pref_title_auto_export_interval"
+            android:summary="@string/pref_summary_auto_export_interval"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_export_included">
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="include_global_settings"
+            android:title="@string/pref_title_include_global_settings" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="include_device_settings"
+            android:title="@string/pref_title_device_settings" />
+        <CheckBoxPreference
+            android:layout="@layout/preference_checkbox"
+            android:defaultValue="true"
+            android:key="include_database"
+            android:title="@string/pref_title_include_database" />
+    </PreferenceCategory>
+</PreferenceScreen >

@@ -21,16 +21,21 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
@@ -100,23 +105,11 @@ public class PeriodicExporter extends BroadcastReceiver {
         @Override
         protected void doInBackground(DBHandler handler) {
             LOG.info("Exporting DB in a background thread");
-            try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                DBHelper helper = new DBHelper(localContext);
-                String dst = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
-                if (dst == null) {
-                    LOG.warn("Unable to export DB, export location not set");
-                    broadcastSuccess(false);
-                    return;
-                }
-                Uri dstUri = Uri.parse(dst);
-                try (OutputStream out = localContext.getContentResolver().openOutputStream(dstUri)) {
-                    helper.exportDB(dbHandler, out);
-                    GBApplication gbApp = GBApplication.app();
-                    gbApp.setLastAutoExportTimestamp(System.currentTimeMillis());
-                }
-
+            try {
+                FileUtils.performFullExport(localContext);
+                GBApplication gbApp = GBApplication.app();
+                gbApp.setLastAutoExportTimestamp(System.currentTimeMillis());
                 broadcastSuccess(true);
-
                 LOG.info("DB export completed");
             } catch (Exception ex) {
                 GB.updateExportFailedNotification(localContext.getString(R.string.notif_export_failed_title), localContext);
