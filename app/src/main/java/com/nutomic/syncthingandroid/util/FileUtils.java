@@ -1,32 +1,33 @@
-package nodomain.freeyourgadget.gadgetbridge.util;
+package com.nutomic.syncthingandroid.util;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.provider.DocumentsContract;
-
 import androidx.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import android.util.Log;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import nodomain.freeyourgadget.gadgetbridge.activities.DataManagementActivity;
-
 /**
- * Slightly adapted version of "FileUtils" found in syncthing-android
- * https://github.com/syncthing/syncthing-android/blob/733f873ae32636f55307e0678712bcfdb1fce6ac/app/src/main/java/com/nutomic/syncthingandroid/util/FileUtils.java
+ * Utils for dealing with Storage Access Framework URIs.
  */
-public class SAFFileUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(SAFFileUtils.class);
+public class FileUtils {
 
-    private SAFFileUtils() {
+    private static final String TAG = "FileUtils";
+
+    // TargetApi(21)
+    private static final Boolean isCompatible = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP);
+
+    private FileUtils() {
         // Private constructor to enforce Singleton pattern.
     }
 
@@ -34,15 +35,22 @@ public class SAFFileUtils {
     private static final String PRIMARY_VOLUME_NAME = "primary";
     private static final String HOME_VOLUME_NAME = "home";
 
+    @Nullable
+    @TargetApi(21)
     public static String getAbsolutePathFromSAFUri(Context context, @Nullable final Uri safResultUri) {
         Uri treeUri = DocumentsContract.buildDocumentUriUsingTree(safResultUri,
-                DocumentsContract.getTreeDocumentId(safResultUri));
+            DocumentsContract.getTreeDocumentId(safResultUri));
         return getAbsolutePathFromTreeUri(context, treeUri);
     }
 
+    @Nullable
     public static String getAbsolutePathFromTreeUri(Context context, @Nullable final Uri treeUri) {
+        if (!isCompatible) {
+            Log.e(TAG, "getAbsolutePathFromTreeUri: called on unsupported API level");
+            return null;
+        }
         if (treeUri == null) {
-            LOG.error("getAbsolutePathFromTreeUri: called with treeUri == null");
+            Log.w(TAG, "getAbsolutePathFromTreeUri: called with treeUri == null");
             return null;
         }
 
@@ -75,15 +83,21 @@ public class SAFFileUtils {
         }
     }
 
+    @SuppressLint("ObsoleteSdkInt")
+    @TargetApi(21)
     private static String getVolumePath(final String volumeId, Context context) {
+        if (!isCompatible) {
+            Log.e(TAG, "getVolumePath called on unsupported API level");
+            return null;
+        }
         try {
             if (HOME_VOLUME_NAME.equals(volumeId)) {
-                LOG.info("getVolumePath: isHomeVolume");
+                Log.v(TAG, "getVolumePath: isHomeVolume");
                 // Reading the environment var avoids hard coding the case of the "documents" folder.
                 return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath();
             }
             if (DOWNLOADS_VOLUME_NAME.equals(volumeId)) {
-                LOG.info("getVolumePath: isDownloadsVolume");
+                Log.v(TAG, "getVolumePath: isDownloadsVolume");
                 // Reading the environment var avoids hard coding the case of the "downloads" folder.
                 return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
             }
@@ -104,22 +118,22 @@ public class SAFFileUtils {
                 Boolean primary = (Boolean) isPrimary.invoke(storageVolumeElement);
                 Boolean isPrimaryVolume = (primary && PRIMARY_VOLUME_NAME.equals(volumeId));
                 Boolean isExternalVolume = ((uuid != null) && uuid.equals(volumeId));
-                LOG.debug("Found volume with uuid='" + uuid +
-                        "', volumeId='" + volumeId +
-                        "', primary=" + primary +
-                        ", isPrimaryVolume=" + isPrimaryVolume +
-                        ", isExternalVolume=" + isExternalVolume
+                Log.d(TAG, "Found volume with uuid='" + uuid +
+                    "', volumeId='" + volumeId +
+                    "', primary=" + primary +
+                    ", isPrimaryVolume=" + isPrimaryVolume +
+                    ", isExternalVolume=" + isExternalVolume
                 );
                 if (isPrimaryVolume || isExternalVolume) {
-                    LOG.info("getVolumePath: isPrimaryVolume || isExternalVolume");
+                    Log.v(TAG, "getVolumePath: isPrimaryVolume || isExternalVolume");
                     // Return path if the correct volume corresponding to volumeId was found.
                     return (String) getPath.invoke(storageVolumeElement);
                 }
             }
         } catch (Exception e) {
-            LOG.warn( "getVolumePath exception", e);
+            Log.w(TAG, "getVolumePath exception", e);
         }
-        LOG.error("getVolumePath failed for volumeId='" + volumeId + "'");
+        Log.e(TAG, "getVolumePath failed for volumeId='" + volumeId + "'");
         return null;
     }
 
@@ -131,6 +145,7 @@ public class SAFFileUtils {
      * This is crucial to assist the user finding a writeable folder
      * to use syncthing's two way sync feature.
      */
+    @TargetApi(19)
     public static android.net.Uri getExternalFilesDirUri(Context context) {
         try {
             /**
@@ -141,28 +156,29 @@ public class SAFFileUtils {
             externalFilesDir.addAll(Arrays.asList(context.getExternalFilesDirs(null)));
             externalFilesDir.remove(context.getExternalFilesDir(null));
             if (externalFilesDir.size() == 0) {
-                LOG.warn("Could not determine app's private files directory on external storage.");
+                Log.w(TAG, "Could not determine app's private files directory on external storage.");
                 return null;
             }
             String absPath = externalFilesDir.get(0).getAbsolutePath();
             String[] segments = absPath.split("/");
             if (segments.length < 2) {
-                LOG.warn("Could not extract volumeId from app's private files path '" + absPath + "'");
+                Log.w(TAG, "Could not extract volumeId from app's private files path '" + absPath + "'");
                 return null;
             }
             // Extract the volumeId, e.g. "abcd-efgh"
             String volumeId = segments[2];
             // Build the content Uri for our private "files" folder.
             return android.net.Uri.parse(
-                    "content://com.android.externalstorage.documents/document/" +
-                            volumeId + "%3AAndroid%2Fdata%2F" +
-                            context.getPackageName() + "%2Ffiles");
+                "content://com.android.externalstorage.documents/document/" +
+                volumeId + "%3AAndroid%2Fdata%2F" +
+                context.getPackageName() + "%2Ffiles");
         } catch (Exception e) {
-            LOG.warn("getExternalFilesDirUri exception", e);
+            Log.w(TAG, "getExternalFilesDirUri exception", e);
         }
         return null;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static String getVolumeIdFromTreeUri(final Uri treeUri) {
         final String docId = DocumentsContract.getTreeDocumentId(treeUri);
         final String[] split = docId.split(":");
@@ -173,6 +189,7 @@ public class SAFFileUtils {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private static String getDocumentPathFromTreeUri(final Uri treeUri) {
         final String docId = DocumentsContract.getTreeDocumentId(treeUri);
         final String[] split = docId.split(":");

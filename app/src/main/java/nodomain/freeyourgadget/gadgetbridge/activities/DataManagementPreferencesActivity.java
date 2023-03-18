@@ -12,7 +12,6 @@ import nodomain.freeyourgadget.gadgetbridge.database.PeriodicExporter;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-import nodomain.freeyourgadget.gadgetbridge.util.SAFFileUtils;
 
 public class DataManagementPreferencesActivity extends AbstractSettingsActivity {
     private static final int DIRECTORY_REQUEST_CODE = 4711;
@@ -81,7 +80,7 @@ public class DataManagementPreferencesActivity extends AbstractSettingsActivity 
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == DIRECTORY_REQUEST_CODE && intent != null) {
             Uri uri = intent.getData();
-            String absoluteUri = SAFFileUtils.getAbsolutePathFromSAFUri(this, uri);
+            String absoluteUri = com.nutomic.syncthingandroid.util.FileUtils.getAbsolutePathFromSAFUri(this, uri);
             PreferenceManager
                     .getDefaultSharedPreferences(this)
                     .edit()
