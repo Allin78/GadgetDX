@@ -105,6 +105,15 @@ public class SettingsActivity extends AbstractSettingsActivity {
             }
         });
 
+        pref = findPreference("pref_data_management_options");
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(SettingsActivity.this, DataManagementPreferencesActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+
         pref = findPreference("pref_key_miband");
         pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -289,16 +298,6 @@ public class SettingsActivity extends AbstractSettingsActivity {
                 return true;
             }
         });
-
-        pref = findPreference("pref_data_management_options");
-        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
-            public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(SettingsActivity.this, DataManagementPreferencesActivity.class);
-                startActivity(intent);
-                return true;
-            }
-        });
-
 
         pref = findPreference("auto_fetch_interval_limit");
         pref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {

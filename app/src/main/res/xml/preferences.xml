@@ -110,6 +110,10 @@
         android:key="pref_charts"
         android:title="@string/activity_prefs_charts" />
 
+    <Preference
+        android:key="pref_data_management_options"
+        android:title="@string/activity_prefs_data_management" />
+
     <PreferenceCategory
         android:key="pref_key_datetime"
         android:title="@string/pref_header_datetime">
@@ -321,10 +325,6 @@
             android:key="pref_key_zetime"
             android:title="@string/zetime_title_settings"/>
     </PreferenceCategory>
-
-    <Preference
-        android:key="pref_data_management_options"
-        android:title="@string/activity_prefs_data_management" />
 
     <PreferenceCategory
         android:title="@string/pref_header_auto_fetch">
