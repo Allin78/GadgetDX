@@ -47,6 +47,8 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.documentfile.provider.DocumentFile;
 
+import org.slf4j.LoggerFactory;
+
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBEnvironment;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -213,6 +215,11 @@ public class FileUtils {
         return getDefaultExportFilesDir().toString();
     }
 
+    /**
+     * Performs export function of all relevant data in Gadgetbridge. Excludes certain data based on user settings.
+     * @param context: needed to perform exports
+     * @throws Exception: thrown when one of the export functions fails.
+     */
     public static void performFullExport(Context context) throws Exception
     {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -229,10 +236,15 @@ public class FileUtils {
 
     public static void exportDatabase(Context context) throws Exception
     {
-        DBHandler dbHandler = GBApplication.acquireDB();
-        DBHelper helper = new DBHelper(context);
-        File dir = FileUtils.getExportFilesDir();
-        File destFile = helper.exportDB(dbHandler, dir);
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+            DBHelper helper = new DBHelper(context);
+            File dir = FileUtils.getExportFilesDir();
+            File destFile = helper.exportDB(dbHandler, dir);
+        } catch (Exception ex)
+        {
+            LoggerFactory.getLogger(FileUtils.class).warn("Error exporting database:" + ex.getMessage());
+            throw ex;
+        }
     }
 
     public static void exportSharedPreferences(SharedPreferences sharedPrefs) throws IOException {
@@ -242,19 +254,24 @@ public class FileUtils {
     }
 
     public static void exportDeviceSharedPreferences(SharedPreferences sharedPrefs) throws Exception {
-        DBHandler lockHandler = GBApplication.acquireDB();
-        List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
-        for (Device dbDevice : activeDevices) {
-            SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
-            if (sharedPrefs != null) {
-                File myPath = FileUtils.getExportFilesDir();
-                File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
-                try {
-                    ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, myFile, null);
-                } catch (Exception ignore) {
-                    // some devices no not have device specific preferences
+        try (DBHandler lockHandler = GBApplication.acquireDB()) {
+            List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
+            for (Device dbDevice : activeDevices) {
+                SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+                if (sharedPrefs != null) {
+                    File myPath = FileUtils.getExportFilesDir();
+                    File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
+                    try {
+                        ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, myFile, null);
+                    } catch (Exception ignore) {
+                        // some devices no not have device specific preferences
+                    }
                 }
             }
+        } catch (Exception ex)
+        {
+            LoggerFactory.getLogger(FileUtils.class).warn("Error exporting device specific preferences:" + ex.getMessage());
+            throw ex;
         }
     }
 
