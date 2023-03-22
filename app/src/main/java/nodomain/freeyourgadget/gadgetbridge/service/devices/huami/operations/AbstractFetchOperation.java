@@ -133,6 +133,24 @@ public abstract class AbstractFetchOperation extends AbstractHuamiOperation {
         GB.updateTransferNotification(null, "", false, 100, getContext());
         operationFinished();
         unsetBusy();
+
+        final AbstractFetchOperation nextFetchOperation = getSupport().getNextFetchOperation();
+        if (nextFetchOperation != null) {
+            LOG.debug("Performing next operation {}", nextFetchOperation.getName());
+            try {
+                nextFetchOperation.perform();
+            } catch (final IOException e) {
+                GB.toast(
+                        getContext(),
+                        "Failed to run next fetch operation",
+                        Toast.LENGTH_SHORT,
+                        GB.ERROR, e
+                );
+
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -297,7 +315,7 @@ public abstract class AbstractFetchOperation extends AbstractHuamiOperation {
         sendAck2021(keepActivityDataOnDevice || !handleFinishSuccess);
     }
 
-    private void sendAck2021(final boolean keepDataOnDevice) {
+    protected void sendAck2021(final boolean keepDataOnDevice) {
         if (!(getSupport() instanceof Huami2021Support)) {
             return;
         }

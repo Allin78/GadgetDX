@@ -57,9 +57,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -116,6 +118,9 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -148,6 +153,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.common.SimpleNotific
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.actions.StopNotificationAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband2.Mi2NotificationStrategy;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband2.Mi2TextNotificationStrategy;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.AbstractFetchOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchActivityOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.InitOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.InitOperation2021;
@@ -325,6 +331,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     protected Huami2021ChunkedEncoder huami2021ChunkedEncoder;
     protected Huami2021ChunkedDecoder huami2021ChunkedDecoder;
+
+    private Queue<AbstractFetchOperation> fetchOperationQueue = new LinkedList<>();
 
     public HuamiSupport() {
         this(LOG);
@@ -1643,11 +1651,44 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     @Override
     public void onFetchRecordedData(int dataTypes) {
-        try {
-            new FetchActivityOperation(this).perform();
-        } catch (IOException ex) {
-            LOG.error("Unable to fetch activity data", ex);
+        this.fetchOperationQueue.addAll(getFetchOperations(dataTypes));
+
+        final AbstractFetchOperation nextOperation = this.fetchOperationQueue.poll();
+        if (nextOperation != null) {
+            try {
+                nextOperation.perform();
+            } catch (IOException ex) {
+                LOG.error("Unable to fetch activity data", ex);
+            }
         }
+    }
+
+    protected List<AbstractFetchOperation> getFetchOperations(final int dataTypes) {
+        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(getDevice());
+
+        final List<AbstractFetchOperation> operations = new ArrayList<>();
+
+        if ((dataTypes & RecordedDataTypes.TYPE_ACTIVITY) != 0) {
+            operations.add(new FetchActivityOperation(this));
+        }
+
+        if ((dataTypes & RecordedDataTypes.TYPE_GPS_TRACKS) != 0 && coordinator.supportsActivityTracks()) {
+            operations.add(new FetchSportsSummaryOperation(this, 1));
+        }
+
+        if ((dataTypes & RecordedDataTypes.TYPE_DEBUGLOGS) != 0 && supportsDebugLogs()) {
+            operations.add(new HuamiFetchDebugLogsOperation(this));
+        }
+
+        return operations;
+    }
+
+    protected boolean supportsDebugLogs() {
+        return false;
+    }
+
+    public AbstractFetchOperation getNextFetchOperation() {
+        return fetchOperationQueue.poll();
     }
 
     @Override
