@@ -19,7 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami;
 
-import android.app.Notification;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
@@ -117,10 +116,11 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
-import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.RepeatingFetchOperation;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -154,7 +154,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.actions.StopNo
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband2.Mi2NotificationStrategy;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband2.Mi2TextNotificationStrategy;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.AbstractFetchOperation;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchActivityOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchActivityHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.InitOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.InitOperation2021;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation;
@@ -1669,7 +1669,9 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         final List<AbstractFetchOperation> operations = new ArrayList<>();
 
         if ((dataTypes & RecordedDataTypes.TYPE_ACTIVITY) != 0) {
-            operations.add(new FetchActivityOperation(this));
+            FetchHandler handler = new FetchActivityHandler(getActivitySampleSize(), getDevice(), getContext());
+            RepeatingFetchOperation fetchOperation = new RepeatingFetchOperation(this, handler);
+            operations.add(fetchOperation);
         }
 
         if ((dataTypes & RecordedDataTypes.TYPE_GPS_TRACKS) != 0 && coordinator.supportsActivityTracks()) {

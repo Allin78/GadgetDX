@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations;
 
-import android.text.format.DateUtils;
+import android.content.Context;
 import android.widget.Toast;
 
 import org.slf4j.Logger;
@@ -42,7 +42,8 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.HuamiExtendedActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.MiBandActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.User;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -51,18 +52,23 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
  * An operation that fetches activity data. For every fetch, a new operation must
  * be created, i.e. an operation may not be reused for multiple fetches.
  */
-public class FetchActivityOperation extends AbstractRepeatingFetchOperation {
-    private static final Logger LOG = LoggerFactory.getLogger(FetchActivityOperation.class);
+public class FetchActivityHandler implements FetchHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(FetchActivityHandler.class);
 
     private final int sampleSize;
+    private final GBDevice gbDevice;
+    private final Context context;
 
-    public FetchActivityOperation(final HuamiSupport support) {
-        super(support, HuamiService.COMMAND_ACTIVITY_DATA_TYPE_ACTIVTY, "activity data");
-        sampleSize = getSupport().getActivitySampleSize();
+
+    public FetchActivityHandler(int sampleSize_, GBDevice device_, Context context_) {
+        sampleSize = sampleSize_;
+        gbDevice = device_;
+        context = context_;
+
     }
 
     @Override
-    protected boolean handleActivityData(final GregorianCalendar timestamp, final byte[] bytes) {
+    public boolean handleActivityData(final GregorianCalendar timestamp, final byte[] bytes) {
         if (bytes.length % sampleSize != 0) {
             throw new AssertionError("Unexpected activity array size: " + bytes.length);
         }
@@ -97,9 +103,9 @@ public class FetchActivityOperation extends AbstractRepeatingFetchOperation {
         try (DBHandler handler = GBApplication.acquireDB()) {
             DaoSession session = handler.getDaoSession();
 
-            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(getDevice());
-            SampleProvider sampleProvider = coordinator.getSampleProvider(getDevice(), session);
-            Device device = DBHelper.getDevice(getDevice(), session);
+            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+            SampleProvider sampleProvider = coordinator.getSampleProvider(gbDevice, session);
+            Device device = DBHelper.getDevice(gbDevice, session);
             User user = DBHelper.getUser(session);
 
             for (MiBandActivitySample sample : samples) {
@@ -119,7 +125,7 @@ public class FetchActivityOperation extends AbstractRepeatingFetchOperation {
             LOG.info("Huami activity data: last sample timestamp: {}", DateTimeUtils.formatDateTime(timestamp.getTime()));
             return true;
         } catch (Exception ex) {
-            GB.toast(getContext(), "Error saving activity samples", Toast.LENGTH_LONG, GB.ERROR);
+            GB.toast(context, "Error saving activity samples", Toast.LENGTH_LONG, GB.ERROR);
             LOG.error("Error saving activity samples", ex);
             return false;
         }
@@ -177,7 +183,21 @@ public class FetchActivityOperation extends AbstractRepeatingFetchOperation {
     }
 
     @Override
-    protected String getLastSyncTimeKey() {
+    public String getLastSyncTimeKey() {
         return "lastSyncTimeMillis";
+    }
+
+    @Override
+    public byte getCommandDataType() {
+        return HuamiService.COMMAND_ACTIVITY_DATA_TYPE_ACTIVTY;
+    }
+
+    public int getDataType() {
+        return RecordedDataTypes.TYPE_ACTIVITY;
+    }
+
+    @Override
+    public String getDataName() {
+        return "activity data";
     }
 }

@@ -30,7 +30,6 @@ import java.util.GregorianCalendar;
 
 import nodomain.freeyourgadget.gadgetbridge.Logging;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.CheckSums;
@@ -40,17 +39,20 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
  * A repeating fetch operation (TODO: Improve docs). For every fetch, a new operation must
  * * be created, i.e. an operation may not be reused for multiple fetches.
  */
-public abstract class AbstractRepeatingFetchOperation extends AbstractFetchOperation {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractRepeatingFetchOperation.class);
+public final class RepeatingFetchOperation extends AbstractFetchOperation {
+    private static final Logger LOG = LoggerFactory.getLogger(RepeatingFetchOperation.class);
 
     private final ByteArrayOutputStream byteStreamBuffer = new ByteArrayOutputStream(140);
 
     protected final byte dataType;
 
-    public AbstractRepeatingFetchOperation(final HuamiSupport support, final byte dataType, final String dataName) {
+    private final FetchHandler handler;
+
+    public RepeatingFetchOperation(final HuamiSupport support, final FetchHandler handler_) {
         super(support);
-        this.dataType = dataType;
-        setName("fetching " + dataName);
+        this.handler = handler_;
+        this.dataType = handler_.getCommandDataType();
+        setName("fetching " + handler.getDataName());
     }
 
     @Override
@@ -60,15 +62,11 @@ public abstract class AbstractRepeatingFetchOperation extends AbstractFetchOpera
         startFetching(builder, dataType, sinceWhen);
     }
 
-    /**
-     * Handle the buffered activity data.
-     *
-     * @param timestamp The timestamp of the first sample. This function should update this to the
-     *                  timestamp of the last processed sample.
-     * @param bytes     the buffered bytes
-     * @return true on success
-     */
-    protected abstract boolean handleActivityData(final GregorianCalendar timestamp, final byte[] bytes);
+    @Override
+    protected String getLastSyncTimeKey() {
+        return handler.getLastSyncTimeKey();
+    }
+
 
     @Override
     protected boolean handleActivityFetchFinish(final boolean success) {
@@ -86,7 +84,7 @@ public abstract class AbstractRepeatingFetchOperation extends AbstractFetchOpera
         final byte[] bytes = byteStreamBuffer.toByteArray();
         final GregorianCalendar timestamp = (GregorianCalendar) this.startTimestamp.clone();
 
-        final boolean handleSuccess = handleActivityData(timestamp, bytes);
+        final boolean handleSuccess = handler.handleActivityData(timestamp, bytes);
 
         if (!handleSuccess) {
             super.handleActivityFetchFinish(false);
