@@ -224,6 +224,7 @@ public class HuamiService {
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_ACTIVTY = 0x01;
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_UNKNOWN_2 = 0x02;
     public static final byte COMMAND_ACTIVITY_DATA_XXX_DATE = 0x02; // issued on first connect, followd by COMMAND_XXXX_ACTIVITY_DATA instead of COMMAND_FETCH_DATA
+    public static final byte COMMAND_ACTIVITY_DATA_TYPE_STRESS_MANUAL = 0x12;
 
     public static final byte COMMAND_FIRMWARE_INIT = 0x01; // to UUID_CHARACTERISTIC_FIRMWARE, followed by fw file size in bytes
     public static final byte COMMAND_FIRMWARE_START_DATA = 0x03; // to UUID_CHARACTERISTIC_FIRMWARE

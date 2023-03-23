@@ -423,6 +423,14 @@ public class DebugActivity extends AbstractGBActivity {
             }
         });
 
+        Button fetchStressButton = findViewById(R.id.fetchStressButton);
+       fetchStressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                                GBApplication.deviceService().onFetchRecordedData(RecordedDataTypes.TYPE_STRESS);
+            }
+        });
+
         Button testNewFunctionalityButton = findViewById(R.id.testNewFunctionality);
         testNewFunctionalityButton.setOnClickListener(new View.OnClickListener() {
             @Override

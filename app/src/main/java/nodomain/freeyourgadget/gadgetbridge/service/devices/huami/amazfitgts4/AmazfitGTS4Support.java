@@ -19,13 +19,28 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts4;
 import android.content.Context;
 import android.net.Uri;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiFWHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4.AmazfitGTS4FWHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressHandler;
 
 public class AmazfitGTS4Support extends Huami2021Support {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AmazfitGTS4Support.class);
+
+    public AmazfitGTS4Support() {
+        this(LOG);
+    }
+
+    public AmazfitGTS4Support(final Logger logger) {
+        super(logger);
+        handlers.add(new FetchStressHandler(true, getDevice(), getContext()));
+    }
     @Override
     public HuamiFWHelper createFWHelper(final Uri uri, final Context context) throws IOException {
         return new AmazfitGTS4FWHelper(uri, context);
