@@ -426,24 +426,11 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     public void onFetchRecordedData(final int dataTypes) {
-        try {
-            // FIXME: currently only one data type supported, these are meant to be flags
-            switch (dataTypes) {
-                case RecordedDataTypes.TYPE_ACTIVITY:
-                    new FetchActivityOperation(this).perform();
-                    break;
-                case RecordedDataTypes.TYPE_GPS_TRACKS:
-                    new FetchSportsSummaryOperation(this, 1).perform();
-                    break;
-                case RecordedDataTypes.TYPE_DEBUGLOGS:
-                    new HuamiFetchDebugLogsOperation(this).perform();
-                    break;
-                default:
-                    LOG.warn("fetching multiple data types at once is not supported yet");
-            }
-        } catch (final Exception e) {
-            LOG.error("Unable to fetch recorded data types {}", dataTypes, e);
+        // TODO: support multiple data types
+        if (Integer.bitCount(dataTypes) != 1) {
+            LOG.warn("fetching multiple data types at once is not supported yet");
         }
+        super.onFetchRecordedData(dataTypes);
     }
 
     @Override
