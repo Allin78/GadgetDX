@@ -119,7 +119,7 @@ public class FetchStressHandler implements FetchHandler {
             LOG.info("Huami activity data: last sample timestamp: {}", DateTimeUtils.formatDateTime(timestamp.getTime()));
             return true;
         } catch (Exception ex) {
-            GB.toast(context, "Error saving activity samples", Toast.LENGTH_LONG, GB.ERROR);
+            GB.toast(context, "Error saving stress samples", Toast.LENGTH_LONG, GB.ERROR);
             LOG.error("Error saving activity samples", ex);
             return false;
         }
