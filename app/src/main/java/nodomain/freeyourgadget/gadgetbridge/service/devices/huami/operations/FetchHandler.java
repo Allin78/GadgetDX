@@ -20,4 +20,6 @@ public interface FetchHandler {
     byte getCommandDataType();
 
     public String getDataName();
+
+    int getDataType();
 }

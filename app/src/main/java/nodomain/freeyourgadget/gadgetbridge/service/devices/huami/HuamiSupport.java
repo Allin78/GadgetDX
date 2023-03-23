@@ -334,6 +334,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     private Queue<AbstractFetchOperation> fetchOperationQueue = new LinkedList<>();
 
+    protected final ArrayList<FetchHandler> handlers = new ArrayList<>();
+
     public HuamiSupport() {
         this(LOG);
     }
@@ -354,6 +356,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         deviceInfoProfile = new DeviceInfoProfile<>(this);
         deviceInfoProfile.addListener(mListener);
         addSupportedProfile(deviceInfoProfile);
+
+        handlers.add(new FetchActivityHandler(getActivitySampleSize(), getDevice(), getContext()));
     }
 
     @Override
@@ -1667,6 +1671,14 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(getDevice());
 
         final List<AbstractFetchOperation> operations = new ArrayList<>();
+
+        for(FetchHandler handler : handlers) {
+            if ((dataTypes & handler.getDataType()) == 0) {
+                continue;
+            }
+            RepeatingFetchOperation fetchOperation = new RepeatingFetchOperation(this, handler);
+            operations.add(fetchOperation);
+        }
 
         if ((dataTypes & RecordedDataTypes.TYPE_ACTIVITY) != 0) {
             FetchHandler handler = new FetchActivityHandler(getActivitySampleSize(), getDevice(), getContext());
