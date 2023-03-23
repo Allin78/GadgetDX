@@ -39,6 +39,11 @@ public class AmazfitGTS4Support extends Huami2021Support {
 
     public AmazfitGTS4Support(final Logger logger) {
         super(logger);
+    }
+
+    @Override
+    protected void initFetchHandlers() {
+        super.initFetchHandlers();
         handlers.add(new FetchStressHandler(true, getDevice(), getContext()));
     }
     @Override

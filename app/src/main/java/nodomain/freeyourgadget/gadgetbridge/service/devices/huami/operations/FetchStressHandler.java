@@ -92,14 +92,13 @@ public class FetchStressHandler implements FetchHandler {
             final long stress = buffer.get();
             timestamp.setTimeInMillis(currentTimestamp);
 
-            LOG.info("Stress (manual) at {}: {}", timestamp, stress);
+            LOG.info("Stress (manual) at {}: {}", timestamp.getTime(), stress);
 
             HuamiExtendedActivitySample sample = getSample(timestamp, (int) stress);
 
             samples.add(sample);
 
         }
-
 
         try (DBHandler handler = GBApplication.acquireDB()) {
             DaoSession session = handler.getDaoSession();

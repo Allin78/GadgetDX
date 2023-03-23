@@ -119,6 +119,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.RepeatingFetchOperation;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
@@ -357,7 +358,6 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         deviceInfoProfile.addListener(mListener);
         addSupportedProfile(deviceInfoProfile);
 
-        handlers.add(new FetchActivityHandler(getActivitySampleSize(), getDevice(), getContext()));
     }
 
     @Override
@@ -383,6 +383,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             }
             characteristicHRControlPoint = getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_HEART_RATE_CONTROL_POINT);
             characteristicChunked = getCharacteristic(HuamiService.UUID_CHARACTERISTIC_CHUNKEDTRANSFER);
+            initFetchHandlers();
         } catch (IOException e) {
             GB.toast(getContext(), "Initializing Huami device failed", Toast.LENGTH_SHORT, GB.ERROR, e);
         }
@@ -1667,21 +1668,20 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
     }
 
+    protected void initFetchHandlers() {
+        handlers.add(new FetchActivityHandler(getActivitySampleSize(), getDevice(), getContext()));
+    }
+
     protected List<AbstractFetchOperation> getFetchOperations(final int dataTypes) {
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(getDevice());
 
         final List<AbstractFetchOperation> operations = new ArrayList<>();
 
+
         for(FetchHandler handler : handlers) {
             if ((dataTypes & handler.getDataType()) == 0) {
                 continue;
             }
-            RepeatingFetchOperation fetchOperation = new RepeatingFetchOperation(this, handler);
-            operations.add(fetchOperation);
-        }
-
-        if ((dataTypes & RecordedDataTypes.TYPE_ACTIVITY) != 0) {
-            FetchHandler handler = new FetchActivityHandler(getActivitySampleSize(), getDevice(), getContext());
             RepeatingFetchOperation fetchOperation = new RepeatingFetchOperation(this, handler);
             operations.add(fetchOperation);
         }
