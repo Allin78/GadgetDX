@@ -38,6 +38,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiExtendedSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
@@ -79,6 +80,7 @@ public class FetchStressHandler implements FetchHandler {
 
         final ByteBuffer buffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
         final GregorianCalendar lastSyncTimestamp = new GregorianCalendar();
+        ArrayList<HuamiExtendedActivitySample> samples = new ArrayList<>();
 
         while (buffer.position() < bytes.length) {
             final long currentTimestamp = BLETypeConversions.toUnsigned(buffer.getInt()) * 1000;
@@ -90,12 +92,44 @@ public class FetchStressHandler implements FetchHandler {
             final long stress = buffer.get();
             timestamp.setTimeInMillis(currentTimestamp);
 
-            LOG.info("Stress (manual) at {}: {}", lastSyncTimestamp.getTime(), stress);
+            LOG.info("Stress (manual) at {}: {}", timestamp, stress);
 
-            // TODO: Save stress data
+            HuamiExtendedActivitySample sample = getSample(timestamp, (int) stress);
+
+            samples.add(sample);
+
         }
 
-        return true;
+
+        try (DBHandler handler = GBApplication.acquireDB()) {
+            DaoSession session = handler.getDaoSession();
+
+            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+            HuamiExtendedSampleProvider sampleProvider = (HuamiExtendedSampleProvider) coordinator.getSampleProvider(gbDevice, session);
+            Device device = DBHelper.getDevice(gbDevice, session);
+            User user = DBHelper.getUser(session);
+
+            for (MiBandActivitySample sample : samples) {
+                sample.setDevice(device);
+                sample.setUser(user);
+                sample.setProvider(sampleProvider);
+            }
+            sampleProvider.addGBActivitySamples(samples.toArray(new HuamiExtendedActivitySample[0]));
+
+            LOG.info("Huami activity data: last sample timestamp: {}", DateTimeUtils.formatDateTime(timestamp.getTime()));
+            return true;
+        } catch (Exception ex) {
+            GB.toast(context, "Error saving activity samples", Toast.LENGTH_LONG, GB.ERROR);
+            LOG.error("Error saving activity samples", ex);
+            return false;
+        }
+    }
+    private HuamiExtendedActivitySample getSample(GregorianCalendar timestamp, int stress) {
+        HuamiExtendedActivitySample sample = new HuamiExtendedActivitySample();
+        sample.setTimestamp((int) (timestamp.getTimeInMillis() / 1000));
+        sample.setRawKind(HuamiExtendedSampleProvider.TYPE_CUSTOM_UNSET);
+        sample.setStress(stress);
+        return sample;
     }
 
 

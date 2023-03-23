@@ -175,6 +175,7 @@ public class FetchActivityHandler implements FetchHandler {
             builder.append(",sleep=").append(huamiExtendedSample.getSleep());
             builder.append(",deepSleep=").append(huamiExtendedSample.getDeepSleep());
             builder.append(",remSleep=").append(huamiExtendedSample.getRemSleep());
+            builder.append(",stress=").append(huamiExtendedSample.getStress());
         }
 
         builder.append("}");

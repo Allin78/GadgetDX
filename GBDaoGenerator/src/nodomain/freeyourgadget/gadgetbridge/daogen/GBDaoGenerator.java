@@ -235,6 +235,7 @@ public class GBDaoGenerator {
         activitySample.addIntProperty("sleep");
         activitySample.addIntProperty("deepSleep");
         activitySample.addIntProperty("remSleep");
+        activitySample.addIntProperty("stress");
         return activitySample;
     }
 
