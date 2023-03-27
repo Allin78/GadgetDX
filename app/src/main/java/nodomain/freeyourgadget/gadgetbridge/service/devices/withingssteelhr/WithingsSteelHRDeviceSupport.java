@@ -35,7 +35,9 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
@@ -281,6 +283,20 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         }
 
         return true;
+    }
+
+    @Override
+    public void onSetCallState(CallSpec callSpec) {
+        if (callSpec.command == CallSpec.CALL_INCOMING) {
+            NotificationSpec notificationSpec = new NotificationSpec();
+            notificationSpec.sourceAppId = "incoming.call";
+            notificationSpec.title = callSpec.number;
+            notificationSpec.sender = callSpec.name;
+            notificationSpec.type = NotificationType.GENERIC_PHONE;
+            notificationProvider.notifyClient(notificationSpec);
+        } else {
+            logger.info("Received yet unhandled call command: " + callSpec.command);
+        }
     }
 
     @Override
