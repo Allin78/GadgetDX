@@ -146,7 +146,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
         switch (((ActivitySampleSleep)data).getSleepType()) {
             case 0:
                 sleepType = ActivityKind.TYPE_LIGHT_SLEEP;
-                activityEntry.setRawIntensity(0);
+                activityEntry.setRawIntensity(10);
                 break;
             case 2:
                 sleepType = ActivityKind.TYPE_DEEP_SLEEP;
