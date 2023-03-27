@@ -193,7 +193,7 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         }
         settings.add(R.xml.devicesettings_nightmode);
         settings.add(R.xml.devicesettings_sleep_mode);
-        settings.add(R.xml.devicesettings_liftwrist_display_sensitivity);
+        settings.add(R.xml.devicesettings_liftwrist_display_sensitivity_with_smart);
         settings.add(R.xml.devicesettings_password);
         settings.add(R.xml.devicesettings_always_on_display);
         settings.add(R.xml.devicesettings_screen_timeout);
@@ -222,6 +222,7 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
             settings.add(R.xml.devicesettings_workout_start_on_phone);
             settings.add(R.xml.devicesettings_workout_send_gps_to_band);
         }
+        settings.add(R.xml.devicesettings_workout_keep_screen_on);
         settings.add(R.xml.devicesettings_workout_detection);
 
         //
@@ -251,6 +252,7 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         settings.add(R.xml.devicesettings_buttonactions_upper_long);
         settings.add(R.xml.devicesettings_buttonactions_lower_short);
         settings.add(R.xml.devicesettings_weardirection);
+        settings.add(R.xml.devicesettings_camera_remote);
 
         //
         // Connection
@@ -264,6 +266,12 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         // Developer
         //
         settings.add(R.xml.devicesettings_header_developer);
+        if (supportsWifiHotspot(device)) {
+            settings.add(R.xml.devicesettings_wifi_hotspot);
+        }
+        if (supportsFtpServer(device)) {
+            settings.add(R.xml.devicesettings_ftp_server);
+        }
         settings.add(R.xml.devicesettings_keep_activity_data_on_device);
         settings.add(R.xml.devicesettings_huami2021_fetch_operation_time_unit);
 
@@ -333,6 +341,14 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
     public boolean mainMenuHasMoreSection() {
         // Devices that have a control center don't seem to have a "more" section in the main menu
         return !supportsControlCenter();
+    }
+
+    public boolean supportsWifiHotspot(final GBDevice device) {
+        return false;
+    }
+
+    public boolean supportsFtpServer(final GBDevice device) {
+        return false;
     }
 
     public boolean hasGps(final GBDevice device) {

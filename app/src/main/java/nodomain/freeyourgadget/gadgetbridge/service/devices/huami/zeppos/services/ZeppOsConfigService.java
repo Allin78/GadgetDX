@@ -52,6 +52,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
@@ -296,6 +298,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         LIFT_WRIST_SCHEDULED_END(ConfigGroup.DISPLAY, ConfigType.DATETIME_HH_MM, 0x0a, PREF_DISPLAY_ON_LIFT_END),
         LIFT_WRIST_RESPONSE_SENSITIVITY(ConfigGroup.DISPLAY, ConfigType.BYTE, 0x0b, PREF_DISPLAY_ON_LIFT_SENSITIVITY),
         SCREEN_ON_ON_NOTIFICATIONS(ConfigGroup.DISPLAY, ConfigType.BOOL, 0x0c, PREF_SCREEN_ON_ON_NOTIFICATIONS),
+        WORKOUT_KEEP_SCREEN_ON(ConfigGroup.DISPLAY, ConfigType.BOOL, 0x0d, PREF_WORKOUT_KEEP_SCREEN_ON),
         ALWAYS_ON_DISPLAY_FOLLOW_WATCHFACE(ConfigGroup.DISPLAY, ConfigType.BOOL, 0x0e, PREF_ALWAYS_ON_DISPLAY_FOLLOW_WATCHFACE),
         ALWAYS_ON_DISPLAY_STYLE(ConfigGroup.DISPLAY, ConfigType.STRING_LIST, 0x0f, PREF_ALWAYS_ON_DISPLAY_STYLE),
 
@@ -378,6 +381,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         NIGHT_MODE_SCHEDULED_END(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x1d, PREF_NIGHT_MODE_END),
         SLEEP_MODE_SLEEP_SCREEN(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x21, PREF_SLEEP_MODE_SLEEP_SCREEN),
         SLEEP_MODE_SMART_ENABLE(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x22, PREF_SLEEP_MODE_SMART_ENABLE),
+        CAMERA_REMOTE(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x23, PREF_CAMERA_REMOTE),
 
         // Bluetooth
         BLUETOOTH_CONNECTED_ADVERTISING(ConfigGroup.BLUETOOTH, ConfigType.BOOL, 0x02, PREF_BT_CONNECTED_ADVERTISEMENT),
@@ -1681,6 +1685,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         put((byte) 0x00, ActivateDisplayOnLift.OFF);
         put((byte) 0x01, ActivateDisplayOnLift.SCHEDULED);
         put((byte) 0x02, ActivateDisplayOnLift.ON);
+        put((byte) 0x03, ActivateDisplayOnLift.SMART);
     }};
 
     private static final Map<Byte, Enum<?>> LIFT_WRIST_SENSITIVITY_MAP = new HashMap<Byte, Enum<?>>() {{
@@ -1761,6 +1766,12 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
             if (anEnum.name().toLowerCase(Locale.ROOT).equals(val)) {
                 return reverse.get(anEnum);
             }
+        }
+
+        // Byte doesn't match a known enum value, attempt to parse it as hex
+        final Matcher matcher = Pattern.compile("^0[xX]([0-9a-fA-F]{1,2})$").matcher(val);
+        if (matcher.find()) {
+            return (byte) Integer.parseInt(matcher.group(1), 16);
         }
 
         return null;

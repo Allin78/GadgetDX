@@ -321,6 +321,19 @@
         <item>@string/p_scheduled</item>
     </string-array>
 
+    <string-array name="activate_display_on_lift_with_smart">
+        <item>@string/off</item>
+        <item>@string/on</item>
+        <item>@string/mi2_dnd_scheduled</item>
+        <item>@string/smart</item>
+    </string-array>
+    <string-array name="activate_display_on_lift_with_smart_values">
+        <item>@string/p_off</item>
+        <item>@string/p_on</item>
+        <item>@string/p_scheduled</item>
+        <item>@string/p_smart</item>
+    </string-array>
+
     <string-array name="activate_display_on_lift_sensitivity">
         <item>@string/normal</item>
         <item>@string/sensitive</item>
@@ -1504,6 +1517,7 @@
         <item>@string/p_menuitem_findphone</item>
         <item>@string/p_menuitem_takephoto</item>
         <item>@string/p_menuitem_settings</item>
+        <item>@string/p_menuitem_alexa</item>
         <item>@string/p_menuitem_more</item>
     </string-array>
 
@@ -2854,6 +2868,7 @@
     <string-array name="pref_transliteration_languages">
         <item>@string/arabic</item>
         <item>@string/bengali</item>
+        <item>@string/croatian</item>
         <item>@string/czech</item>
         <item>@string/estonian</item>
         <item>@string/extended_ascii</item>
@@ -2876,6 +2891,7 @@
     <string-array name="pref_transliteration_languages_values">
         <item>arabic</item>
         <item>bengali</item>
+        <item>croatian</item>
         <item>czech</item>
         <item>estonian</item>
         <item>extended_ascii</item>

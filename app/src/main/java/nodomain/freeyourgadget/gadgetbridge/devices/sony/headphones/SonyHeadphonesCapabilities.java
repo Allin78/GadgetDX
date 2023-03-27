@@ -23,6 +23,8 @@ public enum SonyHeadphonesCapabilities {
     PowerOffFromPhone,
     AmbientSoundControl,
     WindNoiseReduction,
+    SpeakToChatEnabled,
+    SpeakToChatConfig,
     AncOptimizer,
     AudioSettingsOnlyOnSbcCodec,
     AudioUpsampling,

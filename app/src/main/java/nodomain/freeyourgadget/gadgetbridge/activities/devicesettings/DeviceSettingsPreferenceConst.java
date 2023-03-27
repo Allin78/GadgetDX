@@ -24,6 +24,10 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HEADER_WORKOUT_DETECTION = "pref_header_workout_detection";
     public static final String PREF_HEADER_GPS = "pref_header_gps";
     public static final String PREF_HEADER_AGPS = "pref_header_agps";
+    public static final String PREF_HEADER_WIFI_HOTSPOT_CONFIGURATION = "pref_header_wifi_hotspot_configuration";
+    public static final String PREF_HEADER_WIFI_HOTSPOT_STATUS = "pref_header_wifi_hotspot_status";
+    public static final String PREF_HEADER_FTP_SERVER_STATUS = "pref_header_ftp_server_status";
+    public static final String PREF_HEADER_FTP_SERVER_CONFIGURATION = "pref_header_ftp_server_configuration";
 
     public static final String PREF_SCREEN_NIGHT_MODE = "pref_screen_night_mode";
     public static final String PREF_SCREEN_SLEEP_MODE = "pref_screen_sleep_mode";
@@ -35,6 +39,8 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SCREEN_SOUND_AND_VIBRATION = "pref_screen_sound_and_vibration";
     public static final String PREF_SCREEN_DO_NOT_DISTURB = "pref_screen_do_not_disturb";
     public static final String PREF_SCREEN_OFFLINE_VOICE = "pref_screen_offline_voice";
+    public static final String PREF_SCREEN_WIFI_HOTSPOT = "pref_screen_wifi_hotspot";
+    public static final String PREF_SCREEN_FTP_SERVER = "pref_screen_ftp_server";
 
     public static final String PREF_LANGUAGE = "language";
     public static final String PREF_LANGUAGE_AUTO = "auto";
@@ -186,6 +192,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_DO_NOT_DISTURB_AUTOMATIC = "automatic";
     public static final String PREF_DO_NOT_DISTURB_ALWAYS = "always";
     public static final String PREF_DO_NOT_DISTURB_SCHEDULED = "scheduled";
+    public static final String PREF_CAMERA_REMOTE = "camera_remote";
 
     public static final String PREF_WORKOUT_START_ON_PHONE = "workout_start_on_phone";
     public static final String PREF_WORKOUT_SEND_GPS_TO_BAND = "workout_send_gps_to_band";
@@ -208,6 +215,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_AUTOREMOVE_MESSAGE = "autoremove_message";
     public static final String PREF_AUTOREMOVE_NOTIFICATIONS = "autoremove_notifications";
     public static final String PREF_SCREEN_ON_ON_NOTIFICATIONS = "screen_on_on_notifications";
+    public static final String PREF_WORKOUT_KEEP_SCREEN_ON = "workout_keep_screen_on";
     public static final String PREF_OPERATING_SOUNDS = "operating_sounds";
     public static final String PREF_KEY_VIBRATION = "key_vibration";
     public static final String PREF_FAKE_RING_DURATION = "fake_ring_duration";
@@ -225,6 +233,19 @@ public class DeviceSettingsPreferenceConst {
 
     public static final String PREF_BT_CONNECTED_ADVERTISEMENT = "bt_connected_advertisement";
     public static final String PREF_TRANSLITERATION_LANGUAGES = "pref_transliteration_languages";
+
+    public static final String WIFI_HOTSPOT_SSID = "wifi_hotspot_ssid";
+    public static final String WIFI_HOTSPOT_PASSWORD = "wifi_hotspot_password";
+    public static final String WIFI_HOTSPOT_START = "wifi_hotspot_start";
+    public static final String WIFI_HOTSPOT_STOP = "wifi_hotspot_stop";
+    public static final String WIFI_HOTSPOT_STATUS = "wifi_hotspot_status";
+
+    public static final String FTP_SERVER_ROOT_DIR = "ftp_server_root_dir";
+    public static final String FTP_SERVER_ADDRESS = "ftp_server_address";
+    public static final String FTP_SERVER_USERNAME = "ftp_server_username";
+    public static final String FTP_SERVER_START = "ftp_server_start";
+    public static final String FTP_SERVER_STOP = "ftp_server_stop";
+    public static final String FTP_SERVER_STATUS = "ftp_server_status";
 
     public static final String PREF_NOTHING_EAR1_INEAR = "pref_nothing_inear_detection";
     public static final String PREF_NOTHING_EAR1_AUDIOMODE = "pref_nothing_audiomode";
