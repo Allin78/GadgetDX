@@ -162,12 +162,14 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
+        logger.debug("Starting initialization...");
         conversationQueue = new ConversationQueue(this);
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         getDevice().setFirmwareVersion("N/A");
         getDevice().setFirmwareVersion2("N/A");
         BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
         builder.notify(characteristic, true);
+        logger.debug("Requesting change of MTU...");
         builder.requestMtu(119);
         return builder;
     }
@@ -180,6 +182,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+        logger.debug("MTU has changed to " + mtu);
         mtuSize = mtu;
         if (firstTimeConnect) {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.INITIAL_CONNECT));
@@ -440,6 +443,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         TransactionBuilder builder = createTransactionBuilder("setupFinished");
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
         builder.queue(getQueue());
+        logger.debug("Finished initialization.");
     }
 
     public void finishSync() {

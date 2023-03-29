@@ -41,9 +41,11 @@ public class ConversationQueue implements ConversationObserver
     }
 
     public void send() {
+        logger.debug("Sending of queued messages has been requested.");
         if (!queue.isEmpty()) {
             Conversation nextInLine = queue.peek();
             if (nextInLine!= null) {
+                logger.debug("Sending next queued message.");
                 Message request = nextInLine.getRequest();
                 support.sendToDevice(request);
             }
