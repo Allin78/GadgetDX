@@ -87,6 +87,8 @@ public class WeatherSpec implements Parcelable, Serializable {
             todayMinTemp = in.readInt();
             windSpeed = in.readFloat();
             windDirection = in.readInt();
+            ultravioletIndex = in.readInt();
+            rainProbability = in.readInt();
             in.readList(forecasts, Forecast.class.getClassLoader());
         }
     }
@@ -109,6 +111,8 @@ public class WeatherSpec implements Parcelable, Serializable {
         dest.writeInt(todayMinTemp);
         dest.writeFloat(windSpeed);
         dest.writeInt(windDirection);
+        dest.writeInt(ultravioletIndex);
+        dest.writeInt(rainProbability);
         dest.writeList(forecasts);
     }
 
