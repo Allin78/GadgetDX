@@ -50,11 +50,15 @@ public class WeatherSpec implements Parcelable, Serializable {
     public int todayMinTemp; // kelvin
     public float windSpeed; // km per hour
     public int windDirection; // deg
+    public int ultravioletIndex;
+    public int rainProbability; // %
 
     public ArrayList<Forecast> forecasts = new ArrayList<>();
 
     public WeatherSpec() {
-
+        // set to 0 for backward compatibility
+        ultravioletIndex = 0;
+        rainProbability = 0;
     }
 
     // Lower bounds of beaufort regions 1 to 12

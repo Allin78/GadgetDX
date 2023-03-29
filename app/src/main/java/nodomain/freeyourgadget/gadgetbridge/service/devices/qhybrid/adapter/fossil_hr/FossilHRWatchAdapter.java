@@ -1432,7 +1432,6 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                 );
             }
 
-
             JSONObject forecastResponseObject = new JSONObject()
                     .put("res", new JSONObject()
                             .put("id", 0)
@@ -1445,7 +1444,9 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                                                     .put("temp", weatherSpec.currentTemp - 273)
                                                     .put("high", weatherSpec.todayMaxTemp - 273)
                                                     .put("low", weatherSpec.todayMinTemp - 273)
-                                                    .put("rain", 0)
+                                                    .put("rain", weatherSpec.rainProbability)
+                                                    .put("uv", weatherSpec.ultravioletIndex)
+                                                    .put("message", weatherSpec.currentCondition)
                                                     .put("cond_id", getIconForConditionCode(weatherSpec.currentConditionCode, false)) // FIXME do not assume daylight
                                                     .put("forecast_day", forecastDayArray)
                                                     .put("forecast_week", forecastWeekArray)
