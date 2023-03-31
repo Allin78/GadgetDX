@@ -259,6 +259,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         addSupportedService(PineTimeJFConstants.UUID_SERVICE_WEATHER);
         addSupportedService(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
         addSupportedService(PineTimeJFConstants.UUID_SERVICE_MOTION);
+        addSupportedService(PineTimeJFConstants.UUID_SERVICE_HEART_RATE);
 
         IntentListener mListener = new IntentListener() {
             @Override
@@ -404,6 +405,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_STEP_COUNT), true);
             //builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_RAW_XYZ_VALUES), false); // issue #2527
         }
+
+        builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT), true);
 
         setInitialized(builder);
         batteryInfoProfile.requestBatteryInfo(builder);
@@ -610,6 +613,13 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 LOG.debug("onCharacteristicChanged: MotionService:Steps=" + steps);
             }
             onReceiveStepsSample(steps);
+            return true;
+        } else if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT)) {
+            int heartrate = Byte.toUnsignedInt(characteristic.getValue()[1]);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("onCharacteristicChanged: HeartRateMeasurement:HeartRate=" + heartrate);
+            }
+            onReceiveHeartRateMeasurement(heartrate);
             return true;
         }
 
@@ -968,6 +978,32 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
         } else {
             logDebug("ignoring " + diff + " steps");
+        }
+    }
+
+    private void onReceiveHeartRateMeasurement(int heartrate) {
+        this.onReceiveHeartRateMeasurement((int) (Calendar.getInstance().getTimeInMillis() / 1000l), heartrate);
+    }
+
+    private void onReceiveHeartRateMeasurement(int timeStamp, int heartrate) {
+        PineTimeActivitySample sample = new PineTimeActivitySample();
+
+        logDebug(String.format("onReceiveHeartRateMeasurement: \nheartrate=%d", heartrate));
+
+        if (heartrate > 0) {
+            sample.setHeartRate((int)heartrate);
+            sample.setTimestamp(timeStamp);
+            // since it's a local timestamp, it should NOT be treated as Activity because it will spoil activity charts
+            sample.setRawKind(ActivityKind.TYPE_UNKNOWN);
+
+            this.addGBActivitySample(sample);
+
+            Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
+                    .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample)
+                    .putExtra(DeviceService.EXTRA_TIMESTAMP, sample.getTimestamp());
+            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+        } else {
+            logDebug("ignoring heartrate of 0");
         }
     }
 
