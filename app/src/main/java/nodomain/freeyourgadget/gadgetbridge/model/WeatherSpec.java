@@ -38,7 +38,7 @@ public class WeatherSpec implements Parcelable, Serializable {
             return new WeatherSpec[size];
         }
     };
-    public static final int VERSION = 2;
+    public static final int VERSION = 3;
     private static final long serialVersionUID = VERSION;
     public int timestamp;
     public String location;
@@ -56,9 +56,7 @@ public class WeatherSpec implements Parcelable, Serializable {
     public ArrayList<Forecast> forecasts = new ArrayList<>();
 
     public WeatherSpec() {
-        // set to 0 for backward compatibility
-        ultravioletIndex = 0;
-        rainProbability = 0;
+
     }
 
     // Lower bounds of beaufort regions 1 to 12
@@ -76,7 +74,7 @@ public class WeatherSpec implements Parcelable, Serializable {
 
     protected WeatherSpec(Parcel in) {
         int version = in.readInt();
-        if (version == VERSION) {
+        if (version >= 2) {
             timestamp = in.readInt();
             location = in.readString();
             currentTemp = in.readInt();
@@ -87,9 +85,11 @@ public class WeatherSpec implements Parcelable, Serializable {
             todayMinTemp = in.readInt();
             windSpeed = in.readFloat();
             windDirection = in.readInt();
+            in.readList(forecasts, Forecast.class.getClassLoader());
+        }
+        if (version >= 3) {
             ultravioletIndex = in.readInt();
             rainProbability = in.readInt();
-            in.readList(forecasts, Forecast.class.getClassLoader());
         }
     }
 
@@ -111,9 +111,9 @@ public class WeatherSpec implements Parcelable, Serializable {
         dest.writeInt(todayMinTemp);
         dest.writeFloat(windSpeed);
         dest.writeInt(windDirection);
+        dest.writeList(forecasts);
         dest.writeInt(ultravioletIndex);
         dest.writeInt(rainProbability);
-        dest.writeList(forecasts);
     }
 
     public static class Forecast implements Parcelable, Serializable {
