@@ -166,7 +166,8 @@ public class WaspOSCoordinator extends AbstractBLEDeviceCoordinator {
     }
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_transliteration
+                R.xml.devicesettings_transliteration,
+                R.xml.devicesettings_device_intents
         };
     }
 
