@@ -37,7 +37,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
@@ -79,7 +78,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.Timer;
-import java.util.UUID;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
@@ -99,12 +97,10 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicContr
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncState;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncStateDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationManager;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.LocationProviderType;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -112,7 +108,6 @@ import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
@@ -122,14 +117,11 @@ import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiPhoneGpsStatus;
 import nodomain.freeyourgadget.gadgetbridge.util.EmojiConverter;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
-import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 
 public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSDeviceSupport.class);
@@ -160,8 +152,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     // this stores the globalUartReceiver (for uart.tx intents)
     private BroadcastReceiver globalUartReceiver = null;
 
-    /// Maximum amount of characters to store in receiveHistory
-    public static final int MAX_RECEIVE_HISTORY_CHARS = 100000;
     /// Used to avoid spamming logs with ACTION_DEVICE_CHANGED messages
     static String lastStateString;
 
@@ -197,12 +187,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         LOG.info("Stop location updates");
         GBLocationManager.stop(getContext(), this);
         gpsUpdateSetup = false;
-    }
-
-    private void addReceiveHistory(String s) {
-        receiveHistory += s;
-        if (receiveHistory.length() > MAX_RECEIVE_HISTORY_CHARS)
-            receiveHistory = receiveHistory.substring(receiveHistory.length() - MAX_RECEIVE_HISTORY_CHARS);
     }
 
     private void registerLocalIntents() {
@@ -324,124 +308,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         return builder;
     }
 
-    /// Write a string of data, and chunk it up
-    private void uartTx(TransactionBuilder builder, String str) {
-        byte[] bytes = str.getBytes(StandardCharsets.ISO_8859_1);
-        LOG.info("UART TX: " + str);
-        addReceiveHistory("\n================================================\nSENDING "+str+"\n================================================\n");
-        // FIXME: somehow this is still giving us UTF8 data when we put images in strings. Maybe JSON.stringify is converting to UTF-8?
-        for (int i=0;i<bytes.length;i+=mtuSize) {
-            int l = bytes.length-i;
-            if (l>mtuSize) l=mtuSize;
-            byte[] packet = new byte[l];
-            System.arraycopy(bytes, i, packet, 0, l);
-            builder.write(txCharacteristic, packet);
-        }
-    }
-
-    /// Converts an object to a JSON string. see jsonToString
-    private String jsonToStringInternal(Object v) {
-        if (v instanceof String) {
-            /* Convert a string, escaping chars we can't send over out UART connection */
-            String s = (String)v;
-            String json = "\"";
-            //String rawString = "";
-            for (int i=0;i<s.length();i++) {
-                int ch = (int)s.charAt(i); // 0..255
-                int nextCh = (int)(i+1<s.length() ? s.charAt(i+1) : 0); // 0..255
-                //rawString = rawString+ch+",";
-                if (ch<8) {
-                    // if the next character is a digit, it'd be interpreted
-                    // as a 2 digit octal character, so we can't use `\0` to escape it
-                    if (nextCh>='0' && nextCh<='7') json += "\\x0" + ch;
-                    else json += "\\" + ch;
-                } else if (ch==8) json += "\\b";
-                else if (ch==9) json += "\\t";
-                else if (ch==10) json += "\\n";
-                else if (ch==11) json += "\\v";
-                else if (ch==12) json += "\\f";
-                else if (ch==34) json += "\\\""; // quote
-                else if (ch==92) json += "\\\\"; // slash
-                else if (ch<32 || ch==127 || ch==173)
-                    json += "\\x"+Integer.toHexString((ch&255)|256).substring(1);
-                else json += s.charAt(i);
-            }
-            // if it was less characters to send base64, do that!
-            if (json.length() > 5+(s.length()*4/3)) {
-                byte[] bytes = s.getBytes(StandardCharsets.ISO_8859_1);
-                return "atob(\""+Base64.encodeToString(bytes, Base64.DEFAULT).replaceAll("\n","")+"\")";
-            }
-            // for debugging...
-            //addReceiveHistory("\n---------------------\n"+rawString+"\n---------------------\n");
-            return json + "\"";
-        } else if (v instanceof JSONArray) {
-            JSONArray a = (JSONArray)v;
-            String json = "[";
-            for (int i=0;i<a.length();i++) {
-                if (i>0) json += ",";
-                Object o = null;
-                try {
-                    o = a.get(i);
-                } catch (JSONException e) {
-                    LOG.warn("jsonToString array error: " + e.getLocalizedMessage());
-                }
-                json += jsonToStringInternal(o);
-            }
-            return json+"]";
-        } else if (v instanceof JSONObject) {
-            JSONObject obj = (JSONObject)v;
-            String json = "{";
-            Iterator<String> iter = obj.keys();
-            while (iter.hasNext()) {
-                String key = iter.next();
-                Object o = null;
-                try {
-                    o = obj.get(key);
-                } catch (JSONException e) {
-                    LOG.warn("jsonToString object error: " + e.getLocalizedMessage());
-                }
-                json += key+":"+jsonToStringInternal(o);
-                if (iter.hasNext()) json+=",";
-            }
-            return json+"}";
-        } // else int/double/null
-        return v.toString();
-    }
-
-    /// Convert a JSON object to a JSON String (NOT 100% JSON compliant)
-    public String jsonToString(JSONObject jsonObj) {
-        /* jsonObj.toString() works but breaks char codes>128 (encodes as UTF8?) and also uses
-        \u0000 when just \0 would do (and so on).
-
-        So we do it manually, which can be more compact anyway.
-        This is JSON-ish, so not exactly as per JSON1 spec but good enough for Espruino.
-        */
-        return jsonToStringInternal(jsonObj);
-    }
-
-    /// Write a JSON object of data
-    private void uartTxJSON(String taskName, JSONObject json) {
-        try {
-            TransactionBuilder builder = performInitialized(taskName);
-            uartTx(builder, "\u0010GB("+jsonToString(json)+")\n");
-            builder.queue(getQueue());
-        } catch (IOException e) {
-            GB.toast(getContext(), "Error in "+taskName+": " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
-        }
-    }
-
-    private void uartTxJSONError(String taskName, String message, String id) {
-        JSONObject o = new JSONObject();
-        try {
-            o.put("t", taskName);
-            if( id!=null)
-                o.put("id", id);
-            o.put("err", message);
-        } catch (JSONException e) {
-            GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
-        }
-        uartTxJSON(taskName, o);
-    }
 
 
 
@@ -700,71 +566,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 }
             } break;
             case "intent": {
-                Prefs devicePrefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-                if (devicePrefs.getBoolean(PREF_DEVICE_INTENTS, false)) {
-                    String target = json.has("target") ? json.getString("target") : "broadcastreceiver";
-                    Intent in = new Intent();
-                    if (json.has("action")) in.setAction(json.getString("action"));
-                    if (json.has("flags")) {
-                        JSONArray flags = json.getJSONArray("flags");
-                        for (int i = 0; i < flags.length(); i++) {
-                            in = addIntentFlag(in, flags.getString(i));
-                        }
-                    }
-                    if (json.has("categories")) {
-                        JSONArray categories = json.getJSONArray("categories");
-                        for (int i = 0; i < categories.length(); i++) {
-                            in.addCategory(categories.getString(i));
-                        }
-                    }
-                    if (json.has("package") && !json.has("class")) {
-                        in = json.getString("package").equals("gadgetbridge") ?
-                                in.setPackage(this.getContext().getPackageName()) :
-                                in.setPackage(json.getString("package"));
-                    }
-                    if (json.has("package") && json.has("class")) {
-                        in = json.getString("package").equals("gadgetbridge") ?
-                                in.setClassName(this.getContext().getPackageName(), json.getString("class")) :
-                                in.setClassName(json.getString("package"), json.getString("class"));
-                    }
-
-                    if (json.has("mimetype")) in.setType(json.getString("mimetype"));
-                    if (json.has("data")) in.setData(Uri.parse(json.getString("data")));
-                    if (json.has("extra")) {
-                        JSONObject extra = json.getJSONObject("extra");
-                        Iterator<String> iter = extra.keys();
-                        while (iter.hasNext()) {
-                            String key = iter.next();
-                            in.putExtra(key, extra.getString(key)); // Should this be implemented for other types, e.g. extra.getInt(key)? Or will this always work even if receiving ints/doubles/etc.?
-                        }
-                    }
-                    LOG.info("Executing intent:\n\t" + String.valueOf(in) + "\n\tTargeting: " + target);
-                    //GB.toast(getContext(), String.valueOf(in), Toast.LENGTH_LONG, GB.INFO);
-                    switch (target) {
-                        case "broadcastreceiver":
-                            getContext().sendBroadcast(in);
-                            break;
-                        case "activity": // See wakeActivity.java if you want to start activities from under the keyguard/lock sceen.
-                            getContext().startActivity(in);
-                            break;
-                        case "service": // Should this be implemented differently, e.g. workManager?
-                            getContext().startService(in);
-                            break;
-                        case "foregroundservice": // Should this be implemented differently, e.g. workManager?
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                getContext().startForegroundService(in);
-                            } else {
-                                getContext().startService(in);
-                            }
-                            break;
-                        default:
-                            LOG.info("Targeting '"+target+"' isn't implemented or doesn't exist.");
-                            GB.toast(getContext(), "Targeting '"+target+"' isn't implemented or it doesn't exist.", Toast.LENGTH_LONG, GB.INFO);
-                    }
-                } else {
-                    uartTxJSONError("intent", "Android Intents not enabled, check Gadgetbridge Device Settings", null);
-                } break;
-            }
+                handleIntentJSON(json);
+            } break;
             case "force_calendar_sync": {
                 //if(!GBApplication.getPrefs().getBoolean("enable_calendar_sync", false)) return;
                 //pretty much like the updateEvents in CalendarReceiver, but would need a lot of libraries here
@@ -829,18 +632,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private Intent addIntentFlag(Intent intent, String flag) {
-        try {
-            final Class<Intent> intentClass = Intent.class;
-            final Field flagField = intentClass.getDeclaredField(flag);
-            intent.addFlags(flagField.getInt(null));
-        } catch (final Exception e) {
-            // The user sent an invalid flag
-            LOG.info("Flag '"+flag+"' isn't implemented or doesn't exist and was therefore not set.");
-            GB.toast(getContext(), "Flag '"+flag+"' isn't implemented or it doesn't exist and was therefore not set.", Toast.LENGTH_LONG, GB.INFO);
-        }
-        return intent;
-    }
 
     @Override
     public boolean onCharacteristicChanged(BluetoothGatt gatt,

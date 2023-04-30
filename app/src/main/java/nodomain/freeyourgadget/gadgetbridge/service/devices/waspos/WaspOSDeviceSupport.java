@@ -106,43 +106,8 @@ public class WaspOSDeviceSupport extends AbstractBTLEDeviceSupport {
         return builder;
     }
 
-    /// Write a string of data, and chunk it up
-    private void uartTx(TransactionBuilder builder, String str) {
-        LOG.info("UART TX: " + str);
-        byte[] bytes;
-        bytes = str.getBytes(StandardCharsets.ISO_8859_1);
-        for (int i=0;i<bytes.length;i+=8) {
-            int l = bytes.length-i;
-            if (l>8) l=8;
-            byte[] packet = new byte[l];
-            System.arraycopy(bytes, i, packet, 0, l);
-            builder.write(txCharacteristic, packet);
-        }
-    }
 
     /// Write a string of data, and chunk it up
-    private void uartTxJSON(String taskName, JSONObject json) {
-        try {
-            TransactionBuilder builder = performInitialized(taskName);
-            uartTx(builder, "\u0010GB("+json.toString()+")\n");
-            builder.queue(getQueue());
-        } catch (IOException e) {
-            GB.toast(getContext(), "Error in "+taskName+": " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
-        }
-    }
-
-    private void uartTxJSONError(String taskName, String message, String id) {
-        JSONObject o = new JSONObject();
-        try {
-            o.put("t", taskName);
-            if( id!=null)
-                o.put("id", id);
-            o.put("err", message);
-        } catch (JSONException e) {
-            GB.toast(getContext(), "uartTxJSONError: " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
-        }
-        uartTxJSON(taskName, o);
-    }
 
     private void handleUartRxLine(String line) {
         LOG.info("UART RX LINE: " + line);
@@ -211,70 +176,7 @@ public class WaspOSDeviceSupport extends AbstractBTLEDeviceSupport {
                 evaluateGBDeviceEvent(deviceEvtNotificationControl);
             } break;
             case "intent": {
-                Prefs devicePrefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-                if (devicePrefs.getBoolean(PREF_DEVICE_INTENTS, false)) {
-                    String target = json.has("target") ? json.getString("target") : "broadcastreceiver";
-                    Intent in = new Intent();
-                    if (json.has("action")) in.setAction(json.getString("action"));
-                    if (json.has("flags")) {
-                        JSONArray flags = json.getJSONArray("flags");
-                        for (int i = 0; i < flags.length(); i++) {
-                            in = addIntentFlag(in, flags.getString(i));
-                        }
-                    }
-                    if (json.has("categories")) {
-                        JSONArray categories = json.getJSONArray("categories");
-                        for (int i = 0; i < categories.length(); i++) {
-                            in.addCategory(categories.getString(i));
-                        }
-                    }
-                    if (json.has("package") && !json.has("class")) {
-                        in = json.getString("package").equals("gadgetbridge") ?
-                                in.setPackage(this.getContext().getPackageName()) :
-                                in.setPackage(json.getString("package"));
-                    }
-                    if (json.has("package") && json.has("class")) {
-                        in = json.getString("package").equals("gadgetbridge") ?
-                                in.setClassName(this.getContext().getPackageName(), json.getString("class")) :
-                                in.setClassName(json.getString("package"), json.getString("class"));
-                    }
-
-                    if (json.has("mimetype")) in.setType(json.getString("mimetype"));
-                    if (json.has("data")) in.setData(Uri.parse(json.getString("data")));
-                    if (json.has("extra")) {
-                        JSONObject extra = json.getJSONObject("extra");
-                        Iterator<String> iter = extra.keys();
-                        while (iter.hasNext()) {
-                            String key = iter.next();
-                            in.putExtra(key, extra.getString(key)); // Should this be implemented for other types, e.g. extra.getInt(key)? Or will this always work even if receiving ints/doubles/etc.?
-                        }
-                    }
-                    LOG.info("Executing intent:\n\t" + String.valueOf(in) + "\n\tTargeting: " + target);
-                    //GB.toast(getContext(), String.valueOf(in), Toast.LENGTH_LONG, GB.INFO);
-                    switch (target) {
-                        case "broadcastreceiver":
-                            getContext().sendBroadcast(in);
-                            break;
-                        case "activity": // See wakeActivity.java if you want to start activities from under the keyguard/lock sceen.
-                            getContext().startActivity(in);
-                            break;
-                        case "service": // Should this be implemented differently, e.g. workManager?
-                            getContext().startService(in);
-                            break;
-                        case "foregroundservice": // Should this be implemented differently, e.g. workManager?
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                getContext().startForegroundService(in);
-                            } else {
-                                getContext().startService(in);
-                            }
-                            break;
-                        default:
-                            LOG.info("Targeting '"+target+"' isn't implemented or doesn't exist.");
-                            GB.toast(getContext(), "Targeting '"+target+"' isn't implemented or it doesn't exist.", Toast.LENGTH_LONG, GB.INFO);
-                    }
-                } else {
-                    uartTxJSONError("intent", "Android Intents not enabled, check Gadgetbridge Device Settings", null);
-                }
+                handleIntentJSON(json);
                 break;
             }
             /*case "activity": {
@@ -293,20 +195,6 @@ public class WaspOSDeviceSupport extends AbstractBTLEDeviceSupport {
                 }
             } break;*/
         }
-    }
-
-
-    private Intent addIntentFlag(Intent intent, String flag) {
-        try {
-            final Class<Intent> intentClass = Intent.class;
-            final Field flagField = intentClass.getDeclaredField(flag);
-            intent.addFlags(flagField.getInt(null));
-        } catch (final Exception e) {
-            // The user sent an invalid flag
-            LOG.info("Flag '"+flag+"' isn't implemented or doesn't exist and was therefore not set.");
-            GB.toast(getContext(), "Flag '"+flag+"' isn't implemented or it doesn't exist and was therefore not set.", Toast.LENGTH_LONG, GB.INFO);
-        }
-        return intent;
     }
 
     @Override
