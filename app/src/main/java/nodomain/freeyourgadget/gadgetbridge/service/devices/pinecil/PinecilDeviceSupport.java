@@ -64,6 +64,9 @@ public class PinecilDeviceSupport extends AbstractBTLEDeviceSupport {
         // mark the device as initialized
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
 
+        builder.read(getCharacteristic(PinecilConstants.UUID_CHARACTERISTIC_BULK_BUILD));
+
+        // // lines below are just for trying things, will be removed later
         builder.read(getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_DEVICE_NAME));
         builder.read(getCharacteristic(PinecilConstants.UUID_CHARACTERISTIC_LIVE_HANDLE_TEMP));
         builder.read(getCharacteristic(PinecilConstants.UUID_CHARACTERISTIC_LIVE_LIVE_TEMP));
@@ -79,15 +82,23 @@ public class PinecilDeviceSupport extends AbstractBTLEDeviceSupport {
         LOG.info("STATUS: " + status);
 
         UUID uuid = characteristic.getUuid();
+        if (uuid.equals(PinecilConstants.UUID_CHARACTERISTIC_BULK_BUILD)) {
+            getDevice().setFirmwareVersion(characteristic.getStringValue(0));
+            getDevice().sendDeviceUpdateIntent(this.getContext());
+            return true;
+        }
+
+        // lines below are just for trying things, will be removed later
         if (uuid.equals(PinecilConstants.UUID_CHARACTERISTIC_LIVE_HANDLE_TEMP)) {
             LOG.info("HANDLE TEMP: " + characteristic.getFloatValue(BluetoothGattCharacteristic.FORMAT_FLOAT, 0) / 10f + "°C");
         } else if (uuid.equals(GattCharacteristic.UUID_CHARACTERISTIC_DEVICE_NAME)) {
             LOG.info("NAME: " + characteristic.getStringValue(0));
         } else {
             LOG.info("DATA: " + Arrays.toString(characteristic.getValue()));
+            LOG.info("STRING: " + characteristic.getStringValue(0));
         }
 
-        return true;
+        return false;
     }
 
     @Override
