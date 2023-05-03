@@ -25,8 +25,8 @@ import android.os.ParcelUuid;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
@@ -54,25 +54,17 @@ public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
     @NonNull
     @Override
     public Collection<? extends ScanFilter> createBLEScanFilters() {
-        Collection<ScanFilter> filter = new ArrayList<>();
+        // Is this method ever called?
         ParcelUuid bulkDataService = new ParcelUuid(PinecilConstants.UUID_SERVICE_BULK_DATA);
-        filter.add(new ScanFilter.Builder().setServiceUuid(bulkDataService).build());
-        ParcelUuid settingDataService = new ParcelUuid(PinecilConstants.UUID_SERVICE_SETTINGS_DATA);
-        filter.add(new ScanFilter.Builder().setServiceUuid(settingDataService).build());
-        ParcelUuid liveDataService = new ParcelUuid(PinecilConstants.UUID_SERVICE_LIVE_DATA);
-        filter.add(new ScanFilter.Builder().setServiceUuid(liveDataService).build());
-        return filter;
+        return Collections.singletonList(new ScanFilter.Builder().setServiceUuid(bulkDataService).build());
     }
 
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-
-        /* The latest versions of the IronOS firmware should advertise the bulk data service.
-         * Checking the device name as a fallback. This may also become unreliable in the future
-         * in case the device name is made configurable. */
+        /* Device advertises service, but Gadgetbridge does not seem to recognize this. */
         if (candidate.supportsService(PinecilConstants.UUID_SERVICE_BULK_DATA)
-                || (candidate.getName() != null && candidate.getName().startsWith("Pinecil"))) {
+                || (candidate.getName() != null && candidate.getName().startsWith("Pinecil-"))) {
             return DeviceType.PINECIL;
         }
 
