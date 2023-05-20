@@ -50,7 +50,7 @@ public class WeatherSpec implements Parcelable, Serializable {
     public int todayMinTemp; // kelvin
     public float windSpeed; // km per hour
     public int windDirection; // deg
-    public int ultravioletIndex;
+    public float ultravioletIndex;
     public int rainProbability; // %
 
     public ArrayList<Forecast> forecasts = new ArrayList<>();
@@ -88,7 +88,7 @@ public class WeatherSpec implements Parcelable, Serializable {
             in.readList(forecasts, Forecast.class.getClassLoader());
         }
         if (version >= 3) {
-            ultravioletIndex = in.readInt();
+            ultravioletIndex = in.readFloat();
             rainProbability = in.readInt();
         }
     }
@@ -112,7 +112,7 @@ public class WeatherSpec implements Parcelable, Serializable {
         dest.writeFloat(windSpeed);
         dest.writeInt(windDirection);
         dest.writeList(forecasts);
-        dest.writeInt(ultravioletIndex);
+        dest.writeFloat(ultravioletIndex);
         dest.writeInt(rainProbability);
     }
 
