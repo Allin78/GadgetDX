@@ -55,9 +55,9 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
                     weatherSpec.currentCondition = safelyGet(weatherJson, String.class, "currentCondition", "");
                     weatherSpec.currentConditionCode = safelyGet(weatherJson, Integer.class, "currentConditionCode", 0);
                     weatherSpec.currentHumidity = safelyGet(weatherJson, Integer.class, "currentHumidity", 0);
-                    weatherSpec.windSpeed = safelyGet(weatherJson, Float.class, "windSpeed", 0f);
+                    weatherSpec.windSpeed = safelyGet(weatherJson, Double.class, "windSpeed", 0d).floatValue();
                     weatherSpec.windDirection = safelyGet(weatherJson, Integer.class, "windDirection", 0);
-                    weatherSpec.ultravioletIndex = safelyGet(weatherJson, Float.class, "ultravioletIndex", 0);
+                    weatherSpec.ultravioletIndex = safelyGet(weatherJson, Double.class, "ultravioletIndex", 0d).floatValue();
                     weatherSpec.rainProbability = safelyGet(weatherJson, Integer.class, "rainProbability", 0);
 
                     if (weatherJson.has("forecasts")) {
