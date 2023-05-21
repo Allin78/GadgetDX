@@ -134,15 +134,22 @@ public class WeatherSpec implements Parcelable, Serializable {
         public int maxTemp;
         public int conditionCode;
         public int humidity;
+        public float ultravioletIndex;
+        public int rainProbability;
 
         public Forecast() {
         }
 
         public Forecast(int minTemp, int maxTemp, int conditionCode, int humidity) {
+            this(minTemp, maxTemp, conditionCode, humidity, 0f, 0);
+        }
+        public Forecast(int minTemp, int maxTemp, int conditionCode, int humidity, float ultravioletIndex, int rainProbability) {
             this.minTemp = minTemp;
             this.maxTemp = maxTemp;
             this.conditionCode = conditionCode;
             this.humidity = humidity;
+            this.ultravioletIndex = ultravioletIndex;
+            this.rainProbability = rainProbability;
         }
 
         Forecast(Parcel in) {
@@ -150,6 +157,9 @@ public class WeatherSpec implements Parcelable, Serializable {
             maxTemp = in.readInt();
             conditionCode = in.readInt();
             humidity = in.readInt();
+            // todo check version of weather spec, if >= 3 read uv and %pop
+            // ultravioletIndex = in.readFloat();
+            // rainProbability = in.readInt();
         }
 
         @Override
@@ -163,6 +173,8 @@ public class WeatherSpec implements Parcelable, Serializable {
             dest.writeInt(maxTemp);
             dest.writeInt(conditionCode);
             dest.writeInt(humidity);
+            dest.writeFloat(ultravioletIndex);
+            dest.writeInt(rainProbability);
         }
     }
 }
