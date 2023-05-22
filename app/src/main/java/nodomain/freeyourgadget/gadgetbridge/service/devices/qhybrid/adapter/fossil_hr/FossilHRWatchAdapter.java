@@ -1444,8 +1444,8 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
                                                     .put("temp", weatherSpec.currentTemp - 273)
                                                     .put("high", weatherSpec.todayMaxTemp - 273)
                                                     .put("low", weatherSpec.todayMinTemp - 273)
-                                                    .put("rain", weatherSpec.rainProbability)
-                                                    .put("uv", Math.round(weatherSpec.ultravioletIndex))
+                                                    .put("rain", weatherSpec.precipProbability)
+                                                    .put("uv", Math.round(weatherSpec.uvIndex))
                                                     .put("message", weatherSpec.currentCondition)
                                                     .put("cond_id", getIconForConditionCode(weatherSpec.currentConditionCode, false)) // FIXME do not assume daylight
                                                     .put("forecast_day", forecastDayArray)

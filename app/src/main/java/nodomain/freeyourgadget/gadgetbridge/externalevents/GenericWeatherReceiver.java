@@ -55,10 +55,10 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
                     weatherSpec.currentCondition = safelyGet(weatherJson, String.class, "currentCondition", "");
                     weatherSpec.currentConditionCode = safelyGet(weatherJson, Integer.class, "currentConditionCode", 0);
                     weatherSpec.currentHumidity = safelyGet(weatherJson, Integer.class, "currentHumidity", 0);
-                    weatherSpec.windSpeed = safelyGet(weatherJson, Double.class, "windSpeed", 0d).floatValue();
+                    weatherSpec.windSpeed = safelyGet(weatherJson, Number.class, "windSpeed", 0d).floatValue();
                     weatherSpec.windDirection = safelyGet(weatherJson, Integer.class, "windDirection", 0);
-                    weatherSpec.ultravioletIndex = safelyGet(weatherJson, Double.class, "ultravioletIndex", 0d).floatValue();
-                    weatherSpec.rainProbability = safelyGet(weatherJson, Integer.class, "rainProbability", 0);
+                    weatherSpec.uvIndex = safelyGet(weatherJson, Number.class, "uvIndex", 0d).floatValue();
+                    weatherSpec.precipProbability = safelyGet(weatherJson, Integer.class, "precipProbability", 0);
 
                     if (weatherJson.has("forecasts")) {
                         JSONArray forecastArray = weatherJson.getJSONArray("forecasts");
@@ -73,8 +73,8 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
                             forecast.humidity = safelyGet(forecastJson, Integer.class, "humidity", 0);
                             forecast.maxTemp = safelyGet(forecastJson, Integer.class, "maxTemp", 0);
                             forecast.minTemp = safelyGet(forecastJson, Integer.class, "minTemp", 0);
-                            forecast.ultravioletIndex = safelyGet(forecastJson, Double.class, "ultravioletIndex", 0d).floatValue();
-                            forecast.rainProbability = safelyGet(forecastJson, Integer.class, "rainProbability", 0);
+                            forecast.uvIndex = safelyGet(forecastJson, Number.class, "uvIndex", 0d).floatValue();
+                            forecast.precipProbability = safelyGet(forecastJson, Integer.class, "precipProbability", 0);
 
                             weatherSpec.forecasts.add(forecast);
                         }
