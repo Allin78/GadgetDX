@@ -38,6 +38,7 @@ public class WeatherSpec implements Parcelable, Serializable {
             return new WeatherSpec[size];
         }
     };
+
     public static final int VERSION = 3;
     private static final long serialVersionUID = VERSION;
     public int timestamp;
@@ -85,9 +86,12 @@ public class WeatherSpec implements Parcelable, Serializable {
             todayMinTemp = in.readInt();
             windSpeed = in.readFloat();
             windDirection = in.readInt();
-            in.readList(forecasts, Forecast.class.getClassLoader());
+        }
+        if (version == 2) {
+            in.readList(forecasts, ForecastOld.class.getClassLoader());
         }
         if (version >= 3) {
+            in.readList(forecasts, Forecast.class.getClassLoader());
             uvIndex = in.readFloat();
             precipProbability = in.readInt();
         }
@@ -116,8 +120,60 @@ public class WeatherSpec implements Parcelable, Serializable {
         dest.writeInt(precipProbability);
     }
 
-    public static class Forecast implements Parcelable, Serializable {
+    public static class ForecastOld implements Parcelable, Serializable {
         private static final long serialVersionUID = 1L;
+
+        public static final Creator<ForecastOld> CREATOR = new Creator<ForecastOld>() {
+            @Override
+            public ForecastOld createFromParcel(Parcel in) {
+                return new ForecastOld(in);
+            }
+
+            @Override
+            public ForecastOld[] newArray(int size) {
+                return new ForecastOld[size];
+            }
+        };
+
+        public int minTemp;
+        public int maxTemp;
+        public int conditionCode;
+        public int humidity;
+
+        public ForecastOld() {
+        }
+
+        public ForecastOld(int minTemp, int maxTemp, int conditionCode, int humidity) {
+            this.minTemp = minTemp;
+            this.maxTemp = maxTemp;
+            this.conditionCode = conditionCode;
+            this.humidity = humidity;
+        }
+
+        ForecastOld(Parcel in) {
+            minTemp = in.readInt();
+            maxTemp = in.readInt();
+            conditionCode = in.readInt();
+            humidity = in.readInt();
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(minTemp);
+            dest.writeInt(maxTemp);
+            dest.writeInt(conditionCode);
+            dest.writeInt(humidity);
+        }
+    }
+
+    public static class Forecast implements Parcelable, Serializable {
+        public static final int VERSION = 3;
+        private static final long serialVersionUID = VERSION;
 
         public static final Creator<Forecast> CREATOR = new Creator<Forecast>() {
             @Override
@@ -154,12 +210,15 @@ public class WeatherSpec implements Parcelable, Serializable {
         }
 
         Forecast(Parcel in) {
-            minTemp = in.readInt();
-            maxTemp = in.readInt();
-            conditionCode = in.readInt();
-            humidity = in.readInt();
-            uvIndex = in.readFloat();
-            precipProbability = in.readInt();
+            int version = in.readInt();
+            if (version >= 3) {
+                minTemp = in.readInt();
+                maxTemp = in.readInt();
+                conditionCode = in.readInt();
+                humidity = in.readInt();
+                uvIndex = in.readFloat();
+                precipProbability = in.readInt();
+            }
         }
 
         @Override
@@ -169,6 +228,7 @@ public class WeatherSpec implements Parcelable, Serializable {
 
         @Override
         public void writeToParcel(Parcel dest, int flags) {
+            dest.writeInt(VERSION);
             dest.writeInt(minTemp);
             dest.writeInt(maxTemp);
             dest.writeInt(conditionCode);
