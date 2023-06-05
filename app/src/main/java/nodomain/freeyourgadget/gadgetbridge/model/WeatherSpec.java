@@ -61,7 +61,7 @@ public class WeatherSpec implements Parcelable, Serializable {
 
     // Lower bounds of beaufort regions 1 to 12
     // Values from https://en.wikipedia.org/wiki/Beaufort_scale
-    static final float[] beaufort = new float[]{2, 6, 12, 20, 29, 39, 50, 62, 75, 89, 103, 118};
+    static final float[] beaufort = new float[] { 2, 6, 12, 20, 29, 39, 50, 62, 75, 89, 103, 118 };
     //                                    level: 0 1  2   3   4   5   6   7   8   9   10   11   12
 
     public int windSpeedAsBeaufort() {
