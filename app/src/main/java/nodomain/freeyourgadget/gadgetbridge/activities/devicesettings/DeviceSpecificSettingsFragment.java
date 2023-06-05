@@ -50,6 +50,7 @@ import java.util.Set;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.CalBlacklistActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureContacts;
 import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureWorldClocks;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.password.PasswordCapabilityImpl;
@@ -438,6 +439,10 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREF_SOUNDS);
         addPreferenceHandlerFor(PREF_CAMERA_REMOTE);
 
+        addPreferenceHandlerFor(PREF_BLUETOOTH_CALLS_ENABLED);
+        addPreferenceHandlerFor(PREF_DISPLAY_CALLER);
+        addPreferenceHandlerFor(PREF_NOTIFICATION_DELAY_CALLS);
+
         addPreferenceHandlerFor(PREF_SLEEP_MODE_SLEEP_SCREEN);
         addPreferenceHandlerFor(PREF_SLEEP_MODE_SMART_ENABLE);
 
@@ -493,6 +498,13 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
         addPreferenceHandlerFor(PREFS_GALAXY_BUDS_SEAMLESS_CONNECTION);
         addPreferenceHandlerFor(PREF_GALAXY_BUDS_TOUCH_LEFT_SWITCH);
         addPreferenceHandlerFor(PREF_GALAXY_BUDS_TOUCH_RIGHT_SWITCH);
+
+        addPreferenceHandlerFor(MORNING_UPDATES_ENABLED);
+        addPreferenceHandlerFor(MORNING_UPDATES_CATEGORIES_SORTABLE);
+
+        addPreferenceHandlerFor(SHORTCUT_CARDS_SORTABLE);
+
+        addPreferenceHandlerFor(PREF_WATCHFACE);
 
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);
@@ -737,6 +749,19 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     final Intent intent = new Intent(getContext(), ConfigureWorldClocks.class);
+                    intent.putExtra(GBDevice.EXTRA_DEVICE, device);
+                    startActivity(intent);
+                    return true;
+                }
+            });
+        }
+
+        final Preference contacts = findPreference(PREF_CONTACTS);
+        if (contacts != null) {
+            contacts.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    final Intent intent = new Intent(getContext(), ConfigureContacts.class);
                     intent.putExtra(GBDevice.EXTRA_DEVICE, device);
                     startActivity(intent);
                     return true;

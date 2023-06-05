@@ -64,6 +64,7 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePref
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLift;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLiftSensitivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.AlwaysOnDisplay;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.DoNotDisturb;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
@@ -371,11 +372,12 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         DND_MODE(ConfigGroup.SYSTEM, ConfigType.BYTE, 0x0a, PREF_DO_NOT_DISTURB),
         DND_SCHEDULED_START(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x0b, PREF_DO_NOT_DISTURB_START),
         DND_SCHEDULED_END(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x0c, PREF_DO_NOT_DISTURB_END),
+        CALL_DELAY(ConfigGroup.SYSTEM, ConfigType.SHORT, 0x11, PREF_NOTIFICATION_DELAY_CALLS),
         TEMPERATURE_UNIT(ConfigGroup.SYSTEM, ConfigType.BYTE, 0x12, SettingsActivity.PREF_MEASUREMENT_SYSTEM),
         TIME_FORMAT_FOLLOWS_PHONE(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x13, null /* special case, handled below */),
         UPPER_BUTTON_LONG_PRESS(ConfigGroup.SYSTEM, ConfigType.STRING_LIST, 0x15, PREF_UPPER_BUTTON_LONG_PRESS),
         LOWER_BUTTON_PRESS(ConfigGroup.SYSTEM, ConfigType.STRING_LIST, 0x16, PREF_LOWER_BUTTON_SHORT_PRESS),
-        DISPLAY_CALLER(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x18, null), // TODO Handle
+        DISPLAY_CALLER(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x18, PREF_DISPLAY_CALLER),
         NIGHT_MODE_MODE(ConfigGroup.SYSTEM, ConfigType.BYTE, 0x1b, PREF_NIGHT_MODE),
         NIGHT_MODE_SCHEDULED_START(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x1c, PREF_NIGHT_MODE_START),
         NIGHT_MODE_SCHEDULED_END(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x1d, PREF_NIGHT_MODE_END),
@@ -616,22 +618,8 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         return String.format(Locale.ROOT, "%s_huami_2021_max", key);
     }
 
-    /**
-     * Returns the preference key where to save the list of possible value for a preference, comma-separated.
-     */
-    public static String getPrefPossibleValuesKey(final String key) {
-        return String.format(Locale.ROOT, "%s_huami_2021_possible_values", key);
-    }
-
-    /**
-     * Returns the preference key where to that a config was reported as supported (boolean).
-     */
-    public static String getPrefKnownConfig(final ConfigArg pref) {
-        return String.format(Locale.ROOT, "huami_2021_known_config_%s", pref.name());
-    }
-
     public static boolean deviceHasConfig(final Prefs devicePrefs, final ZeppOsConfigService.ConfigArg config) {
-        return devicePrefs.getBoolean(getPrefKnownConfig(config), false);
+        return devicePrefs.getBoolean(Huami2021Coordinator.getPrefKnownConfig(config.name()), false);
     }
 
     public ConfigSetter newSetter() {
@@ -941,7 +929,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 }
 
                 if (configArg != null && argPrefs != null && configType == configArg.getConfigType(mGroupVersions)) {
-                    prefs.put(getPrefKnownConfig(configArg), true);
+                    prefs.put(Huami2021Coordinator.getPrefKnownConfig(configArg.name()), true);
 
                     // Special cases for "follow phone" preferences. We need to ensure that "auto"
                     // always has precedence
@@ -1030,7 +1018,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 prefs = singletonMap(configArg.getPrefKey(), decoder.decode(str.getValue()));
                 if (includesConstraints) {
                     prefs.put(
-                            getPrefPossibleValuesKey(configArg.getPrefKey()),
+                            Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()),
                             decodeStringValues(possibleValues, decoder)
                     );
                 }
@@ -1041,8 +1029,14 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
 
         private Map<String, Object> convertShortToPrefs(final ConfigArg configArg, final ConfigShort value) {
             if (configArg.getPrefKey() != null) {
-                // The arg maps to a number pref directly
-                final Map<String, Object> prefs = singletonMap(configArg.getPrefKey(), value.getValue());
+                final Map<String, Object> prefs;
+                if (configArg == ConfigArg.CALL_DELAY) {
+                    // Persist as string, otherwise the EditText crashes
+                    prefs = singletonMap(configArg.getPrefKey(), String.valueOf(value.getValue()));
+                } else {
+                    // The arg maps to a number pref directly
+                    prefs = singletonMap(configArg.getPrefKey(), value.getValue());
+                }
 
                 if (value.isMinMaxKnown()) {
                     prefs.put(getPrefMinKey(configArg.getPrefKey()), value.getMin());
@@ -1109,7 +1103,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 prefs = singletonMap(configArg.getPrefKey(), new HashSet<>(valuesList));
                 if (includesConstraints) {
                     prefs.put(
-                            getPrefPossibleValuesKey(configArg.getPrefKey()),
+                            Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()),
                             String.join(",", decodeByteValues(possibleValues, decoder))
                     );
                 }
@@ -1145,7 +1139,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                                 possibleLanguages.add(languageByteToLocale(possibleValue));
                             }
                             possibleLanguages.removeAll(Collections.singleton(null));
-                            prefs.put(getPrefPossibleValuesKey(configArg.getPrefKey()), String.join(",", possibleLanguages));
+                            prefs.put(Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()), String.join(",", possibleLanguages));
                         }
                     }
                     decoder = null;
@@ -1201,7 +1195,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 prefs = singletonMap(configArg.getPrefKey(), decoder.decode(value.getValue()));
                 if (includesConstraints) {
                     prefs.put(
-                            getPrefPossibleValuesKey(configArg.getPrefKey()),
+                            Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()),
                             String.join(",", decodeByteValues(possibleValues, decoder))
                     );
                 }

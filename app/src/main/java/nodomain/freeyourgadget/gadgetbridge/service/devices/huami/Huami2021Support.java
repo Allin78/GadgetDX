@@ -38,17 +38,10 @@ import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.TEMPERATURE_UNIT;
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService.ConfigArg.TIME_FORMAT;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Handler;
 import android.widget.Toast;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -68,6 +61,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -75,14 +69,10 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
-import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
@@ -91,6 +81,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.zeppos.ZeppOsAgpsInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.zeppos.ZeppOsGpxRouteInstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.VibrationProfile;
@@ -100,11 +91,10 @@ import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
+import nodomain.freeyourgadget.gadgetbridge.model.Contact;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
@@ -118,28 +108,30 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.Upd
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.UpdateFirmwareOperation2021;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.AbstractZeppOsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.operations.ZeppOsAgpsUpdateOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.operations.ZeppOsGpxRouteUploadOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsAgpsService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsAlarmsService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsCalendarService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsCannedMessagesService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsNotificationService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsShortcutCardsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsContactsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsFileUploadService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsFtpServerService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsMorningUpdatesService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsPhoneService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsWatchfaceService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsWifiService;
-import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
-import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.MapUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.NotificationUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public abstract class Huami2021Support extends HuamiSupport {
     private static final Logger LOG = LoggerFactory.getLogger(Huami2021Support.class);
-
-    // Keep track of Notification ID -> action handle, as BangleJSDeviceSupport.
-    // This needs to be simplified.
-    private final LimitedQueue mNotificationReplyAction = new LimitedQueue(16);
 
     // Tracks whether realtime HR monitoring is already started, so we can just
     // send CONTINUE commands
@@ -151,12 +143,31 @@ public abstract class Huami2021Support extends HuamiSupport {
     private final ZeppOsAgpsService agpsService = new ZeppOsAgpsService(this);
     private final ZeppOsWifiService wifiService = new ZeppOsWifiService(this);
     private final ZeppOsFtpServerService ftpServerService = new ZeppOsFtpServerService(this);
-    private final Map<Short, AbstractZeppOsService> mServiceMap = new HashMap<Short, AbstractZeppOsService>() {{
+    private final ZeppOsContactsService contactsService = new ZeppOsContactsService(this);
+    private final ZeppOsMorningUpdatesService morningUpdatesService = new ZeppOsMorningUpdatesService(this);
+    private final ZeppOsPhoneService phoneService = new ZeppOsPhoneService(this);
+    private final ZeppOsShortcutCardsService shortcutCardsService = new ZeppOsShortcutCardsService(this);
+    private final ZeppOsWatchfaceService watchfaceService = new ZeppOsWatchfaceService(this);
+    private final ZeppOsAlarmsService alarmsService = new ZeppOsAlarmsService(this);
+    private final ZeppOsCalendarService calendarService = new ZeppOsCalendarService(this);
+    private final ZeppOsCannedMessagesService cannedMessagesService = new ZeppOsCannedMessagesService(this);
+    private final ZeppOsNotificationService notificationService = new ZeppOsNotificationService(this, fileUploadService);
+
+    private final Map<Short, AbstractZeppOsService> mServiceMap = new LinkedHashMap<Short, AbstractZeppOsService>() {{
         put(fileUploadService.getEndpoint(), fileUploadService);
         put(configService.getEndpoint(), configService);
         put(agpsService.getEndpoint(), agpsService);
         put(wifiService.getEndpoint(), wifiService);
         put(ftpServerService.getEndpoint(), ftpServerService);
+        put(contactsService.getEndpoint(), contactsService);
+        put(morningUpdatesService.getEndpoint(), morningUpdatesService);
+        put(phoneService.getEndpoint(), phoneService);
+        put(shortcutCardsService.getEndpoint(), shortcutCardsService);
+        put(watchfaceService.getEndpoint(), watchfaceService);
+        put(alarmsService.getEndpoint(), alarmsService);
+        put(calendarService.getEndpoint(), calendarService);
+        put(cannedMessagesService.getEndpoint(), cannedMessagesService);
+        put(notificationService.getEndpoint(), notificationService);
     }};
 
     public Huami2021Support() {
@@ -191,43 +202,21 @@ public abstract class Huami2021Support extends HuamiSupport {
         final ZeppOsConfigService.ConfigSetter configSetter = configService.newSetter();
         final Prefs prefs = getDevicePrefs();
 
-        // Handle button presses - these are not preferences
-        // See Huami2021SettingsCustomizer
-        switch (config) {
-            case DeviceSettingsPreferenceConst.WIFI_HOTSPOT_START:
-                final String ssid = getDevicePrefs().getString(DeviceSettingsPreferenceConst.WIFI_HOTSPOT_SSID, "");
-                if (StringUtils.isNullOrEmpty(ssid)) {
-                    LOG.error("Wi-Fi hotspot SSID not specified");
-                    return;
-                }
+        // Check if any of the services handles this config
+        for (AbstractZeppOsService service : mServiceMap.values()) {
+            if (service.onSendConfiguration(config, prefs)) {
+                return;
+            }
+        }
 
-                final String password = getDevicePrefs().getString(DeviceSettingsPreferenceConst.WIFI_HOTSPOT_PASSWORD, "");
-                if (StringUtils.isNullOrEmpty(password) || password.length() < 8) {
-                    LOG.error("Wi-Fi hotspot password is not valid");
-                    return;
-                }
-                wifiService.startWifiHotspot(ssid, password);
-                return;
-            case DeviceSettingsPreferenceConst.WIFI_HOTSPOT_STOP:
-                wifiService.stopWifiHotspot();
-                return;
-            case DeviceSettingsPreferenceConst.FTP_SERVER_START:
-                ftpServerService.startFtpServer(getDevicePrefs().getString(DeviceSettingsPreferenceConst.FTP_SERVER_ROOT_DIR, ""));
-                return;
-            case DeviceSettingsPreferenceConst.FTP_SERVER_STOP:
-                ftpServerService.stopFtpServer();
-                return;
-            case DeviceSettingsPreferenceConst.WIFI_HOTSPOT_SSID:
-            case DeviceSettingsPreferenceConst.WIFI_HOTSPOT_PASSWORD:
-            case DeviceSettingsPreferenceConst.WIFI_HOTSPOT_STATUS:
-            case DeviceSettingsPreferenceConst.FTP_SERVER_ROOT_DIR:
-            case DeviceSettingsPreferenceConst.FTP_SERVER_ADDRESS:
-            case DeviceSettingsPreferenceConst.FTP_SERVER_USERNAME:
-            case DeviceSettingsPreferenceConst.FTP_SERVER_STATUS:
-                // Ignore preferences that are not reloadable
+        // Other preferences
+        switch (config) {
+            case HuamiConst.PREF_CONTROL_CENTER_SORTABLE:
+                setControlCenter();
                 return;
         }
 
+        // Defer everything else to the configService
         try {
             if (configService.setConfig(prefs, config, configSetter)) {
                 // If the ConfigSetter was able to set the config, just write it and return
@@ -238,11 +227,11 @@ public abstract class Huami2021Support extends HuamiSupport {
 
                 return;
             }
-
-            super.onSendConfiguration(config);
         } catch (final Exception e) {
             GB.toast("Error setting configuration", Toast.LENGTH_LONG, GB.ERROR, e);
         }
+
+        super.onSendConfiguration(config);
     }
 
     @Override
@@ -334,116 +323,14 @@ public abstract class Huami2021Support extends HuamiSupport {
         return this;
     }
 
-    protected void requestCalendarEvents() {
-        LOG.info("Requesting calendar events from band");
-
-        writeToChunked2021(
-                "request calendar events",
-                CHUNKED2021_ENDPOINT_CALENDAR,
-                new byte[]{CALENDAR_CMD_EVENTS_REQUEST, 0x00, 0x00},
-                false
-        );
-    }
-
     @Override
     public void onAddCalendarEvent(final CalendarEventSpec calendarEventSpec) {
-        if (calendarEventSpec.type != CalendarEventSpec.TYPE_UNKNOWN) {
-            LOG.warn("Unsupported calendar event type {}", calendarEventSpec.type);
-            return;
-        }
-
-        LOG.info("Sending calendar event {} to band", calendarEventSpec.id);
-
-        int length = 34;
-        if (calendarEventSpec.title != null) {
-            length += calendarEventSpec.title.getBytes(StandardCharsets.UTF_8).length;
-        }
-        if (calendarEventSpec.description != null) {
-            length += calendarEventSpec.description.getBytes(StandardCharsets.UTF_8).length;
-        }
-
-        final ByteBuffer buf = ByteBuffer.allocate(length);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(CALENDAR_CMD_CREATE_EVENT);
-        buf.putInt((int) calendarEventSpec.id);
-
-        if (calendarEventSpec.title != null) {
-            buf.put(calendarEventSpec.title.getBytes(StandardCharsets.UTF_8));
-        }
-        buf.put((byte) 0x00);
-
-        if (calendarEventSpec.description != null) {
-            buf.put(calendarEventSpec.description.getBytes(StandardCharsets.UTF_8));
-        }
-        buf.put((byte) 0x00);
-
-        buf.putInt(calendarEventSpec.timestamp);
-        buf.putInt(calendarEventSpec.timestamp + calendarEventSpec.durationInSeconds);
-
-        // Remind
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        // Repeat
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        // ?
-        buf.put((byte) 0xff); // ?
-        buf.put((byte) 0xff); // ?
-        buf.put((byte) 0xff); // ?
-        buf.put((byte) 0xff); // ?
-        buf.put(bool(calendarEventSpec.allDay));
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 130); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        // TODO: Description here
-
-        writeToChunked2021("delete calendar event", CHUNKED2021_ENDPOINT_CALENDAR, buf.array(), false);
+        calendarService.addEvent(calendarEventSpec);
     }
 
     @Override
     public void onDeleteCalendarEvent(final byte type, final long id) {
-        if (type != CalendarEventSpec.TYPE_UNKNOWN) {
-            LOG.warn("Unsupported calendar event type {}", type);
-            return;
-        }
-
-        LOG.info("Deleting calendar event {} from band", id);
-
-        final ByteBuffer buf = ByteBuffer.allocate(5);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(CALENDAR_CMD_DELETE_EVENT);
-        buf.putInt((int) id);
-
-        writeToChunked2021("delete calendar event", CHUNKED2021_ENDPOINT_CALENDAR, buf.array(), false);
-    }
-
-    @Override
-    public void onFetchRecordedData(final int dataTypes) {
-        try {
-            // FIXME: currently only one data type supported, these are meant to be flags
-            switch (dataTypes) {
-                case RecordedDataTypes.TYPE_ACTIVITY:
-                    new FetchActivityOperation(this).perform();
-                    break;
-                case RecordedDataTypes.TYPE_GPS_TRACKS:
-                    new FetchSportsSummaryOperation(this, 1).perform();
-                    break;
-                case RecordedDataTypes.TYPE_DEBUGLOGS:
-                    new HuamiFetchDebugLogsOperation(this).perform();
-                    break;
-                default:
-                    LOG.warn("fetching multiple data types at once is not supported yet");
-            }
-        } catch (final Exception e) {
-            LOG.error("Unable to fetch recorded data types {}", dataTypes, e);
-        }
+        calendarService.deleteEvent(type, id);
     }
 
     @Override
@@ -521,6 +408,8 @@ public abstract class Huami2021Support extends HuamiSupport {
         LOG.info("Attempting to set user info...");
 
         final Prefs prefs = GBApplication.getPrefs();
+        final Prefs devicePrefs = getDevicePrefs();
+
         final String alias = prefs.getString(PREF_USER_NAME, null);
         final ActivityUser activityUser = new ActivityUser();
         final int height = activityUser.getHeightCm();
@@ -528,6 +417,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         final int birthYear = activityUser.getYearOfBirth();
         final byte birthMonth = 7; // not in user attributes
         final byte birthDay = 1; // not in user attributes
+        final String region = devicePrefs.getString(DeviceSettingsPreferenceConst.PREF_DEVICE_REGION, "unknown");
 
         if (alias == null || weight == 0 || height == 0 || birthYear == 0) {
             LOG.warn("Unable to set user info, make sure it is set up");
@@ -547,16 +437,18 @@ public abstract class Huami2021Support extends HuamiSupport {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
         try {
-            baos.write(new byte[]{0x01, 0x4f, 0x07, 0x00, 0x00});
+            baos.write(USER_INFO_CMD_SET);
+            baos.write(new byte[]{0x4f, 0x07, 0x00, 0x00});
             baos.write(fromUint16(birthYear));
             baos.write(birthMonth);
             baos.write(birthDay);
             baos.write(genderByte);
-            baos.write((byte) height);
-            baos.write((byte) 0); // TODO ?
+            baos.write(fromUint16(height));
             baos.write(fromUint16(weight * 200));
-            baos.write(BLETypeConversions.fromUint32(userid));
-            baos.write(new byte[]{0x00, 0x00, 0x00, 0x00, 0x75, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x00, 0x09}); // TODO ?
+            baos.write(BLETypeConversions.fromUint64(userid));
+            baos.write(region.getBytes(StandardCharsets.UTF_8));
+            baos.write(0);
+            baos.write(0x09); // TODO ?
             baos.write(alias.getBytes(StandardCharsets.UTF_8));
             baos.write((byte) 0);
 
@@ -590,167 +482,17 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     protected void queueAlarm(final Alarm alarm, final TransactionBuilder builder) {
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
-
-        final Calendar calendar = AlarmUtils.toCalendar(alarm);
-
-        final byte[] alarmMessage;
-        if (!alarm.getUnused()) {
-            int alarmFlags = 0;
-            if (alarm.getEnabled()) {
-                alarmFlags = ALARM_FLAG_ENABLED;
-            }
-            if (coordinator.supportsSmartWakeup(gbDevice) && alarm.getSmartWakeup()) {
-                alarmFlags |= ALARM_FLAG_SMART;
-            }
-            alarmMessage = new byte[]{
-                    ALARMS_CMD_CREATE,
-                    (byte) 0x01, // ?
-                    (byte) alarmFlags,
-                    (byte) alarm.getPosition(),
-                    (byte) calendar.get(Calendar.HOUR_OF_DAY),
-                    (byte) calendar.get(Calendar.MINUTE),
-                    (byte) alarm.getRepetition(),
-                    (byte) 0x00, // ?
-                    (byte) 0x00, // ?
-                    (byte) 0x00, // ?
-                    (byte) 0x00, // ?, this is usually 0 in the create command, 1 in the watch response
-                    (byte) 0x00, // ?
-            };
-        } else {
-            // Delete it from the band
-            alarmMessage = new byte[]{
-                    ALARMS_CMD_DELETE,
-                    (byte) 0x01, // ?
-                    (byte) alarm.getPosition()
-            };
-        }
-
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_ALARMS, alarmMessage, false);
+        alarmsService.sendAlarm(alarm, builder);
     }
 
     @Override
     public void onSetCallState(final CallSpec callSpec) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        try {
-            final TransactionBuilder builder = performInitialized("send notification");
-
-            baos.write(NOTIFICATION_CMD_SEND);
-
-            // ID
-            baos.write(BLETypeConversions.fromUint32(0));
-
-            baos.write(NOTIFICATION_TYPE_CALL);
-            if (callSpec.command == CallSpec.CALL_INCOMING) {
-                baos.write(NOTIFICATION_CALL_STATE_START);
-            } else if ((callSpec.command == CallSpec.CALL_START) || (callSpec.command == CallSpec.CALL_END)) {
-                baos.write(NOTIFICATION_CALL_STATE_END);
-            }
-
-            baos.write(0x00); // ?
-            if (callSpec.name != null) {
-                baos.write(callSpec.name.getBytes(StandardCharsets.UTF_8));
-            }
-            baos.write(0x00);
-
-            baos.write(0x00); // ?
-            baos.write(0x00); // ?
-
-            if (callSpec.number != null) {
-                baos.write(callSpec.number.getBytes(StandardCharsets.UTF_8));
-            }
-            baos.write(0x00);
-
-            // TODO put this behind a setting?
-            baos.write(callSpec.number != null ? 0x01 : 0x00); // reply from watch
-
-            writeToChunked2021(builder, Huami2021Service.CHUNKED2021_ENDPOINT_NOTIFICATIONS, baos.toByteArray(), true);
-            builder.queue(getQueue());
-        } catch (final Exception e) {
-            LOG.error("Failed to send call", e);
-        }
+        notificationService.setCallState(callSpec);
     }
 
     @Override
     public void onNotification(final NotificationSpec notificationSpec) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-        final String senderOrTitle = StringUtils.getFirstOf(notificationSpec.sender, notificationSpec.title);
-
-        // TODO Check real limit for notificationMaxLength / respect across all fields
-
-        try {
-            final TransactionBuilder builder = performInitialized("send notification");
-
-            baos.write(NOTIFICATION_CMD_SEND);
-            baos.write(BLETypeConversions.fromUint32(notificationSpec.getId()));
-            if (notificationSpec.type == NotificationType.GENERIC_SMS) {
-                baos.write(NOTIFICATION_TYPE_SMS);
-            } else {
-                baos.write(NOTIFICATION_TYPE_NORMAL);
-            }
-            baos.write(NOTIFICATION_SUBCMD_SHOW);
-
-            // app package
-            if (notificationSpec.sourceAppId != null) {
-                baos.write(notificationSpec.sourceAppId.getBytes(StandardCharsets.UTF_8));
-            } else {
-                // Send the GB package name, otherwise the last notification icon will
-                // be used wrongly (eg. when receiving an SMS)
-                baos.write(BuildConfig.APPLICATION_ID.getBytes(StandardCharsets.UTF_8));
-            }
-            baos.write(0);
-
-            // sender/title
-            if (!senderOrTitle.isEmpty()) {
-                baos.write(senderOrTitle.getBytes(StandardCharsets.UTF_8));
-            }
-            baos.write(0);
-
-            // body
-            if (notificationSpec.body != null) {
-                baos.write(StringUtils.truncate(notificationSpec.body, notificationMaxLength()).getBytes(StandardCharsets.UTF_8));
-            }
-            baos.write(0);
-
-            // app name
-            if (notificationSpec.sourceName != null) {
-                baos.write(notificationSpec.sourceName.getBytes(StandardCharsets.UTF_8));
-            }
-            baos.write(0);
-
-            // reply
-            boolean hasReply = false;
-            if (notificationSpec.attachedActions != null && notificationSpec.attachedActions.size() > 0) {
-                for (int i = 0; i < notificationSpec.attachedActions.size(); i++) {
-                    final NotificationSpec.Action action = notificationSpec.attachedActions.get(i);
-
-                    switch (action.type) {
-                        case NotificationSpec.Action.TYPE_WEARABLE_REPLY:
-                        case NotificationSpec.Action.TYPE_SYNTECTIC_REPLY_PHONENR:
-                            hasReply = true;
-                            mNotificationReplyAction.add(notificationSpec.getId(), ((long) notificationSpec.getId() << 4) + i + 1);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-
-            baos.write((byte) (hasReply ? 1 : 0));
-
-            writeToChunked2021(builder, Huami2021Service.CHUNKED2021_ENDPOINT_NOTIFICATIONS, baos.toByteArray(), true);
-            builder.queue(getQueue());
-        } catch (final Exception e) {
-            LOG.error("Failed to send notification", e);
-        }
-
-    }
-
-    @Override
-    protected int notificationMaxLength() {
-        return 512;
+        notificationService.sendNotification(notificationSpec);
     }
 
     protected Huami2021Support requestReminders(final TransactionBuilder builder) {
@@ -833,27 +575,18 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
+    public void onSetContacts(ArrayList<? extends Contact> contacts) {
+        contactsService.setContacts((List<Contact>) contacts);
+    }
+
+    @Override
     protected boolean isWorldClocksEncrypted() {
         return true;
     }
 
     @Override
     public void onDeleteNotification(final int id) {
-        LOG.info("Deleting notification {} from band", id);
-
-        final ByteBuffer buf = ByteBuffer.allocate(12);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(NOTIFICATION_CMD_SEND);
-        buf.putInt(id);
-        buf.put(NOTIFICATION_TYPE_NORMAL);
-        buf.put(NOTIFICATION_SUBCMD_DISMISS_FROM_PHONE);
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-
-        writeToChunked2021("delete notification", CHUNKED2021_ENDPOINT_NOTIFICATIONS, buf.array(), true);
+        notificationService.deleteNotification(id);
     }
 
     @Override
@@ -871,58 +604,7 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     public void onSetCannedMessages(final CannedMessagesSpec cannedMessagesSpec) {
-        if (cannedMessagesSpec.type != CannedMessagesSpec.TYPE_GENERIC) {
-            LOG.warn("Got unsupported canned messages type: {}", cannedMessagesSpec.type);
-            return;
-        }
-
-        try {
-            final TransactionBuilder builder = performInitialized("set canned messages");
-
-            for (int i = 0; i < 16; i++) {
-                LOG.debug("Deleting canned message {}", i);
-                final ByteBuffer buf = ByteBuffer.allocate(5);
-                buf.order(ByteOrder.LITTLE_ENDIAN);
-                buf.put(CANNED_MESSAGES_CMD_DELETE);
-                buf.putInt(i);
-                writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CANNED_MESSAGES, buf.array(), false);
-            }
-
-            int i = 0;
-            for (String cannedMessage : cannedMessagesSpec.cannedMessages) {
-                cannedMessage = StringUtils.truncate(cannedMessage, 140);
-                LOG.debug("Setting canned message {} = '{}'", i, cannedMessage);
-
-                final int length = cannedMessage.getBytes(StandardCharsets.UTF_8).length + 7;
-                final ByteBuffer buf = ByteBuffer.allocate(length);
-                buf.order(ByteOrder.LITTLE_ENDIAN);
-                buf.put(CANNED_MESSAGES_CMD_SET);
-                buf.putInt(i++);
-                buf.put((byte) cannedMessage.getBytes(StandardCharsets.UTF_8).length);
-                buf.put((byte) 0x00);
-                buf.put(cannedMessage.getBytes(StandardCharsets.UTF_8));
-                writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CANNED_MESSAGES, buf.array(), false);
-            }
-            builder.queue(getQueue());
-        } catch (IOException ex) {
-            LOG.error("Unable to set canned messages on Huami device", ex);
-        }
-    }
-
-    protected void requestCannedMessages(final TransactionBuilder builder) {
-        LOG.info("Requesting canned messages");
-
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CANNED_MESSAGES, new byte[]{CANNED_MESSAGES_CMD_REQUEST}, false);
-    }
-
-    protected void requestCannedMessages() {
-        try {
-            final TransactionBuilder builder = performInitialized("request canned messages");
-            requestCannedMessages(builder);
-            builder.queue(getQueue());
-        } catch (final Exception e) {
-            LOG.error("Failed to request canned messages", e);
-        }
+        cannedMessagesService.setCannedMessages(cannedMessagesSpec);
     }
 
     @Override
@@ -960,11 +642,28 @@ public abstract class Huami2021Support extends HuamiSupport {
                         configService
                 ).perform();
             } catch (final Exception e) {
-                GB.toast(getContext(), "AGPS File cannot be installed: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
+                GB.toast(getContext(), "AGPS file cannot be installed: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
             }
-        } else {
-            super.onInstallApp(uri);
+
+            return;
         }
+
+        final ZeppOsGpxRouteInstallHandler gpxRouteHandler = new ZeppOsGpxRouteInstallHandler(uri, getContext());
+        if (gpxRouteHandler.isValid()) {
+            try {
+                new ZeppOsGpxRouteUploadOperation(
+                        this,
+                        gpxRouteHandler.getFile(),
+                        fileUploadService
+                ).perform();
+            } catch (final Exception e) {
+                GB.toast(getContext(), "Gpx route file cannot be installed: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
+            }
+
+            return;
+        }
+
+        super.onInstallApp(uri);
     }
 
     @Override
@@ -1131,7 +830,7 @@ public abstract class Huami2021Support extends HuamiSupport {
         setDisplayItems2021(
                 builder,
                 DISPLAY_ITEMS_MENU,
-                new ArrayList<>(prefs.getList(ZeppOsConfigService.getPrefPossibleValuesKey(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE), Collections.emptyList())),
+                new ArrayList<>(prefs.getList(Huami2021Coordinator.getPrefPossibleValuesKey(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE), Collections.emptyList())),
                 new ArrayList<>(prefs.getList(HuamiConst.PREF_DISPLAY_ITEMS_SORTABLE, Collections.emptyList()))
         );
         return this;
@@ -1144,22 +843,29 @@ public abstract class Huami2021Support extends HuamiSupport {
         setDisplayItems2021(
                 builder,
                 DISPLAY_ITEMS_SHORTCUTS,
-                new ArrayList<>(prefs.getList(ZeppOsConfigService.getPrefPossibleValuesKey(HuamiConst.PREF_SHORTCUTS_SORTABLE), Collections.emptyList())),
+                new ArrayList<>(prefs.getList(Huami2021Coordinator.getPrefPossibleValuesKey(HuamiConst.PREF_SHORTCUTS_SORTABLE), Collections.emptyList())),
                 new ArrayList<>(prefs.getList(HuamiConst.PREF_SHORTCUTS_SORTABLE, Collections.emptyList()))
         );
         return this;
     }
 
-    protected Huami2021Support setControlCenter(final TransactionBuilder builder) {
-        final Prefs prefs = getDevicePrefs();
+    protected void setControlCenter() {
+        try {
+            final TransactionBuilder builder = performInitialized("set control center");
 
-        setDisplayItems2021(
-                builder,
-                DISPLAY_ITEMS_CONTROL_CENTER,
-                new ArrayList<>(prefs.getList(ZeppOsConfigService.getPrefPossibleValuesKey(HuamiConst.PREF_CONTROL_CENTER_SORTABLE), Collections.emptyList())),
-                new ArrayList<>(prefs.getList(HuamiConst.PREF_CONTROL_CENTER_SORTABLE, Collections.emptyList()))
-        );
-        return this;
+            final Prefs prefs = getDevicePrefs();
+
+            setDisplayItems2021(
+                    builder,
+                    DISPLAY_ITEMS_CONTROL_CENTER,
+                    new ArrayList<>(prefs.getList(Huami2021Coordinator.getPrefPossibleValuesKey(HuamiConst.PREF_CONTROL_CENTER_SORTABLE), Collections.emptyList())),
+                    new ArrayList<>(prefs.getList(HuamiConst.PREF_CONTROL_CENTER_SORTABLE, Collections.emptyList()))
+            );
+
+            builder.queue(getQueue());
+        } catch (final Exception e) {
+            GB.toast("Error setting control center", Toast.LENGTH_LONG, GB.ERROR, e);
+        }
     }
 
     private void setDisplayItems2021(final TransactionBuilder builder,
@@ -1346,25 +1052,6 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     @Override
-    protected Huami2021Support requestAlarms(final TransactionBuilder builder) {
-        LOG.info("Requesting alarms");
-
-        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_ALARMS, new byte[]{ALARMS_CMD_REQUEST}, false);
-
-        return this;
-    }
-
-    private void requestAlarms() {
-        try {
-            final TransactionBuilder builder = performInitialized("request alarms");
-            requestAlarms(builder);
-            builder.queue(getQueue());
-        } catch (final Exception e) {
-            LOG.error("Failed to request alarms", e);
-        }
-    }
-
-    @Override
     public Huami2021Support requestDisplayItems(final TransactionBuilder builder) {
         LOG.info("Requesting display items");
 
@@ -1376,6 +1063,11 @@ public abstract class Huami2021Support extends HuamiSupport {
         );
 
         return this;
+    }
+
+    public void requestWatchfaces(final TransactionBuilder builder) {
+        watchfaceService.requestWatchfaces(builder);
+        watchfaceService.requestCurrentWatchface(builder);
     }
 
     protected Huami2021Support requestShortcuts(final TransactionBuilder builder) {
@@ -1438,6 +1130,11 @@ public abstract class Huami2021Support extends HuamiSupport {
 
     @Override
     public void phase3Initialize(final TransactionBuilder builder) {
+        // Make sure that performInitialized is not called accidentally in here
+        // (eg. by creating a new TransactionBuilder).
+        // In those cases, the device will be initialized twice, which will change the shared
+        // session key during these phase3 requests and decrypting messages will fail
+
         final Huami2021Coordinator coordinator = getCoordinator();
 
         LOG.info("2021 phase3Initialize...");
@@ -1445,7 +1142,6 @@ public abstract class Huami2021Support extends HuamiSupport {
 
         configService.requestAllConfigs(builder);
         requestCapabilityReminders(builder);
-        fileUploadService.requestCapability(builder);
 
         for (final HuamiVibrationPatternNotificationType type : coordinator.getVibrationPatternNotificationTypes(gbDevice)) {
             // FIXME: Can we read these from the band?
@@ -1453,14 +1149,23 @@ public abstract class Huami2021Support extends HuamiSupport {
             setVibrationPattern(builder, HuamiConst.PREF_HUAMI_VIBRATION_PROFILE_PREFIX + typeKey);
         }
 
-        requestCannedMessages(builder);
+        cannedMessagesService.requestCannedMessages(builder);
         requestDisplayItems(builder);
         requestShortcuts(builder);
         if (coordinator.supportsControlCenter()) {
             requestControlCenter(builder);
         }
-        requestAlarms(builder);
+        alarmsService.requestAlarms(builder);
         //requestReminders(builder);
+
+        for (AbstractZeppOsService service : mServiceMap.values()) {
+            service.initialize(builder);
+        }
+
+        if (coordinator.supportsBluetoothPhoneCalls(gbDevice)) {
+            phoneService.requestCapabilities(builder);
+            phoneService.requestEnabled(builder);
+        }
     }
 
     @Override
@@ -1490,22 +1195,14 @@ public abstract class Huami2021Support extends HuamiSupport {
             return;
         }
 
-        LOG.debug("Got 2021 payload for {}: {}", String.format("0x%04x", type), GB.hexdump(payload));
-
         if (mServiceMap.containsKey(type)) {
             mServiceMap.get(type).handlePayload(payload);
             return;
         }
 
         switch (type) {
-            case CHUNKED2021_ENDPOINT_ALARMS:
-                handle2021Alarms(payload);
-                return;
             case CHUNKED2021_ENDPOINT_AUTH:
                 LOG.warn("Unexpected auth payload {}", GB.hexdump(payload));
-                return;
-            case CHUNKED2021_ENDPOINT_CALENDAR:
-                handle2021Calendar(payload);
                 return;
             case CHUNKED2021_ENDPOINT_COMPAT:
                 LOG.warn("Unexpected compat payload {}", GB.hexdump(payload));
@@ -1528,14 +1225,8 @@ public abstract class Huami2021Support extends HuamiSupport {
             case CHUNKED2021_ENDPOINT_HEARTRATE:
                 handle2021HeartRate(payload);
                 return;
-            case CHUNKED2021_ENDPOINT_NOTIFICATIONS:
-                handle2021Notifications(payload);
-                return;
             case CHUNKED2021_ENDPOINT_REMINDERS:
                 handle2021Reminders(payload);
-                return;
-            case CHUNKED2021_ENDPOINT_CANNED_MESSAGES:
-                handle2021CannedMessages(payload);
                 return;
             case CHUNKED2021_ENDPOINT_CONNECTION:
                 handle2021Connection(payload);
@@ -1561,170 +1252,6 @@ public abstract class Huami2021Support extends HuamiSupport {
             default:
                 LOG.warn("Unhandled 2021 payload {}", String.format("0x%04x", type));
         }
-    }
-
-    protected void handle2021Alarms(final byte[] payload) {
-        switch (payload[0]) {
-            case ALARMS_CMD_CREATE_ACK:
-                LOG.info("Alarm create ACK, status = {}", payload[1]);
-                return;
-            case ALARMS_CMD_DELETE_ACK:
-                LOG.info("Alarm delete ACK, status = {}", payload[1]);
-                return;
-            case ALARMS_CMD_UPDATE_ACK:
-                LOG.info("Alarm update ACK, status = {}", payload[1]);
-                return;
-            case ALARMS_CMD_NOTIFY_CHANGE:
-                LOG.info("Alarms changed on band");
-                requestAlarms();
-                return;
-            case ALARMS_CMD_RESPONSE:
-                LOG.info("Got alarms from band");
-                decodeAndUpdateAlarms(payload);
-                return;
-            default:
-                LOG.warn("Unexpected alarms payload byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    private void decodeAndUpdateAlarms(final byte[] payload) {
-        final int numAlarms = payload[1];
-
-        if (payload.length != 2 + numAlarms * 10) {
-            LOG.warn("Unexpected payload length of {} for {} alarms", payload.length, numAlarms);
-            return;
-        }
-
-        // Map of alarm position to Alarm, as returned by the band
-        final Map<Integer, Alarm> payloadAlarms = new HashMap<>();
-        for (int i = 0; i < numAlarms; i++) {
-            final Alarm alarm = parseAlarm(payload, 2 + i * 10);
-            payloadAlarms.put(alarm.getPosition(), alarm);
-        }
-
-        final List<nodomain.freeyourgadget.gadgetbridge.entities.Alarm> dbAlarms = DBHelper.getAlarms(gbDevice);
-        int numUpdatedAlarms = 0;
-
-        for (nodomain.freeyourgadget.gadgetbridge.entities.Alarm alarm : dbAlarms) {
-            final int pos = alarm.getPosition();
-            final Alarm updatedAlarm = payloadAlarms.get(pos);
-            final boolean alarmNeedsUpdate = updatedAlarm == null ||
-                    alarm.getUnused() != updatedAlarm.getUnused() ||
-                    alarm.getEnabled() != updatedAlarm.getEnabled() ||
-                    alarm.getSmartWakeup() != updatedAlarm.getSmartWakeup() ||
-                    alarm.getHour() != updatedAlarm.getHour() ||
-                    alarm.getMinute() != updatedAlarm.getMinute() ||
-                    alarm.getRepetition() != updatedAlarm.getRepetition();
-
-            if (alarmNeedsUpdate) {
-                numUpdatedAlarms++;
-                LOG.info("Updating alarm index={}, unused={}", pos, updatedAlarm == null);
-                alarm.setUnused(updatedAlarm == null);
-                if (updatedAlarm != null) {
-                    alarm.setEnabled(updatedAlarm.getEnabled());
-                    alarm.setSmartWakeup(updatedAlarm.getSmartWakeup());
-                    alarm.setHour(updatedAlarm.getHour());
-                    alarm.setMinute(updatedAlarm.getMinute());
-                    alarm.setRepetition(updatedAlarm.getRepetition());
-                }
-                DBHelper.store(alarm);
-            }
-        }
-
-        if (numUpdatedAlarms > 0) {
-            final Intent intent = new Intent(DeviceService.ACTION_SAVE_ALARMS);
-            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
-        }
-    }
-
-    private Alarm parseAlarm(final byte[] payload, final int offset) {
-        final nodomain.freeyourgadget.gadgetbridge.entities.Alarm alarm = new nodomain.freeyourgadget.gadgetbridge.entities.Alarm();
-
-        alarm.setUnused(false); // If the band sent it, it's not unused
-        alarm.setPosition(payload[offset + ALARM_IDX_POSITION]);
-        alarm.setEnabled((payload[offset + ALARM_IDX_FLAGS] & ALARM_FLAG_ENABLED) > 0);
-        alarm.setSmartWakeup((payload[offset + ALARM_IDX_FLAGS] & ALARM_FLAG_SMART) > 0);
-        alarm.setHour(payload[offset + ALARM_IDX_HOUR]);
-        alarm.setMinute(payload[offset + ALARM_IDX_MINUTE]);
-        alarm.setRepetition(payload[offset + ALARM_IDX_REPETITION]);
-
-        return alarm;
-    }
-
-    protected void handle2021Calendar(final byte[] payload) {
-        switch (payload[0]) {
-            case CALENDAR_CMD_EVENTS_RESPONSE:
-                LOG.info("Got calendar events from band");
-                decodeAndUpdateCalendarEvents(payload);
-                return;
-            case CALENDAR_CMD_CREATE_EVENT_ACK:
-                LOG.info("Calendar create event ACK, status = {}", payload[1]);
-                return;
-            case CALENDAR_CMD_DELETE_EVENT_ACK:
-                LOG.info("Calendar delete event ACK, status = {}", payload[1]);
-                return;
-            default:
-                LOG.warn("Unexpected calendar payload byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    private void decodeAndUpdateCalendarEvents(final byte[] payload) {
-        final int numEvents = payload[1];
-        // FIXME there's a 0 after this, is it actually a 2-byte short?
-
-        if (payload.length < 1 + numEvents * 34) {
-            LOG.warn("Unexpected payload length of {} for {} calendar events", payload.length, numEvents);
-            return;
-        }
-
-        int i = 3;
-        while (i < payload.length) {
-            if (payload.length - i < 34) {
-                LOG.error("Not enough bytes remaining to parse a calendar event ({})", payload.length - i);
-                return;
-            }
-
-            final int eventId = BLETypeConversions.toUint32(payload, i);
-            i += 4;
-
-            final String title = StringUtils.untilNullTerminator(payload, i);
-            if (title == null) {
-                LOG.error("Failed to decode title");
-                return;
-            }
-            i += title.length() + 1;
-
-            final String description = StringUtils.untilNullTerminator(payload, i);
-            if (description == null) {
-                LOG.error("Failed to decode description");
-                return;
-            }
-            i += description.length() + 1;
-
-            final int startTime = BLETypeConversions.toUint32(payload, i);
-            i += 4;
-
-            final int endTime = BLETypeConversions.toUint32(payload, i);
-            i += 4;
-
-            // ? 00 00 00 00 00 00 00 00 ff ff ff ff
-            i += 12;
-
-            boolean allDay = (payload[i] == 0x01);
-            i++;
-
-            // ? 00 82 00 00 00 00
-            i += 6;
-
-            LOG.info("Calendar Event {}: {}", eventId, title);
-        }
-
-        if (i != payload.length) {
-            LOG.error("Unexpected calendar events payload trailer, {} bytes were not consumed", payload.length - i);
-            return;
-        }
-
-        // TODO update database?
     }
 
     protected void handle2021Workout(final byte[] payload) {
@@ -1809,7 +1336,7 @@ public abstract class Huami2021Support extends HuamiSupport {
                 LOG.error("Unknown display items type {}", String.format("0x%x", payload[1]));
                 return;
         }
-        final String allScreensPrefKey = ZeppOsConfigService.getPrefPossibleValuesKey(prefKey);
+        final String allScreensPrefKey = Huami2021Coordinator.getPrefPossibleValuesKey(prefKey);
 
         final boolean menuHasMoreSection;
 
@@ -2058,98 +1585,6 @@ public abstract class Huami2021Support extends HuamiSupport {
         }
     }
 
-    protected void handle2021Notifications(final byte[] payload) {
-        final GBDeviceEventNotificationControl deviceEvtNotificationControl = new GBDeviceEventNotificationControl();
-        final GBDeviceEventCallControl deviceEvtCallControl = new GBDeviceEventCallControl();
-
-        switch (payload[0]) {
-            case NOTIFICATION_CMD_REPLY:
-                // TODO make this configurable?
-                final int notificationId = BLETypeConversions.toUint32(subarray(payload, 1, 5));
-                final Long replyHandle = (Long) mNotificationReplyAction.lookup(notificationId);
-                if (replyHandle == null) {
-                    LOG.warn("Failed to find reply handle for notification ID {}", notificationId);
-                    return;
-                }
-                final String replyMessage = StringUtils.untilNullTerminator(payload, 5);
-                if (replyMessage == null) {
-                    LOG.warn("Failed to parse reply message for notification ID {}", notificationId);
-                    return;
-                }
-
-                LOG.info("Got reply to notification {} with '{}'", notificationId, replyMessage);
-
-                deviceEvtNotificationControl.handle = replyHandle;
-                deviceEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.REPLY;
-                deviceEvtNotificationControl.reply = replyMessage;
-                evaluateGBDeviceEvent(deviceEvtNotificationControl);
-
-                ackNotificationReply(notificationId); // FIXME: premature?
-                onDeleteNotification(notificationId); // FIXME: premature?
-                return;
-            case NOTIFICATION_CMD_DISMISS:
-                switch (payload[1]) {
-                    case NOTIFICATION_DISMISS_NOTIFICATION:
-                        // TODO make this configurable?
-                        final int dismissNotificationId = BLETypeConversions.toUint32(subarray(payload, 2, 6));
-                        LOG.info("Dismiss notification {}", dismissNotificationId);
-                        deviceEvtNotificationControl.handle = dismissNotificationId;
-                        deviceEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.DISMISS;
-                        evaluateGBDeviceEvent(deviceEvtNotificationControl);
-                        return;
-                    case NOTIFICATION_DISMISS_MUTE_CALL:
-                        LOG.info("Mute call");
-                        deviceEvtCallControl.event = GBDeviceEventCallControl.Event.IGNORE;
-                        evaluateGBDeviceEvent(deviceEvtCallControl);
-                        return;
-                    case NOTIFICATION_DISMISS_REJECT_CALL:
-                        LOG.info("Reject call");
-                        deviceEvtCallControl.event = GBDeviceEventCallControl.Event.REJECT;
-                        evaluateGBDeviceEvent(deviceEvtCallControl);
-                        return;
-                    default:
-                        LOG.warn("Unexpected notification dismiss byte {}", String.format("0x%02x", payload[1]));
-                        return;
-                }
-            case NOTIFICATION_CMD_ICON_REQUEST:
-                final String packageName = StringUtils.untilNullTerminator(payload, 1);
-                if (packageName == null) {
-                    LOG.error("Failed to decode package name from payload");
-                    return;
-                }
-                LOG.info("Got notification icon request for {}", packageName);
-
-                final int expectedLength = packageName.length() + 7;
-                if (payload.length != expectedLength) {
-                    LOG.error("Unexpected icon request payload length {}, expected {}", payload.length, expectedLength);
-                    return;
-                }
-                int pos = 1 + packageName.length() + 1;
-                final byte iconFormat = payload[pos];
-                pos++;
-                int width = BLETypeConversions.toUint16(subarray(payload, pos, pos + 2));
-                pos += 2;
-                int height = BLETypeConversions.toUint16(subarray(payload, pos, pos + 2));
-                sendIconForPackage(packageName, iconFormat, width, height);
-                return;
-            default:
-                LOG.warn("Unexpected notification byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    private void ackNotificationReply(final int notificationId) {
-        final ByteBuffer buf = ByteBuffer.allocate(9);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(NOTIFICATION_CMD_REPLY_ACK);
-        buf.putInt(notificationId);
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-        buf.put((byte) 0x00); // ?
-
-        writeToChunked2021("ack notification reply", CHUNKED2021_ENDPOINT_NOTIFICATIONS, buf.array(), true);
-    }
-
     protected void handle2021Weather(final byte[] payload) {
         switch (payload[0]) {
             case WEATHER_CMD_DEFAULT_LOCATION_ACK:
@@ -2158,90 +1593,6 @@ public abstract class Huami2021Support extends HuamiSupport {
             default:
                 LOG.warn("Unexpected weather byte {}", String.format("0x%02x", payload[0]));
         }
-    }
-
-    private void ackNotificationAfterIconSent(final String queuedIconPackage) {
-        LOG.info("Acknowledging icon send for {}", queuedIconPackage);
-
-        final ByteBuffer buf = ByteBuffer.allocate(1 + queuedIconPackage.length() + 1 + 1);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
-        buf.put(NOTIFICATION_CMD_ICON_REQUEST_ACK);
-        buf.put(queuedIconPackage.getBytes(StandardCharsets.UTF_8));
-        buf.put((byte) 0x00);
-        buf.put((byte) 0x01);
-
-        writeToChunked2021("ack icon send", CHUNKED2021_ENDPOINT_NOTIFICATIONS, buf.array(), true);
-    }
-
-    private void sendIconForPackage(final String packageName, final byte iconFormat, final int width, final int height) {
-        if (getMTU() < 247) {
-            LOG.warn("Sending icons requires high MTU, current MTU is {}", getMTU());
-            return;
-        }
-
-        // Without the expected tga id and format string they seem to get corrupted,
-        // but the encoding seems to actually be the same...?
-        final String format;
-        final String tgaId;
-        switch (iconFormat) {
-            case 0x04:
-                format = "TGA_RGB565_GCNANOLITE";
-                tgaId = "SOMHP";
-                break;
-            case 0x08:
-                format = "TGA_RGB565_DAVE2D";
-                tgaId = "SOMH6";
-                break;
-            default:
-                LOG.error("Unknown icon format {}", String.format("0x%02x", iconFormat));
-                return;
-        }
-
-        final Drawable icon = NotificationUtils.getAppIcon(getContext(), packageName);
-        if (icon == null) {
-            LOG.warn("Failed to get icon for {}", packageName);
-            return;
-        }
-
-        final Bitmap bmp = BitmapUtil.toBitmap(icon);
-
-        // The TGA needs to have this ID, or the band does not accept it
-        final byte[] tgaIdBytes = new byte[46];
-        System.arraycopy(tgaId.getBytes(StandardCharsets.UTF_8), 0, tgaIdBytes, 0, 5);
-
-        final byte[] tga565 = BitmapUtil.convertToTgaRGB565(bmp, width, height, tgaIdBytes);
-
-        final String url = String.format(
-                Locale.ROOT,
-                "notification://logo?app_id=%s&width=%d&height=%d&format=%s",
-                packageName,
-                width,
-                height,
-                format
-        );
-        final String filename = String.format("logo_%s.tga", packageName.replace(".", "_"));
-
-        fileUploadService.sendFile(
-                url,
-                filename,
-                tga565,
-                new ZeppOsFileUploadService.Callback() {
-                    @Override
-                    public void onFileUploadFinish(final boolean success) {
-                        LOG.info("Finished sending icon, success={}", success);
-                        if (success) {
-                            ackNotificationAfterIconSent(packageName);
-                        }
-                    }
-
-                    @Override
-                    public void onFileUploadProgress(final int progress) {
-                        LOG.trace("Icon send progress: {}", progress);
-                    }
-                }
-        );
-
-        LOG.info("Queueing icon for {}", packageName);
     }
 
     protected void handle2021Reminders(final byte[] payload) {
@@ -2322,145 +1673,6 @@ public abstract class Huami2021Support extends HuamiSupport {
         // TODO persist in database. Probably not trivial, because reminderPosition != reminderId
     }
 
-    protected void handle2021CannedMessages(final byte[] payload) {
-        switch (payload[0]) {
-            case CANNED_MESSAGES_CMD_RESPONSE:
-                LOG.info("Canned Messages response");
-                decodeAndUpdateCannedMessagesResponse(payload);
-                return;
-            case CANNED_MESSAGES_CMD_SET_ACK:
-                LOG.info("Canned Message set ACK, status = {}", payload[1]);
-                return;
-            case CANNED_MESSAGES_CMD_DELETE_ACK:
-                LOG.info("Canned Message delete ACK, status = {}", payload[1]);
-                return;
-            case CANNED_MESSAGES_CMD_REPLY_SMS:
-                LOG.info("Canned Message SMS reply");
-                handleCannedSmsReply(payload);
-                return;
-            case CANNED_MESSAGES_CMD_REPLY_SMS_CHECK:
-                LOG.info("Canned Message reply SMS check");
-                final boolean canSendSms;
-                // TODO place this behind a setting as well?
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    canSendSms = getContext().checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;
-                } else {
-                    canSendSms = true;
-                }
-                sendCannedSmsReplyAllow(canSendSms);
-                return;
-            default:
-                LOG.warn("Unexpected canned messages payload byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    private void sendCannedSmsReplyAllow(final boolean allowed) {
-        LOG.info("Sending SMS reply allowed = {}", allowed);
-
-        writeToChunked2021(
-                "allow sms reply",
-                CHUNKED2021_ENDPOINT_CANNED_MESSAGES,
-                new byte[]{CANNED_MESSAGES_CMD_REPLY_SMS_ALLOW, bool(allowed)},
-                false
-        );
-    }
-
-    private void handleCannedSmsReply(final byte[] payload) {
-        final String phoneNumber = StringUtils.untilNullTerminator(payload, 1);
-        if (phoneNumber == null || phoneNumber.isEmpty()) {
-            LOG.warn("No phone number for SMS reply");
-            ackCannedSmsReply(false);
-            return;
-        }
-
-        final int messageLength = payload[phoneNumber.length() + 6] & 0xff;
-        if (phoneNumber.length() + 8 + messageLength != payload.length) {
-            LOG.warn("Unexpected message or payload lengths ({} / {})", messageLength, payload.length);
-            ackCannedSmsReply(false);
-            return;
-        }
-
-        final String message = new String(payload, phoneNumber.length() + 8, messageLength);
-        if (StringUtils.isNullOrEmpty(message)) {
-            LOG.warn("No message for SMS reply");
-            ackCannedSmsReply(false);
-            return;
-        }
-
-        LOG.debug("Sending SMS message '{}' to number '{}' and rejecting call", message, phoneNumber);
-        final GBDeviceEventNotificationControl devEvtNotificationControl = new GBDeviceEventNotificationControl();
-        devEvtNotificationControl.handle = -1;
-        devEvtNotificationControl.phoneNumber = phoneNumber;
-        devEvtNotificationControl.reply = message;
-        devEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.REPLY;
-        evaluateGBDeviceEvent(devEvtNotificationControl);
-
-        final GBDeviceEventCallControl rejectCallCmd = new GBDeviceEventCallControl(GBDeviceEventCallControl.Event.REJECT);
-        evaluateGBDeviceEvent(rejectCallCmd);
-
-        ackCannedSmsReply(true); // FIXME probably premature
-    }
-
-    private void ackCannedSmsReply(final boolean success) {
-        LOG.info("Acknowledging SMS reply, success = {}", success);
-
-        writeToChunked2021(
-                "ack sms reply",
-                CHUNKED2021_ENDPOINT_CANNED_MESSAGES,
-                new byte[]{CANNED_MESSAGES_CMD_REPLY_SMS_ACK, bool(success)},
-                false
-        );
-    }
-
-    private void decodeAndUpdateCannedMessagesResponse(final byte[] payload) {
-        final int numberMessages = payload[1] & 0xff;
-
-        LOG.info("Got {} canned messages", numberMessages);
-
-        final GBDeviceEventUpdatePreferences gbDeviceEventUpdatePreferences = new GBDeviceEventUpdatePreferences();
-        final Map<Integer, String> cannedMessages = new HashMap<>();
-
-        int pos = 3;
-        for (int i = 0; i < numberMessages; i++) {
-            if (pos + 4 >= payload.length) {
-                LOG.warn("Unexpected end of payload while parsing message {} at pos {}", i, pos);
-                return;
-            }
-
-            final int messageId = BLETypeConversions.toUint32(subarray(payload, pos, pos + 4));
-            final int messageLength = payload[pos + 4] & 0xff;
-
-            if (pos + 6 + messageLength > payload.length) {
-                LOG.warn("Unexpected end of payload for message of length {} while parsing message {} at pos {}", messageLength, i, pos);
-                return;
-            }
-
-            final String messageText = new String(subarray(payload, pos + 6, pos + 6 + messageLength));
-
-            LOG.debug("Canned message {}: {}", String.format("0x%x", messageId), messageText);
-
-            final int cannedMessagePrefId = i + 1;
-            if (cannedMessagePrefId > 16) {
-                LOG.warn("Canned message ID {} is out of range", cannedMessagePrefId);
-            } else {
-                cannedMessages.put(cannedMessagePrefId, messageText);
-            }
-
-            pos += messageLength + 6;
-        }
-
-        for (int i = 1; i <= 16; i++) {
-            String message = cannedMessages.get(i);
-            if (StringUtils.isEmpty(message)) {
-                message = null;
-            }
-
-            gbDeviceEventUpdatePreferences.withPreference("canned_reply_" + i, message);
-        }
-
-        evaluateGBDeviceEvent(gbDeviceEventUpdatePreferences);
-    }
-
     protected void handle2021Connection(final byte[] payload) {
         switch (payload[0]) {
             case CONNECTION_CMD_MTU_RESPONSE:
@@ -2479,7 +1691,12 @@ public abstract class Huami2021Support extends HuamiSupport {
     }
 
     protected void handle2021UserInfo(final byte[] payload) {
-        // TODO handle2021UserInfo
+        switch (payload[0]) {
+            case USER_INFO_CMD_SET_ACK:
+                LOG.info("Got user info set ack, status = {}", payload[1]);
+                return;
+        }
+
         LOG.warn("Unexpected user info payload byte {}", String.format("0x%02x", payload[0]));
     }
 

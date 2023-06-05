@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuami2021FWInstallHandler;
@@ -56,9 +57,8 @@ public class AmazfitTRex2Coordinator extends Huami2021Coordinator {
     }
 
     @Override
-    public AbstractHuami2021FWInstallHandler findInstallHandler(final Uri uri, final Context context) {
-        final AmazfitTRex2FWInstallHandler handler = new AmazfitTRex2FWInstallHandler(uri, context);
-        return handler.isValid() ? handler : null;
+    public AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context) {
+        return new AmazfitTRex2FWInstallHandler(uri, context);
     }
 
     @Override
@@ -69,5 +69,10 @@ public class AmazfitTRex2Coordinator extends Huami2021Coordinator {
     @Override
     public boolean supportsToDoList() {
         return true;
+    }
+
+    @Override
+    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+        return false;
     }
 }
