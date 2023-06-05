@@ -73,8 +73,6 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
                             forecast.humidity = safelyGet(forecastJson, Integer.class, "humidity", 0);
                             forecast.maxTemp = safelyGet(forecastJson, Integer.class, "maxTemp", 0);
                             forecast.minTemp = safelyGet(forecastJson, Integer.class, "minTemp", 0);
-                            forecast.uvIndex = safelyGet(forecastJson, Number.class, "uvIndex", 0d).floatValue();
-                            forecast.precipProbability = safelyGet(forecastJson, Integer.class, "precipProbability", 0);
 
                             weatherSpec.forecasts.add(forecast);
                         }
