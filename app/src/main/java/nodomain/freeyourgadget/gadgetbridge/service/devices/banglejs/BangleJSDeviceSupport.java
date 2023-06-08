@@ -161,6 +161,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     // this stores the globalUartReceiver (for uart.tx intents)
     private BroadcastReceiver globalUartReceiver = null;
 
+    // used to make HTTP requests and handle responses
+    private RequestQueue requestQueue = null;
+
     /// Maximum amount of characters to store in receiveHistory
     public static final int MAX_RECEIVE_HISTORY_CHARS = 100000;
     /// Used to avoid spamming logs with ACTION_DEVICE_CHANGED messages
@@ -185,6 +188,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         super.dispose();
         stopGlobalUartReceiver();
         stopLocationUpdate();
+        stopRequestQueue();
     }
 
     private void stopGlobalUartReceiver(){
@@ -198,6 +202,19 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         LOG.info("Stop location updates");
         GBLocationManager.stop(getContext(), this);
         gpsUpdateSetup = false;
+    }
+
+    private void stopRequestQueue() {
+        if (requestQueue != null) {
+            requestQueue.stop();
+        }
+    }
+
+    private RequestQueue getRequestQueue() {
+        if (requestQueue == null) {
+            requestQueue = Volley.newRequestQueue(getContext());
+        }
+        return requestQueue;
     }
 
     private void addReceiveHistory(String s) {
@@ -553,6 +570,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
                 int hrm = 0;
                 int steps = 0;
+                if (json.has("time")) sample.setTimestamp(json.getInt("time"));
                 if (json.has("hrm")) hrm = json.getInt("hrm");
                 if (json.has("stp")) steps = json.getInt("stp");
                 int activity = BangleJSSampleProvider.TYPE_ACTIVITY;
@@ -599,7 +617,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 final String id = _id;
 
                 if (BuildConfig.INTERNET_ACCESS && devicePrefs.getBoolean(PREF_DEVICE_INTERNET_ACCESS, false)) {
-                    RequestQueue queue = Volley.newRequestQueue(getContext());
                     String url = json.getString("url");
 
                     int method = Request.Method.GET;
@@ -692,6 +709,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                             return h;
                         }
                     };
+                    RequestQueue queue = getRequestQueue();
                     queue.add(stringRequest);
                 } else {
                     if (BuildConfig.INTERNET_ACCESS)
@@ -1322,6 +1340,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         float baseline = -paint.ascent(); // ascent() is negative
         int width = (int) (paint.measureText(text) + 0.5f); // round
         int height = (int) (baseline + paint.descent() + 0.5f);
+        if (width<1) width=1;
+        if (height<1) height=1;
         Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(image);
         canvas.drawText(text, 0, baseline, paint);
