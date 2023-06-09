@@ -427,13 +427,17 @@ public class PebbleProtocol extends GBDeviceProtocol {
             mAppMessageHandlers.put(UUID_YWEATHER, new AppMessageHandlerRealWeather(UUID_YWEATHER, PebbleProtocol.this));
             mAppMessageHandlers.put(UUID_REALWEATHER, new AppMessageHandlerRealWeather(UUID_REALWEATHER, PebbleProtocol.this));
 
-            mAppMessageHandlers.put(UUID_SIMPLE_WEATHER, new AppMessageHandlerSimplyWeather(UUID_SIMPLE_WEATHER, PebbleProtocol.this));
+            mAppMessageHandlers.put(UUID_SIMPLE_WEATHER, new AppMessageHandlerSimpleWeather(UUID_SIMPLE_WEATHER, PebbleProtocol.this));
         }
     }
 
     private final HashMap<Byte, DatalogSession> mDatalogSessions = new HashMap<>();
 
     private Integer[] idLookup = new Integer[256];
+
+    public AppMessageHandler getAppMessageHandler(UUID uuid){
+        return mAppMessageHandlers.get(uuid);
+    }
 
     private byte[] encodeSimpleMessage(short endpoint, byte command) {
         final short LENGTH_SIMPLEMESSAGE = 1;

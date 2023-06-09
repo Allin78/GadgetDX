@@ -127,6 +127,10 @@ public class PebbleSupport extends AbstractSerialDeviceSupport {
         }
     }
 
+    public void onAppUpdate(byte[] msg) {
+        getDeviceIOThread().write(msg);
+    }
+
     @Override
     public synchronized PebbleIoThread getDeviceIOThread() {
         return (PebbleIoThread) super.getDeviceIOThread();

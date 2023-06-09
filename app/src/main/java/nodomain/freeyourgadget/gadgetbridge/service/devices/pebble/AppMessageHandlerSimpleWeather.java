@@ -20,9 +20,7 @@ import android.util.Pair;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +32,7 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 
-class AppMessageHandlerSimplyWeather extends AppMessageHandler {
+public class AppMessageHandlerSimpleWeather extends AppMessageHandler {
     private static final int KEY_TEMPERATURE = 0;
     private static final int KEY_LOCATION = 1;
     private static final int KEY_ICON = 2;
@@ -50,11 +48,11 @@ class AppMessageHandlerSimplyWeather extends AppMessageHandler {
     private static final int[] d50 = new int[]{701, 711, 721, 731, 741, 751, 761, 762, 771, 781};
 
 
-    AppMessageHandlerSimplyWeather(UUID uuid, PebbleProtocol pebbleProtocol) {
+    public AppMessageHandlerSimpleWeather(UUID uuid, PebbleProtocol pebbleProtocol) {
         super(uuid, pebbleProtocol);
     }
 
-    private byte[] encodeWeatherMessage(WeatherSpec weatherSpec) {
+    public byte[] encodeWeatherMessage(WeatherSpec weatherSpec) {
 
         /*
             KEY_TEMPERATURE: Math.floor(json.main.temp) + (celsius ? "\u00B0C" : "\u00B0F"),
