@@ -17,9 +17,6 @@
 
 package nodomain.freeyourgadget.gadgetbridge.externalevents;
 
-import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
-
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,24 +27,15 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.AppMessageHandlerSimpleWeather;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleProtocol;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class GenericWeatherReceiver extends BroadcastReceiver {
     public final static String ACTION_GENERIC_WEATHER = "nodomain.freeyourgadget.gadgetbridge.ACTION_GENERIC_WEATHER";
     public final static String EXTRA_WEATHER_JSON = "WeatherJson";
-
-    private static final UUID UUID_SIMPLE_WEATHER = UUID.fromString("fc42139a-5710-4456-b164-ddc12c464398");
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -92,26 +80,11 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
 
                     Weather.getInstance().setWeatherSpec(weatherSpec);
                     GBApplication.deviceService().onSendWeather(weatherSpec);
-
-                    PebbleSupport pebbleSupport = new PebbleSupport();
-                    for (GBDevice device: getAllDevices(context)) {
-                        if (device.getType() == DeviceType.PEBBLE){
-                            byte[] message = ((AppMessageHandlerSimpleWeather) (new PebbleProtocol(device)).getAppMessageHandler(UUID_SIMPLE_WEATHER)).encodeUpdateWeather(weatherSpec);
-                            pebbleSupport.setContext(device, BluetoothAdapter.getDefaultAdapter(), getContext());
-                            pebbleSupport.onAppUpdate(message);
-                        }
-                    }
-
                 } catch (Exception e) {
                     GB.toast("Gadgetbridge received broken or incompatible weather data", Toast.LENGTH_SHORT, GB.ERROR, e);
                 }
             }
         }
-    }
-
-    public List<GBDevice> getAllDevices(Context appContext) {
-        GBApplication gbApp = (GBApplication) appContext;
-        return gbApp.getDeviceManager().getDevices();
     }
 
     private <T> T safelyGet(JSONObject jsonObject, Class<T> tClass, String name, T defaultValue) {
