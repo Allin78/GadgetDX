@@ -18,9 +18,13 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.pebble;
 
 import android.util.Pair;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +42,13 @@ class AppMessageHandlerSimplyWeather extends AppMessageHandler {
     private static final int KEY_R_TIME24 = 4;
     private static final int KEY_LANGUAGE = 5;
     private static final int KEY_DISCONNECTED_VIBES = 6;
+
+    private static final int[] d09 = new int[]{300, 301, 302, 310, 311, 312, 313, 314, 321, 520, 521, 522, 531};
+    private static final int[] d11 = new int[]{200, 201, 202, 210, 211, 212, 221, 230, 231, 231};
+    private static final int[] d10 = new int[]{500, 501, 502, 503, 504};
+    private static final int[] d13 = new int[]{511, 600, 601, 602, 611, 612, 613, 615, 616, 620, 621, 622};
+    private static final int[] d50 = new int[]{701, 711, 721, 731, 741, 751, 761, 762, 771, 781};
+
 
     AppMessageHandlerSimplyWeather(UUID uuid, PebbleProtocol pebbleProtocol) {
         super(uuid, pebbleProtocol);
@@ -66,7 +77,7 @@ class AppMessageHandlerSimplyWeather extends AppMessageHandler {
         pairs.add(new Pair<>(KEY_R_TIME12, getTime(weatherSpec.timestamp, false)));
         pairs.add(new Pair<>(KEY_R_TIME24, getTime(weatherSpec.timestamp, true)));
         pairs.add(new Pair<>(KEY_LANGUAGE, "EN"));
-        pairs.add(new Pair<>(KEY_DISCONNECTED_VIBES, 'Y'));
+        pairs.add(new Pair<>(KEY_DISCONNECTED_VIBES, 'N'));
         byte[] weatherMessage = mPebbleProtocol.encodeApplicationMessagePush(PebbleProtocol.ENDPOINT_APPLICATIONMESSAGE, mUUID, pairs, null);
 
         ByteBuffer buf = ByteBuffer.allocate(weatherMessage.length);
@@ -98,29 +109,36 @@ class AppMessageHandlerSimplyWeather extends AppMessageHandler {
 
     //Map ConditionCode to OWM Icon
     private String getIconForConditionCode(int conditionCode) {
-        if (200 <= conditionCode && conditionCode <= 232)
-            return "11d";
-        else if (300 <= conditionCode && conditionCode <= 321)
-            return "09d";
-        else if (500 <= conditionCode && conditionCode <= 504)
-            return "10d";
-        else if (conditionCode == 511)
-            return "13d";
-        else if (520 <= conditionCode && conditionCode <= 531)
-            return "09d";
-        else if (600 <= conditionCode && conditionCode <= 622)
-            return "13d";
-        else if (700 <= conditionCode && conditionCode <= 781)
-            return "50d";
-        else if (conditionCode == 800)
-            return "01d"; // 01n TODO: Check night!
-        else if (conditionCode == 801)
-            return "02d"; // 02n TODO: Check night!
-        else if (conditionCode == 802)
-            return "03d"; //03n TODO: Check night!
-        else if (conditionCode == 803 || conditionCode == 804)
-            return "04d"; //04n TODO: Check night!
-        return "01d"; //TODO: No weather simbol!
+        String icon = null;
+        if (ArrayUtils.contains(d09,conditionCode)){
+            icon = "09";
+        }else if (ArrayUtils.contains(d10, conditionCode)){
+            icon = "10";
+        }else if (ArrayUtils.contains(d11, conditionCode)){
+            icon = "11";
+        }else if (ArrayUtils.contains(d13, conditionCode)){
+            icon = "13";
+        } else if (ArrayUtils.contains(d50, conditionCode)) {
+            icon = "50";
+        }else if(conditionCode == 800){
+            icon = "01";
+        }else if (conditionCode == 801){
+            icon = "02";
+        }else if (conditionCode == 802){
+            icon = "03";
+        }else if (conditionCode == 803 || conditionCode == 804){
+            icon = "04";
+        }else{
+            icon = "01";
+        }
+        return icon + (isDay() ? 'd' : 'n');
+    }
+
+    private boolean isDay(){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        return (hour <= 19 && hour >= 7); //Between 7am and 7pm
     }
 
     @Override
