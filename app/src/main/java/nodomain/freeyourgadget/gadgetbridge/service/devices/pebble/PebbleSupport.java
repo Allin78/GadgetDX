@@ -233,8 +233,7 @@ public class PebbleSupport extends AbstractSerialDeviceSupport {
     public void onSendWeather(WeatherSpec weatherSpec) {
         if (reconnect()) {
             super.onSendWeather(weatherSpec);
-            byte[] encodedWeatherForApp = ((PebbleProtocol) getDeviceProtocol()).getAppMessageHandler(UUID_SIMPLE_WEATHER).encodeUpdateWeather(weatherSpec);
-            onAppUpdate(encodedWeatherForApp);
+            onAppStart(UUID_SIMPLE_WEATHER,true);
         }
     }
 }
