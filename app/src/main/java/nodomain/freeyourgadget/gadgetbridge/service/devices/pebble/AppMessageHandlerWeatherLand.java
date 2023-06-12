@@ -100,7 +100,7 @@ public class AppMessageHandlerWeatherLand extends AppMessageHandler {
 
     private String getCurrentTemperature(int kelvin) {
         boolean metric = Objects.equals(GBApplication.getPrefs().getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, "metric"), "metric");
-        return Math.round(metric ? kelvin2celsius(kelvin) : kelvin2fahrenheit(kelvin)) + "\u00B0";
+        return (metric ? kelvin2celsius(kelvin) : kelvin2fahrenheit(kelvin)) + "\u00B0";
     }
 
     private double kelvin2celsius(int kelvin) {
