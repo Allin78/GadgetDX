@@ -83,4 +83,8 @@ class AppMessageHandler {
         }
         throw new IOException();
     }
+
+    public byte[] encodeWeatherMessagePublic(WeatherSpec weatherSpec) {
+        return encodeUpdateWeather(weatherSpec);
+    }
 }

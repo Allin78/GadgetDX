@@ -127,10 +127,6 @@ public class PebbleSupport extends AbstractSerialDeviceSupport {
         }
     }
 
-    public void onAppUpdate(byte[] msg) {
-        getDeviceIOThread().write(msg);
-    }
-
     @Override
     public synchronized PebbleIoThread getDeviceIOThread() {
         return (PebbleIoThread) super.getDeviceIOThread();
@@ -228,12 +224,10 @@ public class PebbleSupport extends AbstractSerialDeviceSupport {
         }
     }
 
-    private static final UUID UUID_SIMPLE_WEATHER = UUID.fromString("fc42139a-5710-4456-b164-ddc12c464398");
     @Override
     public void onSendWeather(WeatherSpec weatherSpec) {
         if (reconnect()) {
             super.onSendWeather(weatherSpec);
-            onAppStart(UUID_SIMPLE_WEATHER,true);
         }
     }
 }
