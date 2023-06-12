@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2023 José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -14,25 +14,29 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.activities;
+package nodomain.freeyourgadget.gadgetbridge.service.btle.actions;
 
-import android.graphics.Bitmap;
+import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothGatt;
 
-import androidx.annotation.Nullable;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEAction;
 
-import nodomain.freeyourgadget.gadgetbridge.model.ItemWithDetails;
+public class RequestConnectionPriorityAction extends BtLEAction {
+    private int priority;
 
-public interface InstallActivity {
-    CharSequence getInfoText();
+    public RequestConnectionPriorityAction(int priority) {
+        super(null);
+        this.priority = priority;
+    }
 
-    void setInfoText(String text);
+    @Override
+    public boolean expectsResult() {
+        return true;
+    }
 
-    void setPreview(@Nullable Bitmap bitmap);
-
-    void setInstallEnabled(boolean enable);
-
-    void clearInstallItems();
-
-    void setInstallItem(ItemWithDetails item);
-
+    @Override
+    @SuppressLint("MissingPermission")
+    public boolean run(final BluetoothGatt gatt) {
+        return gatt.requestConnectionPriority(priority);
+    }
 }

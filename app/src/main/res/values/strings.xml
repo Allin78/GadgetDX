@@ -785,6 +785,7 @@
     <string name="devicestatus_upload_failed">Upload has failed</string>
     <string name="firmware_update_progress">Upload is in progress\n%1d%% at %.2fkbps (average %.2fkbps)\nPart %1d of %1d</string>
     <string name="updating_firmware">Flashing firmware…</string>
+    <string name="fwapp_install_device_not_supported">File cannot be installed, device not supported.</string>
     <string name="fwapp_install_device_not_ready">File cannot be installed, device not ready.</string>
     <string name="installhandler_firmware_name">%1$s: %2$s %3$s</string>
     <string name="miband_fwinstaller_compatible_version">Compatible version</string>
@@ -2116,4 +2117,13 @@
     <string name="contact_phone_number">Phone number</string>
     <string name="contact_missing_name">Contact name is empty</string>
     <string name="contact_missing_number">Contact number is empty</string>
+    <string name="voice_service_package_title">Voice service package</string>
+    <string name="voice_service_package_summary">Application that contains the service handling voice commands</string>
+    <string name="voice_service_class_title">Voice service class</string>
+    <string name="voice_service_class_summary">Full service path handling voice commands</string>
+    <string name="voice_service">Voice Service</string>
+    <string name="pref_app_logs_title">App logs</string>
+    <string name="pref_app_logs_summary">Enable logs from watch apps</string>
+    <string name="pref_app_logs_start_summary">Start logging from watch apps</string>
+    <string name="pref_app_logs_stop_summary">Stop logging from watch apps</string>
 </resources>

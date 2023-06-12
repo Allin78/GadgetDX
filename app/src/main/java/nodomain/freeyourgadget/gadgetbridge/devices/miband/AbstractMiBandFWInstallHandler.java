@@ -77,7 +77,11 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             return;
         }
 
-        if (!isSupportedDeviceType(device) || !device.isInitialized()) {
+        if (!isSupportedDeviceType(device)) {
+            installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_supported));
+            installActivity.setInstallEnabled(false);
+            return;
+        } else if (!device.isInitialized()) {
             installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_ready));
             installActivity.setInstallEnabled(false);
             return;
@@ -101,7 +105,7 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             return;
         }
         StringBuilder builder = new StringBuilder();
-        if (helper.getFirmwareType() != WATCHFACE && helper.getFirmwareType() != AGPS_UIHH) {
+        if (!helper.getFirmwareType().isWatchface() && !helper.getFirmwareType().isApp() && helper.getFirmwareType() != AGPS_UIHH) {
             if (helper.isSingleFirmware()) {
                 builder.append(getFwUpgradeNotice());
             } else {
@@ -120,6 +124,9 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
                 // TODO: set a UNKNOWN (question mark) button
             }
         }
+
+        installActivity.setPreview(helper.getPreview());
+
         installActivity.setInfoText(builder.toString());
         installActivity.setInstallItem(fwItem);
         installActivity.setInstallEnabled(true);
