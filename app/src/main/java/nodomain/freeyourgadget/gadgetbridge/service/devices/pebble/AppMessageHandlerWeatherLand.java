@@ -103,7 +103,7 @@ public class AppMessageHandlerWeatherLand extends AppMessageHandler {
         return (metric ? kelvin2celsius(kelvin) : kelvin2fahrenheit(kelvin)) + "\u00B0";
     }
 
-    private double kelvin2celsius(int kelvin) {
+    private int kelvin2celsius(int kelvin) {
         return kelvin - 273;
     }
 
