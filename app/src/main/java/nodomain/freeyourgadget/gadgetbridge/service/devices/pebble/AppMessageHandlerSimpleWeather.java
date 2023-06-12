@@ -16,11 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.pebble;
 
+import android.annotation.SuppressLint;
 import android.util.Pair;
 
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -72,8 +75,9 @@ public class AppMessageHandlerSimpleWeather extends AppMessageHandler {
         pairs.add(new Pair<>(KEY_ICON, getIconForConditionCode(weatherSpec.currentConditionCode)));
         pairs.add(new Pair<>(KEY_TEMPERATURE, getCurrentTemperature(weatherSpec.currentTemp)));
         pairs.add(new Pair<>(KEY_LOCATION, weatherSpec.location));
-        pairs.add(new Pair<>(KEY_R_TIME12, getTime(weatherSpec.timestamp, false)));
-        pairs.add(new Pair<>(KEY_R_TIME24, getTime(weatherSpec.timestamp, true)));
+        //pairs.add(new Pair<>(KEY_LOCATION, "TEST"));
+        pairs.add(new Pair<>(KEY_R_TIME12, getTime(false)));
+        pairs.add(new Pair<>(KEY_R_TIME24, getTime(true)));
         pairs.add(new Pair<>(KEY_LANGUAGE, "EN"));
         pairs.add(new Pair<>(KEY_DISCONNECTED_VIBES, 'N'));
         byte[] weatherMessage = mPebbleProtocol.encodeApplicationMessagePush(PebbleProtocol.ENDPOINT_APPLICATIONMESSAGE, mUUID, pairs, null);
@@ -90,24 +94,14 @@ public class AppMessageHandlerSimpleWeather extends AppMessageHandler {
         return (kelvin - 273) + "\u00B0C";
     }
 
-    private String getTime(int timeInMillis, Boolean h24) {
-        //Calendar.getInstance().timeInMillis / 1000
-        long hours = TimeUnit.MILLISECONDS.toHours(timeInMillis * 1000);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis * 1000);
-
-        if (!h24 && hours > 12) hours -= 12;
-        if (!h24 && hours == 0) hours = 12;
-
-        return padTime(hours) + ":" + padTime(minutes);
-    }
-
-    private String padTime(long time){
-        return String.format("%2s", time).replace(' ', '0');
+    private String getTime(Boolean h24) {
+        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat(h24 ? "HH:mm" :"hh:mm");
+        return dateFormat.format(new Date());
     }
 
     //Map ConditionCode to OWM Icon
     private String getIconForConditionCode(int conditionCode) {
-        String icon = null;
+         String icon = null;
         if (ArrayUtils.contains(d09,conditionCode)){
             icon = "09";
         }else if (ArrayUtils.contains(d10, conditionCode)){
