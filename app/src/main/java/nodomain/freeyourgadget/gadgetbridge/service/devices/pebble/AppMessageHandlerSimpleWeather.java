@@ -93,7 +93,6 @@ public class AppMessageHandlerSimpleWeather extends AppMessageHandler {
         return buf.array();
     }
 
-    //TODO: Fahrenheit!
     private String getCurrentTemperature(int kelvin) {
         boolean metric = Objects.equals(GBApplication.getPrefs().getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, "metric"), "metric");
 
@@ -107,8 +106,8 @@ public class AppMessageHandlerSimpleWeather extends AppMessageHandler {
         return kelvin - 273;
     }
 
-    private int kelvin2fahrenheit(int kelvin) {
-        return (int) Math.round(((9d / 5) * (kelvin - 273)) + 32);
+    private long kelvin2fahrenheit(int kelvin) {
+        return Math.round((9.0 / 5) * kelvin2celsius(kelvin) + 32);
     }
 
     private String getTime(Boolean h24) {
