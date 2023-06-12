@@ -27,9 +27,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
@@ -91,42 +95,55 @@ public class AppMessageHandlerSimpleWeather extends AppMessageHandler {
 
     //TODO: Fahrenheit!
     private String getCurrentTemperature(int kelvin) {
-        return (kelvin - 273) + "\u00B0C";
+        boolean metric = Objects.equals(GBApplication.getPrefs().getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, "metric"), "metric");
+
+        if (metric)
+            return kelvin2celsius(kelvin) + "\u00B0C";
+        else
+            return kelvin2fahrenheit(kelvin) + "\u00B0F";
+    }
+
+    private int kelvin2celsius(int kelvin) {
+        return kelvin - 273;
+    }
+
+    private int kelvin2fahrenheit(int kelvin) {
+        return (int) Math.round(((9d / 5) * (kelvin - 273)) + 32);
     }
 
     private String getTime(Boolean h24) {
-        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat(h24 ? "HH:mm" :"hh:mm");
+        @SuppressLint("SimpleDateFormat") DateFormat dateFormat = new SimpleDateFormat(h24 ? "HH:mm" : "hh:mm");
         return dateFormat.format(new Date());
     }
 
     //Map ConditionCode to OWM Icon
     private String getIconForConditionCode(int conditionCode) {
-         String icon = null;
-        if (ArrayUtils.contains(d09,conditionCode)){
+        String icon = null;
+        if (ArrayUtils.contains(d09, conditionCode)) {
             icon = "09";
-        }else if (ArrayUtils.contains(d10, conditionCode)){
+        } else if (ArrayUtils.contains(d10, conditionCode)) {
             icon = "10";
-        }else if (ArrayUtils.contains(d11, conditionCode)){
+        } else if (ArrayUtils.contains(d11, conditionCode)) {
             icon = "11";
-        }else if (ArrayUtils.contains(d13, conditionCode)){
+        } else if (ArrayUtils.contains(d13, conditionCode)) {
             icon = "13";
         } else if (ArrayUtils.contains(d50, conditionCode)) {
             icon = "50";
-        }else if(conditionCode == 800){
+        } else if (conditionCode == 800) {
             icon = "01";
-        }else if (conditionCode == 801){
+        } else if (conditionCode == 801) {
             icon = "02";
-        }else if (conditionCode == 802){
+        } else if (conditionCode == 802) {
             icon = "03";
-        }else if (conditionCode == 803 || conditionCode == 804){
+        } else if (conditionCode == 803 || conditionCode == 804) {
             icon = "04";
-        }else{
+        } else {
             icon = "01";
         }
         return icon + (isDay() ? 'd' : 'n');
     }
 
-    private boolean isDay(){
+    private boolean isDay() {
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         int hour = cal.get(Calendar.HOUR_OF_DAY);
