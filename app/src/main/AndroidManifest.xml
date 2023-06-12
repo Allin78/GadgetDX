@@ -358,7 +358,7 @@
             android:name=".externalevents.NotificationListener"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
@@ -372,7 +372,7 @@
         <receiver
             android:name=".externalevents.GenericWeatherReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="nodomain.freeyourgadget.gadgetbridge.ACTION_GENERIC_WEATHER" />
             </intent-filter>
@@ -381,14 +381,14 @@
         <receiver
             android:name=".externalevents.WeatherNotificationReceiver"
             android:enabled="true"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="ru.gelin.android.weather.notification.ACTION_WEATHER_UPDATE_2" />
             </intent-filter>
         </receiver>
 
         <activity android:name=".externalevents.WeatherNotificationConfig"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="ru.gelin.android.weather.notification.ACTION_WEATHER_SKIN_PREFERENCES" />
             </intent-filter>
@@ -397,7 +397,7 @@
         <receiver
             android:name=".externalevents.AutoStartReceiver"
             android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -421,14 +421,14 @@
 
         <receiver
             android:name=".service.receivers.GBMusicControlReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="nodomain.freeyourgadget.gadgetbridge.musiccontrol" />
             </intent-filter>
         </receiver>
         <receiver
             android:name=".service.receivers.GBCallControlReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="nodomain.freeyourgadget.gadgetbridge.callcontrol" />
             </intent-filter>
@@ -436,7 +436,7 @@
         <receiver
             android:name=".database.PeriodicExporter"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="true" />
         <!--
             forcing the DebugActivity to portrait mode avoids crashes with the progress
             dialog when changing orientation
@@ -581,7 +581,7 @@
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.screenshot_provider"
-            android:exported="false"
+            android:exported="true"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
@@ -591,7 +591,7 @@
         <receiver
             android:name=".SleepAlarmWidget"
             android:label="@string/appwidget_sleep_alarm_widget_label"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="nodomain.freeyourgadget.gadgetbridge.SLEEP_ALARM_WIDGET_CLICK" />
@@ -604,7 +604,7 @@
         <receiver
             android:name=".Widget"
             android:label="@string/widget_listing_label"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
@@ -624,14 +624,14 @@
             android:theme="@style/Theme.AppCompat.Light.Dialog" />
 
         <activity android:name=".activities.WidgetConfigurationActivity"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
 
         <activity android:name=".activities.SleepAlarmWidgetConfigurationActivity"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -732,7 +732,7 @@
             android:label="@string/gpx_receiver_activity_title"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
