@@ -1691,7 +1691,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
             if ((dataTypes & RecordedDataTypes.TYPE_SLEEP_RESPIRATORY_RATE) != 0 && coordinator.supportsSleepRespiratoryRate()) {
                 this.fetchOperationQueue.add(new FetchSleepRespiratoryRateOperation(this));
-            } 
+            }
         }
 
         final AbstractFetchOperation nextOperation = this.fetchOperationQueue.poll();

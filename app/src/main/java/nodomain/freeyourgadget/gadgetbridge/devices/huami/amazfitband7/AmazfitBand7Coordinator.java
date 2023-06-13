@@ -60,9 +60,4 @@ public class AmazfitBand7Coordinator extends Huami2021Coordinator {
     public AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context) {
         return new AmazfitBand7FWInstallHandler(uri, context);
     }
-
-    @Override
-    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
-        return false;
-    }
 }

@@ -65,18 +65,14 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
 
     @Override
     public InstallHandler findInstallHandler(final Uri uri, final Context context) {
-        if (supportsAgpsUpdates()) {
-            final ZeppOsAgpsInstallHandler agpsInstallHandler = new ZeppOsAgpsInstallHandler(uri, context);
-            if (agpsInstallHandler.isValid()) {
-                return agpsInstallHandler;
-            }
+        final ZeppOsAgpsInstallHandler agpsInstallHandler = new ZeppOsAgpsInstallHandler(uri, context);
+        if (agpsInstallHandler.isValid()) {
+            return agpsInstallHandler;
         }
 
-        if (supportsGpxUploads()) {
-            final ZeppOsGpxRouteInstallHandler gpxRouteInstallHandler = new ZeppOsGpxRouteInstallHandler(uri, context);
-            if (gpxRouteInstallHandler.isValid()) {
-                return gpxRouteInstallHandler;
-            }
+        final ZeppOsGpxRouteInstallHandler gpxRouteInstallHandler = new ZeppOsGpxRouteInstallHandler(uri, context);
+        if (gpxRouteInstallHandler.isValid()) {
+            return gpxRouteInstallHandler;
         }
 
         final AbstractHuami2021FWInstallHandler handler = createFwInstallHandler(uri, context);
@@ -378,6 +374,7 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         // Developer
         //
         settings.add(R.xml.devicesettings_header_developer);
+        settings.add(R.xml.devicesettings_supported_features);
         if (ZeppOsLogsService.isSupported(getPrefs(device))) {
             settings.add(R.xml.devicesettings_app_logs_start_stop);
         }
@@ -445,11 +442,19 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         return false;
     }
 
-    public boolean supportsAgpsUpdates() {
+    public final boolean supportsAgpsUpdates(final GBDevice device) {
+        return supportsFeature(device, "agps_updates", supportsAgpsUpdatesDefault());
+    }
+
+    protected boolean supportsAgpsUpdatesDefault() {
         return false;
     }
 
-    public boolean supportsGpxUploads() {
+    public final boolean supportsGpxUploads(final GBDevice device) {
+        return supportsFeature(device, "gpx_uploads", supportsGpxUploadsDefault());
+    }
+
+    protected boolean supportsGpxUploadsDefault() {
         return false;
     }
 
@@ -485,8 +490,12 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         return supportsConfig(device, ZeppOsConfigService.ConfigArg.SCREEN_AUTO_BRIGHTNESS);
     }
 
-    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
-        return ZeppOsPhoneService.isSupported(getPrefs(device));
+    public final boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+        return supportsFeature(device, "bluetooth_phone_calls", supportsBluetoothPhoneCallsDefault());
+    }
+
+    protected boolean supportsBluetoothPhoneCallsDefault() {
+        return false;
     }
 
     public boolean supportsShortcutCards(final GBDevice device) {

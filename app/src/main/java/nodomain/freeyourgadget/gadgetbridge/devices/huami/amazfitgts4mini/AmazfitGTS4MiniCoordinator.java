@@ -60,9 +60,4 @@ public class AmazfitGTS4MiniCoordinator extends Huami2021Coordinator {
     public AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context) {
         return new AmazfitGTS4MiniFWInstallHandler(uri, context);
     }
-
-    @Override
-    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
-        return false;
-    }
 }

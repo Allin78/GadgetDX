@@ -655,6 +655,17 @@
         <!-- empty array, will be requested from band -->
     </string-array>
 
+    <string-array name="pref_supported_feature_override">
+        <item>@string/pref_device_default</item>
+        <item>@string/pref_force_enable</item>
+        <item>@string/pref_force_disable</item>
+    </string-array>
+    <string-array name="pref_supported_feature_override_values">
+        <item>device_default</item>
+        <item>force_enable</item>
+        <item>force_disable</item>
+    </string-array>
+
     <string-array name="pref_workout_detection_categories">
         <item>@string/activity_type_walking</item>
         <item>@string/activity_type_indoor_walking</item>

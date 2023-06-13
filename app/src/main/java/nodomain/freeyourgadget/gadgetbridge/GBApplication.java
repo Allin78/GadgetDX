@@ -1215,6 +1215,10 @@ public class GBApplication extends Application {
         return context.getSharedPreferences("devicesettings_" + deviceIdentifier, Context.MODE_PRIVATE);
     }
 
+    public static Prefs getDevicePrefs(final GBDevice gbDevice) {
+        return new Prefs(getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
+    }
+
     public static void deleteDeviceSpecificSharedPrefs(String deviceIdentifier) {
         if (deviceIdentifier == null || deviceIdentifier.isEmpty()) {
             return;

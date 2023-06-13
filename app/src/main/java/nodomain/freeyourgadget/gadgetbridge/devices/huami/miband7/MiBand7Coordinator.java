@@ -60,9 +60,4 @@ public class MiBand7Coordinator extends Huami2021Coordinator {
     public AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context) {
         return new MiBand7FWInstallHandler(uri, context);
     }
-
-    @Override
-    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
-        return false;
-    }
 }

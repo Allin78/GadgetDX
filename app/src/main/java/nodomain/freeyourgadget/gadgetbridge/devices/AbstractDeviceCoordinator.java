@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -453,5 +454,42 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
 
     public boolean supportsNavigation() {
         return false;
+    }
+
+    /**
+     * Checks if a device supports a feature. It's expected that the feature preference key is called
+     * "pref_feature_override_{feature}", with a value from the enum {@link FeatureOverride}. This
+     * allows for a device-default to be specified by the coordinator, but for users to override the
+     * support, either by forcing enabling or disabling it.
+     *
+     * @param gbDevice the device
+     * @param feature the feature to check support for
+     * @param deviceDefault the device default support for this feature
+     * @return whether the device is supposed to support this feature
+     */
+    public boolean supportsFeature(final GBDevice gbDevice, final String feature, final boolean deviceDefault) {
+        final Prefs prefs = GBApplication.getDevicePrefs(gbDevice);
+        final String overridePrefKey = "pref_feature_override_" + feature;
+        final FeatureOverride override = FeatureOverride.valueOf(
+                prefs.getString(overridePrefKey, "device_default").toUpperCase(Locale.ROOT)
+        );
+
+        switch (override) {
+            case DEVICE_DEFAULT:
+                return deviceDefault;
+            case FORCE_ENABLE:
+                return true;
+            case FORCE_DISABLE:
+                return false;
+            default:
+                LOG.error("Unexpected override {}", override);
+                return deviceDefault;
+        }
+    }
+
+    enum FeatureOverride {
+        DEVICE_DEFAULT,
+        FORCE_ENABLE,
+        FORCE_DISABLE,
     }
 }

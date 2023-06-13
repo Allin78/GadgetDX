@@ -67,12 +67,12 @@ public class AmazfitGTS4Coordinator extends Huami2021Coordinator {
     }
 
     @Override
-    public boolean supportsAgpsUpdates() {
+    protected boolean supportsAgpsUpdatesDefault() {
         return true;
     }
 
     @Override
-    public boolean supportsGpxUploads() {
+    protected boolean supportsGpxUploadsDefault() {
         return true;
     }
 
@@ -97,7 +97,7 @@ public class AmazfitGTS4Coordinator extends Huami2021Coordinator {
     }
 
     @Override
-    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+    public boolean supportsBluetoothPhoneCallsDefault() {
         return true;
     }
 }

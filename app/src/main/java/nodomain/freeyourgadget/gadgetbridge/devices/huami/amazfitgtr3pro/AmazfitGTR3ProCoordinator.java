@@ -62,12 +62,12 @@ public class AmazfitGTR3ProCoordinator extends Huami2021Coordinator {
     }
 
     @Override
-    public boolean supportsAgpsUpdates() {
+    protected boolean supportsAgpsUpdatesDefault() {
         return true;
     }
 
     @Override
-    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+    public boolean supportsBluetoothPhoneCallsDefault() {
         return true;
     }
 }

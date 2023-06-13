@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceScreen
+        android:icon="@drawable/ic_developer_mode"
+        android:key="pref_screen_supported_features"
+        android:summary="@string/supported_features_summary"
+        android:title="@string/supported_features">
+
+        <ListPreference
+            android:defaultValue="device_default"
+            android:entries="@array/pref_supported_feature_override"
+            android:entryValues="@array/pref_supported_feature_override_values"
+            android:icon="@drawable/ic_gps_location"
+            android:key="pref_feature_override_agps_updates"
+            android:summary="%s"
+            android:title="@string/kind_agps_bundle" />
+
+        <ListPreference
+            android:defaultValue="device_default"
+            android:entries="@array/pref_supported_feature_override"
+            android:entryValues="@array/pref_supported_feature_override_values"
+            android:icon="@drawable/ic_map"
+            android:key="pref_feature_override_gpx_uploads"
+            android:summary="%s"
+            android:title="@string/kind_gpx_route" />
+
+        <ListPreference
+            android:defaultValue="device_default"
+            android:entries="@array/pref_supported_feature_override"
+            android:entryValues="@array/pref_supported_feature_override_values"
+            android:icon="@drawable/ic_phone"
+            android:key="pref_feature_override_bluetooth_phone_calls"
+            android:summary="%s"
+            android:title="@string/bluetooth_calls" />
+    </PreferenceScreen>
+</androidx.preference.PreferenceScreen>

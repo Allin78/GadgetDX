@@ -87,7 +87,7 @@ public class ZeppOsAgpsInstallHandler implements InstallHandler {
             return;
         }
         final Huami2021Coordinator huami2021coordinator = (Huami2021Coordinator) coordinator;
-        if (!huami2021coordinator.supportsAgpsUpdates()) {
+        if (!huami2021coordinator.supportsAgpsUpdates(device)) {
             installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_supported));
             installActivity.setInstallEnabled(false);
             return;
