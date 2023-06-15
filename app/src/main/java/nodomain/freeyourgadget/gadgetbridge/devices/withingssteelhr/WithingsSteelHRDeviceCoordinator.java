@@ -104,7 +104,7 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice gbDevice) {
         return 3;
     }
 
@@ -129,7 +129,7 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(GBDevice gbDevice) {
         return false;
     }
 

@@ -399,7 +399,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
 
         try {
             TransactionBuilder builder = createTransactionBuilder("conversation");
-            builder.setGattCallback(this);
+            builder.setCallback(this);
             BluetoothGattCharacteristic characteristic = getCharacteristic(WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID);
             if (characteristic == null) {
                 logger.info("Characteristic with UUID " + WithingsUUID.WITHINGS_WRITE_CHARACTERISTIC_UUID + " not found.");
