@@ -281,6 +281,11 @@ public class QHybridCoordinator extends AbstractBLEDeviceCoordinator {
         };
     }
 
+    @Override
+    public Class<? extends Activity> getCalibrationActivity() {
+        return CalibrationActivity.class;
+    }
+
     private boolean isHybridHR() {
         List<GBDevice> devices = GBApplication.app().getDeviceManager().getSelectedDevices();
         for(GBDevice device : devices){
