@@ -19,7 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami;
 
-import android.app.Notification;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
@@ -57,9 +56,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -88,6 +89,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLift;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLiftSensitivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.DisconnectNotificationSetting;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
@@ -115,7 +117,19 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
-import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.AbstractFetchOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchHeartRateManualOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchHeartRateMaxOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchHeartRateRestingOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchPaiOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSleepRespiratoryRateOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSpo2NormalOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchSportsSummaryOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressAutoOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.FetchStressManualOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsCannedMessagesService;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -201,10 +215,6 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_TIMEFORMAT;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_USER_FITNESS_GOAL_NOTIFICATION;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_WEARLOCATION;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.CANNED_MESSAGES_CMD_REPLY_SMS;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.CANNED_MESSAGES_CMD_REPLY_SMS_ACK;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.CANNED_MESSAGES_CMD_REPLY_SMS_ALLOW;
-import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.CHUNKED2021_ENDPOINT_CANNED_MESSAGES;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.WORKOUT_GPS_FLAG_POSITION;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service.WORKOUT_GPS_FLAG_STATUS;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst.PREF_BUTTON_ACTION_SELECTION_BROADCAST;
@@ -325,6 +335,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     protected Huami2021ChunkedEncoder huami2021ChunkedEncoder;
     protected Huami2021ChunkedDecoder huami2021ChunkedDecoder;
+
+    private final Queue<AbstractFetchOperation> fetchOperationQueue = new LinkedList<>();
 
     public HuamiSupport() {
         this(LOG);
@@ -831,7 +843,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
-        int maxAlarms = coordinator.getAlarmSlotCount();
+        int maxAlarms = coordinator.getAlarmSlotCount(gbDevice);
 
         try {
             TransactionBuilder builder = performInitialized("Set alarm");
@@ -1643,11 +1655,57 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     @Override
     public void onFetchRecordedData(int dataTypes) {
-        try {
-            new FetchActivityOperation(this).perform();
-        } catch (IOException ex) {
-            LOG.error("Unable to fetch activity data", ex);
+        final HuamiCoordinator coordinator = getCoordinator();
+
+        if ((dataTypes & RecordedDataTypes.TYPE_ACTIVITY) != 0) {
+            this.fetchOperationQueue.add(new FetchActivityOperation(this));
         }
+
+        if ((dataTypes & RecordedDataTypes.TYPE_GPS_TRACKS) != 0 && coordinator.supportsActivityTracks()) {
+            this.fetchOperationQueue.add(new FetchSportsSummaryOperation(this, 1));
+        }
+
+        if ((dataTypes & RecordedDataTypes.TYPE_DEBUGLOGS) != 0 && coordinator.supportsDebugLogs()) {
+            this.fetchOperationQueue.add(new HuamiFetchDebugLogsOperation(this));
+        }
+
+        if (Huami2021Coordinator.experimentalFeatures(getDevice())) {
+            if ((dataTypes & RecordedDataTypes.TYPE_SPO2) != 0 && coordinator.supportsSpo2()) {
+                this.fetchOperationQueue.add(new FetchSpo2NormalOperation(this));
+            }
+
+            if ((dataTypes & RecordedDataTypes.TYPE_STRESS) != 0 && coordinator.supportsStressMeasurement()) {
+                this.fetchOperationQueue.add(new FetchStressAutoOperation(this));
+                this.fetchOperationQueue.add(new FetchStressManualOperation(this));
+            }
+
+            if ((dataTypes & RecordedDataTypes.TYPE_HEART_RATE) != 0 && coordinator.supportsHeartRateStats()) {
+                this.fetchOperationQueue.add(new FetchHeartRateManualOperation(this));
+                this.fetchOperationQueue.add(new FetchHeartRateMaxOperation(this));
+                this.fetchOperationQueue.add(new FetchHeartRateRestingOperation(this));
+            }
+
+            if ((dataTypes & RecordedDataTypes.TYPE_PAI) != 0 && coordinator.supportsPai()) {
+                this.fetchOperationQueue.add(new FetchPaiOperation(this));
+            }
+
+            if ((dataTypes & RecordedDataTypes.TYPE_SLEEP_RESPIRATORY_RATE) != 0 && coordinator.supportsSleepRespiratoryRate()) {
+                this.fetchOperationQueue.add(new FetchSleepRespiratoryRateOperation(this));
+            } 
+        }
+
+        final AbstractFetchOperation nextOperation = this.fetchOperationQueue.poll();
+        if (nextOperation != null) {
+            try {
+                nextOperation.perform();
+            } catch (final IOException e) {
+                LOG.error("Unable to fetch recorded data", e);
+            }
+        }
+    }
+
+    public AbstractFetchOperation getNextFetchOperation() {
+        return fetchOperationQueue.poll();
     }
 
     @Override
@@ -2235,8 +2293,11 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         } else if (HuamiService.UUID_CHARACTERISTIC_3_CONFIGURATION.equals(characteristicUUID)) {
             handleConfigurationInfo(characteristic.getValue());
             return true;
-        } else if (HuamiService.UUID_CHARACTERISTIC_CHUNKEDTRANSFER_2021_READ.equals(characteristicUUID) && huami2021ChunkedDecoder != null) {
-            huami2021ChunkedDecoder.decode(characteristic.getValue());
+        } else if (HuamiService.UUID_CHARACTERISTIC_CHUNKEDTRANSFER_2021_READ.equals(characteristicUUID)) {
+            handleChunked(characteristic.getValue());
+            return true;
+        } else if (HuamiService.UUID_CHARACTERISTIC_RAW_SENSOR_DATA.equals(characteristicUUID)) {
+            handleRawSensorData(characteristic.getValue());
             return true;
         } else {
             LOG.info("Unhandled characteristic changed: " + characteristicUUID);
@@ -2391,6 +2452,47 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             }
         } else {
             LOG.warn("unknown response got from configuration request " + GB.hexdump(value, 0, -1));
+        }
+    }
+
+    private void handleChunked(final byte[] value) {
+        switch (value[0]) {
+            case 0x03:
+                if (huami2021ChunkedDecoder != null) {
+                    final boolean needsAck = huami2021ChunkedDecoder.decode(value);
+                    if (needsAck) {
+                        sendChunkedAck();
+                    }
+                } else {
+                    LOG.warn("Got chunked payload, but decoder is null");
+                }
+                return;
+            case 0x04:
+                final byte handle = value[2];
+                final byte count = value[4];
+                LOG.info("Got chunked ack, handle={}, count={}", handle, count);
+                // TODO: We should probably update the handle and count on the encoder
+                return;
+            default:
+                LOG.warn("Unhandled chunked payload of type {}", value[0]);
+        }
+    }
+
+    public void sendChunkedAck() {
+        if (characteristicChunked2021Read == null) {
+            LOG.error("Chunked read characteristic is null, can't send ack");
+            return;
+        }
+
+        final byte handle = huami2021ChunkedDecoder.getLastHandle();
+        final byte count = huami2021ChunkedDecoder.getLastCount();
+
+        try {
+            final TransactionBuilder builder = performInitialized("send chunked ack");
+            builder.write(characteristicChunked2021Read, new byte[] {0x04, 0x00, handle, 0x01, count});
+            builder.queue(getQueue());
+        } catch (final Exception e) {
+            LOG.error("Failed to send chunked ack", e);
         }
     }
 
@@ -2613,7 +2715,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     private HuamiSupport sendCalendarEventsAsAlarms(TransactionBuilder builder) {
         DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
-        int maxAlarms = coordinator.getAlarmSlotCount();
+        int maxAlarms = coordinator.getAlarmSlotCount(gbDevice);
         int availableSlots = Math.min(prefs.getInt(PREF_RESERVER_ALARMS_CALENDAR, 0), maxAlarms);
 
         if (availableSlots <= 0) {
@@ -4081,7 +4183,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     protected void setMtu(final int mtu) {
         final Prefs prefs = getDevicePrefs();
-        if (!prefs.getBoolean(PREF_ALLOW_HIGH_MTU, false)) {
+        if (!prefs.getBoolean(PREF_ALLOW_HIGH_MTU, true)) {
             LOG.warn("High MTU is not allowed, ignoring");
             return;
         }
@@ -4130,17 +4232,17 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
             return;
         }
 
-        if (type == CHUNKED2021_ENDPOINT_CANNED_MESSAGES && false) { // unsafe for now, disabled
+        if (type == ZeppOsCannedMessagesService.ENDPOINT && false) { // unsafe for now, disabled
             LOG.debug("got command for SMS reply");
             if (payload[0] == 0x0d) {
                 try {
                     TransactionBuilder builder = performInitialized("allow sms reply");
-                    writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CANNED_MESSAGES, new byte[]{(byte) CANNED_MESSAGES_CMD_REPLY_SMS_ALLOW, 0x01}, false);
+                    writeToChunked2021(builder, ZeppOsCannedMessagesService.ENDPOINT, new byte[]{(byte) ZeppOsCannedMessagesService.CMD_REPLY_SMS_ALLOW, 0x01}, false);
                     builder.queue(getQueue());
                 } catch (IOException e) {
                     LOG.error("Unable to allow sms reply");
                 }
-            } else if (payload[0] == CANNED_MESSAGES_CMD_REPLY_SMS) {
+            } else if (payload[0] == ZeppOsCannedMessagesService.CMD_REPLY_SMS) {
                 String phoneNumber = null;
                 String smsReply = null;
                 for (int i = 1; i < payload.length; i++) {
@@ -4161,8 +4263,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                     evaluateGBDeviceEvent(devEvtNotificationControl);
                     try {
                         TransactionBuilder builder = performInitialized("ack sms reply");
-                        byte[] ackSentCommand = new byte[]{CANNED_MESSAGES_CMD_REPLY_SMS_ACK, 0x01};
-                        writeToChunked2021(builder, CHUNKED2021_ENDPOINT_CANNED_MESSAGES, ackSentCommand, false);
+                        byte[] ackSentCommand = new byte[]{ZeppOsCannedMessagesService.CMD_REPLY_SMS_ACK, 0x01};
+                        writeToChunked2021(builder, ZeppOsCannedMessagesService.ENDPOINT, ackSentCommand, false);
                         builder.queue(getQueue());
                     } catch (IOException e) {
                         LOG.error("Unable to ack sms reply");
@@ -4170,5 +4272,13 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
                 }
             }
         }
+    }
+
+    protected void setRawSensor(final boolean enable) {
+        LOG.info("setRawSensor not implemented for HuamiSupport");
+    }
+
+    protected void handleRawSensorData(final byte[] value) {
+        LOG.warn("handleRawSensorData not implemented for HuamiSupport");
     }
 }

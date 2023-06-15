@@ -41,9 +41,11 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SCREEN_OFFLINE_VOICE = "pref_screen_offline_voice";
     public static final String PREF_SCREEN_WIFI_HOTSPOT = "pref_screen_wifi_hotspot";
     public static final String PREF_SCREEN_FTP_SERVER = "pref_screen_ftp_server";
+    public static final String PREF_SCREEN_MORNING_UPDATES = "pref_morning_updates";
 
     public static final String PREF_LANGUAGE = "language";
     public static final String PREF_LANGUAGE_AUTO = "auto";
+    public static final String PREF_DEVICE_REGION = "device_region";
     public static final String PREF_DATEFORMAT = "dateformat";
     public static final String PREF_TIMEFORMAT = "timeformat";
     public static final String PREF_TIMEFORMAT_24H = "24h";
@@ -221,6 +223,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_FAKE_RING_DURATION = "fake_ring_duration";
 
     public static final String PREF_WORLD_CLOCKS = "pref_world_clocks";
+    public static final String PREF_CONTACTS = "pref_contacts";
 
     public static final String PREF_ANTILOST_ENABLED = "pref_antilost_enabled";
     public static final String PREF_HYDRATION_SWITCH = "pref_hydration_switch";
@@ -234,11 +237,26 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_BT_CONNECTED_ADVERTISEMENT = "bt_connected_advertisement";
     public static final String PREF_TRANSLITERATION_LANGUAGES = "pref_transliteration_languages";
 
+    public static final String PREF_BLUETOOTH_CALLS_PAIR = "bluetooth_calls_pair";
+    public static final String PREF_BLUETOOTH_CALLS_ENABLED = "bluetooth_calls_enabled";
+    public static final String PREF_DISPLAY_CALLER = "display_caller";
+    public static final String PREF_NOTIFICATION_DELAY_CALLS = "notification_delay_calls";
+
     public static final String WIFI_HOTSPOT_SSID = "wifi_hotspot_ssid";
     public static final String WIFI_HOTSPOT_PASSWORD = "wifi_hotspot_password";
     public static final String WIFI_HOTSPOT_START = "wifi_hotspot_start";
     public static final String WIFI_HOTSPOT_STOP = "wifi_hotspot_stop";
     public static final String WIFI_HOTSPOT_STATUS = "wifi_hotspot_status";
+
+    public static final String PREF_APP_LOGS_START = "pref_app_logs_start";
+    public static final String PREF_APP_LOGS_STOP = "pref_app_logs_stop";
+
+    public static final String MORNING_UPDATES_ENABLED = "morning_updates_enabled";
+    public static final String MORNING_UPDATES_CATEGORIES_SORTABLE = "morning_updates_categories";
+
+    public static final String SHORTCUT_CARDS_SORTABLE = "shortcut_cards_sortable";
+
+    public static final String PREF_WATCHFACE = "watchface";
 
     public static final String FTP_SERVER_ROOT_DIR = "ftp_server_root_dir";
     public static final String FTP_SERVER_ADDRESS = "ftp_server_address";
@@ -337,4 +355,6 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HOURLY_CHIME_ENABLE = "hourly_chime_enable";
     public static final String PREF_HOURLY_CHIME_START = "hourly_chime_start";
     public static final String PREF_HOURLY_CHIME_END = "hourly_chime_end";
+
+    public static final String PREF_VOICE_SERVICE_LANGUAGE = "voice_service_language";
 }

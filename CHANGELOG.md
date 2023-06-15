@@ -1,20 +1,70 @@
 ### Changelog
 
-#### Next Version
+#### Next Version (WIP)
 
-* Add Croatian transliterator
+* Amazfit GTR 3/GTS 3/GTR 3 Pro: Enable AGPS Updates
+* Amazfit T-Rex 2: Enable AGPS updates and gpx route upload
+* Bangle.js: Add message size limitation to Calendar and Messages
+* Bangle.js: Send more weather data to watch
+* Bangle.js: Allow an activity sample to have a timestamp
+* Bangle.js: Bump flavor target SDK version to 31
+* Bangle.js: Fix convertion of emoji/unicode to bitmap without width/height
+* Bangle.js: Fix location listener not being cleaned up when waiting for reconnect
+* Bangle.js: Fix memory leak from HTTP requests
+* Bangle.js: Fix return to applications management activity after having opened another window
+* Bangle.js: Set default value for GPS event interval to 1 second
+* Bangle.js: Support navigation instructions
+* Fossil/Skagen Hybrids: Add support for ultraviolet index and rain probability
+* Fossil/Skagen Hybrids: Allow launching the calibration activity on any Gadgetbridge variant
+* InfiniTime: Fix weather expiry time
+* InfiniTime: Support navigation instructions
+* Mi Band 6: Allow making device discoverable via Bluetooth when connected
+* Mi Band 7: Add preference to display call contact information
+* Zepp OS: Add gpx route file upload
+* Zepp OS: Add watch app logs developer option
+* Zepp OS: Display watchface and app preview on install
+* Zepp OS: Fix update operations on Zepp OS 2.1+
+* Zepp OS: Manage contacts on watch
+* Zepp OS: Start new GPX segments on pause/resume
+* Zepp OS: Support flashing zab files
+* App Manager: Fix cached apps sorting
+* App Manager: Hide drag handle if app reorder is not supported
+* App Manager: Add confirmation before deleting app
+* Add menus to share GPX, raw summary, raw details
+* Debug Activity: Allow pairing current device as companion
+* Fix some null pointer exception crashes
+* Intent API: Add command to set device mac address
+* Intent API: Add dataTypes parameter for activity sync
+* Intent API: Add debug actions for notifications and incoming calls
+* OsmAnd: Add support for navigation instructions
+* Scrape navigation instructions from Google Maps notifications
+* Fix transliteration returning non-ASCII characters
+* Enable "allow high MTU" setting by default
+
+#### 0.74.0
+* Initial support for Amazfit GTR 3 Pro
+* Initial support for Sony WH-1000XM5
 * Amazfit Bip U: Remove alarm snooze option
 * Amazfit GTR 4 / GTS 4: Add watch Wi-Fi Hotspot and FTP Server
-* Amazfit GTR 4: Whitelist fw 3.18.1.1 diff from 3.17.0.2
+* Amazfit GTR 4 / GTS 4: Perform and receive phone calls on watch
 * Amazfit GTS 2 Mini: Add missing alexa menu item
 * Bangle.js: Fix updating timezone in settings.json if the timezone is zero
-* Fix restoring app notification/pebble blacklist preferences on import
+* Fossil/Skagen Hybrids: Pair watch to phone, fixes repeating confirmation request
 * Huami: Implement repeated activity fetching
 * Sony WH-1000XM4: Add speak-to-chat
-* Zepp OS: Add config to keep screen on during workout
+* Sony Headphones: Add button modes help
+* Zepp OS: Add shortcut cards preference
+* Zepp OS: Add support for morning updates
+* Zepp OS: Add preference to keep screen on during workout
 * Zepp OS: Add preference for camera remote
 * Zepp OS: Fix activate display upon lift wrist smart mode
+* Zepp OS: Fix Cards and MI AI display item and shortcuts
+* Zepp OS: Fix setting of control center
 * Zepp OS: Fix setting of unknown configuration values
+* Zepp OS: Set watchface from phone
+* Add Croatian transliterator
+* Fix restoring app notification/pebble blacklist preferences on import
+* Cache notifications while devices are out of range (opt-in)
 
 #### 0.73.0
 * Initial support for Amazfit T-Rex 2

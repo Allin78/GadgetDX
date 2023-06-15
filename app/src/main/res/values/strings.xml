@@ -159,6 +159,7 @@
     <string name="fw_upgrade_notice_amazfit_gts4">You are about to install the %s firmware on your Amazfit GTS 4.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gts4_mini">You are about to install the %s firmware on your Amazfit GTS 4 Mini.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gtr3">You are about to install the %s firmware on your Amazfit GTR 3.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
+    <string name="fw_upgrade_notice_amazfit_gtr3_pro">You are about to install the %s firmware on your Amazfit GTR 3 Pro.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_gtr4">You are about to install the %s firmware on your Amazfit GTR 4.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_trex2">You are about to install the %s firmware on your Amazfit T-Rex 2.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
     <string name="fw_upgrade_notice_amazfit_band7">You are about to install the %s firmware on your Amazfit Band 7.\n\nYour band will reboot after installing the .zip file.\n\nPROCEED AT YOUR OWN RISK!</string>
@@ -220,6 +221,20 @@
     <string name="pref_title_notifications_call">Phone Calls</string>
     <string name="pref_title_notification_delay_calls">Call notification delay</string>
     <string name="pref_summary_notification_delay_calls">Delay before sending incoming call notifications to the device, in seconds.</string>
+    <string name="pref_summary_receive_calls_watch">Perform and receive calls directly on the watch</string>
+    <string name="bluetooth_calls">Bluetooth calls</string>
+    <string name="bluetooth_calls_pairing">Bluetooth calls pairing</string>
+    <string name="bluetooth_calls_settings">Bluetooth calls settings</string>
+    <string name="pref_display_caller_title">Show contact information</string>
+    <string name="pref_display_caller_summary">Display phone number or name for incoming calls</string>
+    <string name="pref_pair_bluetooth_calls_title">Pair for bluetooth calls</string>
+    <string name="pref_pair_bluetooth_calls_summary">Click here to start the pairing process</string>
+    <string name="pref_pair_bluetooth_calls_help_title">How to receive bluetooth calls</string>
+    <string name="pref_pair_bluetooth_calls_help_summary">In order to receive bluetooth calls, you need to pair your phone with a second instance of the watch.</string>
+    <string name="pref_pair_bluetooth_calls_help_1">1. Tap the button below to start the pairing process.</string>
+    <string name="pref_pair_bluetooth_calls_help_2">2. Go to your phone\'s bluetooth settings, and pair with the new device that will show up (similar name to your current watch, but with a suffix, eg. \"Amazfit GTR 4 - AFC8\".</string>
+    <string name="pref_pair_bluetooth_calls_help_3">3. Enable the "Bluetooth calls" setting below.</string>
+    <string name="pref_pair_bluetooth_calls_help_warning">WARNING: If you enable bluetooth calls without pairing with the second instance, call notifications might not work as expected.</string>
     <string name="pref_title_support_voip_calls">Enable VoIP app calls</string>
     <string name="pref_title_ping_tone">Ping tone</string>
     <string name="pref_title_notifications_sms">SMS</string>
@@ -233,6 +248,8 @@
     <string name="pref_summary_notifications_ignore_low_priority">Do not send low and minimum priority notifications to the watch</string>
     <string name="pref_title_notification_prefer_long_text">Prefer long notification text</string>
     <string name="pref_summary_notification_prefer_long_text">If available, send the long notification text to the device</string>
+    <string name="pref_title_notification_cache_while_disconnected">Cache while out of range</string>
+    <string name="pref_summary_notification_cache_while_disconnected">Send missed notifications when a device reconnects after being out of range</string>
     <string name="pref_title_notification_filter">Do Not Disturb</string>
     <string name="pref_summary_notification_filter">Block all notifications when Do Not Disturb is enabled on the phone</string>
     <string name="pref_title_notification_media_ignores_application_list">Media notifications ignore app list</string>
@@ -307,6 +324,7 @@
     <string name="pref_pebble_privacy_mode_content">Shift the notification text off-screen</string>
     <string name="pref_pebble_privacy_mode_complete">Show only the notification icon</string>
     <string name="pref_header_location">Location</string>
+    <string name="pref_header_navigation">Navigation</string>
     <string name="pref_title_location_aquire">Acquire location</string>
     <string name="pref_title_location_latitude">Latitude</string>
     <string name="pref_title_location_longitude">Longitude</string>
@@ -467,6 +485,10 @@
     <string name="pref_agps_expire_time">AGPS Expire Time</string>
     <string name="pref_camera_remote_title">Camera Remote</string>
     <string name="pref_camera_remote_summary">Allows the watch to trigger the phone\'s camera</string>
+    <string name="pref_morning_updates_title">Morning Updates</string>
+    <string name="pref_morning_updates_summary">Display updates every morning</string>
+    <string name="pref_morning_updates_categories_title">Morning Updates Categories</string>
+    <string name="pref_morning_updates_categories_summary">List of categories to display every morning</string>
     <string name="pref_workout_start_on_phone_title">Fitness app tracking</string>
     <string name="pref_workout_start_on_phone_summary">Start/stop fitness app tracking on phone when a GPS workout is started on the band</string>
     <string name="pref_workout_send_gps_title">Send GPS during workout</string>
@@ -647,8 +669,11 @@
     <string name="title_activity_charts">Activity and Sleep</string>
     <string name="title_activity_set_alarm">Configure alarms</string>
     <string name="title_activity_set_reminders">Configure reminders</string>
+    <string name="title_activity_set_contacts">Configure contacts</string>
     <string name="pref_world_clocks_title">World Clocks</string>
     <string name="pref_world_clocks_summary">Configure clocks for other timezones</string>
+    <string name="pref_contacts_title">Contacts</string>
+    <string name="pref_contacts_summary">Configure contacts on the watch</string>
     <string name="controlcenter_start_configure_alarms">Configure alarms</string>
     <string name="controlcenter_start_configure_reminders">Configure reminders</string>
     <string name="reminder_repeat">Repeat</string>
@@ -669,6 +694,9 @@
     <string name="reminder_delete_confirm_description">Are you sure you want to delete the reminder?</string>
     <string name="reminder_no_free_slots_title">No free slots</string>
     <string name="reminder_no_free_slots_description">The device has no free slots for reminders (total slots: %1$s)</string>
+    <string name="contact_delete_confirm_title">Delete contact</string>
+    <string name="contact_delete_confirm_description">Are you sure you want to delete \'%1$s\'?</string>
+    <string name="contact_no_free_slots_description">The device has no free slots for contacts (total slots: %1$s)</string>
     <string name="world_clock_delete_confirm_title">Delete \'%1$s\'</string>
     <string name="world_clock_delete_confirm_description">Are you sure you want to delete the world clock?</string>
     <string name="world_clock_no_free_slots_title">No free slots</string>
@@ -679,6 +707,7 @@
     <string name="world_clock_code">Code</string>
     <string name="title_activity_alarm_details">Alarm details</string>
     <string name="title_activity_reminder_details">Reminder details</string>
+    <string name="title_activity_contact_details">Contact details</string>
     <string name="title_activity_world_clock_details">World Clock details</string>
     <string name="alarm_sun_short">Sun</string>
     <string name="alarm_mon_short">Mon</string>
@@ -756,6 +785,7 @@
     <string name="devicestatus_upload_failed">Upload has failed</string>
     <string name="firmware_update_progress">Upload is in progress\n%1d%% at %.2fkbps (average %.2fkbps)\nPart %1d of %1d</string>
     <string name="updating_firmware">Flashing firmware…</string>
+    <string name="fwapp_install_device_not_supported">File cannot be installed, device not supported.</string>
     <string name="fwapp_install_device_not_ready">File cannot be installed, device not ready.</string>
     <string name="installhandler_firmware_name">%1$s: %2$s %3$s</string>
     <string name="miband_fwinstaller_compatible_version">Compatible version</string>
@@ -770,6 +800,9 @@
     <string name="updatefirmwareoperation_update_complete">Firmware installation complete</string>
     <string name="updatefirmwareoperation_update_complete_rebooting">Firmware installation complete, rebooting device…</string>
     <string name="updatefirmwareoperation_write_failed">Firmware flashing failed</string>
+    <string name="gpx_route_upload_failed">Gpx route upload failed</string>
+    <string name="gpx_route_upload_complete">Gpx route upload complete</string>
+    <string name="gpx_route_upload_in_progress">Uploading gpx route</string>
     <string name="chart_steps">Steps</string>
     <string name="calories">Calories</string>
     <string name="distance">Distance</string>
@@ -894,6 +927,8 @@
     <string name="mi3_prefs_night_mode_summary">Lower band screen brightness automatically at night</string>
     <string name="bip_prefs_shortcuts">Shortcuts</string>
     <string name="bip_prefs_shotcuts_summary">Choose the shortcuts on the band screen</string>
+    <string name="prefs_shortcut_cards">Shortcut Cards</string>
+    <string name="prefs_shortcut_cards_summary">Shortcut cards seen when swiping right on the watchface. When an app is running, auto-generated cards are not affected by this setting.</string>
     <string name="prefs_control_center">Control Center</string>
     <string name="prefs_control_center_summary">Choose the items on the control center dropdown</string>
     <string name="prefs_activate_display_on_lift_sensitivity">Sensitivity</string>
@@ -1181,8 +1216,11 @@
     <string name="activity_type_exercise">Exercise</string>
     <string name="activity_error_no_app_for_gpx">To view activity trace, install app which can handle GPX files.</string>
     <string name="activity_error_no_app_for_png">To share this screenshot, install an app which can handle image files.</string>
+    <string name="activity_error_share_failed">Sharing file failed.</string>
     <string name="select_all">Select all</string>
     <string name="share">Share</string>
+    <string name="share_screenshot">Share screenshot</string>
+    <string name="screenshot_taken">Screenshot taken</string>
     <string name="reset_index">Reset fetch date</string>
     <string name="kind_firmware">Firmware</string>
     <string name="kind_invalid">Invalid data</string>
@@ -1191,6 +1229,7 @@
     <string name="kind_gps_almanac">GPS Almanac</string>
     <string name="kind_gps_cep">GPS Error Correction</string>
     <string name="kind_agps_bundle">AGPS Bundle</string>
+    <string name="kind_gpx_route">GPX Route</string>
     <string name="kind_resources">Resources</string>
     <string name="kind_watchface">Watchface</string>
     <string name="kind_app">App</string>
@@ -1209,6 +1248,7 @@
     <string name="devicetype_amazfit_gts4">Amazfit GTS 4</string>
     <string name="devicetype_amazfit_gts4_mini">Amazfit GTS 4 Mini</string>
     <string name="devicetype_amazfit_gtr3">Amazfit GTR 3</string>
+    <string name="devicetype_amazfit_gtr3_pro">Amazfit GTR 3 Pro</string>
     <string name="devicetype_amazfit_gtr4">Amazfit GTR 4</string>
     <string name="devicetype_amazfit_trex_2">Amazfit T-Rex 2</string>
     <string name="devicetype_amazfit_band5">Amazfit Band 5</string>
@@ -1271,6 +1311,7 @@
     <string name="devicetype_sony_wh_1000xm2">Sony WH-1000XM2</string>
     <string name="devicetype_sony_wh_1000xm3">Sony WH-1000XM3</string>
     <string name="devicetype_sony_wh_1000xm4">Sony WH-1000XM4</string>
+    <string name="devicetype_sony_wh_1000xm5">Sony WH-1000XM5</string>
     <string name="devicetype_sony_wf_sp800n">Sony WF-SP800N</string>
     <string name="devicetype_sony_wf_1000xm3">Sony WF-1000XM3</string>
     <string name="devicetype_sony_wf_1000xm4">Sony WF-1000XM4</string>
@@ -1294,6 +1335,12 @@
     <string name="menuitem_notifications">Notifications</string>
     <string name="menuitem_activity">Workout History</string>
     <string name="menuitem_weather">Weather</string>
+    <string name="menuitem_aqi">Air Quality Index</string>
+    <string name="menuitem_forecast">Forecast</string>
+    <string name="menuitem_last_workout">Last workout</string>
+    <string name="menuitem_total_workout">Total workout</string>
+    <string name="menuitem_vo2_max">VO₂ Max</string>
+    <string name="menuitem_recommendation">Recommendation</string>
     <string name="menuitem_breathing">Breathing</string>
     <string name="menuitem_cycles">Cycle Tracking</string>
     <string name="menuitem_alarm">Alarm</string>
@@ -1302,6 +1349,8 @@
     <string name="menuitem_settings">Settings</string>
     <string name="menuitem_alipay">Alipay</string>
     <string name="menuitem_wechat_pay">WeChat Pay</string>
+    <string name="menuitem_cards">Cards</string>
+    <string name="menuitem_mi_ai">MI AI</string>
     <string name="preferences_qhybrid_settings">Q Hybrid Settings</string>
     <string name="menuitem_music">Music</string>
     <string name="menuitem_more">More</string>
@@ -1352,6 +1401,17 @@
     <string name='menuitem_eject_water'>Eject Water</string>
     <string name="menuitem_unknown_app">Unknown (%s)</string>
     <string name="menuitem_unsupported">[UNSUPPORTED] %s</string>
+    <string name="zepp_os_watchface_red_fantasy">Red Fantasy</string>
+    <string name="zepp_os_watchface_multiple_data">Multiple Data</string>
+    <string name="zepp_os_watchface_rush">Rush</string>
+    <string name="zepp_os_watchface_minimalist">Minimalist</string>
+    <string name="zepp_os_watchface_simplicity_data">Simplicity Data</string>
+    <string name="zepp_os_watchface_vibrant">Vibrant</string>
+    <string name="zepp_os_watchface_business_style">Business Style</string>
+    <string name="zepp_os_watchface_emerald_moonlight">Emerald Moonlight</string>
+    <string name="zepp_os_watchface_rotating_earth">Rotating Earth</string>
+    <string name="zepp_os_watchface_superposition">superposition</string>
+    <string name="yesterdays_activity">Yesterday\'s Activity</string>
     <string name="watch9_time_minutes">Minutes:</string>
     <string name="watch9_time_hours">Hours:</string>
     <string name="watch9_time_seconds">Seconds:</string>
@@ -1589,7 +1649,11 @@
     <string name="activity_detail_end_label">End</string>
     <string name="activity_detail_duration_label">Duration</string>
     <string name="activity_detail_show_gps_label">Show GPS Track</string>
+    <string name="activity_detail_share_gps_label">Share GPS Track</string>
+    <string name="activity_detail_share_raw_summary">Share Raw Summary</string>
+    <string name="activity_detail_share_raw_details">Share Raw Details</string>
     <string name="gps_track">GPS track</string>
+    <string name="dev_tools">Dev Tools</string>
     <!-- Device Actions Preferences -->
     <string name="prefs_events_forwarding_summary">Use device events to trigger actions and Android broadcasts</string>
     <string name="prefs_events_forwarding_title">Device actions</string>
@@ -1825,6 +1889,7 @@
     <string name="pref_switch_controls_anc_ambient">Noise cancelling ←→ Ambient</string>
     <string name="pref_switch_controls_anc_off">Noise cancelling ←→ Off</string>
     <string name="pref_switch_controls_ambient_off">Ambient ←→ Off</string>
+    <string name="pref_switch_controls_anc_ambient_off">Noise cancelling ←→ Ambient ←→ Off</string>
     <string name="prefs_noise_control">Noise control</string>
     <string name="prefs_voice_detect">Voice detect</string>
     <string name="prefs_voice_detect_summary">Enable Ambient sound and lower playback automatically after voice has been detected</string>
@@ -1924,6 +1989,8 @@
     <string name="sony_button_mode_left">Button Mode (Left)</string>
     <string name="sony_button_mode_right">Button Mode (Right)</string>
     <string name="sony_button_mode_off">Off</string>
+    <string name="sony_button_mode_help_title">Button Modes - Help</string>
+    <string name="sony_button_mode_help_summary">A description of each button mode</string>
     <string name="sony_button_mode_ambient_sound_control">Ambient Sound Control</string>
     <string name="sony_button_mode_playback_control">Playback Control</string>
     <string name="sony_button_mode_volume_control">Volume Control</string>
@@ -1937,6 +2004,12 @@
     <string name="pref_screen_auto_brightness_title">Auto Brightness</string>
     <string name="pref_screen_auto_brightness_summary">Adjust screen brightness according to ambient light</string>
     <string name="pref_screen_brightness">Screen Brightness</string>
+    <string name="single_tap">Single Tap</string>
+    <string name="double_tap">Double Tap</string>
+    <string name="triple_tap">Triple Tap</string>
+    <string name="long_press">Long Press</string>
+    <string name="continue_pressing">Continue Pressing</string>
+    <string name="quick_attention">Quick Attention</string>
     <string name="watchface_widget_type_custom">Custom widget</string>
     <string name="watchface_dialog_widget_timezone">Time zone</string>
     <string name="watchface_dialog_widget_timezone_duration">Clock visibility duration (in seconds)</string>
@@ -1976,6 +2049,8 @@
     <string name="fossil_hr_button_config_info">Some buttons cannot be configured because their functions are hard-coded in the watch firmware.\n\nWarning: long-pressing the upper button when a watchface from the official Fossil app is installed will also toggle between showing/hiding widgets.</string>
     <string name="pref_title_opentracks_packagename">OpenTracks package name</string>
     <string name="pref_summary_opentracks_packagename">Used for starting/stopping GPS track recording in external fitness app.</string>
+    <string name="pref_summary_navigation_forward">Forward instructions from navigation apps to the watch</string>
+    <string name="pref_title_navigation_forward">Send navigation to watch</string>
     <string name="watchface_dialog_pre_setting_position">pre-setting position to %s</string>
     <string name="watchface_setting_light_up_on_notification">Light up on new notification</string>
 
@@ -2027,6 +2102,8 @@
     <string name="intent_api_allow_trigger_export_summary">Allow triggering database export via Intent API</string>
     <string name="intent_api_broadcast_export_title">Broadcast on database export</string>
     <string name="intent_api_broadcast_export_summary">Broadcast an intent when database export finishes</string>
+    <string name="intent_api_allow_debug_commands_title">Allow Debug Commands</string>
+    <string name="intent_api_allow_debug_commands_summary">Allow triggering debug menu commands via Intent API</string>
     <string name="devicetype_super_cars">Shell Racing</string>
     <string name="supercars_turbo_speed_label">Turbo Speed</string>
     <string name="supercars_lights_label">Lights</string>
@@ -2050,6 +2127,27 @@
     <string name="ftp_server_root_dir">Root Directory</string>
     <string name="address">Address</string>
     <string name="username">Username</string>
+    <string name="fossil_hr_confirm_connection">Please confirm on your watch</string>
+    <string name="fossil_hr_connection_not_confirmed">Connection not confirmed on watch, using unauthenticated mode</string>
+    <string name="fossil_hr_pairing_successful">Pairing with watch successful</string>
+    <string name="fossil_hr_pairing_failed">Pairing with watch failed</string>
+    <string name="fossil_hr_confirmation_skipped">Skipping on-device confirmation</string>
+    <string name="fossil_hr_confirmation_timeout">Confirmation timeout, continuing</string>
+    <string name="debug_companion_show_associated">Show associated companion devices</string>
+    <string name="debug_companion_pair_current">Pair current device as companion</string>
+    <string name="contact_name">Name</string>
+    <string name="contact_phone_number">Phone number</string>
+    <string name="contact_missing_name">Contact name is empty</string>
+    <string name="contact_missing_number">Contact number is empty</string>
+    <string name="voice_service_package_title">Voice service package</string>
+    <string name="voice_service_package_summary">Application that contains the service handling voice commands</string>
+    <string name="voice_service_class_title">Voice service class</string>
+    <string name="voice_service_class_summary">Full service path handling voice commands</string>
+    <string name="voice_service">Voice Service</string>
+    <string name="pref_app_logs_title">App logs</string>
+    <string name="pref_app_logs_summary">Enable logs from watch apps</string>
+    <string name="pref_app_logs_start_summary">Start logging from watch apps</string>
+    <string name="pref_app_logs_stop_summary">Stop logging from watch apps</string>
     <string name="withings_calibration_text_hours">Please use the dial below to align the hour hand to the 12.</string>
     <string name="withings_calibration_text_minutes">Now use the dial to align the minute hand to the 12.</string>
     <string name="withings_calibration_text_activity_target">Finally align the activity hand to 100%. Please be aware that this hand only moves clockwise.</string>

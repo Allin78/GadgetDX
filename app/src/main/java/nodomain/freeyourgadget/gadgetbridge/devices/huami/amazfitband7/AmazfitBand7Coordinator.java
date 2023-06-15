@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuami2021FWInstallHandler;
@@ -56,8 +57,12 @@ public class AmazfitBand7Coordinator extends Huami2021Coordinator {
     }
 
     @Override
-    public AbstractHuami2021FWInstallHandler findInstallHandler(final Uri uri, final Context context) {
-        final AmazfitBand7FWInstallHandler handler = new AmazfitBand7FWInstallHandler(uri, context);
-        return handler.isValid() ? handler : null;
+    public AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context) {
+        return new AmazfitBand7FWInstallHandler(uri, context);
+    }
+
+    @Override
+    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+        return false;
     }
 }

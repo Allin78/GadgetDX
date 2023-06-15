@@ -163,7 +163,9 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
         for (final Map.Entry<String, List<GBDevice>> folder : devicesPerFolder.entrySet()) {
             enrichedList.add(new GBDeviceFolder(folder.getKey()));
-            enrichedList.addAll(folder.getValue());
+            if (folder.getKey().equals(expandedFolderName)) {
+                enrichedList.addAll(folder.getValue());
+            }
         }
 
         return enrichedList;
@@ -213,6 +215,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
                 }else {
                     expandedFolderName = folder.getName();
                 }
+                rebuildFolders();
                 notifyDataSetChanged();
             }
         });
@@ -418,7 +421,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
                                                         @Override
                                                         public void onClick(View v) {
                                                             showTransientSnackbar(R.string.busy_task_fetch_activity_data);
-                                                            GBApplication.deviceService(device).onFetchRecordedData(RecordedDataTypes.TYPE_ACTIVITY);
+                                                            GBApplication.deviceService(device).onFetchRecordedData(RecordedDataTypes.TYPE_SYNC);
                                                         }
                                                     }
         );
@@ -438,7 +441,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         );
 
         //manage apps
-        holder.manageAppsView.setVisibility((device.isInitialized() && coordinator.supportsAppsManagement()) ? View.VISIBLE : View.GONE);
+        holder.manageAppsView.setVisibility((device.isInitialized() && coordinator.supportsAppsManagement(device)) ? View.VISIBLE : View.GONE);
         holder.manageAppsView.setOnClickListener(new View.OnClickListener()
 
                                                  {
@@ -456,7 +459,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
         );
 
         //set alarms
-        holder.setAlarmsView.setVisibility(coordinator.getAlarmSlotCount() > 0 ? View.VISIBLE : View.GONE);
+        holder.setAlarmsView.setVisibility(coordinator.getAlarmSlotCount(device) > 0 ? View.VISIBLE : View.GONE);
         holder.setAlarmsView.setOnClickListener(new View.OnClickListener()
 
                                                 {
@@ -811,7 +814,7 @@ public class GBDeviceAdapterv2 extends ListAdapter<GBDevice, GBDeviceAdapterv2.V
 
     private boolean showInstallerItem(GBDevice device) {
         final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
-        return coordinator.supportsAppsManagement() || coordinator.supportsFlashing();
+        return coordinator.supportsAppsManagement(device) || coordinator.supportsFlashing();
     }
 
     private void showDeviceSubmenu(final View v, final GBDevice device) {

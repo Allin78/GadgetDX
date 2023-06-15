@@ -50,6 +50,8 @@ import nodomain.freeyourgadget.gadgetbridge.entities.ActivityDescription;
 import nodomain.freeyourgadget.gadgetbridge.entities.ActivityDescriptionDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.entities.AlarmDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Contact;
+import nodomain.freeyourgadget.gadgetbridge.entities.ContactDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.DeviceAttributes;
@@ -374,6 +376,20 @@ public class DBHelper {
         return null;
     }
 
+    public static void updateDeviceMacAddress(final DaoSession session, final String oldAddress, final String newAddress) {
+        final DeviceDao deviceDao = session.getDeviceDao();
+        final Query<Device> query = deviceDao.queryBuilder().where(DeviceDao.Properties.Identifier.eq(oldAddress)).build();
+        final List<Device> devices = query.list();
+        if (devices.isEmpty()) {
+            LOG.warn("Failed to find device with address {}", oldAddress);
+            return;
+        }
+
+        final Device device = devices.get(0);
+        device.setIdentifier(newAddress);
+        session.getDeviceDao().update(device);
+    }
+
     /**
      * Returns all active (that is, not old, archived ones) from the database.
      * (currently the active handling is not available)
@@ -580,7 +596,7 @@ public class DBHelper {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()));
 
         int reservedSlots = prefs.getInt(DeviceSettingsPreferenceConst.PREF_RESERVER_ALARMS_CALENDAR, 0);
-        int alarmSlots = coordinator.getAlarmSlotCount();
+        int alarmSlots = coordinator.getAlarmSlotCount(gbDevice);
 
         try (DBHandler db = GBApplication.acquireDB()) {
             DaoSession daoSession = db.getDaoSession();
@@ -668,6 +684,28 @@ public class DBHelper {
         return Collections.emptyList();
     }
 
+    @NonNull
+    public static List<Contact> getContacts(@NonNull GBDevice gbDevice) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            final DaoSession daoSession = db.getDaoSession();
+            final User user = getUser(daoSession);
+            final Device dbDevice = DBHelper.findDevice(gbDevice, daoSession);
+            if (dbDevice != null) {
+                final ContactDao contactDao = daoSession.getContactDao();
+                final Long deviceId = dbDevice.getId();
+                final QueryBuilder<Contact> qb = contactDao.queryBuilder();
+                qb.where(
+                        ContactDao.Properties.UserId.eq(user.getId()),
+                        ContactDao.Properties.DeviceId.eq(deviceId)).orderAsc(ContactDao.Properties.Name);
+                return qb.build().list();
+            }
+        } catch (final Exception e) {
+            LOG.error("Error reading contacts from db", e);
+        }
+
+        return Collections.emptyList();
+    }
+
     public static void store(final Reminder reminder) {
         try (DBHandler db = GBApplication.acquireDB()) {
             final DaoSession daoSession = db.getDaoSession();
@@ -686,6 +724,15 @@ public class DBHelper {
         }
     }
 
+    public static void store(final Contact contact) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            final DaoSession daoSession = db.getDaoSession();
+            daoSession.insertOrReplace(contact);
+        } catch (final Exception e) {
+            LOG.error("Error acquiring database", e);
+        }
+    }
+
     public static void delete(final Reminder reminder) {
         try (DBHandler db = GBApplication.acquireDB()) {
             final DaoSession daoSession = db.getDaoSession();
@@ -699,6 +746,15 @@ public class DBHelper {
         try (DBHandler db = GBApplication.acquireDB()) {
             final DaoSession daoSession = db.getDaoSession();
             daoSession.delete(worldClock);
+        } catch (final Exception e) {
+            LOG.error("Error acquiring database", e);
+        }
+    }
+
+    public static void delete(final Contact contact) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            final DaoSession daoSession = db.getDaoSession();
+            daoSession.delete(contact);
         } catch (final Exception e) {
             LOG.error("Error acquiring database", e);
         }
