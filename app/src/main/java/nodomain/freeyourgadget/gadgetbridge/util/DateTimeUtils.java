@@ -26,6 +26,8 @@ import java.text.FieldPosition;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -62,6 +64,13 @@ public class DateTimeUtils {
         }
 
     }; //no public access, we have to workaround Android bugs
+
+    public static class TimeAndZone {
+        public int timestampSec;
+        public String zoneId;
+        public int zoneOffsetHour;
+        public int zoneOffsetMinutes;
+    }
 
     public static String formatDateTime(Date date) {
         return DateUtils.formatDateTime(GBApplication.getContext(), date.getTime(), DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_NO_YEAR);
@@ -205,4 +214,15 @@ public class DateTimeUtils {
         return (int) TimeUnit.MILLISECONDS.toDays((time2 - time1) * 1000L);
     }
 
+    public static TimeAndZone getTimeAndZone() {
+        TimeAndZone timeAndZone = new TimeAndZone();
+
+        ZonedDateTime now = ZonedDateTime.now();
+        timeAndZone.timestampSec = (int)now.toEpochSecond();
+        timeAndZone.zoneId = now.format(DateTimeFormatter.ofPattern("z"));
+        timeAndZone.zoneOffsetHour = now.getOffset().getTotalSeconds() / 60 / 60;
+        timeAndZone.zoneOffsetMinutes = now.getOffset().getTotalSeconds() / 60 % 60;
+
+        return timeAndZone;
+    }
 }
