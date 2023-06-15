@@ -824,19 +824,6 @@ public class DeviceSpecificSettingsFragment extends PreferenceFragmentCompat imp
             });
         }
 
-        final Preference handsCalibration = findPreference("hands_calibration");
-        if (handsCalibration != null) {
-            handsCalibration.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    final Intent intent = new Intent(getContext(), WithingsCalibrationActivity.class);
-                    intent.putExtra(GBDevice.EXTRA_DEVICE, device);
-                    startActivity(intent);
-                    return true;
-                }
-            });
-        }
-
         setInputTypeFor(HuamiConst.PREF_BUTTON_ACTION_BROADCAST_DELAY, InputType.TYPE_CLASS_NUMBER);
         setInputTypeFor(HuamiConst.PREF_BUTTON_ACTION_PRESS_MAX_INTERVAL, InputType.TYPE_CLASS_NUMBER);
         setInputTypeFor(HuamiConst.PREF_BUTTON_ACTION_PRESS_COUNT, InputType.TYPE_CLASS_NUMBER);

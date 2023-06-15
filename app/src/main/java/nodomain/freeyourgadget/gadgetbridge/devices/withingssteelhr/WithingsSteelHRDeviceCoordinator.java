@@ -46,8 +46,7 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_withingssteelhr_workout_types,
-                R.xml.devicesettings_withingssteelhr_calibration
+                R.xml.devicesettings_withingssteelhr
         };
     }
 
