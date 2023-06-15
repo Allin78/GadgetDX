@@ -1,8 +1,16 @@
 #!/bin/bash
-pushd jerryscript
-python3 tools/build.py --jerry-cmdline-snapshot ON
-popd
-pushd fossil-hr-watchface
+
+if [[ ! -f jerryscript/no-rebuild ]]; then
+    pushd jerryscript || exit
+    git reset --hard
+    git clean -dxf
+    gcc_version="$(gcc -v 2>&1 | grep -oe '^gcc version [0-9][0-9\.]*[0-9]' | sed 's|^.* ||;s|\..*||')"
+    (( gcc_version > 11 )) && git apply ../patches/jerryscript-gcc-12-build-fix.patch
+    python3 tools/build.py --jerry-cmdline-snapshot ON && touch no-rebuild
+    popd || exit
+fi
+
+pushd fossil-hr-watchface || exit
 export jerry=../jerryscript/build/bin/jerry-snapshot
 $jerry generate -f '' open_source_watchface.js -o openSourceWatchface.bin
 $jerry generate -f '' widget_date.js -o widgetDate.bin
@@ -15,5 +23,5 @@ $jerry generate -f '' widget_2nd_tz.js -o widget2ndTZ.bin
 $jerry generate -f '' widget_activemins.js -o widgetActiveMins.bin
 $jerry generate -f '' widget_chanceofrain.js -o widgetChanceOfRain.bin
 $jerry generate -f '' widget_custom.js -o widgetCustom.bin
-popd
+popd || exit
 mv fossil-hr-watchface/*.bin ../app/src/main/assets/fossil_hr/
