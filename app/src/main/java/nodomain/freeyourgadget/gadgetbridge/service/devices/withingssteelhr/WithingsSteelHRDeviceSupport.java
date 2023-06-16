@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr;
 
+import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
+
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -45,6 +47,8 @@ import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
+import nodomain.freeyourgadget.gadgetbridge.devices.hplus.HPlusConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
@@ -109,6 +113,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.comm
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationProvider;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.notification.NotificationSource;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
+import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
@@ -118,6 +124,7 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     public static final String HANDS_CALIBRATION_CMD = "withings_hands_calibration";
     public static final String START_HANDS_CALIBRATION_CMD = "start_withings_hands_calibration";
     public static final String STOP_HANDS_CALIBRATION_CMD = "stop_withings_hands_calibration";
+    private static Prefs prefs = GBApplication.getPrefs();
     private MessageBuilder messageBuilder;
     private LiveWorkoutHandler liveWorkoutHandler;
     private ActivitySampleHandler activitySampleHandler;
@@ -206,8 +213,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.START_HANDS_CALIBRATION));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.STOP_HANDS_CALIBRATION));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_TIME, new Time()));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.DISTANCE, UserUnitConstants.UNIT_KM)));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.CLOCK_MODE, UserUnitConstants.UNIT_24H)));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.DISTANCE, getUnit())));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.CLOCK_MODE, getTimeMode())));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_ACTIVITY_TARGET, new ActivityTarget(activityUser.getStepsGoal())));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_ANCS_STATUS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_ANCS_STATUS, new AncsStatus(true)));
@@ -249,8 +256,8 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
             //  message.addDataStructure(new UserSecret());
             addSimpleConversationToQueue(message);
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_ACTIVITY_TARGET, new ActivityTarget(activityUser.getStepsGoal())));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.DISTANCE, UserUnitConstants.UNIT_KM)));
-            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.CLOCK_MODE, UserUnitConstants.UNIT_24H)));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.DISTANCE, getUnit())));
+            addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.SET_USER_UNIT, new UserUnit(UserUnitConstants.CLOCK_MODE, getTimeMode())));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_ALARM_SETTINGS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_SCREEN_SETTINGS));
             addSimpleConversationToQueue(new WithingsMessage(WithingsMessageType.GET_ALARM));
@@ -686,6 +693,27 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
         message.addDataStructure(imageData);
 
         return message;
+    }
+
+    private short getTimeMode() {
+        GBPrefs gbPrefs = new GBPrefs(new Prefs(GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress())));
+        String tmode = gbPrefs.getTimeFormat();
+
+        if ("24h".equals(tmode)) {
+            return UserUnitConstants.UNIT_24H;
+        } else {
+            return UserUnitConstants.UNIT_12H;
+        }
+    }
+
+    private short getUnit() {
+        String units = prefs.getString(SettingsActivity.PREF_MEASUREMENT_SYSTEM, GBApplication.getContext().getString(R.string.p_unit_metric));
+
+        if (units.equals(GBApplication.getContext().getString(R.string.p_unit_metric))) {
+            return UserUnitConstants.UNIT_KM;
+        } else {
+            return UserUnitConstants.UNIT_MILES;
+        }
     }
 
 }

@@ -1,12 +1,10 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import java.nio.ByteBuffer;
-
-import nodomain.freeyourgadget.gadgetbridge.test.TestHelperUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class ProbeReplyTest {
 
@@ -14,7 +12,7 @@ public class ProbeReplyTest {
     public void testFillFromRawData() {
         // arrange
         // this data is a real world example:
-        byte[] rawData = TestHelperUtils.hexToBytes("0000000008537465656c2048521130303a32343a65343a36653a34633a3861103433303765303861643433383531616500ffffff0830303132303132320000001b00001b8100ffffff");
+        byte[] rawData = GB.hexStringToByteArray("0000000008537465656c2048521130303a32343a65343a36653a34633a3861103433303765303861643433383531616500ffffff0830303132303132320000001b00001b8100ffffff");
         ProbeReply probeReply2Test = new ProbeReply();
 
         // act

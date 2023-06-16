@@ -372,7 +372,6 @@ public class DeviceHelper {
         result.add(new SuperCarsCoordinator());
         result.add(new AsteroidOSDeviceCoordinator());
         result.add(new SoFlowCoordinator());
-
         result.add(new WithingsSteelHRDeviceCoordinator());
         return result;
     }
