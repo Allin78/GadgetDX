@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.AuthenticationHandler;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
@@ -74,7 +75,7 @@ public class ProbeReply extends WithingsStructure {
 
     @Override
     public short getLength() {
-        int length = (name != null ? name.getBytes().length : 0) + 1;
+        int length = (name != null ? name.getBytes(StandardCharsets.UTF_8).length : 0) + 1;
         length += (mac != null ? mac.getBytes().length : 0) + 1;
         length += (secret != null ? secret.getBytes().length : 0) + 1;
         length += (mId != null ? mId.getBytes().length : 0) + 1;

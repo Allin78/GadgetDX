@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class User extends WithingsStructure {
@@ -81,7 +82,7 @@ public class User extends WithingsStructure {
 
     @Override
     public short getLength() {
-        return (short) ((name != null ? name.getBytes().length : 0) + 22);
+        return (short) ((name != null ? name.getBytes(StandardCharsets.UTF_8).length : 0) + 22);
     }
 
     @Override
