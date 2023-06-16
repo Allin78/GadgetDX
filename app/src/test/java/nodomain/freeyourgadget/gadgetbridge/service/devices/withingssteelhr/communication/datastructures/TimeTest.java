@@ -1,6 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.withingssteelhr.communication.datastructures;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.threeten.bp.Instant;
@@ -16,11 +16,11 @@ public class TimeTest {
     public void testGetRawDataWithValues() throws Exception {
         // arrange
         Time time = new Time();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = sdf.parse("2000-04-01 12:00:00");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss 'GMT'Z");
+        Date date = sdf.parse("2000-04-01 12:00:00 GMT+0200");
         time.setNow(Instant.ofEpochMilli(date.getTime()));
         time.setTimeOffsetInSeconds(7200);
-        date = sdf.parse("2000-10-26 02:00:00");
+        date = sdf.parse("2000-10-26 02:00:00 GMT+0200");
         time.setNextDaylightSavingTransition(Instant.ofEpochMilli(date.getTime()));
         time.setNextDaylightSavingTransitionOffsetInSeconds(2400);
 

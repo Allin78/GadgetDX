@@ -1199,7 +1199,7 @@
     <string name="activity_type_riding">Horseback Riding</string>
     <string name="activity_type_hockey">Hockey</string>
     <string name="activity_type_icehockey">Icehockey</string>
-    <string name="activity_type_iceskating">Icescating</string>
+    <string name="activity_type_iceskating">Ice Skating</string>
     <string name="activity_type_golf">Golfing</string>
     <string name="activity_type_other">Other</string>
     <string name="activity_type_unknown">Unknown activity</string>
@@ -2153,5 +2153,4 @@
     <string name="withings_calibration_text_activity_target">Finally align the activity hand to 100%. Please be aware that this hand only moves clockwise.</string>
     <string name="withings_bt_calibration_previous">Previous</string>
     <string name="withings_bt_calibration_next">Next</string>
-    <string name="withings_calibration_ok">OK</string>
 </resources>
