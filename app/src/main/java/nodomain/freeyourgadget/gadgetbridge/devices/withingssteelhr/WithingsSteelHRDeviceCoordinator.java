@@ -155,7 +155,7 @@ public class WithingsSteelHRDeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     public boolean supportsCalendarEvents() {
-        return true;
+        return false;
     }
 
     @Override

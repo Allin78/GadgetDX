@@ -54,7 +54,7 @@ public class DataStructureFactory {
                     structure = new BatteryValues();
                     break;
                 case WithingsStructureType.SCREEN_SETTINGS:
-                    structure = new BatteryValues();
+                    structure = new ScreenSettings();
                     break;
                 case WithingsStructureType.ANCS_STATUS:
                     structure = new AncsStatus();

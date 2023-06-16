@@ -94,7 +94,7 @@ public class ActivitySampleHandler extends AbstractResponseHandler {
                     handleWalk(data);
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_RUN:
-                    handleWalk(data);
+                    handleRun(data);
                     break;
                 case WithingsStructureType.ACTIVITY_SAMPLE_SWIM:
                     handleSwim(data);
