@@ -23,13 +23,14 @@ import android.bluetooth.le.ScanFilter;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
@@ -40,6 +41,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
+import nodomain.freeyourgadget.gadgetbridge.model.BloodPressureSample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.model.PaiSample;
@@ -221,6 +223,12 @@ public interface DeviceCoordinator {
     boolean supportsHeartRateStats();
 
     /**
+     * Returns true if blood pressure measurement (systolic, diastolic, pulse) measurement and
+     * fetching is supported by the device (with this coordinator).
+     */
+    boolean supportsBloodPressureMeasurement();
+
+    /**
      * Returns true if PAI (Personal Activity Intelligence) measurement and fetching is supported by
      * the device (with this coordinator).
      */
@@ -283,6 +291,11 @@ public interface DeviceCoordinator {
      * Returns the sample provider for sleep respiratory rate data, for the device being supported.
      */
     TimeSampleProvider<? extends SleepRespiratoryRateSample> getSleepRespiratoryRateSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for blood pressure data, for the device being supported.
+     */
+    TimeSampleProvider<? extends BloodPressureSample> getBloodPressureSampleProvider(GBDevice device, DaoSession session);
 
     /**
      * Returns the {@link ActivitySummaryParser} for the device being supported.

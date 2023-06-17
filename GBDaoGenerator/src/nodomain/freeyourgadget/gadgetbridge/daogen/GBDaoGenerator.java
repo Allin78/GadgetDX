@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(48, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(49, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -90,6 +90,7 @@ public class GBDaoGenerator {
         addCasioGBX100Sample(schema, user, device);
         addFitProActivitySample(schema, user, device);
         addPineTimeActivitySample(schema, user, device);
+        addSBM67BloodPressureSample(schema, user, device);
 
         addHybridHRActivitySample(schema, user, device);
         addCalendarSyncState(schema, device);
@@ -803,4 +804,20 @@ public class GBDaoGenerator {
         addHeartRateProperties(activitySample);
         return activitySample;
     }
+
+
+    private static Entity addSBM67BloodPressureSample(Schema schema, Entity user, Entity device) {
+        Entity bloodPressureSample = addEntity(schema, "SBM67BloodPressureSample");
+        addCommonTimeSampleProperties("AbstractBloodPressureSample", bloodPressureSample, user, device);
+        bloodPressureSample.addIntProperty("userIndex"); //device can store measurements for up to 4 users
+        bloodPressureSample.addIntProperty("systolicPressure");
+        bloodPressureSample.addIntProperty("diastolicPressure");
+        bloodPressureSample.addIntProperty("meanArterialPressure");
+        bloodPressureSample.addIntProperty("pulse");
+        bloodPressureSample.addIntProperty("readingStatus");
+        bloodPressureSample.addBooleanProperty("heartRhythmDisorder");
+        bloodPressureSample.addBooleanProperty("restingIndicator");
+        return bloodPressureSample;
+    }
+
 }
