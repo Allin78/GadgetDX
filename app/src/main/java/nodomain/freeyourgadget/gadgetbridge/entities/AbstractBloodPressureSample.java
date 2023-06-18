@@ -31,6 +31,7 @@ public abstract class AbstractBloodPressureSample extends AbstractTimeSample imp
                 ", deviceId=" + getDeviceId() +
                 ", systolicPressure=" + getSystolicPressure() +
                 ", diastolicPressure=" + getDiastolicPressure() +
+                ", pulse=" + getPulse() +
                 "}";
     }
 }

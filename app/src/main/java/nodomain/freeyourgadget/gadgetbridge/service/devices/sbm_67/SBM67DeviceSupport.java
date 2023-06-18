@@ -67,7 +67,7 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
         deviceInfoProfile = new DeviceInfoProfile<>(this);
         IntentListener mListener = intent -> {
             String s = intent.getAction();
-            if (s.equals(DeviceInfoProfile.ACTION_DEVICE_INFO)) {
+            if (DeviceInfoProfile.ACTION_DEVICE_INFO.equals(s)) {
                 DeviceInfo deviceInfo = intent.getParcelableExtra(DeviceInfoProfile.EXTRA_DEVICE_INFO);
                 if (deviceInfo != null) {
                     handleDeviceInfo(deviceInfo);
@@ -127,7 +127,6 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
 
             final SBM67BloodPressureSample bloodPressureSample = new SBM67BloodPressureSample();
             bloodPressureSample.setDevice(device);
-            bloodPressureSample.setTimestamp(System.currentTimeMillis() / 1000);
 
             byte unk = incoming.get();
             short syst = incoming.getShort();//
@@ -157,7 +156,7 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
                 bloodPressureSample.setTimestamp(c.getTime().getTime());
             }
             byte pulse = incoming.get();//
-            bloodPressureSample.setPulse((int) pulse);
+            bloodPressureSample.setPulse((int) pulse & 0xff);
             incoming.get();//skip
             byte user = incoming.get();//
             bloodPressureSample.setUserIndex((int) user);
