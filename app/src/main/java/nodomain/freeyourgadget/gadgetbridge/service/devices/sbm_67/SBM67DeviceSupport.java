@@ -18,15 +18,23 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sbm_67;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.Toast;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -37,6 +45,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sbm_67.SBM67Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.SBM67BloodPressureSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic;
@@ -55,14 +64,14 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
     private final DeviceInfoProfile<SBM67DeviceSupport> deviceInfoProfile;
     private final GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
 
-
-    private SBM67BloodPressureSampleProvider sampleProvider;
-    private Device device;
+    private List<SBM67BloodPressureSample> samples;
 
     public SBM67DeviceSupport() {
         super(LOG);
         addSupportedService(GattService.UUID_SERVICE_BLOOD_PRESSURE);
         addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
+
+        samples = new ArrayList<>();
 
         deviceInfoProfile = new DeviceInfoProfile<>(this);
         IntentListener mListener = intent -> {
@@ -76,6 +85,26 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
         };
         deviceInfoProfile.addListener(mListener);
         addSupportedProfile(deviceInfoProfile);
+
+        IntentFilter commandFilter = new IntentFilter();
+        commandFilter.addAction(GBDevice.ACTION_DEVICE_CHANGED);
+        BroadcastReceiver commandReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (GBDevice.ACTION_DEVICE_CHANGED.equals(intent.getAction())) {
+                    GBDevice.DeviceUpdateSubject subject = (GBDevice.DeviceUpdateSubject) intent.getSerializableExtra(GBDevice.EXTRA_UPDATE_SUBJECT);
+
+                    if (GBDevice.DeviceUpdateSubject.CONNECTION_STATE.equals(subject) &&
+                            GBDevice.State.NOT_CONNECTED.equals(gbDevice.getState()) &&
+                            !samples.isEmpty()) {
+                        // This particular device disconnects automatically once the transfer is finished, hence this method of persisting the samples works, but it's far from ideal
+                        persistSamples();
+                        samples.clear();
+                    }
+                }
+            }
+        };
+        LocalBroadcastManager.getInstance(GBApplication.getContext()).registerReceiver(commandReceiver, commandFilter);
     }
 
     /**
@@ -87,14 +116,7 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
 
-        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-            final SBM67Coordinator coordinator = (SBM67Coordinator) DeviceHelper.getInstance().getCoordinator(getDevice());
-            final DaoSession session = dbHandler.getDaoSession();
-            device = DBHelper.getDevice(getDevice(), session);
-            sampleProvider = coordinator.getBloodPressureSampleProvider(getDevice(), session);
-        } catch (final Exception e) {
-            GB.toast(getContext(), "Error connecting to DB", Toast.LENGTH_LONG, GB.ERROR, e);
-        }
+        samples = new ArrayList<>();
 
         deviceInfoProfile.requestDeviceInfo(builder);
 
@@ -126,7 +148,6 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
             incoming.order(ByteOrder.LITTLE_ENDIAN);
 
             final SBM67BloodPressureSample bloodPressureSample = new SBM67BloodPressureSample();
-            bloodPressureSample.setDevice(device);
 
             byte unk = incoming.get();
             short syst = incoming.getShort();//
@@ -166,11 +187,38 @@ public class SBM67DeviceSupport extends AbstractBTLEDeviceSupport {
             bloodPressureSample.setHeartRhythmDisorder((status & 4) != 0);
             bloodPressureSample.setRestingIndicator((status & 64) != 0);
 
-            sampleProvider.addSample(bloodPressureSample);
+            samples.add(bloodPressureSample);
             return true;
         }
 
         return super.onCharacteristicChanged(gatt, characteristic);
+    }
+
+
+    protected void persistSamples() {
+
+        try (DBHandler handler = GBApplication.acquireDB()) {
+            final DaoSession session = handler.getDaoSession();
+
+            final Device device = DBHelper.getDevice(getDevice(), session);
+            final User user = DBHelper.getUser(session);
+
+            final SBM67Coordinator coordinator = (SBM67Coordinator) DeviceHelper.getInstance().getCoordinator(getDevice());
+            final SBM67BloodPressureSampleProvider sampleProvider = coordinator.getBloodPressureSampleProvider(getDevice(), session);
+
+            for (final SBM67BloodPressureSample sample : samples) {
+                sample.setDevice(device);
+                sample.setUser(user);
+            }
+
+            LOG.debug("Will persist {} blood pressure samples", samples.size());
+            sampleProvider.addSamples(samples);
+        } catch (final Exception e) {
+            GB.toast(getContext(), "Error saving blood pressure samples", Toast.LENGTH_LONG, GB.ERROR, e);
+            return;
+        }
+
+        return;
     }
 
     /**
