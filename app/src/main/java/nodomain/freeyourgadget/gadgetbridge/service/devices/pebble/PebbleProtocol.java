@@ -27,6 +27,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -65,6 +69,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class PebbleProtocol extends GBDeviceProtocol {
@@ -281,7 +286,12 @@ public class PebbleProtocol extends GBDeviceProtocol {
     boolean mEnablePebbleKit = false;
     boolean mAlwaysACKPebbleKit = false;
     private boolean mForceProtocol = false;
-    private GBDeviceEventScreenshot mDevEventScreenshot = null;
+
+    private byte[] screenshotData = null;
+    private int screenshotWidth;
+    private int screenshotHeight;
+    private byte screenshotBpp;
+    private byte[] screenshotClut;
     private int mScreenshotRemaining = -1;
 
     //monochrome black + white
@@ -400,7 +410,8 @@ public class PebbleProtocol extends GBDeviceProtocol {
     private static final UUID UUID_M7S = UUID.fromString("03adc57a-569b-4669-9a80-b505eaea314d");
     private static final UUID UUID_YWEATHER = UUID.fromString("35a28a4d-0c9f-408f-9c6d-551e65f03186");
     private static final UUID UUID_REALWEATHER = UUID.fromString("1f0b0701-cc8f-47ec-86e7-7181397f9a52");
-
+    private static final UUID UUID_SIMPLE_WEATHER = UUID.fromString("fc42139a-5710-4456-b164-ddc12c464398");
+    private static final UUID UUID_WEATHER_LAND = UUID.fromString("1f0b0701-cc8f-47ec-86e7-7181397f9a25");
     private static final UUID UUID_ZERO = new UUID(0, 0);
 
     private static final UUID UUID_LOCATION = UUID.fromString("2c7e6a86-51e5-4ddd-b606-db43d1e4ad28"); // might be the location of "Berlin" or "Auto"
@@ -429,6 +440,9 @@ public class PebbleProtocol extends GBDeviceProtocol {
             mAppMessageHandlers.put(UUID_M7S, new AppMessageHandlerM7S(UUID_M7S, PebbleProtocol.this));
             mAppMessageHandlers.put(UUID_YWEATHER, new AppMessageHandlerRealWeather(UUID_YWEATHER, PebbleProtocol.this));
             mAppMessageHandlers.put(UUID_REALWEATHER, new AppMessageHandlerRealWeather(UUID_REALWEATHER, PebbleProtocol.this));
+
+            mAppMessageHandlers.put(UUID_SIMPLE_WEATHER, new AppMessageHandlerSimpleWeather(UUID_SIMPLE_WEATHER, PebbleProtocol.this));
+            mAppMessageHandlers.put(UUID_WEATHER_LAND, new AppMessageHandlerWeatherLand(UUID_WEATHER_LAND, PebbleProtocol.this));
         }
     }
 
@@ -1945,27 +1959,26 @@ public class PebbleProtocol extends GBDeviceProtocol {
     }
 
     private GBDeviceEventScreenshot decodeScreenshot(ByteBuffer buf, int length) {
-        if (mDevEventScreenshot == null) {
+        if (screenshotData == null) {
             byte result = buf.get();
-            mDevEventScreenshot = new GBDeviceEventScreenshot();
             int version = buf.getInt();
             if (result != 0) {
                 return null;
             }
-            mDevEventScreenshot.width = buf.getInt();
-            mDevEventScreenshot.height = buf.getInt();
+            screenshotWidth = buf.getInt();
+            screenshotHeight = buf.getInt();
 
             if (version == 1) {
-                mDevEventScreenshot.bpp = 1;
-                mDevEventScreenshot.clut = clut_pebble;
+                screenshotBpp = 1;
+                screenshotClut = clut_pebble;
             } else {
-                mDevEventScreenshot.bpp = 8;
-                mDevEventScreenshot.clut = clut_pebbletime;
+                screenshotBpp = 8;
+                screenshotClut = clut_pebbletime;
             }
 
-            mScreenshotRemaining = (mDevEventScreenshot.width * mDevEventScreenshot.height * mDevEventScreenshot.bpp) / 8;
+            mScreenshotRemaining = (screenshotWidth * screenshotHeight * screenshotBpp) / 8;
 
-            mDevEventScreenshot.data = new byte[mScreenshotRemaining];
+            screenshotData = new byte[mScreenshotRemaining];
             length -= 13;
         }
         if (mScreenshotRemaining == -1) {
@@ -1973,24 +1986,66 @@ public class PebbleProtocol extends GBDeviceProtocol {
         }
         for (int i = 0; i < length; i++) {
             byte corrected = buf.get();
-            if (mDevEventScreenshot.bpp == 1) {
+            if (screenshotBpp == 1) {
                 corrected = reverseBits(corrected);
             } else {
                 corrected = (byte) (corrected & 0b00111111);
             }
 
-            mDevEventScreenshot.data[mDevEventScreenshot.data.length - mScreenshotRemaining + i] = corrected;
+            screenshotData[screenshotData.length - mScreenshotRemaining + i] = corrected;
         }
         mScreenshotRemaining -= length;
         LOG.info("Screenshot remaining bytes " + mScreenshotRemaining);
         if (mScreenshotRemaining == 0) {
             mScreenshotRemaining = -1;
-            LOG.info("Got screenshot : " + mDevEventScreenshot.width + "x" + mDevEventScreenshot.height + "  " + "pixels");
-            GBDeviceEventScreenshot devEventScreenshot = mDevEventScreenshot;
-            mDevEventScreenshot = null;
+            LOG.info("Got screenshot : " + screenshotWidth + "x" + screenshotHeight + "  " + "pixels");
+            GBDeviceEventScreenshot devEventScreenshot = new GBDeviceEventScreenshot(encodeScreenshotBmp());
+            screenshotData = null;
             return devEventScreenshot;
         }
         return null;
+    }
+
+    private byte[] encodeScreenshotBmp() {
+        final int FILE_HEADER_SIZE = 14;
+        final int INFO_HEADER_SIZE = 40;
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            ByteBuffer headerbuf = ByteBuffer.allocate(FILE_HEADER_SIZE + INFO_HEADER_SIZE + screenshotClut.length);
+            headerbuf.order(ByteOrder.LITTLE_ENDIAN);
+
+            // file header
+            headerbuf.put((byte) 'B');
+            headerbuf.put((byte) 'M');
+            headerbuf.putInt(0); // size in bytes (uncompressed = 0)
+            headerbuf.putInt(0); // reserved
+            headerbuf.putInt(FILE_HEADER_SIZE + INFO_HEADER_SIZE + screenshotClut.length);
+
+            // info header
+            headerbuf.putInt(INFO_HEADER_SIZE);
+            headerbuf.putInt(screenshotWidth);
+            headerbuf.putInt(-screenshotHeight);
+            headerbuf.putShort((short) 1); // planes
+            headerbuf.putShort((short) screenshotBpp);
+            headerbuf.putInt(0); // compression
+            headerbuf.putInt(0); // length of pixeldata in bytes (uncompressed=0)
+            headerbuf.putInt(0); // pixels per meter (x)
+            headerbuf.putInt(0); // pixels per meter (y)
+            headerbuf.putInt(screenshotClut.length / 4); // number of colors in CLUT
+            headerbuf.putInt(0); // numbers of used colors
+            headerbuf.put(screenshotClut);
+            baos.write(headerbuf.array());
+            int rowbytes = (screenshotWidth * screenshotBpp) / 8;
+            byte[] pad = new byte[rowbytes % 4];
+            for (int i = 0; i < screenshotHeight; i++) {
+                baos.write(screenshotData, rowbytes * i, rowbytes);
+                baos.write(pad);
+            }
+            return baos.toByteArray();
+        } catch (final IOException e) {
+            LOG.warn("Failed to encode screenshot to bpm");
+            return null;
+        }
     }
 
     private GBDeviceEvent[] decodeAction(ByteBuffer buf) {

@@ -18,14 +18,21 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.pebble;
 
 
+import android.location.Location;
 import android.util.Pair;
+
+import net.e175.klaus.solarpositioning.DeltaT;
+import net.e175.klaus.solarpositioning.SPA;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,6 +40,8 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Weather;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.webview.CurrentPosition;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.PebbleUtils;
 
@@ -83,4 +92,21 @@ class AppMessageHandler {
         }
         throw new IOException();
     }
+
+    protected boolean isDay() {
+        GregorianCalendar date = new GregorianCalendar();
+        final Location lastKnownLocation = new CurrentPosition().getLastKnownLocation();
+
+        final GregorianCalendar[] sunriseTransitSet = SPA.calculateSunriseTransitSet(
+                date,
+                lastKnownLocation.getLatitude(),
+                lastKnownLocation.getLongitude(),
+                DeltaT.estimate(date)
+        );
+
+        long inf = sunriseTransitSet[0].getTimeInMillis();
+        long sup = sunriseTransitSet[1].getTimeInMillis();
+        return inf <= date.getTimeInMillis() && date.getTimeInMillis() <= sup;
+    }
+
 }
