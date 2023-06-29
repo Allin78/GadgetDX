@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "nodomain.freeyourgadget.gadgetbridge",
+  "variantName": "mainRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 222,
+      "versionName": "0.74.0",
+      "outputFile": "app-main-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
