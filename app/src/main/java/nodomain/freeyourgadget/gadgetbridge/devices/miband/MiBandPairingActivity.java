@@ -50,6 +50,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+import nodomain.freeyourgadget.gadgetbridge.util.SleepAsAndroidReceiver;
 
 public class MiBandPairingActivity extends AbstractGBActivity implements BondingInterface {
     private static final Logger LOG = LoggerFactory.getLogger(MiBandPairingActivity.class);
@@ -226,6 +227,9 @@ public class MiBandPairingActivity extends AbstractGBActivity implements Bonding
     public void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(pairingReceiver, new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED));
         registerReceiver(bondingReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+        SleepAsAndroidReceiver sr = new SleepAsAndroidReceiver();
+        registerReceiver(sr, new IntentFilter("com.urbandroid.sleep.watch"));
+
     }
 
     public Context getContext() {
