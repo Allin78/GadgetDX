@@ -8,7 +8,7 @@ import android.content.Intent;
 public class SleepAsAndroidReceiver extends BroadcastReceiver {
 
     boolean sendData;
-    float[] accelData = new float[5];
+    float[] accelData=new float[100];
     long batchSize=12;
 
     @Override
@@ -18,14 +18,15 @@ public class SleepAsAndroidReceiver extends BroadcastReceiver {
                 context.sendBroadcast(new Intent("com.urbandroid.sleep.watch.CONFIRM_CONNECTED"));
                 break;
             case "com.urbandroid.sleep.watch.START_TRACKING":
+                // TODO: Add logic to send updates periodically
                 sendData=true;
+
                 Intent dataIntent = new Intent("com.urbandroid.sleep.watch.DATA_UPDATE");
                 dataIntent.setPackage("com.urbandroid.sleep");
-
+                // TODO: Replace dummy values with data gathered from the watch
                 accelData[0] = 10.7f;
                 accelData[1] = 30.3f;
                 accelData[2] = 40.60f;
-
                 dataIntent.putExtra("MAX_RAW_DATA", accelData);
                 context.sendBroadcast(dataIntent);
                 break;
@@ -37,14 +38,9 @@ public class SleepAsAndroidReceiver extends BroadcastReceiver {
                 break;
             case "com.urbandroid.sleep.watch.HINT":
                 // TODO: Make wrist band vibrate
-                boolean dd =false;
-                dd=true;
-                break;
-            case "":
                 break;
             default:
-                boolean dummy =false;
-                dummy=true;
+                // TODO: Log unhandled Intents
         }
     }
 }
