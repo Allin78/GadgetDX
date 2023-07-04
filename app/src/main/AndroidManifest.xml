@@ -53,6 +53,9 @@
     <!-- Used for starting activities from the background with intents -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <!-- Used for running commands in Termux>
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND"  />
+
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="true" />
