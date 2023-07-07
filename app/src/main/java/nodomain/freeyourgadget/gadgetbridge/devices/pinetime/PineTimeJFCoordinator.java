@@ -100,6 +100,11 @@ public class PineTimeJFCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsManualHeartRateMeasurement(GBDevice device) {
+        return false;
+    }
+
+    @Override
     public String getManufacturer() {
         return "Pine64";
     }
