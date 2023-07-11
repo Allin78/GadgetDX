@@ -110,22 +110,25 @@ public class FetchSportsSummaryOperation extends AbstractFetchOperation {
             }
         }
 
-        final boolean superSuccess = super.handleActivityFetchFinish(success);
-        boolean getDetailsSuccess = true;
+        final boolean summarySuccess = success && parseSummarySuccess && summary != null;
 
-        if (summary != null) {
+        if (summarySuccess) {
             final AbstractHuamiActivityDetailsParser detailsParser = ((HuamiActivitySummaryParser) summaryParser).getDetailsParser(summary);
 
-            FetchSportsDetailsOperation nextOperation = new FetchSportsDetailsOperation(summary, detailsParser, getSupport(), getLastSyncTimeKey(), fetchCount);
-            try {
-                nextOperation.perform();
-            } catch (IOException ex) {
-                GB.toast(getContext(), "Unable to fetch activity details: " + ex.getMessage(), Toast.LENGTH_LONG, GB.ERROR, ex);
-                getDetailsSuccess = false;
-            }
+            final FetchSportsDetailsOperation nextOperation = new FetchSportsDetailsOperation(
+                    summary,
+                    detailsParser,
+                    getSupport(),
+                    getLastSyncTimeKey(),
+                    fetchCount
+            );
+
+            getSupport().getFetchOperationsQueue().addFirst(nextOperation);
         }
 
-        return parseSummarySuccess && superSuccess && getDetailsSuccess;
+        super.handleActivityFetchFinish(success);
+
+        return summarySuccess;
     }
 
     @Override

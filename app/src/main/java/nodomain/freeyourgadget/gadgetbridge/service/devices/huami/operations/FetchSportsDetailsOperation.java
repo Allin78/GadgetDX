@@ -35,6 +35,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.Logging;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbip.AmazfitBipService;
 import nodomain.freeyourgadget.gadgetbridge.entities.BaseActivitySummary;
 import nodomain.freeyourgadget.gadgetbridge.export.ActivityTrackExporter;
@@ -142,8 +143,6 @@ public class FetchSportsDetailsOperation extends AbstractFetchOperation {
             }
         }
 
-        final boolean superSuccess = super.handleActivityFetchFinish(success);
-
         if (success && parseSuccess) {
             // Always increment the sync timestamp on success, even if we did not get data
             GregorianCalendar endTime = BLETypeConversions.createCalendar();
@@ -151,17 +150,14 @@ public class FetchSportsDetailsOperation extends AbstractFetchOperation {
             saveLastSyncTimestamp(endTime);
 
             if (needsAnotherFetch(endTime)) {
-                FetchSportsSummaryOperation nextOperation = new FetchSportsSummaryOperation(getSupport(), fetchCount);
-                try {
-                    nextOperation.perform();
-                } catch (IOException ex) {
-                    LOG.error("Error starting another round of fetching activity data", ex);
-                }
+                final FetchSportsSummaryOperation nextOperation = new FetchSportsSummaryOperation(getSupport(), fetchCount);
+                getSupport().getFetchOperationsQueue().addFirst(nextOperation);
             }
         }
 
+        super.handleActivityFetchFinish(success);
 
-        return superSuccess && parseSuccess;
+        return success && parseSuccess;
     }
 
     private boolean needsAnotherFetch(GregorianCalendar lastSyncTimestamp) {

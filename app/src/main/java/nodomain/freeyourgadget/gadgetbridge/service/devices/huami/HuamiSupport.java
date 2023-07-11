@@ -56,6 +56,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Deque;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -339,7 +340,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     protected Huami2021ChunkedEncoder huami2021ChunkedEncoder;
     protected Huami2021ChunkedDecoder huami2021ChunkedDecoder;
 
-    private final Queue<AbstractFetchOperation> fetchOperationQueue = new LinkedList<>();
+    private final Deque<AbstractFetchOperation> fetchOperationQueue = new LinkedList<>();
 
     public HuamiSupport() {
         this(LOG);
@@ -1698,8 +1699,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
     }
 
-    public AbstractFetchOperation getNextFetchOperation() {
-        return fetchOperationQueue.poll();
+    public Deque<AbstractFetchOperation> getFetchOperationsQueue() {
+        return fetchOperationQueue;
     }
 
     @Override
