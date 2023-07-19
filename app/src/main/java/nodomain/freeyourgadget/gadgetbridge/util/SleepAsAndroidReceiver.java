@@ -1,9 +1,10 @@
 package nodomain.freeyourgadget.gadgetbridge.util;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 
 public class SleepAsAndroidReceiver extends BroadcastReceiver {
 
@@ -38,6 +39,11 @@ public class SleepAsAndroidReceiver extends BroadcastReceiver {
                 break;
             case "com.urbandroid.sleep.watch.HINT":
                 // TODO: Make wrist band vibrate
+                break;
+            case DeviceService.ACTION_REALTIME_SAMPLES:
+                ActivitySample sample = (ActivitySample) intent.getSerializableExtra(DeviceService.EXTRA_REALTIME_SAMPLE);
+                sample.getHeartRate();
+                // TODO: forward heart rate to SleepAsAndroid
                 break;
             default:
                 // TODO: Log unhandled Intents

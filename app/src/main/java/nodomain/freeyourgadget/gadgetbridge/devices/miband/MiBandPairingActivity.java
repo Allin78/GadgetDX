@@ -44,6 +44,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.DiscoveryActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BondingInterface;
 import nodomain.freeyourgadget.gadgetbridge.util.BondingUtil;
@@ -227,7 +228,10 @@ public class MiBandPairingActivity extends AbstractGBActivity implements Bonding
     public void registerBroadcastReceivers() {
         LocalBroadcastManager.getInstance(this).registerReceiver(pairingReceiver, new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED));
         registerReceiver(bondingReceiver, new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
-        registerReceiver(new SleepAsAndroidReceiver(), new IntentFilter("com.urbandroid.sleep.watch"));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.urbandroid.sleep.watch");
+        filter.addAction(DeviceService.ACTION_REALTIME_SAMPLES);
+        registerReceiver(new SleepAsAndroidReceiver(), filter);
     }
 
     public Context getContext() {
