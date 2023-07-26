@@ -2546,6 +2546,8 @@
         <item>@string/weeksleepchart_sleep_a_week</item>
         <item>@string/weeksleepchart_sleep_a_month</item>
         <item>@string/weekstepschart_steps_a_month</item>
+        <item>@string/menuitem_stress</item>
+        <item>@string/menuitem_pai</item>
         <item>@string/stats_title</item>
         <item>@string/liveactivity_live_activity</item>
     </string-array>
@@ -2556,6 +2558,8 @@
         <item>@string/p_sleep</item>
         <item>@string/p_sleep_week</item>
         <item>@string/p_steps_week</item>
+        <item>@string/p_stress</item>
+        <item>@string/p_pai</item>
         <item>@string/p_speed_zones</item>
         <item>@string/p_live_stats</item>
     </string-array>
@@ -2566,6 +2570,8 @@
         <item>@string/p_sleep</item>
         <item>@string/p_sleep_week</item>
         <item>@string/p_steps_week</item>
+        <item>@string/p_stress</item>
+        <item>@string/p_pai</item>
         <item>@string/p_speed_zones</item>
         <item>@string/p_live_stats</item>
     </string-array>

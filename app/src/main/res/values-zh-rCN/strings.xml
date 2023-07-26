@@ -2244,4 +2244,27 @@
     <string name="pref_app_logs_start_summary">在手表应用里开始日志</string>
     <string name="pref_app_logs_stop_summary">在手表应用里停止日志</string>
     <string name="fwapp_install_device_not_supported">无法安装文件，设备不被支持。</string>
+    <string name="screenshot_taken">已截图</string>
+    <string name="share_screenshot">分享屏幕截图</string>
+    <string name="stress_high">高</string>
+    <string name="charts_legend_stress_average">压力平均值</string>
+    <string name="stress_mild">温和</string>
+    <string name="stress_moderate">缓和</string>
+    <string name="stress_relaxed">放松</string>
+    <string name="watchface_widget_type_uv_index">紫外线指数</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">仅当使用手机的 GPS 数据时，此选项才有效。此选项设置更新 GPS 位置的频率（以毫秒为单位）</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">GPS 数据更新间隔（以毫秒为单位）</string>
+    <string name="title">标题</string>
+    <string name="status_icon">状态图标</string>
+    <string name="preview_image">图片预览</string>
+    <string name="description">描述</string>
+    <string name="changelog_full_title">变更日志</string>
+    <string name="changelog_show_full">更多…</string>
+    <string name="changelog_ok_button">好</string>
+    <string name="changelog_title">新功能</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">仅当使用手机的 GPS 数据时，此选项才有效。此选项可用于仅使用网络提供商来确定位置。这降低了功耗，但以精度为代价。需要重新连接设备。</string>
+    <string name="pref_title_banglejs_phone_gps_enbale">使用手机的GPS数据</string>
+    <string name="pref_summary_banglejs_phone_gps_enbale">使用手机的GPS数据覆盖手环设备的GPS数据</string>
+    <string name="action_changelog">更改日志</string>
+    <string name="pref_title_banglejs_phone_gps_network_only">仅使用网络来确定位置</string>
 </resources>

@@ -56,6 +56,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.FindPhoneActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AbstractAppManagerFragment;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.LoyaltyCard;
 import nodomain.freeyourgadget.gadgetbridge.database.DBAccess;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
@@ -394,6 +395,7 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
             intent.setAction(android.content.Intent.ACTION_VIEW);
             Uri screenshotURI = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".screenshot_provider", new File(fullpath));
             intent.setDataAndType(screenshotURI, "image/*");
+            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             PendingIntent pIntent = PendingIntentUtils.getActivity(context, 0, intent, 0, false);
 
@@ -634,6 +636,16 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
      */
     @Override
     public void onSetReminders(ArrayList<? extends Reminder> reminders) {
+
+    }
+
+    /**
+     * If loyalty cards can be set on the device, this method can be
+     * overridden and implemented by the device support class.
+     * @param cards {@link java.util.ArrayList} containing {@link LoyaltyCard} instances
+     */
+    @Override
+    public void onSetLoyaltyCards(ArrayList<LoyaltyCard> cards) {
 
     }
 

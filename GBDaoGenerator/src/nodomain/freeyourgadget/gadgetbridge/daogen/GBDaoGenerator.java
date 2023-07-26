@@ -91,8 +91,10 @@ public class GBDaoGenerator {
         addFitProActivitySample(schema, user, device);
         addPineTimeActivitySample(schema, user, device);
         addWithingsSteelHRActivitySample(schema, user, device);
-
         addHybridHRActivitySample(schema, user, device);
+        addVivomoveHrActivitySample(schema, user, device);
+        addGarminFitFile(schema, user, device);
+
         addCalendarSyncState(schema, device);
         addAlarms(schema, user, device);
         addReminders(schema, user, device);
@@ -460,6 +462,48 @@ public class GBDaoGenerator {
         activitySample.addByteProperty("wear_type").notNull();
         addHeartRateProperties(activitySample);
         return activitySample;
+    }
+
+    private static Entity addVivomoveHrActivitySample(Schema schema, Entity user, Entity device) {
+        final Entity activitySample = addEntity(schema, "VivomoveHrActivitySample");
+        activitySample.implementsSerializable();
+        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        activitySample.addIntProperty(SAMPLE_STEPS).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_RAW_INTENSITY).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty(SAMPLE_HEART_RATE).notNull().codeBeforeGetterAndSetter(OVERRIDE);
+        activitySample.addIntProperty("caloriesBurnt");
+        activitySample.addIntProperty("floorsClimbed");
+        return activitySample;
+    }
+
+    private static Entity addGarminFitFile(Schema schema, Entity user, Entity device) {
+        final Entity downloadedFitFile = addEntity(schema, "GarminFitFile");
+        downloadedFitFile.implementsSerializable();
+        downloadedFitFile.setJavaDoc("This class represents a single FIT file downloaded from a FIT-compatible Garmin device.");
+        downloadedFitFile.addIdProperty().autoincrement();
+        downloadedFitFile.addLongProperty("downloadTimestamp").notNull();
+        final Property deviceId = downloadedFitFile.addLongProperty("deviceId").notNull().getProperty();
+        downloadedFitFile.addToOne(device, deviceId);
+        final Property userId = downloadedFitFile.addLongProperty("userId").notNull().getProperty();
+        downloadedFitFile.addToOne(user, userId);
+        final Property fileNumber = downloadedFitFile.addIntProperty("fileNumber").notNull().getProperty();
+        downloadedFitFile.addIntProperty("fileDataType").notNull();
+        downloadedFitFile.addIntProperty("fileSubType").notNull();
+        downloadedFitFile.addLongProperty("fileTimestamp").notNull();
+        downloadedFitFile.addIntProperty("specificFlags").notNull();
+        downloadedFitFile.addIntProperty("fileSize").notNull();
+        downloadedFitFile.addByteArrayProperty("fileData");
+
+        final Index indexUnique = new Index();
+        indexUnique.addProperty(deviceId);
+        indexUnique.addProperty(userId);
+        indexUnique.addProperty(fileNumber);
+        indexUnique.makeUnique();
+
+        downloadedFitFile.addIndex(indexUnique);
+
+        return downloadedFitFile;
     }
 
     private static Entity addWatchXPlusHealthActivitySample(Schema schema, Entity user, Entity device) {

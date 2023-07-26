@@ -391,7 +391,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     public void onSetTime() {
         // Since this is a standard we should generalize this in Gadgetbridge (properly)
         GregorianCalendar now = BLETypeConversions.createCalendar();
-        byte[] bytesCurrentTime = BLETypeConversions.calendarToCurrentTime(now);
+        byte[] bytesCurrentTime = BLETypeConversions.calendarToCurrentTime(now, 0);
         byte[] bytesLocalTime = BLETypeConversions.calendarToLocalTime(now);
 
         TransactionBuilder builder = new TransactionBuilder("set time");
@@ -425,7 +425,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                         .setKeepBond(true)
                         .setForeground(false)
                         .setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(false)
-                        .setMtu(517)
+                        .setMtu(23)
                         .setZip(uri);
 
                 controller = starter.start(getContext(), PineTimeDFUService.class);

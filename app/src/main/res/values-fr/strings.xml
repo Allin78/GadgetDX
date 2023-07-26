@@ -1517,7 +1517,7 @@ Temps de sommeil préféré en heures</string>
     <string name="pref_media_rewind">Piste précédente</string>
     <string name="pref_device_action_broadcast">Envoyer un message Broadcast</string>
     <string name="distance_format_meters">###m</string>
-    <string name="pref_media_forward">Piste suivante</string>
+    <string name="pref_media_forward">Avance rapide</string>
     <string name="distance_format_kilometers">###.#km</string>
     <string name="distance_format_feet">###ft</string>
     <string name="about_hash">Commit %s</string>
@@ -2248,4 +2248,27 @@ Temps de sommeil préféré en heures</string>
     <string name="pref_app_logs_title">Logs de l\'app</string>
     <string name="pref_app_logs_stop_summary">Arrêter les logs pour les apps de la montre</string>
     <string name="fwapp_install_device_not_supported">Le fichier ne peut pas être installé, l\'appareil n\'est pas supporté.</string>
+    <string name="share_screenshot">Partager la capture écran</string>
+    <string name="screenshot_taken">Capture écran faite</string>
+    <string name="stress_relaxed">Relaxé</string>
+    <string name="stress_mild">Moyen</string>
+    <string name="stress_moderate">Modéré</string>
+    <string name="stress_high">Élevé</string>
+    <string name="charts_legend_stress_average">Stress moyen</string>
+    <string name="watchface_widget_type_uv_index">Index UV</string>
+    <string name="action_changelog">Journal des modifications</string>
+    <string name="pref_title_banglejs_phone_gps_enbale">Utiliser les données GPS du téléphone</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">Cette option est active uniquement si les données GPS du téléphone sont utilisées. Cette option pernet d\'utiliser uniquement le réseau pour déterminer la position. Cela réduit la consommation au sacrifice de la précision. Une reconnexion de l\'appareil est nécessaire.</string>
+    <string name="pref_summary_banglejs_phone_gps_enbale">Utiliser les données GPS du téléphone à la place des données de l\'appareil bangle</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">Intervalle de mise à jour du GPS en ms</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">Cette option est active uniquement si le GPS du téléphone est utilisé. Cette option configure l\'intervalle en ms de mise à jour du GPS</string>
+    <string name="preview_image">Aperçu</string>
+    <string name="changelog_title">Quoi de neuf</string>
+    <string name="description">Description</string>
+    <string name="status_icon">Icône d\'état</string>
+    <string name="changelog_show_full">Plus…</string>
+    <string name="changelog_full_title">Journal des modifications</string>
+    <string name="changelog_ok_button">OK</string>
+    <string name="pref_title_banglejs_phone_gps_network_only">Utiliser le réseau uniquement pour déterminer la position</string>
+    <string name="title">Titre</string>
 </resources>

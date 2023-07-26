@@ -84,7 +84,7 @@
     <string name="pref_title_canned_messages_dismisscall">התעלמות משיחות</string>
     <string name="pref_title_canned_messages_set">עדכון במכשיר</string>
     <string name="pref_header_development">אפשרויות פיתוח</string>
-    <string name="pref_title_development_miaddr">כתובת </string>
+    <string name="pref_title_development_miaddr">כתובת Mi Band</string>
     <string name="pref_title_pebble_settings">הגדרות Pebble</string>
     <string name="pref_header_activitytrackers">עוקבי פעילות</string>
     <string name="pref_title_pebble_activitytracker">עוקב פעילות מועדף</string>
@@ -1992,7 +1992,7 @@
     <string name="prefs_always_on_display_follow_watchface">הסגנון הוא כמו פני השעון</string>
     <string name="prefs_always_on_display_style">סגנון</string>
     <string name="menuitem_sun_moon">שמש וירח</string>
-    <string name="menuitem_todo">רשימת מטלות</string>
+    <string name="menuitem_todo">מטלות</string>
     <string name="menuitem_calendar">לוח שנה</string>
     <string name="menuitem_volume">עצמת שמע</string>
     <string name="menuitem_theater_mode">מצב תיאטרון</string>
@@ -2243,4 +2243,27 @@
     <string name="pref_app_logs_title">יומני היישומונים</string>
     <string name="pref_app_logs_stop_summary">עצירת תיעוד מיישומוני השעון</string>
     <string name="fwapp_install_device_not_supported">אי אפשר להתקין את הקובץ, המכשיר לא נתמך.</string>
+    <string name="share_screenshot">שיתוף צילום מסך</string>
+    <string name="screenshot_taken">המסך צולם</string>
+    <string name="charts_legend_stress_average">ממוצע לחץ</string>
+    <string name="stress_mild">בינוני</string>
+    <string name="stress_moderate">מתון</string>
+    <string name="stress_high">גבוה</string>
+    <string name="stress_relaxed">רגוע</string>
+    <string name="watchface_widget_type_uv_index">מדד קרינה אולטרה סגולה</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">הפרש בין עדכוני נתוני נווטן במילישניות</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">האפשרות הזאת פעילה בלבד אם נעשה שימוש בנתוני הנווטן של הטלפון. אפשר להשתמש באפשרות הזאת כדי להשתמש רק ברשת כדי לזהות את המיקום. מפחית את צריכת הסוללה בתמורה לדיוק. נדרש חיבור מחדש למכשיר.</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">האפשרות הזאת פעילה רק אם נעשה שימוש בנתוני הנווטן של הטלפון. אפשרות זו מגדיר את ההפרש במילישניות לעדכון מיקום הנווטן</string>
+    <string name="pref_title_banglejs_phone_gps_enbale">להשתמש בנתוני הנווטן של הטלפון</string>
+    <string name="changelog_show_full">עוד…</string>
+    <string name="preview_image">תמונת תצוגה מקדימה</string>
+    <string name="description">תיאור</string>
+    <string name="action_changelog">יומן שינויים</string>
+    <string name="status_icon">סמל מצב</string>
+    <string name="title">כותרת</string>
+    <string name="pref_summary_banglejs_phone_gps_enbale">להשתמש בנתוני הנווטן של הטלפון כדי לדרוס את נתוני הנווטן של מכשיר ה־bangle</string>
+    <string name="pref_title_banglejs_phone_gps_network_only">להשתמש רק ברשת כדי למצוא מיקום</string>
+    <string name="changelog_full_title">יומן שינויים</string>
+    <string name="changelog_ok_button">אישור</string>
+    <string name="changelog_title">מה חדש</string>
 </resources>

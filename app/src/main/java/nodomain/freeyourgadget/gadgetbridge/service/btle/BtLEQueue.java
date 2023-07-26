@@ -82,6 +82,7 @@ public final class BtLEQueue {
     private final InternalGattServerCallback internalGattServerCallback;
     private boolean mAutoReconnect;
     private boolean mImplicitGattCallbackModify = true;
+    private boolean mSendWriteRequestResponse = false;
 
     private Thread dispatchThread = new Thread("Gadgetbridge GATT Dispatcher") {
 
@@ -219,6 +220,10 @@ public final class BtLEQueue {
 
     public void setImplicitGattCallbackModify(final boolean enable) {
         mImplicitGattCallbackModify = enable;
+    }
+
+    public void setSendWriteRequestResponse(final boolean enable) {
+        mSendWriteRequestResponse = enable;
     }
 
     protected boolean isConnected() {
@@ -760,9 +765,8 @@ public final class BtLEQueue {
             if (getCallbackToUse() != null) {
                 success = getCallbackToUse().onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
             }
-
-            if (responseNeeded) {
-                mBluetoothGattServer.sendResponse(device, requestId, success? BluetoothGatt.GATT_SUCCESS : BluetoothGatt.GATT_FAILURE, 0, new byte[0]);
+            if (responseNeeded && mSendWriteRequestResponse) {
+                mBluetoothGattServer.sendResponse(device, requestId, success ? BluetoothGatt.GATT_SUCCESS : BluetoothGatt.GATT_FAILURE, 0, new byte[0]);
             }
         }
 
@@ -787,11 +791,9 @@ public final class BtLEQueue {
             if(getCallbackToUse() != null) {
                 success = getCallbackToUse().onDescriptorWriteRequest(device, requestId, descriptor, preparedWrite, responseNeeded, offset, value);
             }
-
-            if (responseNeeded) {
-                mBluetoothGattServer.sendResponse(device, requestId, success? BluetoothGatt.GATT_SUCCESS : BluetoothGatt.GATT_FAILURE, 0, new byte[0]);
+            if (responseNeeded && mSendWriteRequestResponse) {
+                mBluetoothGattServer.sendResponse(device, requestId, success ? BluetoothGatt.GATT_SUCCESS : BluetoothGatt.GATT_FAILURE, 0, new byte[0]);
             }
         }
     }
-
 }

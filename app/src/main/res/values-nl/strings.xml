@@ -2244,4 +2244,27 @@
     <string name="pref_app_logs_title">App-logboeken</string>
     <string name="pref_app_logs_stop_summary">Loggen vanuit horloge-apps stoppen</string>
     <string name="fwapp_install_device_not_supported">Bestand kan niet worden geïnstalleerd, apparaat wordt niet ondersteund.</string>
+    <string name="share_screenshot">Schermafbeelding delen</string>
+    <string name="screenshot_taken">Schermafbeelding gemaakt</string>
+    <string name="charts_legend_stress_average">Stress gemiddeld</string>
+    <string name="watchface_widget_type_uv_index">UV-index</string>
+    <string name="stress_relaxed">Ontspannen</string>
+    <string name="stress_mild">Mild</string>
+    <string name="stress_moderate">Matig</string>
+    <string name="stress_high">Hoog</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">Deze optie is alleen actief als de GPS-gegevens van de telefoon worden gebruikt. Deze optie kan worden gebruikt om alleen de netwerkprovider te gebruiken om de locatie te bepalen. Dit vermindert het stroomverbruik ten koste van de nauwkeurigheid. Het apparaat moet opnieuw worden verbonden.</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">Update-interval GPS-gegevens in ms</string>
+    <string name="action_changelog">Wijzigingenlijst</string>
+    <string name="pref_title_banglejs_phone_gps_enbale">Gebruik GPS-gegevens van telefoon</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">Deze optie is alleen actief als de GPS-gegevens van de telefoon worden gebruikt. Deze optie stelt het interval in ms in hoe vaak de GPS-positie wordt bijgewerkt</string>
+    <string name="pref_title_banglejs_phone_gps_network_only">Gebruik alleen het netwerk om de locatie te bepalen</string>
+    <string name="pref_summary_banglejs_phone_gps_enbale">Gebruik de GPS-gegevens van de telefoon om de GPS-gegevens van het Bangle-apparaat te overschrijven</string>
+    <string name="changelog_title">Wat is er nieuw</string>
+    <string name="description">Beschrijving</string>
+    <string name="preview_image">Voorbeeldafbeelding</string>
+    <string name="changelog_full_title">Wijzigingenlijst</string>
+    <string name="status_icon">Statuspictogram</string>
+    <string name="changelog_show_full">Meer…</string>
+    <string name="changelog_ok_button">OK</string>
+    <string name="title">Titel</string>
 </resources>

@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.devicesettings;
 
 public class DeviceSettingsPreferenceConst {
+    public static final String PREF_HEADER_APPS = "pref_header_apps";
     public static final String PREF_HEADER_TIME = "pref_header_time";
     public static final String PREF_HEADER_DISPLAY = "pref_header_display";
     public static final String PREF_HEADER_HEALTH = "pref_header_health";
@@ -80,6 +81,7 @@ public class DeviceSettingsPreferenceConst {
 
     public static final String PREF_DEVICE_GPS_UPDATE = "banglejs_gps_update";
     public static final String PREF_DEVICE_GPS_UPDATE_INTERVAL = "banglejs_gps_update_interval";
+    public static final String PREF_DEVICE_GPS_USE_NETWORK_ONLY = "banglejs_gps_use_network_only";
 
     public static final String PREF_DEVICE_INTERNET_ACCESS = "device_internet_access";
     public static final String PREF_DEVICE_INTENTS = "device_intents";
