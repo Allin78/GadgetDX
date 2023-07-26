@@ -184,6 +184,12 @@ public class WithingsSteelHRDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
+    public boolean getSendWriteRequestResponse() {
+        return true;
+    }
+
+
+    @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         logger.debug("Starting initialization...");
         conversationQueue = new ConversationQueue(this);
