@@ -51,6 +51,8 @@ vendor's servers.
     - Casio GB-X6900B
     - Casio GB-6900B
     - Casio GB-5600B
+    - Casio GW-B5600
+    - Casio GMW-B5000 (untested)
     - Casio STB-1000
     - Casio GBX-100
     - Casio GBD-100
@@ -66,12 +68,15 @@ vendor's servers.
     - [Galaxy Buds Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds-pro)
     - [Galaxy Buds2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds2)
     - [Galaxy Buds2 Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds2-pro)
-
+- Garmin
+    - Vívomove HR
 - [HPlus Devices (e.g. ZeBand)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/HPlus)
 - ID115
 - [iTag](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/iTag)
 - JYou Y5
 - Lefun
+  - Lefun ID115 Plus
+  - Other clones: bohemic smart bracelet
 - Lenovo
 	- Watch 9
 	- [Watch X (Plus)](https://codeberg.org/mamutcho/Gadgetbridge/wiki)

@@ -43,7 +43,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.widget.Toast;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,35 +50,27 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventAppInfo;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.LoyaltyCard;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventScreenshot;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
-import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Service;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
@@ -98,12 +89,12 @@ import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Contact;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattCharacteristic;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
@@ -121,6 +112,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.service
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsDisplayItemsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsHttpService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsLogsService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsLoyaltyCardService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsMusicService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsNotificationService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsRemindersService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsServicesService;
@@ -137,9 +130,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
-import nodomain.freeyourgadget.gadgetbridge.util.MapUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFileTransferService.Callback {
     private static final Logger LOG = LoggerFactory.getLogger(Huami2021Support.class);
@@ -147,6 +138,9 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     // Tracks whether realtime HR monitoring is already started, so we can just
     // send CONTINUE commands
     private boolean heartRateRealtimeStarted;
+
+    // Keep track of whether the rawSensor is enabled
+    private boolean rawSensor = false;
 
     // Services
     private final ZeppOsServicesService servicesService = new ZeppOsServicesService(this);
@@ -170,6 +164,8 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     private final ZeppOsDisplayItemsService displayItemsService = new ZeppOsDisplayItemsService(this);
     private final ZeppOsHttpService httpService = new ZeppOsHttpService(this);
     private final ZeppOsRemindersService remindersService = new ZeppOsRemindersService(this);
+    private final ZeppOsLoyaltyCardService loyaltyCardService = new ZeppOsLoyaltyCardService(this);
+    private final ZeppOsMusicService musicService = new ZeppOsMusicService(this);
 
     private final Map<Short, AbstractZeppOsService> mServiceMap = new LinkedHashMap<Short, AbstractZeppOsService>() {{
         put(servicesService.getEndpoint(), servicesService);
@@ -193,6 +189,8 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
         put(displayItemsService.getEndpoint(), displayItemsService);
         put(httpService.getEndpoint(), httpService);
         put(remindersService.getEndpoint(), remindersService);
+        put(loyaltyCardService.getEndpoint(), loyaltyCardService);
+        put(musicService.getEndpoint(), musicService);
     }};
 
     public Huami2021Support() {
@@ -226,6 +224,20 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     public void onSendConfiguration(final String config) {
         final Prefs prefs = getDevicePrefs();
 
+        // FIXME: This should not be handled here
+        switch (config) {
+            case ActivityUser.PREF_USER_STEPS_GOAL:
+            case ActivityUser.PREF_USER_CALORIES_BURNT:
+            case ActivityUser.PREF_USER_SLEEP_DURATION:
+            case ActivityUser.PREF_USER_GOAL_WEIGHT_KG:
+            case ActivityUser.PREF_USER_GOAL_STANDING_TIME_HOURS:
+            case ActivityUser.PREF_USER_GOAL_FAT_BURN_TIME_MINUTES:
+                final TransactionBuilder builder = createTransactionBuilder("set fitness goal");
+                setFitnessGoal(builder);
+                builder.queue(getQueue());
+                return;
+        }
+
         // Check if any of the services handles this config
         for (AbstractZeppOsService service : mServiceMap.values()) {
             if (service.onSendConfiguration(config, prefs)) {
@@ -233,18 +245,14 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
             }
         }
 
+        LOG.warn("Unhandled config {}, will pass to HuamiSupport", config);
+
         super.onSendConfiguration(config);
     }
 
     @Override
     public void onTestNewFunction() {
-        try {
-            final TransactionBuilder builder = performInitialized("test");
-            //requestMTU(247);
-            builder.queue(getQueue());
-        } catch (final Exception e) {
-            LOG.error("Failed to test new function", e);
-        }
+        setRawSensor(!rawSensor);
     }
 
     @Override
@@ -515,6 +523,11 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     }
 
     @Override
+    public void onSetLoyaltyCards(final ArrayList<LoyaltyCard> cards) {
+        loyaltyCardService.setCards(cards);
+    }
+
+    @Override
     public void onSetContacts(ArrayList<? extends Contact> contacts) {
         contactsService.setContacts((List<Contact>) contacts);
     }
@@ -549,17 +562,12 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
 
     @Override
     public void onSetPhoneVolume(final float volume) {
-        // FIXME: we need to send the music info and state as well, or it breaks the info
-        sendMusicStateToDevice(bufferMusicSpec, bufferMusicStateSpec);
+        musicService.sendVolume(volume);
     }
 
-    protected void sendMusicStateToDevice(final MusicSpec musicSpec,
-                                          final MusicStateSpec musicStateSpec) {
-        byte[] cmd = ArrayUtils.addAll(new byte[]{MUSIC_CMD_MEDIA_INFO}, encodeMusicState(musicSpec, musicStateSpec, true));
-
-        LOG.info("sendMusicStateToDevice: {}, {}", musicSpec, musicStateSpec);
-
-        writeToChunked2021("send playback info", CHUNKED2021_ENDPOINT_MUSIC, cmd, false);
+    @Override
+    protected void sendMusicStateToDevice(final MusicSpec musicSpec, final MusicStateSpec musicStateSpec) {
+        musicService.sendMusicState(musicSpec, musicStateSpec);
     }
 
     @Override
@@ -574,13 +582,34 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
         final ZeppOsAgpsInstallHandler agpsHandler = new ZeppOsAgpsInstallHandler(uri, getContext());
         if (agpsHandler.isValid()) {
             try {
-                new ZeppOsAgpsUpdateOperation(
-                        this,
-                        agpsHandler.getFile(),
-                        agpsService,
-                        fileTransferService,
-                        configService
-                ).perform();
+                if (getCoordinator().sendAgpsAsFileTransfer()) {
+                    LOG.info("Sending AGPS as file transfer");
+                    new ZeppOsAgpsUpdateOperation(
+                            this,
+                            agpsHandler.getFile(),
+                            agpsService,
+                            fileTransferService,
+                            configService
+                    ).perform();
+                } else {
+                    LOG.info("Sending AGPS as firmware update");
+
+                    // Write the agps epo update to a temporary file in cache, so we can reuse the firmware update operation
+                    final File cacheDir = getContext().getCacheDir();
+                    final File agpsCacheDir = new File(cacheDir, "zepp-os-agps");
+                    agpsCacheDir.mkdir();
+                    final File uihhFile = new File(agpsCacheDir, "epo-agps.uihh");
+
+                    try (FileOutputStream outputStream = new FileOutputStream(uihhFile)) {
+                        outputStream.write(agpsHandler.getFile().getUihhBytes());
+                    } catch (final IOException e) {
+                        LOG.error("Failed to write agps bytes to temporary uihhFile", e);
+                        return;
+                    }
+
+                    new UpdateFirmwareOperation2021(Uri.parse(uihhFile.toURI().toString()), this).perform();
+                }
+
             } catch (final Exception e) {
                 GB.toast(getContext(), "AGPS file cannot be installed: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
             }
@@ -714,10 +743,15 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     }
 
     @Override
+    public HuamiSupport enableNotifications(final TransactionBuilder builder, final boolean enable) {
+        builder.notify(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_CHUNKEDTRANSFER_2021_READ), enable);
+        return this;
+    }
+
+    @Override
     public Huami2021Support enableFurtherNotifications(final TransactionBuilder builder,
                                                        final boolean enable) {
-        builder.notify(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_CHUNKEDTRANSFER_2021_READ), enable);
-
+        // Nothing to do here, they are already enabled from enableNotifications
         return this;
     }
 
@@ -968,6 +1002,8 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     @Override
     protected void setRawSensor(final boolean enable) {
         LOG.info("Set raw sensor to {}", enable);
+        rawSensor = enable;
+
         try {
             final TransactionBuilder builder = performInitialized("set raw sensor");
             if (enable) {
@@ -986,7 +1022,51 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
 
     @Override
     protected void handleRawSensorData(final byte[] value) {
-        LOG.debug("Raw sensor: {}", GB.hexdump(value));
+        // The g values seem to vary between -4100 and 4100, so we scale them
+        final float scaleFactor = 4100f;
+        final float gravity = -9.81f;
+
+        final ByteBuffer buf = ByteBuffer.wrap(value).order(ByteOrder.LITTLE_ENDIAN);
+        final byte type = buf.get();
+        final int index = buf.get() & 0xff; // always incrementing, for each type
+
+        if (type == 0x00) {
+            // g-sensor x y z values, per second
+            if ((value.length - 2) % 6 != 0) {
+                LOG.warn("Raw sensor value for type 0 not divisible by 6");
+                return;
+            }
+
+            for (int i = 2; i < value.length; i += 6) {
+                final int x = (BLETypeConversions.toUint16(value, i) << 16) >> 16;
+                final int y = (BLETypeConversions.toUint16(value, i + 2) << 16) >> 16;
+                final int z = (BLETypeConversions.toUint16(value, i + 4) << 16) >> 16;
+
+                final float gx = (x * gravity) / scaleFactor;
+                final float gy = (y * gravity) / scaleFactor;
+                final float gz = (z * gravity) / scaleFactor;
+
+                LOG.info("Raw sensor g: x={} y={} z={}", gx, gy, gz);
+            }
+        } else if (type == 0x01) {
+            // TODO not sure what this is?
+            if ((value.length - 2) % 4 != 0) {
+                LOG.warn("Raw sensor value for type 1 not divisible by 4");
+                return;
+            }
+
+            for (int i = 2; i < value.length; i += 4) {
+                int val = BLETypeConversions.toUint32(value, i);
+                LOG.info("Raw sensor 1: {}", val);
+            }
+        } else if (type == 0x07) {
+            // Timestamp for the targetType, sent in intervals of ~10 seconds
+            final int targetType = buf.get() & 0xff;
+            final long tsMillis = buf.getLong();
+            LOG.debug("Raw sensor timestamp for type={} index={}: {}", targetType, index, new Date(tsMillis));
+        } else {
+            LOG.warn("Unknown raw sensor type: {}", GB.hexdump(value));
+        }
     }
 
     @Override
@@ -1038,9 +1118,6 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
                 return;
             case CHUNKED2021_ENDPOINT_SILENT_MODE:
                 handle2021SilentMode(payload);
-                return;
-            case CHUNKED2021_ENDPOINT_MUSIC:
-                handle2021Music(payload);
                 return;
             default:
                 LOG.warn("Unhandled 2021 payload {}", String.format("0x%04x", type));
@@ -1265,55 +1342,6 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
                 return;
             default:
                 LOG.warn("Unexpected silent mode payload byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    protected void handle2021Music(final byte[] payload) {
-        switch (payload[0]) {
-            case MUSIC_CMD_APP_STATE:
-                switch (payload[1]) {
-                    case MUSIC_APP_OPEN:
-                        onMusicAppOpen();
-                        break;
-                    case MUSIC_APP_CLOSE:
-                        onMusicAppClosed();
-                        break;
-                    default:
-                        LOG.warn("Unexpected music app state {}", String.format("0x%02x", payload[1]));
-                        break;
-                }
-                return;
-
-            case MUSIC_CMD_BUTTON_PRESS:
-                LOG.info("Got music button press");
-                final GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
-                switch (payload[1]) {
-                    case MUSIC_BUTTON_PLAY:
-                        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.PLAY;
-                        break;
-                    case MUSIC_BUTTON_PAUSE:
-                        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.PAUSE;
-                        break;
-                    case MUSIC_BUTTON_NEXT:
-                        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.NEXT;
-                        break;
-                    case MUSIC_BUTTON_PREVIOUS:
-                        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.PREVIOUS;
-                        break;
-                    case MUSIC_BUTTON_VOLUME_UP:
-                        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.VOLUMEUP;
-                        break;
-                    case MUSIC_BUTTON_VOLUME_DOWN:
-                        deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.VOLUMEDOWN;
-                        break;
-                    default:
-                        LOG.warn("Unexpected music button {}", String.format("0x%02x", payload[1]));
-                        return;
-                }
-                evaluateGBDeviceEvent(deviceEventMusicControl);
-                return;
-            default:
-                LOG.warn("Unexpected music byte {}", String.format("0x%02x", payload[0]));
         }
     }
 
