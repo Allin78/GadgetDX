@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -580,6 +581,18 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         wfFactory.setSettings(watchfaceSettings);
         wfFactory.setBackground(selectedBackgroundImage);
         wfFactory.addWidgets(widgets);
+
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
+        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "");
+        if(!menuStructureJson.isEmpty()){
+            try {
+                JSONObject menuStructure = new JSONObject(menuStructureJson);
+                wfFactory.setMenuStructure(menuStructure);
+            } catch (JSONException e) {
+                LOG.error("Error loading menu structure", e);
+            }
+        }
+
         try {
             File tempFile = File.createTempFile("tmpWatchfaceFile", null);
             tempFile.deleteOnExit();

@@ -1069,6 +1069,28 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
     }
 
     @Override
+    public void handleSetMenuStructure(JSONObject menuStructure) {
+        String serialized = menuStructure.toString();
+        getDeviceSpecificPreferences()
+                .edit()
+                .putString("MENU_STRUCTURE_JSON", serialized)
+                .apply();
+
+        try {
+            String payload = new JSONObject()
+                    .put("push", new JSONObject()
+                            .put("set", new JSONObject()
+                                    .put("customWatchFace._.config.menu_structure", menuStructure)
+                            )
+                    ).toString();
+            pushConfigJson(payload);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
     public void setWidgetContent(String widgetID, String content, boolean renderOnWatch) {
         boolean update = false;
         for (Widget widget : widgets) {
