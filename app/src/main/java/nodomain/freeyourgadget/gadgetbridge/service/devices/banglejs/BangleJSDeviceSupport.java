@@ -41,6 +41,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
@@ -525,9 +526,23 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 evaluateGBDeviceEvent(deviceEventFindPhone);
             } break;
             case "music": {
-                GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
-                deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(json.getString("n").toUpperCase());
-                evaluateGBDeviceEvent(deviceEventMusicControl);
+                if (json.getString("n").equals("volumesetlevel")) { // This part is heavily inspired by `GBDeviceEventMusicControl.onReceive()`
+                    Context context = GBApplication.getContext();
+                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+                    float levelCmd = json.getInt("extra");
+                    final int volumePercentage = (byte) levelCmd;
+                    LOG.info("volumePercentage: " + volumePercentage);
+                    final int volumeMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                    final int volumeLevel = Math.round(volumePercentage * volumeMax / 100);
+                    LOG.info("volumeLevel: " + volumeLevel);
+                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
+                    GBApplication.deviceService().onSetPhoneVolume(volumePercentage); // This is here to imitate the implementation I used for inspiration. But after testing it doesn't seem to do anything?
+                } else {
+                    GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
+                    deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(json.getString("n").toUpperCase());
+                    evaluateGBDeviceEvent(deviceEventMusicControl);
+                }
             } break;
             case "call": {
                 GBDeviceEventCallControl deviceEventCallControl = new GBDeviceEventCallControl();
