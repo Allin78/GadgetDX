@@ -534,6 +534,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     final int volumePercentage = (byte) levelCmd;
                     LOG.info("volumePercentage: " + volumePercentage);
                     final int volumeMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                    LOG.info("volumeMax: " + volumeMax);
+                    final int volumeMin = audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC);
+                    LOG.info("volumeMin: " + volumeMin);
                     final int volumeLevel = Math.round(volumePercentage * volumeMax / 100);
                     LOG.info("volumeLevel: " + volumeLevel);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
