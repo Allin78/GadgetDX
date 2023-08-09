@@ -540,7 +540,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                         volumeMin = audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC);
                         LOG.info("volumeMin: " + volumeMin);
                     }
-                    final int volumeLevel = Math.round(volumePercentage * volumeMax / 100);
+                    final int volumeLevel = volumeMax * volumePercentage / 100;
                     LOG.info("volumeLevel: " + volumeLevel);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
                     GBApplication.deviceService().onSetPhoneVolume(volumePercentage); // This is here to imitate the implementation I used for inspiration. But after testing it doesn't seem to do anything?
