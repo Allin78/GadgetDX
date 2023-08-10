@@ -544,6 +544,23 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     LOG.info("volumeLevel: " + volumeLevel);
                     audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
                     GBApplication.deviceService().onSetPhoneVolume(volumePercentage); // This is here to imitate the implementation I used for inspiration. But after testing it doesn't seem to do anything?
+                } else if (json.getString("n").equals("volumegetlevel")) {
+
+                    Context context = GBApplication.getContext();
+                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    final int volumeCurrent = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                    LOG.info("volumeCurrent: " + volumeCurrent);
+                    final int volumeUpper = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                    LOG.info("volumeUpper: " + volumeUpper);
+                    int volumeLower = 0;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                        volumeLower = audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC);
+                        LOG.info("volumeLower: " + volumeLower);
+                    }
+                    uartTxJSON(
+                            "send media volume info",
+                            new JSONObject("{t:'audio', level:{c:"+volumeCurrent+",u:"+volumeUpper+"}}")
+                    );
                 } else {
                     GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
                     deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.valueOf(json.getString("n").toUpperCase());
