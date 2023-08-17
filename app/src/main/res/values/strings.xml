@@ -2219,4 +2219,9 @@
     <string name="withings_bt_calibration_next">Next</string>
     <string name="info_menu_structure_set">Menu structure JSON set in GB</string>
     <string name="error_invalid_menu_structure">Invalid menu structure JSON</string>
+    <string name="button_open_menu_companion">Open menu companion</string>
+    <string name="button_reset_menu_structure">Reset menu structure</string>
+    <string name="info_menu_structure_removed">Menu structure removed</string>
+    <string name="error_menu_companion_not_installed">\'HR Menu Companion\' probably not installed</string>
+    <string name="info_menu_structure_contents">\"Menu structure: %s\"</string>
 </resources>
