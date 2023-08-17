@@ -424,10 +424,10 @@ public class QHybridSupport extends QHybridBaseSupport {
         try {
             JSONObject menuStructure = new JSONObject(menuStructureJson);
             watchAdapter.handleSetMenuStructure(menuStructure);
-            GB.toast("menu structure JSON set in GB.", Toast.LENGTH_SHORT, GB.INFO);
+            GB.toast(getContext().getString(R.string.info_menu_structure_set), Toast.LENGTH_SHORT, GB.INFO);
         } catch (JSONException e) {
             logger.error("Menu structure json empty");
-            GB.toast("invalid menu structure JSON", Toast.LENGTH_SHORT, GB.ERROR);
+            GB.toast(getContext().getString(R.string.error_invalid_menu_structure), Toast.LENGTH_SHORT, GB.ERROR);
         }
     }
 

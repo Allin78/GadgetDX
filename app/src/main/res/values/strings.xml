@@ -2217,4 +2217,6 @@
     <string name="withings_calibration_text_activity_target">Finally align the activity hand to 100%. Please be aware that this hand only moves clockwise.</string>
     <string name="withings_bt_calibration_previous">Previous</string>
     <string name="withings_bt_calibration_next">Next</string>
+    <string name="info_menu_structure_set">Menu structure JSON set in GB</string>
+    <string name="error_invalid_menu_structure">Invalid menu structure JSON</string>
 </resources>
