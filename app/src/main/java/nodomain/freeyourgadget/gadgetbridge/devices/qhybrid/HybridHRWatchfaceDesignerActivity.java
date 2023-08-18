@@ -82,6 +82,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
+import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -282,13 +283,12 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
             deleteWatchfaceBackground();
             renderWatchfacePreview();
         } else if(buttonId == R.id.button_watchface_open_menu_companion){
-            Intent intent = new Intent();
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setClassName("d.d.hrmenucompanion", "d.d.hrmenucompanion.MainActivity");
             try {
-                startActivity(intent);
+                AndroidUtils.openApp("d.d.hrmenucompanion");
             } catch (Exception e) {
                 GB.toast(getString(R.string.error_menu_companion_not_installed), Toast.LENGTH_SHORT, GB.INFO);
+
+                AndroidUtils.openWebsite("https://github.com/dakhnod/Fossil-HR-Menu-Companion/releases/latest");
             }
         } else if(buttonId == R.id.button_watchface_reset_menu_structure) {
             SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
