@@ -140,12 +140,25 @@
         android:layout_height="wrap_content"
         android:text="@string/button_reset_menu_structure" />
 
-    <TextView
+    <com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/fossil_menu_structure_hint_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/text_watchface_menu_structure"
-        android:lines="1"
-        android:ellipsize="end" />
+        android:layout_margin="8dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="?attr/cardview_background_color"
+        app:cardElevation="3dp"
+        app:contentPadding="8dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/text_watchface_menu_structure"
+            android:lines="1"
+            android:ellipsize="end" />
+    </com.google.android.material.card.MaterialCardView>
+
 
 </LinearLayout>
 </ScrollView>

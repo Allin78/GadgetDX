@@ -293,12 +293,18 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
 
     private void reloadMenuStructureIndicator(){
         SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
-        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "empty");
-        ((TextView)findViewById(R.id.text_watchface_menu_structure))
-                .setText(getString(R.string.info_menu_structure_contents, menuStructureJson));
+        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "");
+
+        boolean active = !menuStructureJson.isEmpty();
 
         ((Button) findViewById(R.id.button_watchface_reset_menu_structure))
-                .setEnabled(!menuStructureJson.equals("empty"));
+                .setEnabled(active);
+        findViewById(R.id.fossil_menu_structure_hint_container).setVisibility(active ? View.VISIBLE : View.GONE);
+
+        if(active){
+            ((TextView)findViewById(R.id.text_watchface_menu_structure))
+                    .setText(getString(R.string.info_menu_structure_contents, menuStructureJson));
+        }
     }
 
     @Override
