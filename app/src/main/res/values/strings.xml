@@ -2240,6 +2240,6 @@
     <string name="button_reset_menu_structure">Reset menu structure</string>
     <string name="info_menu_structure_removed">Menu structure removed</string>
     <string name="error_menu_companion_not_installed">\'HR Menu Companion\' probably not installed</string>
-    <string name="info_menu_structure_contents">\"Menu structure: %s\"</string>
+    <string name="info_menu_structure_contents">Menu structure: %s</string>
     <string name="info_fossil_rebuild_watchface_custom_menu">Please rebuild your watchface for custom menu</string>
 </resources>

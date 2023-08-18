@@ -40,6 +40,7 @@ import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -292,9 +293,12 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
 
     private void reloadMenuStructureIndicator(){
         SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
-        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "");
+        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "empty");
         ((TextView)findViewById(R.id.text_watchface_menu_structure))
                 .setText(getString(R.string.info_menu_structure_contents, menuStructureJson));
+
+        ((Button) findViewById(R.id.button_watchface_reset_menu_structure))
+                .setEnabled(!menuStructureJson.equals("empty"));
     }
 
     @Override
