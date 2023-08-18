@@ -25,6 +25,8 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.Dev
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTENTS;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTERNET_ACCESS;
 import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.getUser;
+import static nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants.PREF_BANGLEJS_ACTIVITY_FULL_SYNC_START;
+import static nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants.PREF_BANGLEJS_ACTIVITY_FULL_SYNC_STATUS;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -32,6 +34,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -72,6 +75,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -89,6 +93,7 @@ import io.wax911.emojify.EmojiManager;
 import io.wax911.emojify.EmojiUtils;
 import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
@@ -96,15 +101,19 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallContro
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncState;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncStateDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationManager;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.LocationProviderType;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
@@ -117,6 +126,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.util.EmojiConverter;
@@ -320,34 +330,13 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         //sendSettings(builder);
 
         // get version
-
         gbDevice.setState(GBDevice.State.INITIALIZED);
         gbDevice.sendDeviceUpdateIntent(getContext());
-
-        getDevice().setFirmwareVersion("N/A");
-        getDevice().setFirmwareVersion2("N/A");
-        lastBatteryPercent = -1;
-
-        /* Here we get the last Activity info saved from Bangle.js, and then send
-        its timestamp. Bangle.js can then look back at its history and can try and
-        send any missing data.  */
-        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-            BangleJSSampleProvider provider = new BangleJSSampleProvider(getDevice(), dbHandler.getDaoSession());
-            BangleJSActivitySample sample = provider.getLatestActivitySample();
-            if (sample!=null) {
-                LOG.info("Send 'actlast' with last activity's timestamp: "+sample.getTimestamp());
-                try {
-                    JSONObject o = new JSONObject();
-                    o.put("t", "actlast");
-                    o.put("time", sample.getTimestamp());
-                    uartTxJSON("actlast", o);
-                } catch (JSONException e) {
-                    LOG.info("JSONException: " + e.getLocalizedMessage());
-                }
-            }
-        } catch (Exception ex) {
-            LOG.warn("Error getting last activity: " + ex.getLocalizedMessage());
+        if (getDevice().getFirmwareVersion() == null) {
+            getDevice().setFirmwareVersion("N/A");
+            getDevice().setFirmwareVersion2("N/A");
         }
+        lastBatteryPercent = -1;
 
         LOG.info("Initialization Done");
 
@@ -520,10 +509,12 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 GB.toast(getContext(), "Bangle.js: " + json.getString("msg"), Toast.LENGTH_LONG, GB.ERROR);
                 break;
             case "ver": {
-                if (json.has("fw1"))
-                    getDevice().setFirmwareVersion(json.getString("fw1"));
-                if (json.has("fw2"))
-                    getDevice().setFirmwareVersion2(json.getString("fw2"));
+                final GBDeviceEventVersionInfo gbDeviceEventVersionInfo = new GBDeviceEventVersionInfo();
+                if (json.has("fw"))
+                    gbDeviceEventVersionInfo.fwVersion = json.getString("fw");
+                if (json.has("hw"))
+                    gbDeviceEventVersionInfo.hwVersion = json.getString("hw");
+                evaluateGBDeviceEvent(gbDeviceEventVersionInfo);
             } break;
             case "findPhone": {
                 boolean start = json.has("n") && json.getBoolean("n");
@@ -546,6 +537,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 break;
             case "notify" :
                 handleNotificationControl(json);
+                break;
+            case "actfetch":
+                handleActivityFetch(json);
                 break;
             case "act":
                 handleActivity(json);
@@ -626,17 +620,36 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         evaluateGBDeviceEvent(deviceEvtNotificationControl);
     }
 
+    private void handleActivityFetch(final JSONObject json) throws JSONException {
+        final String state = json.getString("state");
+        if ("start".equals(state)) {
+            GB.updateTransferNotification(getContext().getString(R.string.busy_task_fetch_activity_data),"", true, 0, getContext());
+            getDevice().setBusyTask(getContext().getString(R.string.busy_task_fetch_activity_data));
+        } else if ("end".equals(state)) {
+            saveLastSyncTimestamp(System.currentTimeMillis() - 1000L * 60);
+            getDevice().unsetBusyTask();
+            GB.updateTransferNotification(null, "", false, 100, getContext());
+        } else {
+            LOG.warn("Unknown actfetch state {}", state);
+        }
+
+        final GBDeviceEventUpdatePreferences event = new GBDeviceEventUpdatePreferences()
+                .withPreference(PREF_BANGLEJS_ACTIVITY_FULL_SYNC_STATUS, state);
+        evaluateGBDeviceEvent(event);
+
+        getDevice().sendDeviceUpdateIntent(getContext());
+    }
+
     /**
      * Handle "act" packet, used to send activity reports
      */
     private void handleActivity(JSONObject json) throws JSONException {
         BangleJSActivitySample sample = new BangleJSActivitySample();
-        sample.setTimestamp((int) (System.currentTimeMillis() / 1000L));
-        int hrm = 0;
-        int steps = 0;
-        if (json.has("time")) sample.setTimestamp(json.getInt("time"));
-        if (json.has("hrm")) hrm = json.getInt("hrm");
-        if (json.has("stp")) steps = json.getInt("stp");
+        int timestamp = (int) (json.optLong("ts", System.currentTimeMillis()) / 1000);
+        int hrm = json.optInt("hrm", 0);
+        int steps = json.optInt("stp", 0);
+        int intensity = json.optInt("mov", ActivitySample.NOT_MEASURED);
+        boolean realtime = json.optInt("rt", 0) == 1;
         int activity = BangleJSSampleProvider.TYPE_ACTIVITY;
         /*if (json.has("act")) {
             String actName = "TYPE_" + json.getString("act").toUpperCase();
@@ -651,21 +664,26 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 LOG.info("JSON activity '"+actName+"' not found");
             }
         }*/
+        sample.setTimestamp(timestamp);
         sample.setRawKind(activity);
         sample.setHeartRate(hrm);
         sample.setSteps(steps);
-        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-            Long userId = getUser(dbHandler.getDaoSession()).getId();
-            Long deviceId = DBHelper.getDevice(getDevice(), dbHandler.getDaoSession()).getId();
-            BangleJSSampleProvider provider = new BangleJSSampleProvider(getDevice(), dbHandler.getDaoSession());
-            sample.setDeviceId(deviceId);
-            sample.setUserId(userId);
-            provider.addGBActivitySample(sample);
-        } catch (Exception ex) {
-            LOG.warn("Error saving activity: " + ex.getLocalizedMessage());
+        sample.setRawIntensity(intensity);
+        if (!realtime) {
+            try (DBHandler dbHandler = GBApplication.acquireDB()) {
+                final Long userId = getUser(dbHandler.getDaoSession()).getId();
+                final Long deviceId = DBHelper.getDevice(getDevice(), dbHandler.getDaoSession()).getId();
+                BangleJSSampleProvider provider = new BangleJSSampleProvider(getDevice(), dbHandler.getDaoSession());
+                sample.setDeviceId(deviceId);
+                sample.setUserId(userId);
+                provider.upsertSample(sample);
+            } catch (final Exception ex) {
+                LOG.warn("Error saving activity: " + ex.getLocalizedMessage());
+            }
         }
+
         // push realtime data
-        if (realtimeHRM || realtimeStep) {
+        if (realtime && (realtimeHRM || realtimeStep)) {
             Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
                     .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
@@ -852,10 +870,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             GB.toast("Database Error while forcefully syncing Calendar", Toast.LENGTH_SHORT, GB.ERROR, e1);
         }
         //force a syncCalendar now, send missing events
-        Context context = GBApplication.getContext();
-        Intent intent = new Intent("FORCE_CALENDAR_SYNC");
-        intent.setPackage(BuildConfig.APPLICATION_ID);
-        GBApplication.getContext().sendBroadcast(intent);
+        CalendarReceiver.forceSync();
     }
 
     /**
@@ -940,6 +955,17 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             GB.toast(getContext(), "Flag '"+flag+"' isn't implemented or it doesn't exist and was therefore not set.", Toast.LENGTH_LONG, GB.INFO);
         }
         return intent;
+    }
+
+    @Override
+    public void onSendConfiguration(final String config) {
+        switch (config) {
+            case PREF_BANGLEJS_ACTIVITY_FULL_SYNC_START:
+                fetchActivityData(0);
+                return;
+        }
+
+        LOG.warn("Unknown config changed: {}", config);
     }
 
     @Override
@@ -1212,13 +1238,14 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("d", jsonalarms);
 
             for (Alarm alarm : alarms) {
-                if (!alarm.getEnabled()) continue;
+                if (alarm.getUnused()) continue;
                 JSONObject jsonalarm = new JSONObject();
                 jsonalarms.put(jsonalarm);
                 //Calendar calendar = AlarmUtils.toCalendar(alarm);
                 jsonalarm.put("h", alarm.getHour());
                 jsonalarm.put("m", alarm.getMinute());
                 jsonalarm.put("rep", alarm.getRepetition());
+                jsonalarm.put("on", alarm.getEnabled());
             }
             uartTxJSON("onSetAlarms", o);
         } catch (JSONException e) {
@@ -1305,7 +1332,11 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onFetchRecordedData(int dataTypes) {
-        if (dataTypes == RecordedDataTypes.TYPE_DEBUGLOGS) {
+        if ((dataTypes & RecordedDataTypes.TYPE_ACTIVITY) != 0)  {
+            fetchActivityData(getLastSuccessfulSyncTime());
+        }
+
+        if ((dataTypes & RecordedDataTypes.TYPE_DEBUGLOGS) != 0)  {
             File dir;
             try {
                 dir = FileUtils.getExternalFilesDir();
@@ -1326,6 +1357,37 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 LOG.warn("Could not write to file", e);
             }
         }
+    }
+
+    protected void fetchActivityData(final long timestampMillis) {
+        try {
+            JSONObject o = new JSONObject();
+            o.put("t", "actfetch");
+            o.put("ts", timestampMillis);
+            uartTxJSON("fetch activity data", o);
+        } catch (final JSONException e) {
+            LOG.warn("Failed to fetch activity data", e);
+        }
+    }
+
+    protected String getLastSyncTimeKey() {
+        return "lastSyncTimeMillis";
+    }
+
+    protected void saveLastSyncTimestamp(final long timestamp) {
+        final SharedPreferences.Editor editor = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()).edit();
+        editor.putLong(getLastSyncTimeKey(), timestamp);
+        editor.apply();
+    }
+
+    protected long getLastSuccessfulSyncTime() {
+        long timeStampMillis = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()).getLong(getLastSyncTimeKey(), 0);
+        if (timeStampMillis != 0) {
+            return timeStampMillis;
+        }
+        final GregorianCalendar calendar = BLETypeConversions.createCalendar();
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        return calendar.getTimeInMillis();
     }
 
     @Override
@@ -1640,5 +1702,4 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
     }
-
 }

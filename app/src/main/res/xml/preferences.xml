@@ -69,6 +69,12 @@
                 android:layout="@layout/preference_checkbox"
                 android:title="@string/pref_theme_black_background"
                 app:iconSpaceReserved="false" />
+            <Preference
+                android:enabled="false"
+                android:selectable="false"
+                android:singleLineTitle="false"
+                android:title="@string/pref_theme_dynamic_colors_explanation"
+                app:iconSpaceReserved="false" />
         </PreferenceScreen>
 
         <PreferenceScreen
@@ -225,7 +231,7 @@
         <Preference
             android:icon="@drawable/ic_device_miband"
             android:key="pref_key_miband"
-            android:title="@string/preferences_miband_settings" />
+            android:title="@string/preferences_miband_1_2_settings" />
 
         <Preference
             android:icon="@drawable/ic_device_pebble"
@@ -305,6 +311,13 @@
             android:layout="@layout/preference_checkbox"
             android:summary="@string/pref_check_permission_status_summary"
             android:title="@string/pref_check_permission_status"
+            app:iconSpaceReserved="false" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="show_changelog"
+            android:layout="@layout/preference_checkbox"
+            android:summary="@string/pref_show_changelog_summary"
+            android:title="@string/pref_show_changelog"
             app:iconSpaceReserved="false" />
         <SwitchPreference
             android:defaultValue="true"

@@ -132,6 +132,7 @@ public class GBApplication extends Application {
     public static final String ACTION_QUIT
             = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.quit";
     public static final String ACTION_LANGUAGE_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.language_change";
+    public static final String ACTION_THEME_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.theme_change";
     public static final String ACTION_NEW_DATA = "nodomain.freeyourgadget.gadgetbridge.action.new_data";
 
     private static GBApplication app;
@@ -1311,7 +1312,7 @@ public class GBApplication extends Application {
         Resources resources = context.getResources();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                selectedTheme.equals(context.getString(R.string.pref_theme_value_system))) {
+                (selectedTheme.equals(context.getString(R.string.pref_theme_value_system)) || selectedTheme.equals(context.getString(R.string.pref_theme_value_dynamic)))) {
             return (resources.getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         } else {
             return selectedTheme.equals(context.getString(R.string.pref_theme_value_dark));
@@ -1322,11 +1323,21 @@ public class GBApplication extends Application {
         return prefs.getBoolean("pref_key_theme_amoled_black", false);
     }
 
+    public static boolean areDynamicColorsEnabled() {
+        String selectedTheme = prefs.getString("pref_key_theme", context.getString(R.string.pref_theme_value_system));
+        return selectedTheme.equals(context.getString(R.string.pref_theme_value_dynamic));
+    }
+
     public static int getTextColor(Context context) {
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = context.getTheme();
-        theme.resolveAttribute(R.attr.textColorPrimary, typedValue, true);
-        return typedValue.data;
+        if (GBApplication.isDarkThemeEnabled()) {
+            return context.getResources().getColor(R.color.primarytext_dark);
+        } else {
+            return context.getResources().getColor(R.color.primarytext_light);
+        }
+    }
+
+    public static int getSecondaryTextColor(Context context) {
+        return context.getResources().getColor(R.color.secondarytext);
     }
 
     @Override
@@ -1367,6 +1378,10 @@ public class GBApplication extends Application {
 
     public static Locale getLanguage() {
         return language;
+    }
+
+    public static boolean isNightly() {
+        return BuildConfig.APPLICATION_ID.contains("nightly");
     }
 
     public String getVersion() {

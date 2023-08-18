@@ -19,9 +19,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -44,9 +42,13 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.google.android.material.color.DynamicColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -390,6 +392,13 @@ public class SettingsActivity extends AbstractSettingsActivityV2 {
                     amoled_black.setEnabled(false);
                 else
                     amoled_black.setEnabled(true);
+                amoled_black.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newVal) {
+                        sendThemeChangeIntent();
+                        return true;
+                    }
+                });
             }
 
             if (theme != null) {
@@ -402,6 +411,19 @@ public class SettingsActivity extends AbstractSettingsActivityV2 {
                                 amoled_black.setEnabled(false);
                             else
                                 amoled_black.setEnabled(true);
+                        }
+                        // Warn user if dynamic colors are not available
+                        if (val.equals(requireContext().getString(R.string.pref_theme_value_dynamic)) && !DynamicColors.isDynamicColorAvailable()) {
+                            new MaterialAlertDialogBuilder(requireContext())
+                                    .setTitle(R.string.warning)
+                                    .setMessage(R.string.pref_theme_dynamic_colors_not_available_warning)
+                                    .setIcon(R.drawable.ic_warning)
+                                    .setPositiveButton(R.string.ok, (dialog, whichButton) -> {
+                                        sendThemeChangeIntent();
+                                    })
+                                    .show();
+                        } else {
+                            sendThemeChangeIntent();
                         }
                         return true;
                     }
@@ -448,7 +470,7 @@ public class SettingsActivity extends AbstractSettingsActivityV2 {
                     outerLayout.addView(selectionListSpinner);
                     outerLayout.addView(innerLayout);
 
-                    new AlertDialog.Builder(requireContext())
+                    new MaterialAlertDialogBuilder(requireContext())
                             .setCancelable(true)
                             .setTitle(R.string.pref_title_opentracks_packagename)
                             .setView(outerLayout)
@@ -546,6 +568,15 @@ public class SettingsActivity extends AbstractSettingsActivityV2 {
                     .putString("location_latitude", latitude)
                     .putString("location_longitude", longitude)
                     .apply();
+        }
+
+        /**
+         * Signal running activities that the theme has changed
+         */
+        private void sendThemeChangeIntent() {
+            Intent intent = new Intent();
+            intent.setAction(GBApplication.ACTION_THEME_CHANGE);
+            LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
         }
     }
 }

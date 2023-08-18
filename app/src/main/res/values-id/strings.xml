@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="application_name_generic">Gadgetbridge</string>
     <string name="title_activity_controlcenter_generic">Gadgetbridge</string>
     <string name="action_settings">Pengaturan</string>
@@ -1929,7 +1929,7 @@
 \n 
 \nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
     <string name="pref_title_banglejs_txt_bitmap_size">Ukuran Teks Bitmap</string>
-    <string name="pref_summary_banglejs_txt_bitmap_size">Jika \'Teks sebagai Bitmap\' diaktifkan, ukuran apa teks seharusnya ditampilkan\?</string>
+    <string name="pref_summary_banglejs_txt_bitmap_size">Ukuran yang digunakan untuk rendering teks bitmap</string>
     <string name="pref_summary_banglejs_webview_url">Jika Anda ingin pemuat aplikasi kustom letakkan URL https://…/android.html di sini. Jika tidak tinggalkan kosong untuk https://banglejs.com/apps</string>
     <string name="pref_title_pebble_sync_health">Sinkron Kesehatan Pebble</string>
     <string name="pref_summary_enable_pebblekit">Aktifkan dukungan eksperimental untuk aplikasi Android menggunakan PebbleKit</string>
@@ -2245,7 +2245,7 @@
     <string name="title">Judul</string>
     <string name="pref_title_banglejs_phone_gps_enbale">Gunakan data GPS ponsel</string>
     <string name="pref_summary_banglejs_phone_gps_enbale">Gunakan data GPS ponsel untuk menimpa data GPS dari perangkat Bangle</string>
-    <string name="pref_title_banglejs_phone_gps_update_interval">Interval pembaruan data GPS dalam milidetik</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">Interval pembaruan data GPS</string>
     <string name="description">Deskripsi</string>
     <string name="preview_image">Pratinjau gambar</string>
     <string name="status_icon">Ikon status</string>
@@ -2253,7 +2253,93 @@
     <string name="changelog_show_full">Lainnya…</string>
     <string name="changelog_ok_button">Oke</string>
     <string name="changelog_title">Apa Yang Baru</string>
-    <string name="pref_summary_banglejs_phone_gps_network_only">Pilihan ini hanya aktif, jika data GPS ponsel sedang digunakan. Pilihan ini dapat digunakan untuk hanya menggunakan penyedia jaringan untuk menentukan lokasi. Hal ini mengurangi konsumsi daya untuk biaya akurasi. Diperlukan penyambungan ulang perangkat.</string>
-    <string name="pref_summary_banglejs_phone_gps_update_interval">Opsi ini hanya aktif, jika data GPS ponsel sedang digunakan. Opsi ini mengatur interval dalam milidetik seberapa sering posisi GPS diperbarui</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">Hanya gunakan penyedia jaringan untuk menentukan lokasi. Hal ini akan mengurangi konsumsi daya dengan mengorbankan keakuratan. Diperlukan koneksi ulang.</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">Interval seberapa sering posisi gps diperbarui, dalam ms</string>
     <string name="action_changelog">Catatan Perubahan</string>
+    <string name="pai_chart_per_month">PAI per bulan</string>
+    <string name="pai_day">Pemambahan PAI hari</string>
+    <string name="pai_plus_num">+%d</string>
+    <string name="pai_total">Jumlah PAI</string>
+    <string name="pai_chart_per_week">PAI per minggu</string>
+    <string name="num_min">%d mnt</string>
+    <string name="loyalty_cards_catima_package">Nama paket Catima</string>
+    <string name="loyalty_cards_sync_groups_only">Hanya sinkronkan grup spesifik</string>
+    <string name="loyalty_cards_sync_groups">Grup untuk Disinkronkan</string>
+    <string name="loyalty_cards_sync_archived">Sinkronkan kartu yang terarsip</string>
+    <string name="loyalty_cards_install_catima_fail">Gagal membuka toko aplikasi untuk memasang Catima</string>
+    <string name="loyalty_cards_sync_title">Sinkronkan Kartu Loyalitas</string>
+    <string name="loyalty_cards_sync_summary">Ketuk untuk menyinkronkan kartu ke jam tangan</string>
+    <string name="loyalty_cards_catima_not_installed">Catima dibutuhkan untuk mengelola kartu loyalitas</string>
+    <string name="loyalty_cards_catima_not_compatible">Versi Catima yang terpasang tidak kompatibel dengan Gadgetbridge. Silakan perbarui Catima dan Gadgetbridge ke versi yang terbaru.</string>
+    <string name="loyalty_cards_catima">Catima</string>
+    <string name="loyalty_cards_catima_permissions_summary">Gadgetbridge perlu izin membaca pada kartu Catima untuk disinkronkan. Ketuk tombol ini untuk mengizinkan.</string>
+    <string name="loyalty_cards">Kartu Loyalitas</string>
+    <string name="loyalty_cards_install">Pasang Catima</string>
+    <string name="loyalty_cards_open_catima">Buka Catima</string>
+    <string name="loyalty_cards_sync_starred">Hanya sinkronkan kartu yang dibintangi</string>
+    <string name="loyalty_cards_syncing">Menyinkronkan %d kartu loyalitas ke perangkat</string>
+    <string name="loyalty_cards_sync">Sinkronkan</string>
+    <string name="loyalty_cards_sync_options">Opsi Sinkronisasi</string>
+    <string name="loyalty_cards_catima_permissions_title">Izin dibutuhkan</string>
+    <string name="devicetype_bohemic_smart_bracelet">Bohemic Smart Bracelet</string>
+    <string name="pref_title_mb_intents">Intent Tombol Media Siaran Secara Langsung</string>
+    <string name="pref_summary_mb_intents">Aktifkan jika kontrol media perangkat tidak berfungsi untuk aplikasi tertentu</string>
+    <string name="devicetype_vivomove_hr">Garmin Vivomove HR</string>
+    <string name="devicetype_casiogwb5600">Casio GW-B5600</string>
+    <string name="devicetype_casiogmwb5000">Casio GMW-B5000</string>
+    <string name="busy_task_fetch_sports_summaries">Mendapatkan rangkuman olahraga</string>
+    <string name="busy_task_fetch_sports_details">Mendapatkan detail olahraga</string>
+    <string name="busy_task_fetch_sleep_respiratory_rate_data">Mendapatkan data tingkat pernapasan saat tidur</string>
+    <string name="busy_task_fetch_debug_logs">Mendapatkan catatan pengawakutu</string>
+    <string name="busy_task_fetch_spo2_data">Mendapatkan data SpO2</string>
+    <string name="busy_task_fetch_stress_data">Mendapatkan data stres</string>
+    <string name="busy_task_fetch_hr_data">Mendapatkan data detak jantung</string>
+    <string name="busy_task_fetch_pai_data">Mendapatkan data PAI</string>
+    <string name="activity_prefs_goals">Sasaran</string>
+    <string name="error_no_bluetooth_connect">Akses koneksi Bluetooth harus diberikan dan diaktifkan agar pemindaian dapat bekerja dengan baik</string>
+    <string name="permission_request">%1$s memungkinkan Anda untuk mengirim pesan dan data lain dari Android ke perangkat Anda. Untuk melakukan hal ini, diperlukan izin untuk mengakses data tersebut dan tanpa izin, aplikasi ini tidak akan berfungsi dengan baik.
+\n
+\nSekarang Anda akan dihadapkan pada beberapa dialog Android yang meminta izin tersebut.
+\n
+\nSilakan ketuk \'%2$s\' untuk melanjutkan.</string>
+    <string name="activity_type_windsurfing">Selancar angin</string>
+    <string name="activity_type_football">Sepak bola</string>
+    <string name="activity_type_baseball">Bisbol</string>
+    <string name="activity_type_handball">Bola tangan</string>
+    <string name="activity_type_tennis">Tenis</string>
+    <string name="activity_type_squash">Squash</string>
+    <string name="activity_type_rugby">Rugbi</string>
+    <string name="activity_type_weightlifting">Angkat Berat</string>
+    <string name="activity_type_dancing">Menari</string>
+    <string name="activity_type_skiing">Ski</string>
+    <string name="activity_type_snowboarding">Seluncur salju</string>
+    <string name="activity_type_riding">Menunggang Kuda</string>
+    <string name="activity_type_hockey">Hoki</string>
+    <string name="activity_type_icehockey">Hoki es</string>
+    <string name="activity_type_iceskating">Seluncur Es</string>
+    <string name="activity_type_golf">Golf</string>
+    <string name="activity_type_other">Lainnya</string>
+    <string name="withings_steel_hr">Withings Steel HR</string>
+    <string name="withings_calibration_text_activity_target">Terakhir, sejajarkan jarum penunjuk aktivitas ke 100%. Perlu diketahui bahwa jarum penunjuk ini hanya bergerak searah jarum jam.</string>
+    <string name="withings_bt_calibration_previous">Sebelumnya</string>
+    <string name="withings_bt_calibration_next">Lanjutkan</string>
+    <string name="activity_type_surfing">Berselancar</string>
+    <string name="activity_type_kitesurfing">Berselancar layang-layang</string>
+    <string name="error_no_bluetooth_scan">Akses pemindaian Bluetooth harus diberikan dan diaktifkan agar pemindaian dapat bekerja dengan baik</string>
+    <string name="withings_calibration_text_hours">Silakan gunakan dial di bawah ini untuk menyelaraskan jarum penunjuk jam ke angka 12.</string>
+    <string name="withings_calibration_text_minutes">Sekarang, gunakan dial untuk menyelaraskan jarum penunjuk menit ke angka 12.</string>
+    <string name="pref_theme_dynamic">Warna dinamis</string>
+    <string name="drag_handle">seret pegangan</string>
+    <string name="preferences_miband_1_2_settings" tools:ignore="TypographyFractions">Pengaturan Mi Band 1/2</string>
+    <string name="find_my_phone_found_it">DITEMUKAN</string>
+    <string name="pref_activity_full_sync_trigger_summary">Picu sinkronisasi lengkap semua data aktivitas</string>
+    <string name="pref_activity_full_sync_trigger_title">Sinkronisasi lengkap</string>
+    <string name="pref_activity_full_sync_trigger_warning">Ini akan memicu sinkronisasi penuh semua data aktivitas dari perangkat. Ini mungkin memerlukan beberapa menit untuk selesai.</string>
+    <string name="menuitem_zepp_coach">Zepp Coach</string>
+    <string name="pref_show_changelog">Tampilkan catatan perubahan saat aplikasi dibuka</string>
+    <string name="pref_canned_message">Pesan</string>
+    <string name="preferences_miband_1_2_warning">Peringatan: Preferensi ini hanya berlaku pada Mi Band 1 dan 2.</string>
+    <string name="pref_show_changelog_summary">Tampilkan catatan perubahan sejak versi terakhir setelah Gadgetbridge diperbarui</string>
+    <string name="pref_theme_dynamic_colors_not_available_warning">Warna dinamis tidak tersedia pada perangkat Anda, hanya Android 12+ mendukung fitur ini. Gadgetbridge akan menggunakan warna Materia) 3 bawaan.</string>
+    <string name="pref_theme_dynamic_colors_explanation">Catatan: untuk tema warna dinamis, Anda perlu mengaktifkan Warna Wallpaper atau Palet Warma di pengaturan Android 12+ Anda. Jika tidak, Gadgetbridge akan menggunakan warna Material 3 bawaan.</string>
 </resources>

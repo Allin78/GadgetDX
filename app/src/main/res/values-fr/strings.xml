@@ -213,7 +213,7 @@
     <string name="vibration_profile_long">Long</string>
     <string name="vibration_profile_waterdrop">Goute d\'eau</string>
     <string name="vibration_profile_ring">Sonnette</string>
-    <string name="vibration_profile_alarm_clock">Réveil</string>
+    <string name="vibration_profile_alarm_clock">Alarme</string>
     <string name="miband_prefs_vibration">Vibreur</string>
     <string name="vibration_try">Essayer</string>
     <string name="pref_screen_notification_profile_sms">Notification Texto</string>
@@ -397,7 +397,7 @@ Temps de sommeil préféré en heures</string>
     <string name="unit_imperial">Impériale</string>
     <string name="timeformat_24h">24H</string>
     <string name="timeformat_am_pm">AM/PM</string>
-    <string name="pref_screen_notification_profile_alarm_clock">Réveil</string>
+    <string name="pref_screen_notification_profile_alarm_clock">Alarme</string>
     <string name="StringUtils_sender">(%1$s)</string>
     <string name="find_device_you_found_it">Vous l\'avez trouvé !</string>
     <string name="miband2_prefs_timeformat">Mi2 : format de l\'heure</string>
@@ -1776,7 +1776,7 @@ Temps de sommeil préféré en heures</string>
     <string name="appmanager_item_outdated">(obsolète)</string>
     <string name="appmanager_app_share">Partager</string>
     <string name="pref_title_banglejs_txt_bitmap_size">Taille des images texte</string>
-    <string name="pref_summary_banglejs_txt_bitmap_size">Si le mode \'Texte en tant qu\'images\' est activé, quelle taille devrait être utilisée \?</string>
+    <string name="pref_summary_banglejs_txt_bitmap_size">Taille à utiliser pour le rendu de texte en image</string>
     <string name="watchface_dialog_title_widget">Réglages du widget</string>
     <string name="watchface_dialog_widget_cat_generic">Générique</string>
     <string name="watchface_dialog_widget_cat_position">Position</string>
@@ -2258,10 +2258,10 @@ Temps de sommeil préféré en heures</string>
     <string name="watchface_widget_type_uv_index">Index UV</string>
     <string name="action_changelog">Journal des modifications</string>
     <string name="pref_title_banglejs_phone_gps_enbale">Utiliser les données GPS du téléphone</string>
-    <string name="pref_summary_banglejs_phone_gps_network_only">Cette option est active uniquement si les données GPS du téléphone sont utilisées. Cette option pernet d\'utiliser uniquement le réseau pour déterminer la position. Cela réduit la consommation au sacrifice de la précision. Une reconnexion de l\'appareil est nécessaire.</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">Utiliser uniquement le réseau pour déterminer la position. Cela réduit la consommation d\'énergie au prix de la précision. Une reconnexion est nécessaire.</string>
     <string name="pref_summary_banglejs_phone_gps_enbale">Utiliser les données GPS du téléphone à la place des données de l\'appareil bangle</string>
-    <string name="pref_title_banglejs_phone_gps_update_interval">Intervalle de mise à jour du GPS en ms</string>
-    <string name="pref_summary_banglejs_phone_gps_update_interval">Cette option est active uniquement si le GPS du téléphone est utilisé. Cette option configure l\'intervalle en ms de mise à jour du GPS</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">Intervalle de mise à jour du GPS</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">Intervalle de mise à jour de la position GPS, en ms</string>
     <string name="preview_image">Aperçu</string>
     <string name="changelog_title">Quoi de neuf</string>
     <string name="description">Description</string>
@@ -2271,4 +2271,98 @@ Temps de sommeil préféré en heures</string>
     <string name="changelog_ok_button">OK</string>
     <string name="pref_title_banglejs_phone_gps_network_only">Utiliser le réseau uniquement pour déterminer la position</string>
     <string name="title">Titre</string>
+    <string name="pai_chart_per_month">PAI par mois</string>
+    <string name="pai_plus_num">+%d</string>
+    <string name="num_min">%d min</string>
+    <string name="pai_chart_per_week">PAI par semaine</string>
+    <string name="pai_total">PAI Total</string>
+    <string name="pai_day">Augmentation journalière du PAI</string>
+    <string name="loyalty_cards_install">Installer Catima</string>
+    <string name="loyalty_cards_sync_groups">Groupes à synchroniser</string>
+    <string name="loyalty_cards_install_catima_fail">Impossible d\'ouvrir l\'app store pour installer Catima</string>
+    <string name="loyalty_cards_sync_summary">Toucher pour synchroniser les cartes dans la montre</string>
+    <string name="loyalty_cards_catima_not_installed">Catima est requis pour gérer les cartes de fidélité</string>
+    <string name="loyalty_cards_sync_options">Options de synchronisation</string>
+    <string name="loyalty_cards_sync">Synchronisation</string>
+    <string name="loyalty_cards_catima">Catima</string>
+    <string name="loyalty_cards_open_catima">Démarrer Catima</string>
+    <string name="loyalty_cards_catima_permissions_title">Autorisations manquantes</string>
+    <string name="loyalty_cards_catima_permissions_summary">Gadgetbridge a besoin d\'une autorisation de lecture sur les cartes Catima pour les synchroniser. Appuyer sur ce bouton pour l\'autoriser.</string>
+    <string name="loyalty_cards_catima_package">Nom du logiciel Catima</string>
+    <string name="loyalty_cards_sync_groups_only">Synchroniser uniquement certains groupes</string>
+    <string name="loyalty_cards_sync_archived">Synchroniser les cartes archivées</string>
+    <string name="loyalty_cards_sync_starred">Synchroniser uniquement les cartes étoilées</string>
+    <string name="loyalty_cards_sync_title">Synchroniser les cartes de fidélité</string>
+    <string name="loyalty_cards_syncing">Synchronisation de %d des cartes de fidélité dans l\'appareil</string>
+    <string name="loyalty_cards_catima_not_compatible">La version installée de Catima est incompatible avec Gadgetbridge. Merci de mettre à jour Catima et Gadgetbridge en dernière version.</string>
+    <string name="loyalty_cards">Cartes de fidélité</string>
+    <string name="pref_title_mb_intents">Diffuser les annonces Media directement</string>
+    <string name="pref_summary_mb_intents">Activer si le contrôle des médias ne marchent pas dans certaines applications</string>
+    <string name="devicetype_bohemic_smart_bracelet">Bohemic Smart Bracelet</string>
+    <string name="devicetype_vivomove_hr">Garmin Vivomove HR</string>
+    <string name="busy_task_fetch_stress_data">Récupération des données de stress</string>
+    <string name="busy_task_fetch_hr_data">Récupération des données de rythme cardiaque</string>
+    <string name="busy_task_fetch_sports_summaries">Récupération des résumés d\'exercice</string>
+    <string name="busy_task_fetch_sports_details">Récupération des détails d\'activité</string>
+    <string name="busy_task_fetch_debug_logs">Récupération des logs de dépannage</string>
+    <string name="busy_task_fetch_pai_data">Récupération des données RAI</string>
+    <string name="busy_task_fetch_spo2_data">Récupération des données SpO2</string>
+    <string name="busy_task_fetch_sleep_respiratory_rate_data">Récupération des données du rythme respiratoire</string>
+    <string name="devicetype_casiogwb5600">Casio GW-B5600</string>
+    <string name="devicetype_casiogmwb5000">Casio GMW-B5000</string>
+    <string name="activity_prefs_goals">Objectifs</string>
+    <string name="error_no_bluetooth_scan">L\'accès au Bluetooth doit être autorisé et activé pour que le scan fonctionne correctement</string>
+    <string name="error_no_bluetooth_connect">L\'accès au Bluetooth doit être autorisé et activé pour que le scan fonctionne correctement</string>
+    <string name="permission_request">%1$s vous permet d\'envoyer des messages et d\'autres données depuis Android vers votre appareil. Pour cela il a besoin de permission pour accéder à ces données, sans quoi cela risque de ne pas fonctionner correctement.
+\n
+\nVous allez maintenant pouvoir configurer ces autorisations.
+\n
+\nMerci d\'appuyer sur \'%2$s\' pour continuer.</string>
+    <string name="activity_type_handball">Handball</string>
+    <string name="activity_type_windsurfing">Surf à voile</string>
+    <string name="activity_type_kitesurfing">Kitesurfing</string>
+    <string name="activity_type_rugby">Rugby</string>
+    <string name="activity_type_baseball">Baseball</string>
+    <string name="activity_type_squash">Squash</string>
+    <string name="activity_type_skiing">Ski</string>
+    <string name="activity_type_snowboarding">Snowboard</string>
+    <string name="activity_type_riding">Course à cheval</string>
+    <string name="activity_type_hockey">Hockey</string>
+    <string name="withings_calibration_text_hours">Merci d\'utiliser la molette ci-dessous pour aligner la main sur le 12.</string>
+    <string name="withings_calibration_text_minutes">Maintenant utiliser la molette pour aligner la main des minutes sur le 12.</string>
+    <string name="withings_calibration_text_activity_target">Pour finir aligner la main d\'activité sur 100%. Attention cette main ne bouge que dans le sens des aiguilles d\'une montre.</string>
+    <string name="activity_type_weightlifting">Halthérophilie</string>
+    <string name="activity_type_dancing">Danse</string>
+    <string name="activity_type_icehockey">Hockey sur glace</string>
+    <string name="activity_type_iceskating">Patinage sur glace</string>
+    <string name="activity_type_golf">Golf</string>
+    <string name="activity_type_other">Autre</string>
+    <string name="withings_steel_hr">Withings Steel HR</string>
+    <string name="withings_bt_calibration_previous">Précédent</string>
+    <string name="withings_bt_calibration_next">Suivant</string>
+    <string name="activity_type_tennis">Tennis</string>
+    <string name="activity_type_surfing">Surf</string>
+    <string name="activity_type_football">Football</string>
+    <string name="drag_handle">Poignets</string>
+    <string name="pref_theme_dynamic">Couleurs dynamiques</string>
+    <string name="pref_canned_message">Message</string>
+    <string name="find_my_phone_found_it">TROUVÉ</string>
+    <string name="preferences_miband_1_2_settings" tools:ignore="TypographyFractions">Réglages Mi Band 1/2</string>
+    <string name="pref_activity_full_sync_trigger_warning">Cela va déclencher une synchronisation complète des données d\'activité de l\'appareil. Cela peut prendre quelques minutes.</string>
+    <string name="pref_activity_full_sync_trigger_summary">Déclenche une sychronisation complète de tous les données d\'activité</string>
+    <string name="pref_activity_full_sync_trigger_title">Synchronisation complète</string>
+    <string name="preferences_miband_1_2_warning">Avertissement : Ces réglages s\'appliquent uniquement aux Mi Band 1 et 2.</string>
+    <string name="pref_show_changelog">Afficher le journal des modifications au démarrage</string>
+    <string name="pref_show_changelog_summary">Afficher le journal des modifications depuis la dernière version après la mise à jour de GadgetBridge</string>
+    <string name="pref_theme_dynamic_colors_not_available_warning">Les coouleurs dynamiques ne sont pas disponibles sur votre appareil, seul Android 12 ou sup. le supporte. Gadgetbridge utilisera les couleurs par défaut Material 3.</string>
+    <string name="pref_theme_dynamic_colors_explanation">Remarque : pour le thème avec des couleurs dynamiques, vous devez activer les couleurs de papier-peint ou la palette de couleurs dans les réglages d\'apparenci d\'Android 12 ou supérieur. Si vous ne le faites pas, Gadgetbridge utilisera les couleurs par défaut de Material 3.</string>
+    <string name="menuitem_zepp_coach">Zepp Coach</string>
+    <string name="devicetype_amazfit_bip3_pro">Amazfit Bip 3 Pro</string>
+    <string name="fw_upgrade_notice_amazfitbip3pro">Vous êtes sur le point d\'installer le micro-logiciel %s dans votre Amazfit Bip 3 Pro.
+\n
+\nAssurez-vous d\'installer le fichier .fw, et ensuite le fichier .res. Votre montre redémarrera après l\'installation du fichier .fw.
+\n
+\nRemarque : Pas besoin d\'installer le fichier .res si c\'est exactement le même que le précédent installé.
+\n
+\nA VOS RISQUES ET PÉRILS !</string>
 </resources>

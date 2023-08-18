@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="application_name_generic">Gadgetbridge</string>
     <string name="title_activity_controlcenter_generic">Gadgetbridge</string>
     <string name="action_settings">הגדרות</string>
@@ -1780,7 +1780,7 @@
     <string name="watchface_dialog_widget_cat_custom_widget">וידג׳ט משלך</string>
     <string name="watchface_dialog_title_widget">הגדרות וידג׳ט</string>
     <string name="pref_title_banglejs_txt_bitmap_size">גודל מפות סיביות של כתב</string>
-    <string name="pref_summary_banglejs_txt_bitmap_size">אם ‚כתב כמפות סיביות’ מופעל, באיזה גודל יוצג הכתב\?</string>
+    <string name="pref_summary_banglejs_txt_bitmap_size">הגודל לשימוש לעיבוד מפות סיביות של טקסט</string>
     <string name="steps_streaks_achievement_rate">קצב
 \nהישגיות</string>
     <string name="share_log_not_enabled_message">עליך להפעיל תיעוד ליומנים תחילה דרך הגדרות - כתיבת קובצי יומן</string>
@@ -1997,7 +1997,7 @@
     <string name="menuitem_volume">עצמת שמע</string>
     <string name="menuitem_theater_mode">מצב תיאטרון</string>
     <string name="menuitem_phone">טלפון</string>
-    <string name="menuitem_membership_cards">כרטיסי מועדון</string>
+    <string name="menuitem_membership_cards">כרטיסי חברות</string>
     <string name="menuitem_offline_voice">קול בלתי מקוון</string>
     <string name="menuitem_lockscreen">מסך נעילה</string>
     <string name="menuitem_brightness">בהירות</string>
@@ -2251,9 +2251,9 @@
     <string name="stress_high">גבוה</string>
     <string name="stress_relaxed">רגוע</string>
     <string name="watchface_widget_type_uv_index">מדד קרינה אולטרה סגולה</string>
-    <string name="pref_title_banglejs_phone_gps_update_interval">הפרש בין עדכוני נתוני נווטן במילישניות</string>
-    <string name="pref_summary_banglejs_phone_gps_network_only">האפשרות הזאת פעילה בלבד אם נעשה שימוש בנתוני הנווטן של הטלפון. אפשר להשתמש באפשרות הזאת כדי להשתמש רק ברשת כדי לזהות את המיקום. מפחית את צריכת הסוללה בתמורה לדיוק. נדרש חיבור מחדש למכשיר.</string>
-    <string name="pref_summary_banglejs_phone_gps_update_interval">האפשרות הזאת פעילה רק אם נעשה שימוש בנתוני הנווטן של הטלפון. אפשרות זו מגדיר את ההפרש במילישניות לעדכון מיקום הנווטן</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">הפרש בין עדכוני נתוני נווטן</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">אפשר להשתמש באפשרות הזאת כדי להשתמש רק ברשת כדי לזהות את המיקום. מפחית את צריכת הסוללה בתמורה לדיוק. נדרש חיבור מחדש.</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">ההפרש לעדכון מיקום הנווטן, במילישניות</string>
     <string name="pref_title_banglejs_phone_gps_enbale">להשתמש בנתוני הנווטן של הטלפון</string>
     <string name="changelog_show_full">עוד…</string>
     <string name="preview_image">תמונת תצוגה מקדימה</string>
@@ -2266,4 +2266,90 @@
     <string name="changelog_full_title">יומן שינויים</string>
     <string name="changelog_ok_button">אישור</string>
     <string name="changelog_title">מה חדש</string>
+    <string name="num_min">%d דק׳</string>
+    <string name="pai_plus_num">+%d</string>
+    <string name="pai_chart_per_month">PAI בחודש</string>
+    <string name="pai_chart_per_week">PAI בשבוע</string>
+    <string name="loyalty_cards_install">התקנת Catima</string>
+    <string name="loyalty_cards_sync_groups_only">סנכרון קבוצות מסוימות בלבד</string>
+    <string name="loyalty_cards_sync_archived">סנכרון כרטיסים בארכיון</string>
+    <string name="loyalty_cards_install_catima_fail">פתיחת החנות להתקנת Catima נכשלה</string>
+    <string name="loyalty_cards_sync_starred">לסנכרן כרטיסים בכוכב בלבד</string>
+    <string name="loyalty_cards_catima_not_compatible">גרסת ה־Catima המותקנת לא תואמת ל־Gadgetbridge. נא לעדכן את Catima ואת Gadgetbridge לגרסאות העדכניות ביותר.</string>
+    <string name="loyalty_cards_catima">Catima</string>
+    <string name="loyalty_cards_open_catima">פתיחת Catima</string>
+    <string name="pai_total">PAI כולל</string>
+    <string name="pai_day">צמיחת PAI יומית</string>
+    <string name="loyalty_cards_sync_groups">קבוצות לסנכרון</string>
+    <string name="loyalty_cards_sync_title">סנכרון כרטיסי מועדון</string>
+    <string name="loyalty_cards_catima_package">שם חבילת Catima</string>
+    <string name="loyalty_cards_sync_summary">יש ללחוץ כדי לסנכרן את הכרטיסים לשעון</string>
+    <string name="loyalty_cards_catima_not_installed">צריך Catima כדי לנהל את כרטיסי המועדון</string>
+    <string name="loyalty_cards_catima_permissions_title">חסרות הרשאות</string>
+    <string name="loyalty_cards_sync_options">אפשרויות סנכרון</string>
+    <string name="loyalty_cards_sync">סנכרון</string>
+    <string name="loyalty_cards_catima_permissions_summary">ל־Gadgetbridge דרושות הרשאות לקרוא כרטיסים מ־Catima כדי סלנכרן אותם. נגיעה בכפתור הזה תאשר את הגישה.</string>
+    <string name="loyalty_cards">כרטיסי מועדון</string>
+    <string name="loyalty_cards_syncing">%d כרטיסי מועדון מסונכרנים למכשיר</string>
+    <string name="pref_title_mb_intents">שידור Intents של כפתורי מדיה ישירות</string>
+    <string name="pref_summary_mb_intents">יש להפעיל אם בקרת המדיה של המכשיר לא עובדת ביישומים מסוימים</string>
+    <string name="devicetype_bohemic_smart_bracelet">צמיד חכם של Bohemic</string>
+    <string name="devicetype_vivomove_hr">Garmin Vivomove HR‎</string>
+    <string name="busy_task_fetch_sports_summaries">תקצירי הספורט מעודכנים</string>
+    <string name="busy_task_fetch_sports_details">פרטי הספורט מתעדכנים</string>
+    <string name="busy_task_fetch_debug_logs">יומני ניפוי התקלות מעודכנים</string>
+    <string name="busy_task_fetch_pai_data">נתוני PAI מעודכנים</string>
+    <string name="busy_task_fetch_spo2_data">נתוני חמצן בדם מעודכנים</string>
+    <string name="busy_task_fetch_hr_data">נתוני דופק מעודכנים</string>
+    <string name="busy_task_fetch_stress_data">נתוני הלחץ מעודכנים</string>
+    <string name="busy_task_fetch_sleep_respiratory_rate_data">נתוני קצב נשימות בשינה מעודכנים</string>
+    <string name="devicetype_casiogwb5600">Casio GW-B5600‎</string>
+    <string name="devicetype_casiogmwb5000">Casio GMW-B5000‎</string>
+    <string name="activity_prefs_goals">יעדים</string>
+    <string name="error_no_bluetooth_scan">יש להעניק גישה לסריקת Bluetooth ולהפעיל אותה כדי שזה יעבוד כראוי</string>
+    <string name="error_no_bluetooth_connect">יש להעניק גישה לחיבור Bluetooth ולהפעיל אותו כדי שהסריקה תעבוד כראוי</string>
+    <string name="permission_request">%1$s מאפשר לך לשלוח הודעות ונתונים נוספים מ־Android למכשיר שלך. כדי לעשות זאת נדרשת גישה לנתונים האלה ובלעדיה, כנראה שזה לא יעבוד כראוי.
+\n
+\nעכשיו יוצגו בפניך מספר חלוניות של Android שמבקשות את ההרשאות האלה.
+\n
+\nנא לגעת ב־‚%2$s’ כדי להמשיך.</string>
+    <string name="activity_type_surfing">גלישה</string>
+    <string name="activity_type_windsurfing">גלישת רוח</string>
+    <string name="activity_type_rugby">רוגבי</string>
+    <string name="activity_type_baseball">בייסבול</string>
+    <string name="activity_type_handball">כדור־יד</string>
+    <string name="activity_type_tennis">טניס</string>
+    <string name="activity_type_squash">סקווש</string>
+    <string name="activity_type_weightlifting">הרמת משקולות</string>
+    <string name="activity_type_dancing">ריקוד</string>
+    <string name="activity_type_hockey">הוקי</string>
+    <string name="activity_type_icehockey">הוקי קרח</string>
+    <string name="activity_type_iceskating">החלקה על קרח</string>
+    <string name="activity_type_football">פוטבול</string>
+    <string name="activity_type_kitesurfing">קייטסרפינג</string>
+    <string name="activity_type_snowboarding">גלישת שלג</string>
+    <string name="activity_type_other">אחר</string>
+    <string name="withings_steel_hr">Withings Steel HR‎</string>
+    <string name="withings_bt_calibration_previous">הקודם</string>
+    <string name="withings_calibration_text_minutes">כעת יש להשתמש בחוגה כדי ליישר את מחוג הדקות ל־12.</string>
+    <string name="withings_bt_calibration_next">הבא</string>
+    <string name="activity_type_skiing">סקי</string>
+    <string name="activity_type_golf">גולף</string>
+    <string name="withings_calibration_text_hours">נא להשתמש בחוגה שלהלן כדי ליישר את מחוג השעות ל־12.</string>
+    <string name="activity_type_riding">רכיבת סוסים</string>
+    <string name="withings_calibration_text_activity_target">ולבסוף, יש ליישר את מחוג הפעילות ל־100%. כדאי לשים לב שהמחוג הזה נע רק נגד כיוון השעון.</string>
+    <string name="pref_theme_dynamic">צבעים דינמיים</string>
+    <string name="pref_canned_message">הודעה</string>
+    <string name="preferences_miband_1_2_settings" tools:ignore="TypographyFractions">הגדרות Mi Band 1/2</string>
+    <string name="preferences_miband_1_2_warning">אזהרה: ההעדפות האלו חלות רק על רצועות Mi Band 1 ו־2.</string>
+    <string name="drag_handle">ידית משיכה</string>
+    <string name="find_my_phone_found_it">מצאתי אותו</string>
+    <string name="pref_activity_full_sync_trigger_title">סנכרון מלא</string>
+    <string name="pref_show_changelog">הצגת יומן שינויים בעלייה</string>
+    <string name="pref_show_changelog_summary">הצגת יומן השינויים מאז הגרסה האחרונה לאחר עדכון Gadgetbridge</string>
+    <string name="pref_activity_full_sync_trigger_summary">הקפצת סנכרון מלא של כל נתוני הפעילות</string>
+    <string name="pref_activity_full_sync_trigger_warning">פעולה זו תקפיץ סנכרון מלא של כל נתוני הפעילות מול המכשיר. עלול לארוך כמה דקות עד שיושלם.</string>
+    <string name="menuitem_zepp_coach">Zepp Coach‎</string>
+    <string name="pref_theme_dynamic_colors_explanation">לתשומת לבך: לטובת ערכת הצבעים הדינמיים יש להפעיל צבעי טפט או ערכת צבעים בהגדרות המראה ב־Android 12+‎ שלך. אם לא, Gadgetbridge ישתמש בצבעי Material 3 כברירת מחדל.</string>
+    <string name="pref_theme_dynamic_colors_not_available_warning">צבעים דינמיים לא זמינים במכשיר שלך, רק Android 12 ומעלה תומך ביכולת הזאת. Gadgetbridge ישתמש בצבעי ברירת המחדל של Material 3.</string>
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="application_name_generic">Gadgetbridge</string>
     <string name="title_activity_controlcenter_generic">Gadgetbridge</string>
     <string name="action_settings">Einstellungen</string>
@@ -976,7 +976,7 @@
     <string name="minAltitude">Minimale Höhe</string>
     <string name="maxAltitude">Maximale Höhe</string>
     <string name="descentMeters">Höhenverlust</string>
-    <string name="ascentMeters">Höhengewinn</string>
+    <string name="ascentMeters">Bergauf</string>
     <string name="distanceMeters">Strecke</string>
     <string name="activity_summary_detail">Detail der Sportaktivität</string>
     <string name="maxSpeed">Maximum</string>
@@ -1779,7 +1779,7 @@
     <string name="open_fw_installer_getting_files_text">Da wir die Firmware-Dateien nicht verteilen dürfen, musst du dir die Dateien selbst beschaffen. Das bedeutet, dass du nach den Dateien in apk-Dateien, online, in Foren, auf Amazfitwatchfaces (für Miband/Amazfit-Geräte) und so weiter suchen musst.</string>
     <string name="appmanager_item_outdated">(veraltet)</string>
     <string name="pref_title_banglejs_txt_bitmap_size">Größe der Text-Bitmaps</string>
-    <string name="pref_summary_banglejs_txt_bitmap_size">Wenn \"Text als Bitmap\" aktiviert ist, in welcher Größe soll der Text gerendert werden\?</string>
+    <string name="pref_summary_banglejs_txt_bitmap_size">Größe, die für das Rendern von Text als Bitmap verwendet werden soll</string>
     <string name="watchface_dialog_widget_cat_generic">Allgemein</string>
     <string name="watchface_dialog_widget_cat_custom_widget">Benutzerdefiniertes Widget</string>
     <string name="watchface_dialog_widget_cat_2nd_tz_widget">2. Zeitzonen-Widget</string>
@@ -2156,7 +2156,7 @@
     <string name="pref_morning_updates_categories_title">Morgendliche Kategorie-Updates</string>
     <string name="yesterdays_activity">Gestrige Aktivität</string>
     <string name="pref_morning_updates_categories_summary">Liste der Kategorien, die jeden Morgen angezeigt werden</string>
-    <string name="pref_pair_bluetooth_calls_help_warning">WARNUNG: Wenn du Bluetooth-Anrufe aktivierst, ohne sich mit der zweiten Instanz zu koppeln, funktionieren die Anrufbenachrichtigungen möglicherweise nicht wie erwartet.</string>
+    <string name="pref_pair_bluetooth_calls_help_warning">WARNUNG: Wenn du Bluetooth-Anrufe aktivierst, ohne dich mit der zweiten Instanz zu koppeln, funktionieren die Anrufbenachrichtigungen möglicherweise nicht wie erwartet.</string>
     <string name="pref_summary_receive_calls_watch">Führen und empfangen von Anrufen direkt auf der Uhr</string>
     <string name="bluetooth_calls">Bluetooth-Anrufe</string>
     <string name="bluetooth_calls_settings">Einstellungen für Bluetooth-Anrufe</string>
@@ -2168,7 +2168,7 @@
     <string name="pref_display_caller_title">Kontaktinformationen anzeigen</string>
     <string name="pref_pair_bluetooth_calls_title">Koppeln für Bluetooth-Anrufe</string>
     <string name="pref_pair_bluetooth_calls_help_title">Wie man Bluetooth-Anrufe empfängt</string>
-    <string name="pref_pair_bluetooth_calls_help_2">2. Gehen Sie zu den Bluetooth-Einstellungen deines Telefons und koppel es mit dem neuen Gerät, das angezeigt wird (ähnlicher Name wie deine aktuelle Uhr, aber mit einem Suffix, z. B. \"Amazfit GTR 4 - AFC8\").</string>
+    <string name="pref_pair_bluetooth_calls_help_2">2. Gehe zu den Bluetooth-Einstellungen deines Telefons und verbinde es mit dem neuen Gerät, das angezeigt wird (ähnlicher Name wie deine aktuelle Uhr, aber mit einem Suffix, z. B. \"Amazfit GTR 4 - AFC8\".</string>
     <string name="pref_pair_bluetooth_calls_help_3">3. Aktiviere die nachstehende Einstellung für Bluetooth-Anrufe.</string>
     <string name="pref_title_notification_cache_while_disconnected">Cache außerhalb der Reichweite</string>
     <string name="pref_summary_notification_cache_while_disconnected">Verpasste Benachrichtigungen senden, wenn sich ein Gerät wieder verbindet, nachdem es sich außerhalb der Reichweite befand</string>
@@ -2265,13 +2265,98 @@
     <string name="description">Beschreibung</string>
     <string name="status_icon">Statussymbol</string>
     <string name="pref_summary_banglejs_phone_gps_enbale">Verwende die GPS-Daten des Telefons, um die GPS-Daten des Armbands zu überschreiben</string>
-    <string name="pref_summary_banglejs_phone_gps_network_only">Diese Option ist nur aktiv, wenn die GPS-Daten des Telefons verwendet werden. Diese Option kann verwendet werden, um nur den Netzbetreiber für die Standortbestimmung zu verwenden. Dadurch wird der Stromverbrauch auf Kosten der Genauigkeit reduziert. Eine erneute Verbindung mit dem Gerät ist erforderlich.</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">Verwende nur den Netzbetreiber, um den Standort zu bestimmen. Dies reduziert den Stromverbrauch auf Kosten der Genauigkeit. Eine erneute Verbindung ist erforderlich.</string>
     <string name="watchface_widget_type_uv_index">UV-Index</string>
-    <string name="pref_summary_banglejs_phone_gps_update_interval">Diese Option ist nur aktiv, wenn die GPS-Daten des Telefons verwendet werden. Diese Option legt das Intervall in ms fest, wie oft die GPS-Position aktualisiert wird</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">Das Intervall in ms, in dem die GPS-Position aktualisiert wird</string>
     <string name="preview_image">Vorschaubild</string>
     <string name="changelog_full_title">Änderungsprotokoll</string>
     <string name="changelog_show_full">Mehr…</string>
-    <string name="pref_title_banglejs_phone_gps_update_interval">Aktualisierungsintervall der GPS-Daten in ms</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">Aktualisierungsintervall der GPS-Daten</string>
     <string name="changelog_ok_button">OK</string>
     <string name="changelog_title">Was gibt\'s Neues</string>
+    <string name="num_min">%d min</string>
+    <string name="pai_chart_per_week">PAI pro Woche</string>
+    <string name="pai_chart_per_month">PAI pro Monat</string>
+    <string name="pai_plus_num">+%d</string>
+    <string name="pai_total">PAI Gesamt</string>
+    <string name="loyalty_cards_sync_groups">Zu synchronisierende Gruppen</string>
+    <string name="loyalty_cards_sync_archived">Archivierte Karten synchronisieren</string>
+    <string name="loyalty_cards_catima_package">Catima Paketname</string>
+    <string name="loyalty_cards_install">Catima installieren</string>
+    <string name="loyalty_cards_sync_groups_only">Nur bestimmte Gruppen synchronisieren</string>
+    <string name="loyalty_cards_sync_summary">Tippe, um die Karten mit der Uhr zu synchronisieren</string>
+    <string name="loyalty_cards_sync_title">Kundenkarten synchronisieren</string>
+    <string name="loyalty_cards_catima_not_compatible">Die installierte Catima-Version ist nicht mit Gadgetbridge kompatibel. Bitte aktualisiere Catima und Gadgetbridge auf die neuesten Versionen.</string>
+    <string name="loyalty_cards_catima_permissions_summary">Gadgetbridge benötigt Leseberechtigungen für Catima-Karten, um diese zu synchronisieren. Tippe auf diese Schaltfläche, um sie zu erteilen.</string>
+    <string name="pref_title_mb_intents">Direktes Übertragen von Medienschaltflächen-Intents</string>
+    <string name="pref_summary_mb_intents">Aktivieren, wenn die Mediensteuerung des Geräts für bestimmte Anwendungen nicht funktioniert</string>
+    <string name="pai_day">Erhöhung des Tages-PAI</string>
+    <string name="loyalty_cards_install_catima_fail">App Store konnte nicht geöffnet werden, um Catima zu installieren</string>
+    <string name="loyalty_cards_sync_starred">Nur markierte Karten synchronisieren</string>
+    <string name="loyalty_cards_catima_not_installed">Catima wird für die Verwaltung der Kundenkarten benötigt</string>
+    <string name="loyalty_cards_sync_options">Synchronisationsoptionen</string>
+    <string name="loyalty_cards_sync">Synchronisieren</string>
+    <string name="loyalty_cards_open_catima">Catima öffnen</string>
+    <string name="loyalty_cards_catima_permissions_title">Fehlende Berechtigungen</string>
+    <string name="loyalty_cards">Kundenkarten</string>
+    <string name="loyalty_cards_syncing">Synchronisieren der %d Kundenkarten mit dem Gerät</string>
+    <string name="loyalty_cards_catima">Catima</string>
+    <string name="devicetype_bohemic_smart_bracelet">Bohemic Smart Bracelet</string>
+    <string name="devicetype_vivomove_hr">Garmin Vivomove HR</string>
+    <string name="devicetype_casiogmwb5000">Casio GMW-B5000</string>
+    <string name="devicetype_casiogwb5600">Casio GW-B5600</string>
+    <string name="busy_task_fetch_sports_details">Abrufen von Sportdaten</string>
+    <string name="busy_task_fetch_sports_summaries">Abrufen von Sportübersichten</string>
+    <string name="busy_task_fetch_debug_logs">Abrufen von Debug-Protokollen</string>
+    <string name="busy_task_fetch_stress_data">Abrufen von Stressdaten</string>
+    <string name="busy_task_fetch_pai_data">Abrufen von PAI-Daten</string>
+    <string name="busy_task_fetch_spo2_data">Abrufen von SpO2-Daten</string>
+    <string name="busy_task_fetch_sleep_respiratory_rate_data">Abruf von Daten zur Atemfrequenz im Schlaf</string>
+    <string name="error_no_bluetooth_scan">Zugriff auf den Bluetooth-Scan muss gewährt und aktiviert sein, damit der Scanvorgang ordnungsgemäß funktioniert</string>
+    <string name="error_no_bluetooth_connect">Zugriff auf die Bluetooth-Verbindung muss gewährt und aktiviert sein, damit der Scanvorgang ordnungsgemäß funktioniert</string>
+    <string name="permission_request">Mit %1$s kannst du Nachrichten und andere Daten von Android an dein Gerät senden. Dazu ist die Berechtigung für den Zugriff auf diese Daten erforderlich, und ohne diese Berechtigung funktioniert sie möglicherweise nicht richtig.
+\n
+\nEs werden nun einige Android-Dialogfelder angezeigt, in denen diese Berechtigungen angefordert werden.
+\n
+\nBitte tippe auf \'%2$s\', um fortzufahren.</string>
+    <string name="busy_task_fetch_hr_data">Abrufen von Herzfrequenzdaten</string>
+    <string name="activity_prefs_goals">Ziele</string>
+    <string name="activity_type_surfing">Surfen</string>
+    <string name="activity_type_windsurfing">Windsurfen</string>
+    <string name="activity_type_football">Fußball</string>
+    <string name="activity_type_rugby">Rugby</string>
+    <string name="activity_type_baseball">Baseball</string>
+    <string name="activity_type_handball">Handball</string>
+    <string name="activity_type_tennis">Tennis</string>
+    <string name="activity_type_squash">Squash</string>
+    <string name="activity_type_weightlifting">Gewichtheben</string>
+    <string name="activity_type_skiing">Skifahren</string>
+    <string name="activity_type_hockey">Hockey</string>
+    <string name="activity_type_icehockey">Eishockey</string>
+    <string name="activity_type_iceskating">Schlittschuhlaufen</string>
+    <string name="activity_type_golf">Golfen</string>
+    <string name="withings_calibration_text_hours">Bitte verwende das Zifferblatt unten, um den Stundenzeiger auf die 12 auszurichten.</string>
+    <string name="withings_calibration_text_minutes">Verwende nun das Zifferblatt, um den Minutenzeiger auf die 12 auszurichten.</string>
+    <string name="withings_calibration_text_activity_target">Zum Schluss richte den Aktivitätszeiger auf 100% aus. Bitte beachte, dass sich dieser Zeiger nur im Uhrzeigersinn bewegt.</string>
+    <string name="withings_bt_calibration_previous">Vorherige</string>
+    <string name="withings_bt_calibration_next">Nächste</string>
+    <string name="activity_type_kitesurfing">Kitesurfen</string>
+    <string name="activity_type_snowboarding">Snowboarden</string>
+    <string name="activity_type_dancing">Tanzen</string>
+    <string name="activity_type_riding">Reiten</string>
+    <string name="activity_type_other">Andere</string>
+    <string name="withings_steel_hr">Withings Steel HR</string>
+    <string name="pref_canned_message">Nachricht</string>
+    <string name="find_my_phone_found_it">GEFUNDEN</string>
+    <string name="pref_theme_dynamic">Dynamische Farben</string>
+    <string name="preferences_miband_1_2_settings" tools:ignore="TypographyFractions">Mi Band 1/2 Einstellungen</string>
+    <string name="preferences_miband_1_2_warning">Warnung: Diese Einstellungen gelten nur für die Mi Bands 1 und 2.</string>
+    <string name="pref_activity_full_sync_trigger_summary">Vollständige Synchronisation aller Aktivitätsdaten durchführen</string>
+    <string name="pref_show_changelog">Änderungsprotokoll beim Starten anzeigen</string>
+    <string name="pref_show_changelog_summary">Anzeige des Änderungsprotokolls seit der letzten Version, nachdem Gadgetbridge aktualisiert wurde</string>
+    <string name="pref_activity_full_sync_trigger_title">Vollständige Synchronisation</string>
+    <string name="pref_activity_full_sync_trigger_warning">Dadurch wird eine vollständige Synchronisation aller Aktivitätsdaten des Geräts ausgelöst. Es kann einige Minuten dauern, bis der Vorgang abgeschlossen ist.</string>
+    <string name="pref_theme_dynamic_colors_not_available_warning">Dynamische Farben sind auf deinem Gerät nicht verfügbar, nur Android 12+ unterstützt diese Funktion. Gadgetbridge verwendet die Standardfarben von Material 3.</string>
+    <string name="pref_theme_dynamic_colors_explanation">Hinweis: Für das Design mit dynamischen Farben musst du Hintergrundbildfarben oder Farbpalette in deinen Android 12+ Darstellungseinstellungen aktivieren. Wenn du das nicht tust, wird Gadgetbridge die Standardfarben von Material 3 verwenden.</string>
+    <string name="menuitem_zepp_coach">Zepp Coach</string>
 </resources>

@@ -44,6 +44,13 @@
         android:name="android.permission.MEDIA_CONTENT_CONTROL"
         tools:ignore="ProtectedPermissions" />
 
+    <!--
+        Allow Gadgetbridge to run Termux commands. Permission must be granted manually through the
+        permissions page in Android settings.
+        More information: https://github.com/termux/termux-app/wiki/RUN_COMMAND-Intent
+    -->
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND"/>
+
     <!-- Used for background service -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -127,7 +134,7 @@
             android:parentActivityName=".activities.SettingsActivity" />
         <activity
             android:name=".devices.miband.MiBandPreferencesActivity"
-            android:label="@string/preferences_miband_settings"
+            android:label="@string/preferences_miband_1_2_settings"
             android:parentActivityName=".activities.SettingsActivity" />
         <activity
             android:name=".activities.loyaltycards.LoyaltyCardsSettingsActivity"
