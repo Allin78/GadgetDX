@@ -176,6 +176,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.vibratissimo.VibratissimoCoo
 import nodomain.freeyourgadget.gadgetbridge.devices.vivomovehr.VivomoveHrCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.waspos.WaspOSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.watch9.Watch9DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.wearfit.WearFitCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miband7pro.MiBand7ProCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miband8.MiBand8Coordinator;
@@ -375,7 +376,9 @@ public enum DeviceType {
     SONY_WENA_3(SonyWena3Coordinator.class),
     FEMOMETER_VINCA2(FemometerVinca2DeviceCoordinator.class),
     PIXOO(PixooCoordinator.class),
+    WEARFIT_HK8_PRO(WearFitCoordinator.class),
     SCANNABLE(ScannableDeviceCoordinator.class),
+
     TEST(TestDeviceCoordinator.class);
 
     private DeviceCoordinator coordinator;
