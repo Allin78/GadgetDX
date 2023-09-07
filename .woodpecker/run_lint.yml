@@ -1,5 +1,5 @@
 steps:
-  tests:
+  lint:
     image: codeberg.org/freeyourgadget/android-fdroid-tools:latest
     commands:
       - pwd #bump
