@@ -1314,6 +1314,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
+    private JSONObject prevMusicStateObject;
+
     @Override
     public void onSetMusicState(MusicStateSpec stateSpec) {
         try {
@@ -1327,11 +1329,16 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("position", stateSpec.position);
             o.put("shuffle", stateSpec.shuffle);
             o.put("repeat", stateSpec.repeat);
-            uartTxJSON("onSetMusicState", o);
+            LOG.info("prevMusicState 1: " + String.valueOf(prevMusicStateObject));
+            if (true || !String.valueOf(o).equals(String.valueOf(prevMusicStateObject))) uartTxJSON("onSetMusicState", o);
+            prevMusicStateObject = o;
+            LOG.info("prevMusicState 2: " + String.valueOf(prevMusicStateObject));
         } catch (JSONException e) {
-            LOG.info("JSONException: " + e.getLocalizedMessage());
+            LOG.info("JSXNException: " + e.getLocalizedMessage());
         }
     }
+
+    private JSONObject prevMusicInfoObject;
 
     @Override
     public void onSetMusicInfo(MusicSpec musicSpec) {
@@ -1344,7 +1351,10 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("dur", musicSpec.duration);
             o.put("c", musicSpec.trackCount);
             o.put("n", musicSpec.trackNr);
-            uartTxJSON("onSetMusicInfo", o);
+            LOG.info("prevMusicINfo 1: " + String.valueOf(prevMusicInfoObject));
+            if (true || !String.valueOf(o).equals(String.valueOf(prevMusicInfoObject))) uartTxJSON("onSetMusicInfo", o);
+            prevMusicInfoObject = o;
+            LOG.info("prevMusicINfo 2: " + String.valueOf(prevMusicInfoObject));
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
