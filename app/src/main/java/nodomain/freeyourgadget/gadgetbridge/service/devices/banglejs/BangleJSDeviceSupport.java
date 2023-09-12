@@ -559,7 +559,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     }
                     uartTxJSON(
                             "send media volume info",
-                            new JSONObject("{t:'audio', level:{c:"+volumeCurrent+",u:"+volumeUpper+"}}")
+                            new JSONObject("{t:'audio', l:{c:"+volumeCurrent+",u:"+volumeUpper+"}}")
                     );
                 } else {
                     GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
