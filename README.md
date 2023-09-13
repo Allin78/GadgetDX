@@ -10,10 +10,9 @@ Gadgetbridge
 Gadgetbridge is an open-source Android (5.0+) application which 
 allow you to use your all gadgets with one application.
 
-[Homepage](https://gadgetbridge.org) - [Blog](https://blog.freeyourgadget.org) - [Wiki](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki) - <a rel="me" href="https://social.anoxinon.de/@gadgetbridge">Mastodon</a>
+[Website](https://gadgetbridge.org) - [Blog](https://blog.freeyourgadget.org) - [Wiki](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki) - <a rel="me" href="https://social.anoxinon.de/@gadgetbridge">ActivityPub</a>
 
 [![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Gadgetbridge/donate)
-
 
 [![Translate](https://hosted.weblate.org/widgets/freeyourgadget/-/gadgetbridge/svg-badge.svg)](https://hosted.weblate.org/projects/freeyourgadget/gadgetbridge)
 
@@ -21,7 +20,6 @@ allow you to use your all gadgets with one application.
 
 * Gadgetbrige is licensed under the AGPLv3
 * Files in app/src/main/java/net/osmand/ and app/src/main/aidl/net/osmand/ are licensed under the GPLv3 by OsmAnd BV
-
 
 ## Download
 
