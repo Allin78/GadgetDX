@@ -29,6 +29,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.NotificationKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationOptions;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeZoneSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceStateInfo;
@@ -56,8 +57,16 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         // Sync current time to device
         sendCurrentTime(builder);
 
+        // Sync camera mode to device
+        builder.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                CameraAppTypeSetting.findOut(getContext().getPackageManager()).toByteArray()
+        );
+
+
         // Get battery state
-        checkBattery(builder);
+        builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID));
+
         // Subscribe to updates
         builder.notify(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID), true);
         builder.notify(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID), true);
@@ -74,18 +83,6 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
         return builder;
-    }
-
-    private void checkBattery(TransactionBuilder b) {
-        try {
-            TransactionBuilder builder = b == null ? performInitialized("requestBattery") : b;
-
-            builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID));
-
-            if(b == null) performImmediately(builder);
-        } catch (IOException e) {
-            LOG.warn("Unable to read battery state", e);
-        }
     }
 
     @Override
