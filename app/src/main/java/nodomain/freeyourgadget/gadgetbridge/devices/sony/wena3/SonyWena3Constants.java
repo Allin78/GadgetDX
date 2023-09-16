@@ -1,5 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3;
 
+import android.graphics.Color;
+
 import java.util.UUID;
 
 public class SonyWena3Constants {
@@ -15,4 +17,15 @@ public class SonyWena3Constants {
     public static UUID NOTIFICATION_SERVICE_UUID = UUID.fromString(String.format(uuidTemplate, "4001"));
     public static UUID NOTIFICATION_SERVICE_CHARACTERISTIC_UUID = UUID.fromString(String.format(uuidTemplate, "4002"));
 
+    public static int[] LED_PRESETS = {
+            Color.rgb(255, 0, 0),
+            Color.rgb(255, 255, 0),
+            Color.rgb(0, 255, 0),
+            Color.rgb(0, 255, 255),
+            Color.rgb(0, 0, 255),
+            Color.rgb(255, 0, 255),
+            Color.rgb(255, 255, 255)
+    };
+
+    public static long EPOCH_START = 1577836800000L;
 }

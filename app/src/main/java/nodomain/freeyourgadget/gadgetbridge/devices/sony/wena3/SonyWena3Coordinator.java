@@ -162,16 +162,6 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
         return true;
     }
 
-    @Override
-    public boolean supportsLedColor() {
-        return false;
-    }
-
-    @NonNull
-    @Override
-    public int[] getColorPresets() {
-        return super.getColorPresets();
-    }
 
     @Override
     public boolean supportsFindDevice() {
