@@ -170,6 +170,6 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsWeather() {
-        return false;
+        return true;
     }
 }

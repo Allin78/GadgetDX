@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -19,6 +20,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
@@ -36,6 +38,10 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.MusicInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.NotificationServiceStatusRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.NotificationServiceStatusRequestType;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.Weather;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherDay;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherReport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherType;
 
 public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3DeviceSupport.class);
@@ -62,7 +68,6 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
                 CameraAppTypeSetting.findOut(getContext().getPackageManager()).toByteArray()
         );
-
 
         // Get battery state
         builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID));
@@ -161,6 +166,21 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
+    private void sendWeatherInfo(WeatherReport weather, @Nullable TransactionBuilder b) {
+        try {
+            TransactionBuilder builder = b == null ? performInitialized("updateWeather") : b;
+
+            builder.write(
+                    getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
+                    weather.toByteArray()
+            );
+
+            if(b == null) performImmediately(builder);
+        } catch (IOException e) {
+            LOG.warn("Unable to send current weather", e);
+        }
+    }
+
     @Override
     public void onSetMusicInfo(MusicSpec musicSpec) {
         StringBuilder sb = new StringBuilder();
@@ -185,7 +205,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     public void onSetMusicState(MusicStateSpec stateSpec) {
         if(stateSpec.state == MusicStateSpec.STATE_PLAYING && lastMusicInfo != null) {
             sendMusicInfo(lastMusicInfo);
-        } else if (stateSpec.state == MusicStateSpec.STATE_STOPPED) {
+        } else if (stateSpec.state == MusicStateSpec.STATE_STOPPED || stateSpec.state == MusicStateSpec.STATE_PAUSED) {
+            lastMusicInfo = "";
             sendMusicInfo("");
         }
     }
@@ -271,5 +292,27 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
+    @Override
+    public void onSendWeather(WeatherSpec weatherSpec) {
+        if(weatherSpec.forecasts.size() < 4) return;
 
+        ArrayList<WeatherDay> days = new ArrayList<>();
+        // Add today
+        days.add(
+                new WeatherDay(
+                        Weather.fromOpenWeatherMap(weatherSpec.currentConditionCode),
+                        Weather.fromOpenWeatherMap(weatherSpec.currentConditionCode),
+                        weatherSpec.todayMaxTemp,
+                        weatherSpec.todayMinTemp
+                )
+        );
+
+        // Add other days
+        for(int i = 0; i < 4; i++) {
+            days.add(WeatherDay.fromSpec(weatherSpec.forecasts.get(i)));
+        }
+
+        WeatherReport report = new WeatherReport(days);
+        sendWeatherInfo(report, null);
+    }
 }
