@@ -13,6 +13,6 @@ public class SonyWena3Constants {
     public static UUID COMMON_SERVICE_CHARACTERISTIC_STATE_UUID = UUID.fromString(String.format(uuidTemplate, "1521"));
 
     public static UUID NOTIFICATION_SERVICE_UUID = UUID.fromString(String.format(uuidTemplate, "4001"));
-    public static UUID NOTIFICATION_SERVICE_CHARACTERISTIC_TX_UUID = UUID.fromString(String.format(uuidTemplate, "4002"));
+    public static UUID NOTIFICATION_SERVICE_CHARACTERISTIC_UUID = UUID.fromString(String.format(uuidTemplate, "4002"));
 
 }
