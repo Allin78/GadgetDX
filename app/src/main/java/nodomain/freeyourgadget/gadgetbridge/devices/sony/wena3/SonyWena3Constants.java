@@ -17,6 +17,10 @@ public class SonyWena3Constants {
     public static final UUID NOTIFICATION_SERVICE_UUID = UUID.fromString(String.format(uuidTemplate, "4001"));
     public static final UUID NOTIFICATION_SERVICE_CHARACTERISTIC_UUID = UUID.fromString(String.format(uuidTemplate, "4002"));
 
+    public static final UUID ACTIVITY_LOG_SERVICE_UUID = UUID.fromString(String.format(uuidTemplate, "3001"));
+    public static final UUID ACTIVITY_LOG_CHARACTERISTIC_UUID = UUID.fromString(String.format(uuidTemplate, "3002"));
+
+
     public static int[] LED_PRESETS = {
             Color.rgb(255, 0, 0),
             Color.rgb(255, 255, 0),
