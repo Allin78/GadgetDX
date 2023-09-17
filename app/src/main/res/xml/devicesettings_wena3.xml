@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Not including PREF_LANGUAGE here since GadgetBridge seems to add it for us -->
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_title_screen">
+        <ListPreference
+            android:defaultValue="5"
+            android:entries="@array/screen_timeout"
+            android:entryValues="@array/screen_timeout_values"
+            android:key="screen_timeout"
+            android:icon="@drawable/ic_hourglass_empty"
+            android:summary="%s"
+            android:title="@string/prefs_screen_timeout" />
+        <SwitchPreference
+            android:title="@string/prefs_wena3_item_lift_wrist"
+            android:key="pref_screen_lift_wrist"
+            android:icon="@drawable/ic_watch"
+            android:summary="@string/prefs_wena3_hint_lift_wrist"
+            android:defaultValue="false"
+            />
+        <ListPreference
+            android:defaultValue="left"
+            android:icon="@drawable/ic_switch_left"
+            android:entries="@array/wearside"
+            android:entryValues="@array/wearside_values"
+            android:key="wearlocation"
+            android:summary="%s"
+            android:title="@string/prefs_wearside" />
+        <SwitchPreference
+            android:title="@string/prefs_wena3_item_weather_statusbar"
+            android:icon="@drawable/ic_wb_sunny"
+            android:key="pref_wena3_weather_in_statusbar"
+            android:summary="@string/prefs_wena3_hint_weather_statusbar"
+            android:defaultValue="true" />
+        <SwitchPreference
+            android:title="@string/prefs_wena3_item_rich_design"
+            android:icon="@drawable/ic_auto_awesome"
+            android:key="pref_wena3_rich_design_mode"
+            android:summary="@string/prefs_wena3_hint_rich_design"
+            android:defaultValue="false" />
+        <SwitchPreference
+            android:title="@string/prefs_wena3_item_large_font"
+            android:icon="@drawable/ic_font_size"
+            android:key="pref_wena3_large_font_size"
+            android:summary="@string/prefs_wena3_hint_large_font"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_title_alarm">
+        <ListPreference
+            android:key="smart_alarm_interval_preference"
+            android:title="@string/prefs_wena3_smart_alarm_margin_item"
+            android:icon="@drawable/ic_access_alarms"
+            android:defaultValue="10"
+            android:entries="@array/sonyswr12_smart_alarm_intervals"
+            android:entryValues="@array/sonyswr12_smart_alarm_interval_values"
+            android:summary="%s" />
+    </PreferenceCategory>
+</PreferenceScreen>

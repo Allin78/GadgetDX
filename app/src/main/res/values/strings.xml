@@ -2267,4 +2267,16 @@
     <string name="info_menu_structure_contents">Menu structure: %s</string>
     <string name="info_fossil_rebuild_watchface_custom_menu">Please rebuild your watchface for custom menu</string>
     <string name="devicetype_miband2_hrx">Mi Band HRX</string>
+
+    <string name="prefs_wena3_title_screen">Display Settings</string>
+    <string name="prefs_wena3_item_lift_wrist">Lift Wrist To Turn On</string>
+    <string name="prefs_wena3_hint_lift_wrist">Turn on the display when you look at your wrist.</string>
+    <string name="prefs_wena3_item_large_font">Larger Font Size</string>
+    <string name="prefs_wena3_hint_large_font">Increase the font size in calendar, notifications, etc.</string>
+    <string name="prefs_wena3_item_rich_design">Use Rich Design</string>
+    <string name="prefs_wena3_hint_rich_design">Adds rounded rectangles around home screen icons. May lead to more OLED wear over time.</string>
+    <string name="prefs_wena3_item_weather_statusbar">Weather In Status Bar</string>
+    <string name="prefs_wena3_hint_weather_statusbar">Show current conditions icon in the top left corner of the home screen.</string>
+    <string name="prefs_wena3_title_alarm">Alarm Settings</string>
+    <string name="prefs_wena3_smart_alarm_margin_item">Smart Alarm Margin</string>
 </resources>

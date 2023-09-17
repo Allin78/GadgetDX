@@ -2,6 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -11,12 +12,17 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Constants;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
@@ -31,7 +37,14 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.NotificationKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationOptions;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AlarmListSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplayDesign;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplayOrientation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.FontSize;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.Language;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.SingleAlarmSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeZoneSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceStateInfo;
@@ -41,7 +54,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherDay;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherReport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherType;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3DeviceSupport.class);
@@ -314,5 +328,126 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
         WeatherReport report = new WeatherReport(days);
         sendWeatherInfo(report, null);
+    }
+
+    @Override
+    public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
+        try {
+            Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+            TransactionBuilder builder = performInitialized("alarmSetting");
+
+            assert alarms.size() <= SonyWena3Constants.ALARM_SLOTS;
+
+            int wakeupMargin = prefs.getInt(SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES,
+                    SonyWena3Constants.ALARM_DEFAULT_SMART_WAKEUP_MARGIN_MINUTES);
+
+            for(
+                int i = 0;
+                i < SonyWena3Constants.ALARM_SLOTS;
+                i += AlarmListSettings.MAX_ALARMS_IN_PACKET
+            ) {
+                AlarmListSettings pkt = new AlarmListSettings(new ArrayList<>(), i);
+
+                for(int j = 0; j < AlarmListSettings.MAX_ALARMS_IN_PACKET; j++) {
+                    if(i + j < alarms.size()) {
+                        Alarm alarm = alarms.get(i + j);
+                        SingleAlarmSetting sas = new SingleAlarmSetting(
+                                alarm.getEnabled(),
+                                (byte) alarm.getRepetition(),
+                                alarm.getSmartWakeup() ? wakeupMargin : 0,
+                                alarm.getHour(),
+                                alarm.getMinute()
+                        );
+                        pkt.alarms.add(sas);
+                    }
+                }
+
+                builder.write(
+                        getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                        pkt.toByteArray()
+                );
+            }
+
+            performImmediately(builder);
+        } catch (IOException e) {
+            LOG.warn("Unable to send alarms", e);
+            GB.toast("Failed to save alarms", Toast.LENGTH_SHORT, GB.ERROR);
+        }
+    }
+
+    private void sendDisplaySettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+
+        String localeString = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getString(DeviceSettingsPreferenceConst.PREF_LANGUAGE, DeviceSettingsPreferenceConst.PREF_LANGUAGE_AUTO);
+        if (localeString == null || localeString.equals(DeviceSettingsPreferenceConst.PREF_LANGUAGE_AUTO)) {
+            String language = Locale.getDefault().getLanguage();
+            String country = Locale.getDefault().getCountry();
+
+            if (country == null) {
+                country = language;
+            }
+            localeString = language + "_" + country.toUpperCase();
+        }
+        LOG.info("Setting device to locale: " + localeString);
+
+        Language languageCode = Language.ENGLISH;
+
+        switch (localeString.substring(0, 2)) {
+            case "en":
+                languageCode = Language.ENGLISH;
+                break;
+            case "ja":
+                languageCode = Language.JAPANESE;
+                break;
+        }
+        LOG.info("Resolved locale: %i", languageCode.ordinal());
+
+        DisplaySetting pkt = new DisplaySetting(
+                prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST, false),
+                languageCode,
+                prefs.getInt(DeviceSettingsPreferenceConst.PREF_SCREEN_TIMEOUT, 5),
+                (prefs.getString(DeviceSettingsPreferenceConst.PREF_WEARLOCATION, "left")
+                        .equals("left") ? DisplayOrientation.LEFT_HAND : DisplayOrientation.RIGHT_HAND),
+                (prefs.getBoolean(SonyWena3SettingKeys.RICH_DESIGN_MODE, false) ? DisplayDesign.RICH : DisplayDesign.NORMAL),
+                (prefs.getBoolean(SonyWena3SettingKeys.LARGE_FONT_SIZE, false) ? FontSize.LARGE : FontSize.NORMAL),
+                prefs.getBoolean(SonyWena3SettingKeys.WEATHER_IN_STATUSBAR, true)
+        );
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                pkt.toByteArray()
+        );
+    }
+
+    @Override
+    public void onSendConfiguration(String config) {
+        try {
+            TransactionBuilder builder = performInitialized("sendConfig");
+
+            switch (config) {
+                case DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST:
+                case DeviceSettingsPreferenceConst.PREF_LANGUAGE:
+                case DeviceSettingsPreferenceConst.PREF_SCREEN_TIMEOUT:
+                case DeviceSettingsPreferenceConst.PREF_WEARLOCATION:
+                case SonyWena3SettingKeys.RICH_DESIGN_MODE:
+                case SonyWena3SettingKeys.LARGE_FONT_SIZE:
+                case SonyWena3SettingKeys.WEATHER_IN_STATUSBAR:
+                    sendDisplaySettings(builder);
+                    break;
+
+                case SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES:
+                    // Resend alarms
+                    GBApplication.deviceService(gbDevice).onSetAlarms(new ArrayList<>(DBHelper.getAlarms(gbDevice)));
+                    break;
+
+                default:
+                    LOG.warn("Unsupported setting %s", config);
+                    return;
+            }
+
+            performImmediately(builder);
+        } catch(Exception e) {
+            LOG.warn("Failed to update settings");
+        }
     }
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -149,19 +150,18 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public int getAlarmSlotCount(GBDevice device) {
-        return 0;
+        return SonyWena3Constants.ALARM_SLOTS;
     }
 
     @Override
     public boolean supportsSmartWakeup(GBDevice device) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supportsMusicInfo() {
         return true;
     }
-
 
     @Override
     public boolean supportsFindDevice() {
@@ -171,5 +171,26 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public boolean supportsWeather() {
         return true;
+    }
+
+    @Override
+    public boolean isExperimental() {
+        return true;
+    }
+
+    @Override
+    public String[] getSupportedLanguageSettings(GBDevice device) {
+        return new String[]{
+                "auto",
+                "en_US",
+                "ja_JP"
+        };
+    }
+
+    @Override
+    public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
+        return new int[]{
+                R.xml.devicesettings_wena3
+        };
     }
 }
