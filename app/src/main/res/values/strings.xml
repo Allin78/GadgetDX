@@ -2315,4 +2315,5 @@
     <string name="prefs_wena3_menu_icon_title">Menu Icons</string>
     <string name="prefs_wena3_menu_icon_hint">The Settings icon is always shown at the end of the menu.</string>
     <string name="prefs_wena3_status_page_title">Status Page Ordering</string>
+    <string name="prefs_wena3_day_start_hour_item">Day Starts At</string>
 </resources>

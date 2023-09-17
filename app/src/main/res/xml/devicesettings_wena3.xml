@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Not including PREF_LANGUAGE here since GadgetBridge seems to add it for us -->
+    <ListPreference
+        android:defaultValue="6"
+        android:entries="@array/prefs_wena3_day_start_list"
+        android:entryValues="@array/prefs_wena3_day_start_values_list"
+        android:key="pref_wena3_day_start_hour"
+        android:icon="@drawable/ic_watch"
+        android:summary="%s"
+        android:title="@string/prefs_wena3_day_start_hour_item" />
     <PreferenceCategory
         android:title="@string/prefs_wena3_title_screen">
         <ListPreference
@@ -71,21 +79,24 @@
             android:defaultValue="4864"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
-            android:summary="%s" />
+            android:summary="%s"
+            android:icon="@drawable/ic_wena_icon_left" />
         <ListPreference
             android:key="pref_wena3_home_icon_center"
             android:title="@string/prefs_wena3_home_icon_center_item"
             android:defaultValue="2560"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
-            android:summary="%s" />
+            android:summary="%s"
+            android:icon="@drawable/ic_wena_icon_center" />
         <ListPreference
             android:key="pref_wena3_home_icon_right"
             android:title="@string/prefs_wena3_home_icon_right_item"
             android:defaultValue="4352"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
-            android:summary="%s" />
+            android:summary="%s"
+            android:icon="@drawable/ic_wena_icon_right" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/prefs_wena3_menu_icon_title"
