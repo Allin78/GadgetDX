@@ -45,6 +45,26 @@
             android:summary="@string/prefs_wena3_hint_large_font"
             android:defaultValue="false"/>
     </PreferenceCategory>
+    <PreferenceCategory android:title="@string/mi2_prefs_do_not_disturb">
+        <ListPreference
+            android:defaultValue="@string/p_off"
+            android:icon="@drawable/ic_activity_sleep"
+            android:entries="@array/do_not_disturb_no_auto"
+            android:entryValues="@array/do_not_disturb_no_auto_values"
+            android:key="do_not_disturb_no_auto"
+            android:summary="%s"
+            android:title="@string/mi2_prefs_do_not_disturb" />
+
+        <nodomain.freeyourgadget.gadgetbridge.util.XTimePreference
+            android:defaultValue="22:00"
+            android:key="do_not_disturb_no_auto_start"
+            android:title="@string/mi2_prefs_do_not_disturb_start" />
+
+        <nodomain.freeyourgadget.gadgetbridge.util.XTimePreference
+            android:defaultValue="06:00"
+            android:key="do_not_disturb_no_auto_end"
+            android:title="@string/mi2_prefs_do_not_disturb_end" />
+    </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/prefs_wena3_title_alarm">
         <ListPreference

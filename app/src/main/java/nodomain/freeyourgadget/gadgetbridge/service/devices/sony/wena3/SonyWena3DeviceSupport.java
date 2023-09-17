@@ -10,8 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -42,6 +47,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplayDesign;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplayOrientation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DoNotDisturbSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.FontSize;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.Language;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.SingleAlarmSetting;
@@ -378,7 +384,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private void sendDisplaySettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
 
-        String localeString = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getString(DeviceSettingsPreferenceConst.PREF_LANGUAGE, DeviceSettingsPreferenceConst.PREF_LANGUAGE_AUTO);
+        String localeString = prefs.getString(DeviceSettingsPreferenceConst.PREF_LANGUAGE, DeviceSettingsPreferenceConst.PREF_LANGUAGE_AUTO);
         if (localeString == null || localeString.equals(DeviceSettingsPreferenceConst.PREF_LANGUAGE_AUTO)) {
             String language = Locale.getDefault().getLanguage();
             String country = Locale.getDefault().getCountry();
@@ -419,6 +425,36 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendDnDSettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        String dndMode = prefs.getString(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO, DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_OFF);
+        boolean isDndOn = (dndMode != null && dndMode.equals(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_SCHEDULED));
+        String start = prefs.getString("do_not_disturb_no_auto_start", "22:00");
+        String end = prefs.getString("do_not_disturb_no_auto_end", "06:00");
+
+        Calendar startCalendar = GregorianCalendar.getInstance();
+        Calendar endCalendar = GregorianCalendar.getInstance();
+        DateFormat df = new SimpleDateFormat("HH:mm");
+
+        try {
+            startCalendar.setTime(df.parse(start));
+            endCalendar.setTime(df.parse(end));
+        } catch (ParseException e) {
+            LOG.error("settings error: " + e);
+        }
+
+        byte startH = (byte)startCalendar.get(Calendar.HOUR_OF_DAY);
+        byte startM = (byte)startCalendar.get(Calendar.MINUTE);
+        byte endH = (byte)endCalendar.get(Calendar.HOUR_OF_DAY);
+        byte endM = (byte)endCalendar.get(Calendar.MINUTE);
+
+        DoNotDisturbSettings dndPkt = new DoNotDisturbSettings(isDndOn, startH, startM, endH, endM);
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                dndPkt.toByteArray()
+        );
+    }
+
     @Override
     public void onSendConfiguration(String config) {
         try {
@@ -438,6 +474,12 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 case SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES:
                     // Resend alarms
                     GBApplication.deviceService(gbDevice).onSetAlarms(new ArrayList<>(DBHelper.getAlarms(gbDevice)));
+                    break;
+
+                case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO:
+                case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_END:
+                case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_START:
+                    sendDnDSettings(builder);
                     break;
 
                 default:
