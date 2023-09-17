@@ -193,4 +193,6 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
                 R.xml.devicesettings_wena3
         };
     }
+
+
 }

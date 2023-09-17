@@ -3195,4 +3195,25 @@
         <item>8</item>
         <item>9</item>
     </string-array>
+
+    <string-array name="prefs_wena3_status_pages_list">
+        <item>@string/prefs_wena3_menu_icon_name_none</item>
+        <item>@string/prefs_wena3_home_icon_name_pedometer</item>
+        <item>@string/prefs_wena3_home_icon_name_sleep</item>
+        <item>@string/prefs_wena3_home_icon_name_heart_rate</item>
+        <item>@string/prefs_wena3_home_icon_name_vo2max</item>
+        <item>@string/prefs_wena3_home_icon_name_stress</item>
+        <item>@string/prefs_wena3_home_icon_name_energy</item>
+        <item>@string/prefs_wena3_home_icon_name_calories</item>
+    </string-array>
+    <string-array name="prefs_wena3_status_page_values_list">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
 </resources>

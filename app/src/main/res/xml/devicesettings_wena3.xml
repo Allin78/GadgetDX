@@ -173,4 +173,49 @@
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_status_page_title">
+        <ListPreference
+            android:key="pref_wena3_status_page_0"
+            android:defaultValue="1"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_status_page_1"
+            android:defaultValue="2"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_status_page_2"
+            android:defaultValue="3"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_status_page_3"
+            android:defaultValue="4"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_status_page_4"
+            android:defaultValue="5"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_status_page_5"
+            android:defaultValue="6"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_status_page_6"
+            android:defaultValue="7"
+            android:entries="@array/prefs_wena3_status_pages_list"
+            android:entryValues="@array/prefs_wena3_status_page_values_list"
+            android:summary="%s" />
+    </PreferenceCategory>
 </PreferenceScreen>

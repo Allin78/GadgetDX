@@ -45,6 +45,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AlarmListSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.MenuIconSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.StatusPageOrderSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayDesign;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayOrientation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
@@ -58,6 +59,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeZoneSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.VibrationSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.MenuIconId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.StatusPageId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.VibrationStrength;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceStateInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.MusicInfo;
@@ -505,13 +507,31 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendStatusPageSettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        StatusPageOrderSetting pageOrderSetting = new StatusPageOrderSetting();
+        for(int i = 0; i < SonyWena3SettingKeys.MAX_STATUS_PAGES; i++) {
+            int id = prefs.getInt(SonyWena3SettingKeys.statusPageKeyFor(i), 0);
+            if(id != 0) {
+                pageOrderSetting.pages.add(new StatusPageId(id));
+            }
+        }
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                pageOrderSetting.toByteArray()
+        );
+    }
+
 
     @Override
     public void onSendConfiguration(String config) {
         try {
             TransactionBuilder builder = performInitialized("sendConfig");
-            if(config.startsWith("pref_wena3_menu_icon_")) {
+            if(config.startsWith(SonyWena3SettingKeys.MENU_ICON_KEY_PREFIX)) {
                 sendMenuSettings(builder);
+            } else if(config.startsWith(SonyWena3SettingKeys.STATUS_PAGE_KEY_PREFIX)) {
+                sendStatusPageSettings(builder);
             } else switch (config) {
                 case DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST:
                 case DeviceSettingsPreferenceConst.PREF_LANGUAGE:
