@@ -53,6 +53,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.SingleAlarmSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeZoneSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.VibrationSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.VibrationStrength;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceStateInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.MusicInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.NotificationServiceStatusRequest;
@@ -429,8 +431,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         String dndMode = prefs.getString(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO, DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_OFF);
         boolean isDndOn = (dndMode != null && dndMode.equals(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_SCHEDULED));
-        String start = prefs.getString("do_not_disturb_no_auto_start", "22:00");
-        String end = prefs.getString("do_not_disturb_no_auto_end", "06:00");
+        String start = prefs.getString(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_START, "22:00");
+        String end = prefs.getString(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_END, "06:00");
 
         Calendar startCalendar = GregorianCalendar.getInstance();
         Calendar endCalendar = GregorianCalendar.getInstance();
@@ -452,6 +454,18 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         b.write(
                 getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
                 dndPkt.toByteArray()
+        );
+    }
+
+    private void sendVibrationSettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        boolean smartVibration = prefs.getBoolean(SonyWena3SettingKeys.SMART_VIBRATION, true);
+        VibrationStrength strength = VibrationStrength.fromInt(prefs.getInt(SonyWena3SettingKeys.VIBRATION_STRENGTH, 0));
+        VibrationSetting pkt = new VibrationSetting(smartVibration, strength);
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                pkt.toByteArray()
         );
     }
 
@@ -480,6 +494,11 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_END:
                 case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_START:
                     sendDnDSettings(builder);
+                    break;
+
+                case SonyWena3SettingKeys.VIBRATION_STRENGTH:
+                case SonyWena3SettingKeys.SMART_VIBRATION:
+                    sendVibrationSettings(builder);
                     break;
 
                 default:

@@ -2279,4 +2279,9 @@
     <string name="prefs_wena3_hint_weather_statusbar">Show current conditions icon in the top left corner of the home screen.</string>
     <string name="prefs_wena3_title_alarm">Alarm Settings</string>
     <string name="prefs_wena3_smart_alarm_margin_item">Smart Alarm Margin</string>
+    <string name="prefs_wena3_vibration_strength_item">Vibration Strength</string>
+    <string name="prefs_wena3_vibration_smart_item">Smart Vibration</string>
+    <string name="prefs_wena3_vibration_strength_item_weak">Weak</string>
+    <string name="prefs_wena3_vibration_strength_item_medium">Medium</string>
+    <string name="prefs_wena3_vibration_strength_item_strong">Strong</string>
 </resources>

@@ -49,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
@@ -435,6 +436,13 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SONYSWR12_STAMINA);
         addPreferenceHandlerFor(PREF_SONYSWR12_LOW_VIBRATION);
         addPreferenceHandlerFor(PREF_SONYSWR12_SMART_INTERVAL);
+
+        addPreferenceHandlerFor(SonyWena3SettingKeys.RICH_DESIGN_MODE);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.LARGE_FONT_SIZE);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.WEATHER_IN_STATUSBAR);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.SMART_VIBRATION);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.VIBRATION_STRENGTH);
 
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_INEAR);
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_AUDIOMODE);
