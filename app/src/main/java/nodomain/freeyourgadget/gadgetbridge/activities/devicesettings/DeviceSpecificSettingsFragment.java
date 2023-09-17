@@ -446,6 +446,9 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(SonyWena3SettingKeys.LEFT_HOME_ICON);
         addPreferenceHandlerFor(SonyWena3SettingKeys.CENTER_HOME_ICON);
         addPreferenceHandlerFor(SonyWena3SettingKeys.RIGHT_HOME_ICON);
+        for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
+            addPreferenceHandlerFor(SonyWena3SettingKeys.menuIconKeyFor(i));
+        }
 
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_INEAR);
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_AUDIOMODE);

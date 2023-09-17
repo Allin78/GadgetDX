@@ -115,4 +115,62 @@
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
             android:summary="%s" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_menu_icon_title"
+        android:summary="@string/prefs_wena3_menu_icon_hint">
+        <ListPreference
+            android:key="pref_wena3_menu_icon_0"
+            android:defaultValue="1"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_1"
+            android:defaultValue="2"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_2"
+            android:defaultValue="3"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_3"
+            android:defaultValue="5"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_4"
+            android:defaultValue="7"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_5"
+            android:defaultValue="8"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_6"
+            android:defaultValue="9"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_7"
+            android:defaultValue="0"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_menu_icon_8"
+            android:defaultValue="0"
+            android:entries="@array/prefs_wena3_menu_icons_names_list"
+            android:entryValues="@array/prefs_wena3_menu_icons_values_list"
+            android:summary="%s" />
+    </PreferenceCategory>
 </PreferenceScreen>

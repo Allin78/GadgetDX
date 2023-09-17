@@ -3170,4 +3170,29 @@
         <item>4864</item>
         <item>5120</item>
     </string-array>
+
+    <string-array name="prefs_wena3_menu_icons_names_list">
+        <item>@string/prefs_wena3_menu_icon_name_none</item>
+        <item>@string/prefs_wena3_home_icon_name_timer</item>
+        <item>@string/prefs_wena3_home_icon_name_alarm</item>
+        <item>@string/prefs_wena3_menu_icon_name_find_phone</item>
+        <item>@string/prefs_wena3_home_icon_name_alexa</item>
+        <item>@string/prefs_wena3_menu_icon_name_payment</item>
+        <item>@string/prefs_wena3_home_icon_name_qrio</item>
+        <item>@string/prefs_wena3_menu_icon_name_weather</item>
+        <item>@string/prefs_wena3_home_icon_name_music</item>
+        <item>@string/prefs_wena3_home_icon_name_camera</item>
+    </string-array>
+    <string-array name="prefs_wena3_menu_icons_values_list">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
 </resources>

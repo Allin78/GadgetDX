@@ -44,19 +44,21 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationOptions;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AlarmListSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplayDesign;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplayOrientation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.MenuIconSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayDesign;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayOrientation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DoNotDisturbSettings;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.FontSize;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.HomeIconId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.FontSize;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.HomeIconId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.HomeIconOrderSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.Language;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.Language;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.SingleAlarmSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeZoneSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.VibrationSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.VibrationStrength;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.MenuIconId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.VibrationStrength;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceStateInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.MusicInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.NotificationServiceStatusRequest;
@@ -136,7 +138,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 return true;
             }
             else {
-                LOG.warn("Unknown NotificationServiceStatusRequest %i", request.requestType);
+                LOG.warn("Unknown NotificationServiceStatusRequest %d", request.requestType);
             }
         }
         return false;
@@ -410,7 +412,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 languageCode = Language.JAPANESE;
                 break;
         }
-        LOG.info("Resolved locale: %i", languageCode.ordinal());
+        LOG.info("Resolved locale: %d", languageCode.ordinal());
 
         DisplaySetting pkt = new DisplaySetting(
                 prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST, false),
@@ -487,12 +489,30 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendMenuSettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        MenuIconSetting menu = new MenuIconSetting();
+        for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
+            int id = prefs.getInt(SonyWena3SettingKeys.menuIconKeyFor(i), 0);
+            if(id != 0) {
+                menu.iconList.add(new MenuIconId(id));
+            }
+        }
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                menu.toByteArray()
+        );
+    }
+
+
     @Override
     public void onSendConfiguration(String config) {
         try {
             TransactionBuilder builder = performInitialized("sendConfig");
-
-            switch (config) {
+            if(config.startsWith("pref_wena3_menu_icon_")) {
+                sendMenuSettings(builder);
+            } else switch (config) {
                 case DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST:
                 case DeviceSettingsPreferenceConst.PREF_LANGUAGE:
                 case DeviceSettingsPreferenceConst.PREF_SCREEN_TIMEOUT:

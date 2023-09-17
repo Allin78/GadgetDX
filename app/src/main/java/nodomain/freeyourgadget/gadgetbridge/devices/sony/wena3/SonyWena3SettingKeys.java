@@ -13,4 +13,9 @@ public class SonyWena3SettingKeys {
     public static final String LEFT_HOME_ICON = "pref_wena3_home_icon_left";
     public static final String CENTER_HOME_ICON = "pref_wena3_home_icon_center";
     public static final String RIGHT_HOME_ICON = "pref_wena3_home_icon_right";
+    private static final String MENU_ICON_KEY_FMT = "pref_wena3_menu_icon_%d";
+    public static final int MAX_MENU_ICONS = 9;
+    public static final String menuIconKeyFor(int number) {
+        return String.format(MENU_ICON_KEY_FMT, number);
+    }
 }

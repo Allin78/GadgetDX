@@ -2308,4 +2308,10 @@
     <string name="prefs_wena3_home_icon_name_riiiver">Riiiver</string>
     <string name="prefs_wena3_home_icon_name_music">Music</string>
     <string name="prefs_wena3_home_icon_name_camera">Camera</string>
+    <string name="prefs_wena3_menu_icon_name_none">(None)</string>
+    <string name="prefs_wena3_menu_icon_name_find_phone">Find Phone</string>
+    <string name="prefs_wena3_menu_icon_name_payment">Payment</string>
+    <string name="prefs_wena3_menu_icon_name_weather">Weather</string>
+    <string name="prefs_wena3_menu_icon_title">Menu Icons</string>
+    <string name="prefs_wena3_menu_icon_hint">The Settings icon is always shown at the end of the menu.</string>
 </resources>

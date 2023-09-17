@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines;
 
 public class HomeIconId {
     public static final HomeIconId TIMER = new HomeIconId(256);
