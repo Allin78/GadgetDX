@@ -3130,9 +3130,9 @@
         <item>@string/prefs_wena3_home_icon_name_timer</item>
         <item>@string/prefs_wena3_home_icon_name_alarm</item>
         <item>@string/prefs_wena3_home_icon_name_clock</item>
-        <item>@string/prefs_wena3_home_icon_name_alexa</item>
-        <item>@string/prefs_wena3_home_icon_name_wena_pay</item>
-        <item>@string/prefs_wena3_home_icon_name_qrio</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_alexa</item> -->
+        <!-- <item>@string/prefs_wena3_home_icon_name_wena_pay</item> -->
+        <!-- <item>@string/prefs_wena3_home_icon_name_qrio</item> -->
         <item>@string/prefs_wena3_home_icon_name_edy</item>
         <item>@string/prefs_wena3_home_icon_name_notification_count</item>
         <item>@string/prefs_wena3_home_icon_name_schedule</item>
@@ -3144,7 +3144,7 @@
         <item>@string/prefs_wena3_home_icon_name_energy</item>
         <item>@string/prefs_wena3_home_icon_name_suica</item>
         <item>@string/prefs_wena3_home_icon_name_calories</item>
-        <item>@string/prefs_wena3_home_icon_name_riiiver</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_riiiver</item> -->
         <item>@string/prefs_wena3_home_icon_name_music</item>
         <item>@string/prefs_wena3_home_icon_name_camera</item>
     </string-array>
@@ -3152,9 +3152,9 @@
         <item>256</item>
         <item>512</item>
         <item>768</item>
-        <item>1024</item>
-        <item>1280</item>
-        <item>1536</item>
+        <!-- <item>1024</item> -->
+        <!-- <item>1280</item> -->
+        <!-- <item>1536</item> -->
         <item>1792</item>
         <item>2048</item>
         <item>2304</item>
@@ -3166,7 +3166,7 @@
         <item>3840</item>
         <item>4096</item>
         <item>4352</item>
-        <item>4608</item>
+        <!-- <item>4608</item> -->
         <item>4864</item>
         <item>5120</item>
     </string-array>
@@ -3176,9 +3176,9 @@
         <item>@string/prefs_wena3_home_icon_name_timer</item>
         <item>@string/prefs_wena3_home_icon_name_alarm</item>
         <item>@string/prefs_wena3_menu_icon_name_find_phone</item>
-        <item>@string/prefs_wena3_home_icon_name_alexa</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_alexa</item> -->
         <item>@string/prefs_wena3_menu_icon_name_payment</item>
-        <item>@string/prefs_wena3_home_icon_name_qrio</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_qrio</item> -->
         <item>@string/prefs_wena3_menu_icon_name_weather</item>
         <item>@string/prefs_wena3_home_icon_name_music</item>
         <item>@string/prefs_wena3_home_icon_name_camera</item>
@@ -3188,9 +3188,9 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
-        <item>4</item>
+        <!-- <item>4</item> -->
         <item>5</item>
-        <item>6</item>
+        <!-- <item>6</item> -->
         <item>7</item>
         <item>8</item>
         <item>9</item>
