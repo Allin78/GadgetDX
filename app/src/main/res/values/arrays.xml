@@ -3125,4 +3125,49 @@
         <item>0</item>
         <item>2</item>
     </string-array>
+
+    <string-array name="prefs_wena3_home_icons_names_list">
+        <item>@string/prefs_wena3_home_icon_name_timer</item>
+        <item>@string/prefs_wena3_home_icon_name_alarm</item>
+        <item>@string/prefs_wena3_home_icon_name_clock</item>
+        <item>@string/prefs_wena3_home_icon_name_alexa</item>
+        <item>@string/prefs_wena3_home_icon_name_wena_pay</item>
+        <item>@string/prefs_wena3_home_icon_name_qrio</item>
+        <item>@string/prefs_wena3_home_icon_name_edy</item>
+        <item>@string/prefs_wena3_home_icon_name_notification_count</item>
+        <item>@string/prefs_wena3_home_icon_name_schedule</item>
+        <item>@string/prefs_wena3_home_icon_name_pedometer</item>
+        <item>@string/prefs_wena3_home_icon_name_sleep</item>
+        <item>@string/prefs_wena3_home_icon_name_heart_rate</item>
+        <item>@string/prefs_wena3_home_icon_name_vo2max</item>
+        <item>@string/prefs_wena3_home_icon_name_stress</item>
+        <item>@string/prefs_wena3_home_icon_name_energy</item>
+        <item>@string/prefs_wena3_home_icon_name_suica</item>
+        <item>@string/prefs_wena3_home_icon_name_calories</item>
+        <item>@string/prefs_wena3_home_icon_name_riiiver</item>
+        <item>@string/prefs_wena3_home_icon_name_music</item>
+        <item>@string/prefs_wena3_home_icon_name_camera</item>
+    </string-array>
+    <string-array name="prefs_wena3_home_icons_values_list">
+        <item>256</item>
+        <item>512</item>
+        <item>768</item>
+        <item>1024</item>
+        <item>1280</item>
+        <item>1536</item>
+        <item>1792</item>
+        <item>2048</item>
+        <item>2304</item>
+        <item>2560</item>
+        <item>2816</item>
+        <item>3072</item>
+        <item>3328</item>
+        <item>3584</item>
+        <item>3840</item>
+        <item>4096</item>
+        <item>4352</item>
+        <item>4608</item>
+        <item>4864</item>
+        <item>5120</item>
+    </string-array>
 </resources>

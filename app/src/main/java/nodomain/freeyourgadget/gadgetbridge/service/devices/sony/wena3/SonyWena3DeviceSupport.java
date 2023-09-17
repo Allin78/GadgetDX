@@ -49,6 +49,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DoNotDisturbSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.FontSize;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.HomeIconId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.HomeIconOrderSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.Language;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.SingleAlarmSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeSetting;
@@ -469,6 +471,22 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendHomeScreenSettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        int leftId = prefs.getInt(SonyWena3SettingKeys.LEFT_HOME_ICON, 4864);
+        int centerId = prefs.getInt(SonyWena3SettingKeys.CENTER_HOME_ICON, 2560);
+        int rightId = prefs.getInt(SonyWena3SettingKeys.RIGHT_HOME_ICON, 4352);
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                new HomeIconOrderSetting(
+                        new HomeIconId(leftId),
+                        new HomeIconId(centerId),
+                        new HomeIconId(rightId)
+                ).toByteArray()
+        );
+    }
+
     @Override
     public void onSendConfiguration(String config) {
         try {
@@ -499,6 +517,12 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 case SonyWena3SettingKeys.VIBRATION_STRENGTH:
                 case SonyWena3SettingKeys.SMART_VIBRATION:
                     sendVibrationSettings(builder);
+                    break;
+
+                case SonyWena3SettingKeys.LEFT_HOME_ICON:
+                case SonyWena3SettingKeys.CENTER_HOME_ICON:
+                case SonyWena3SettingKeys.RIGHT_HOME_ICON:
+                    sendHomeScreenSettings(builder);
                     break;
 
                 default:

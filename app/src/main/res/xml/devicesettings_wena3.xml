@@ -91,4 +91,28 @@
             android:key="pref_wena3_vibration_smart"
             android:defaultValue="true" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_home_icon_title">
+        <ListPreference
+            android:key="pref_wena3_home_icon_left"
+            android:title="@string/prefs_wena3_home_icon_left_item"
+            android:defaultValue="4864"
+            android:entries="@array/prefs_wena3_home_icons_names_list"
+            android:entryValues="@array/prefs_wena3_home_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_home_icon_center"
+            android:title="@string/prefs_wena3_home_icon_center_item"
+            android:defaultValue="2560"
+            android:entries="@array/prefs_wena3_home_icons_names_list"
+            android:entryValues="@array/prefs_wena3_home_icons_values_list"
+            android:summary="%s" />
+        <ListPreference
+            android:key="pref_wena3_home_icon_right"
+            android:title="@string/prefs_wena3_home_icon_right_item"
+            android:defaultValue="4352"
+            android:entries="@array/prefs_wena3_home_icons_names_list"
+            android:entryValues="@array/prefs_wena3_home_icons_values_list"
+            android:summary="%s" />
+    </PreferenceCategory>
 </PreferenceScreen>

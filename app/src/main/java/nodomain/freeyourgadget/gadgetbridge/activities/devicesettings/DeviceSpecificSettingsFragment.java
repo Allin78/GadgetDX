@@ -443,6 +443,9 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(SonyWena3SettingKeys.SMART_VIBRATION);
         addPreferenceHandlerFor(SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES);
         addPreferenceHandlerFor(SonyWena3SettingKeys.VIBRATION_STRENGTH);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.LEFT_HOME_ICON);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.CENTER_HOME_ICON);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.RIGHT_HOME_ICON);
 
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_INEAR);
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_AUDIOMODE);
