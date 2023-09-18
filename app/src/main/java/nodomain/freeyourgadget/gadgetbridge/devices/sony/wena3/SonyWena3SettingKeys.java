@@ -7,6 +7,10 @@ public class SonyWena3SettingKeys {
     public static final String WEATHER_IN_STATUSBAR = "pref_wena3_weather_in_statusbar";
     public static final String SMART_VIBRATION = "pref_wena3_vibration_smart";
 
+    public static final String AUTO_POWER_SCHEDULE_KIND = "pref_wena3_power_schedule_kind";
+    public static final String AUTO_POWER_SCHEDULE_START_HHMM = "pref_wena3_power_schedule_start";
+    public static final String AUTO_POWER_SCHEDULE_END_HHMM = "pref_wena3_power_schedule_end";
+
     // ------ Ints
     public static final String SMART_WAKEUP_MARGIN_MINUTES = "pref_wena3_smart_wakeup_margin";
     public static final String VIBRATION_STRENGTH = "pref_wena3_vibration_strength";

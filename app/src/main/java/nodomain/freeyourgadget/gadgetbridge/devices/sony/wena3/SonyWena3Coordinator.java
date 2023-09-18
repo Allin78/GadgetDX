@@ -192,6 +192,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
         return new int[]{
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_donotdisturb_no_auto,
+                R.xml.devicesettings_wena3_auto_power_off,
                 R.xml.devicesettings_goal_notification,
                 R.xml.devicesettings_wena3,
         };

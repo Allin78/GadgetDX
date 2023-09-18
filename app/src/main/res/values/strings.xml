@@ -2313,7 +2313,11 @@
     <string name="prefs_wena3_menu_icon_name_payment">Payment</string>
     <string name="prefs_wena3_menu_icon_name_weather">Weather</string>
     <string name="prefs_wena3_menu_icon_title">Menu Icons</string>
-    <string name="prefs_wena3_menu_icon_hint">The Settings icon is always shown at the end of the menu.</string>
+    <string name="prefs_wena3_menu_icon_hint">The Settings icon is always shown at the end</string>
     <string name="prefs_wena3_status_page_title">Status Page Ordering</string>
     <string name="prefs_wena3_day_start_hour_item">Day Starts At</string>
+    <string name="prefs_wena3_auto_power_off_item">Auto Power Off</string>
+    <string name="prefs_wena3_auto_power_off_hint">The device will turn off and on automatically at the specified schedule</string>
+    <string name="prefs_wena3_auto_power_off_turn_off_time_item">Shutdown at:</string>
+    <string name="prefs_wena3_auto_power_off_turn_on_time_item">Resume at:</string>
 </resources>

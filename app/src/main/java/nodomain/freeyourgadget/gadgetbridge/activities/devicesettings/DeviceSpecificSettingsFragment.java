@@ -447,6 +447,9 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(SonyWena3SettingKeys.CENTER_HOME_ICON);
         addPreferenceHandlerFor(SonyWena3SettingKeys.RIGHT_HOME_ICON);
         addPreferenceHandlerFor(SonyWena3SettingKeys.DAY_START_HOUR);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_KIND);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_START_HHMM);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_END_HHMM);
         for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
             addPreferenceHandlerFor(SonyWena3SettingKeys.menuIconKeyFor(i));
         }

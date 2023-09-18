@@ -48,6 +48,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationOptions;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AlarmListSettings;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AutoPowerOffSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.BodyPropertiesSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DayStartHourSetting;
@@ -101,7 +102,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         getDevice().setFirmwareVersion("...");
         getDevice().setFirmwareVersion2("...");
-        
+
         // Sync current time to device
         sendCurrentTime(builder);
 
@@ -545,6 +546,36 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendAutoPowerSettings(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        String autoPowerMode = prefs.getString(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_KIND, DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_OFF);
+        boolean isAutoPowerOffEnabled = (autoPowerMode != null && autoPowerMode.equals(DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_SCHEDULED));
+        String start = prefs.getString(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_START_HHMM, "22:00");
+        String end = prefs.getString(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_END_HHMM, "06:00");
+
+        Calendar startCalendar = GregorianCalendar.getInstance();
+        Calendar endCalendar = GregorianCalendar.getInstance();
+        DateFormat df = new SimpleDateFormat("HH:mm");
+
+        try {
+            startCalendar.setTime(df.parse(start));
+            endCalendar.setTime(df.parse(end));
+        } catch (ParseException e) {
+            LOG.error("settings error: " + e);
+        }
+
+        byte startH = (byte)startCalendar.get(Calendar.HOUR_OF_DAY);
+        byte startM = (byte)startCalendar.get(Calendar.MINUTE);
+        byte endH = (byte)endCalendar.get(Calendar.HOUR_OF_DAY);
+        byte endM = (byte)endCalendar.get(Calendar.MINUTE);
+
+        AutoPowerOffSettings powerOffPkt = new AutoPowerOffSettings(isAutoPowerOffEnabled, startH, startM, endH, endM);
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                powerOffPkt.toByteArray()
+        );
+    }
+
     private void sendVibrationSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         boolean smartVibration = prefs.getBoolean(SonyWena3SettingKeys.SMART_VIBRATION, true);
@@ -669,6 +700,12 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_END:
                 case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO_START:
                     sendDnDSettings(builder);
+                    break;
+
+                case SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_KIND:
+                case SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_START_HHMM:
+                case SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_END_HHMM:
+                    sendAutoPowerSettings(builder);
                     break;
 
                 case SonyWena3SettingKeys.VIBRATION_STRENGTH:
