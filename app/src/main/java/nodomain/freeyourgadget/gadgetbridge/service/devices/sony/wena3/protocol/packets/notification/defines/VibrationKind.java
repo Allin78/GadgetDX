@@ -10,6 +10,19 @@ public enum VibrationKind {
     STEP_DOWN,
     WARNING,
     SIREN,
-    SHORT
+    SHORT;
+
+    public static final VibrationKind[] LUT = new VibrationKind[] {
+            NONE,
+            CONTINUOUS,
+            BASIC,
+            RAPID,
+            TRIPLE,
+            STEP_UP,
+            STEP_DOWN,
+            WARNING,
+            SIREN,
+            SHORT
+    };
 }
 

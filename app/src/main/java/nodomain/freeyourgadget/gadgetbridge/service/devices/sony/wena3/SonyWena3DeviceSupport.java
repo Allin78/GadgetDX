@@ -292,21 +292,37 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onSetCallState(CallSpec callSpec) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        boolean enableNotifications = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_NOTIFICATION_ENABLE, false);
+        boolean enableCalls = prefs.getBoolean(SonyWena3SettingKeys.RECEIVE_CALLS, true);
+        if(!enableCalls || !enableNotifications) {
+            LOG.info("Calls are disabled, ignoring");
+            return;
+        }
+
         try {
             TransactionBuilder builder = performInitialized("sendCall");
 
             if(callSpec.command == CallSpec.CALL_INCOMING) {
+                LedColor led = LedColor.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_CALL_LED_COLOR, 7)];
+                VibrationKind vibra = VibrationKind.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_CALL_VIBRATION_PATTERN, 1)];
+                boolean vibraContinuous = false;
+                int vibraRepeats = prefs.getInt(SonyWena3SettingKeys.DEFAULT_CALL_VIBRATION_REPETITION, 0);
+                if(vibraRepeats == 0) {
+                    vibraContinuous = true;
+                }
+
                 builder.write(
                         getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
                         new NotificationArrival(
                                 NotificationKind.CALL,
                                 INCOMING_CALL_ID,
-                                callSpec.name,
                                 callSpec.number,
+                                callSpec.name,
                                 "",
                                 new Date(),
-                                new VibrationOptions(VibrationKind.CONTINUOUS, 0, true),
-                                LedColor.WHITE,
+                                new VibrationOptions(vibra, vibraRepeats, vibraContinuous),
+                                led,
                                 NotificationFlags.NONE
                         ).toByteArray()
                 );
@@ -371,6 +387,14 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             NotificationFlags flags = NotificationFlags.NONE;
             // TODO: Figure out how actions work
 
+            LedColor led = LedColor.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_LED_COLOR, 5)];
+            VibrationKind vibra = VibrationKind.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_VIBRATION_PATTERN, 2)];
+            boolean vibraContinuous = false;
+            int vibraRepeats = prefs.getInt(SonyWena3SettingKeys.DEFAULT_VIBRATION_REPETITION, 1);
+            if(vibraRepeats == 0) {
+                vibraContinuous = true;
+            }
+
             builder.write(
                     getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
                     new NotificationArrival(
@@ -380,8 +404,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                             bodyBuilder.toString(),
                             actionLabel,
                             new Date(notificationSpec.when),
-                            new VibrationOptions(VibrationKind.STEP_UP, 1, false),
-                            LedColor.GREEN,
+                            new VibrationOptions(vibra, vibraRepeats, vibraContinuous),
+                            led,
                             flags
                     ).toByteArray()
             );

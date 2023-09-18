@@ -10,6 +10,68 @@
         android:summary="%s"
         android:title="@string/prefs_wena3_day_start_hour_item" />
     <PreferenceCategory
+        android:title="@string/prefs_wena3_notification_settings_title">
+        <ListPreference
+            android:defaultValue="2"
+            android:entries="@array/prefs_wena3_vibration_patterns"
+            android:entryValues="@array/prefs_wena3_vibration_pattern_values"
+            android:key="pref_wena3_default_vibration"
+            android:icon="@drawable/ic_vibration"
+            android:title="@string/prefs_wena3_notification_default_vibration"
+            android:summary="%s" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/prefs_wena3_vibration_times"
+            android:entryValues="@array/prefs_wena3_vibration_times_values"
+            android:key="pref_wena3_default_vibration_repetition"
+            android:icon="@drawable/ic_refresh"
+            android:title="@string/prefs_wena3_notification_default_vibration_repetition"
+            android:summary="%s" />
+        <ListPreference
+            android:defaultValue="5"
+            android:entries="@array/prefs_wena3_led_patterns"
+            android:entryValues="@array/prefs_wena3_led_pattern_values"
+            android:key="pref_wena3_default_led_color"
+            android:icon="@drawable/ic_circle"
+            android:title="@string/prefs_wena3_notification_default_led"
+            android:summary="%s" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_receive_calls_title">
+        <SwitchPreference
+            android:title="@string/prefs_wena3_receive_calls_item"
+            android:key="pref_wena3_receive_calls"
+            android:icon="@drawable/ic_phone"
+            android:summary="@string/prefs_wena3_receive_calls_hint"
+            android:defaultValue="true"
+            />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/prefs_wena3_vibration_patterns"
+            android:entryValues="@array/prefs_wena3_vibration_pattern_values"
+            android:key="pref_wena3_call_default_vibration"
+            android:icon="@drawable/ic_vibration"
+            android:title="@string/prefs_wena3_notification_default_call_vibration"
+            android:summary="%s" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/prefs_wena3_vibration_times"
+            android:entryValues="@array/prefs_wena3_vibration_times_values"
+            android:key="pref_wena3_default_call_vibration_repetition"
+            android:icon="@drawable/ic_refresh"
+            android:title="@string/prefs_wena3_notification_default_call_vibration_repetition"
+            android:summary="%s" />
+        <ListPreference
+            android:defaultValue="7"
+            android:entries="@array/prefs_wena3_led_patterns"
+            android:entryValues="@array/prefs_wena3_led_pattern_values"
+            android:key="pref_wena3_default_call_led_color"
+            android:icon="@drawable/ic_circle"
+            android:title="@string/prefs_wena3_notification_default_call_led"
+            android:summary="%s" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/prefs_wena3_title_screen">
         <ListPreference
             android:defaultValue="5"

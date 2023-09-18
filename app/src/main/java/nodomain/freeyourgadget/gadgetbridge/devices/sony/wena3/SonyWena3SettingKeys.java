@@ -6,6 +6,7 @@ public class SonyWena3SettingKeys {
     public static final String LARGE_FONT_SIZE = "pref_wena3_large_font_size";
     public static final String WEATHER_IN_STATUSBAR = "pref_wena3_weather_in_statusbar";
     public static final String SMART_VIBRATION = "pref_wena3_vibration_smart";
+    public static final String RECEIVE_CALLS = "pref_wena3_receive_calls";
 
     public static final String AUTO_POWER_SCHEDULE_KIND = "pref_wena3_power_schedule_kind";
     public static final String AUTO_POWER_SCHEDULE_START_HHMM = "pref_wena3_power_schedule_start";
@@ -20,6 +21,14 @@ public class SonyWena3SettingKeys {
     public static final String DAY_START_HOUR = "pref_wena3_day_start_hour";
     public static final String BUTTON_LONG_PRESS_ACTION = "pref_wena3_button_long_action";
     public static final String BUTTON_DOUBLE_PRESS_ACTION = "pref_wena3_button_double_action";
+
+    public static final String DEFAULT_VIBRATION_REPETITION = "pref_wena3_default_vibration_repetition";
+    public static final String DEFAULT_LED_COLOR = "pref_wena3_default_led_color";
+    public static final String DEFAULT_VIBRATION_PATTERN = "pref_wena3_default_vibration";
+    public static final String DEFAULT_CALL_VIBRATION_REPETITION = "pref_wena3_default_call_vibration_repetition";
+    public static final String DEFAULT_CALL_LED_COLOR = "pref_wena3_default_call_led_color";
+    public static final String DEFAULT_CALL_VIBRATION_PATTERN = "pref_wena3_call_default_vibration";
+
     public static final String MENU_ICON_KEY_PREFIX = "pref_wena3_menu_icon_";
     public static final int MAX_MENU_ICONS = 9;
     public static final String menuIconKeyFor(int number) {
