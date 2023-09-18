@@ -408,6 +408,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_AMPM_ENABLED);
         addPreferenceHandlerFor(PREF_SOUNDS);
         addPreferenceHandlerFor(PREF_CAMERA_REMOTE);
+        addPreferenceHandlerFor(PREF_SCREEN_LIFT_WRIST);
 
         addPreferenceHandlerFor(PREF_BLUETOOTH_CALLS_ENABLED);
         addPreferenceHandlerFor(PREF_DISPLAY_CALLER);
@@ -450,6 +451,8 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_KIND);
         addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_START_HHMM);
         addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_END_HHMM);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION);
+        addPreferenceHandlerFor(SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION);
         for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
             addPreferenceHandlerFor(SonyWena3SettingKeys.menuIconKeyFor(i));
         }

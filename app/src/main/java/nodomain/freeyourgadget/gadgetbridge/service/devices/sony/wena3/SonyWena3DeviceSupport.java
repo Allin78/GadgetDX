@@ -52,9 +52,11 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.BodyPropertiesSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DayStartHourSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DeviceButtonActionSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.GoalStepsSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.MenuIconSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.StatusPageOrderSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DeviceButtonActionId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayDesign;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayOrientation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
@@ -103,14 +105,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         getDevice().setFirmwareVersion("...");
         getDevice().setFirmwareVersion2("...");
 
-        // Sync current time to device
-        sendCurrentTime(builder);
-
-        // Sync camera mode to device
-        builder.write(
-                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
-                CameraAppTypeSetting.findOut(getContext().getPackageManager()).toByteArray()
-        );
+        sendAllSettings(builder);
 
         // Get battery state
         builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID));
@@ -672,6 +667,39 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendButtonActions(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        int doubleId = prefs.getInt(SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION, 0);
+        int longId = prefs.getInt(SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION, 0);
+        DeviceButtonActionSetting setting = new DeviceButtonActionSetting(
+                new DeviceButtonActionId(longId),
+                new DeviceButtonActionId(doubleId)
+        );
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                setting.toByteArray()
+        );
+    }
+
+    private void sendAllSettings(TransactionBuilder builder) {
+        sendCurrentTime(builder);
+        builder.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                CameraAppTypeSetting.findOut(getContext().getPackageManager()).toByteArray()
+        );
+        sendMenuSettings(builder);
+        sendStatusPageSettings(builder);
+        sendDisplaySettings(builder);
+        sendDnDSettings(builder);
+        sendAutoPowerSettings(builder);
+        sendVibrationSettings(builder);
+        sendHomeScreenSettings(builder);
+        sendActivityGoalSettings(builder);
+        sendDayStartHour(builder);
+        sendButtonActions(builder);
+    }
+
     @Override
     public void onSendConfiguration(String config) {
         try {
@@ -730,6 +758,11 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
                 case SonyWena3SettingKeys.DAY_START_HOUR:
                     sendDayStartHour(builder);
+                    break;
+
+                case SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION:
+                case SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION:
+                    sendButtonActions(builder);
                     break;
 
                 default:

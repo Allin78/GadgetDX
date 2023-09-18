@@ -3269,4 +3269,55 @@
         <item>22</item>
         <item>23</item>
     </string-array>
+
+    <string-array name="prefs_wena3_button_action_list">
+        <item>@string/prefs_wena3_menu_icon_name_none</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_alexa</item> -->
+        <!-- <item>@string/prefs_wena3_home_icon_name_qrio</item> -->
+        <!-- <item>@string/prefs_wena3_button_action_name_qrio_unlock</item> -->
+        <!-- <item>@string/prefs_wena3_button_action_name_qrio_lock</item> -->
+        <item>@string/prefs_wena3_menu_icon_name_find_phone</item>
+        <item>@string/prefs_wena3_button_action_name_toggle_nfc</item>
+        <item>@string/prefs_wena3_button_action_name_toggle_silent</item>
+        <item>@string/prefs_wena3_button_action_name_start_timer</item>
+        <item>@string/prefs_wena3_home_icon_name_timer</item>
+        <item>@string/prefs_wena3_menu_icon_name_weather</item>
+        <item>@string/prefs_wena3_home_icon_name_schedule</item>
+        <item>@string/prefs_wena3_button_action_name_activity_screen</item>
+        <item>@string/prefs_wena3_button_action_name_notification_screen</item>
+        <item>@string/prefs_wena3_home_icon_name_suica</item>
+        <item>@string/prefs_wena3_home_icon_name_edy</item>
+        <item>@string/prefs_wena3_home_icon_name_alarm</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_riiiver</item> -->
+        <item>@string/prefs_wena3_home_icon_name_music</item>
+        <item>@string/prefs_wena3_button_action_name_toggle_music</item>
+        <item>@string/prefs_wena3_button_action_name_music_next</item>
+        <item>@string/prefs_wena3_button_action_name_music_prev</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_wena_pay</item> -->
+    </string-array>
+    <string-array name="prefs_wena3_button_action_values_list">
+        <item>0</item>
+        <!-- <item>1</item> -->
+        <!-- <item>2</item> -->
+        <!-- <item>258</item> -->
+        <!-- <item>514</item> -->
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>262</item>
+        <item>6</item>
+        <item>7</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <!-- <item>15</item> -->
+        <item>16</item>
+        <item>272</item>
+        <item>528</item>
+        <item>784</item>
+        <!-- <item>8</item> -->
+    </string-array>
 </resources>

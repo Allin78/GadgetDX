@@ -6,7 +6,7 @@
         android:entries="@array/prefs_wena3_day_start_list"
         android:entryValues="@array/prefs_wena3_day_start_values_list"
         android:key="pref_wena3_day_start_hour"
-        android:icon="@drawable/ic_watch"
+        android:icon="@drawable/ic_wb_twilight"
         android:summary="%s"
         android:title="@string/prefs_wena3_day_start_hour_item" />
     <PreferenceCategory
@@ -70,6 +70,23 @@
             android:title="@string/prefs_wena3_vibration_smart_item"
             android:key="pref_wena3_vibration_smart"
             android:defaultValue="true" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/prefs_wena3_button_action_item">
+        <ListPreference
+            android:key="pref_wena3_button_double_action"
+            android:title="@string/prefs_wena3_button_action_item_double"
+            android:defaultValue="0"
+            android:entries="@array/prefs_wena3_button_action_list"
+            android:entryValues="@array/prefs_wena3_button_action_values_list"
+            android:summary="%s"/>
+        <ListPreference
+            android:key="pref_wena3_button_long_action"
+            android:title="@string/prefs_wena3_button_action_item_long"
+            android:defaultValue="0"
+            android:entries="@array/prefs_wena3_button_action_list"
+            android:entryValues="@array/prefs_wena3_button_action_values_list"
+            android:summary="%s"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/prefs_wena3_home_icon_title">
