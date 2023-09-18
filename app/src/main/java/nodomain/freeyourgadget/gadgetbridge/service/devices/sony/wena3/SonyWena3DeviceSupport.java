@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -30,6 +31,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingK
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
+import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
@@ -40,6 +42,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncRequestTypeA;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncRequestTypeB;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.calendar.CalendarEntry;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.NotificationArrival;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.NotificationRemoval;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.LedColor;
@@ -50,6 +53,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AlarmListSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.AutoPowerOffSettings;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.BodyPropertiesSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CalendarNotificationEnableSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DayStartHourSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DeviceButtonActionSetting;
@@ -88,6 +92,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private static final int INCOMING_CALL_ID = 3939;
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3DeviceSupport.class);
     private String lastMusicInfo = null;
+    private List<CalendarEventSpec> calendarEvents = new ArrayList<>();
     public SonyWena3DeviceSupport() {
         super(LoggerFactory.getLogger(SonyWena3DeviceSupport.class));
         addSupportedService(SonyWena3Constants.COMMON_SERVICE_UUID);
@@ -682,6 +687,18 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         );
     }
 
+    private void sendCalendarNotificationToggles(TransactionBuilder b) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        boolean enableCalendar = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR, false);
+        boolean enableNotifications = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_NOTIFICATION_ENABLE, false);
+        CalendarNotificationEnableSetting setting = new CalendarNotificationEnableSetting(enableCalendar, enableNotifications);
+
+        b.write(
+                getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
+                setting.toByteArray()
+        );
+    }
+
     private void sendAllSettings(TransactionBuilder builder) {
         sendCurrentTime(builder);
         builder.write(
@@ -698,6 +715,55 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         sendActivityGoalSettings(builder);
         sendDayStartHour(builder);
         sendButtonActions(builder);
+        sendCalendarNotificationToggles(builder);
+    }
+
+    private void sendAllCalendarEvents(TransactionBuilder b) {
+        try {
+            Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+            boolean enableCalendar = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR, false);
+            if(!enableCalendar) return;
+            TransactionBuilder builder = b == null ? performInitialized("updateCalendarEvents") : b;
+
+            int i = 1;
+            int total = Math.min(calendarEvents.size(), 255);
+            for(CalendarEventSpec evt: calendarEvents) {
+                builder.write(
+                        getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
+                        new CalendarEntry(
+                                new Date(evt.timestamp * 1000L),
+                                new Date((evt.timestamp * 1000L) + (evt.durationInSeconds * 1000L)),
+                                evt.allDay,
+                                (evt.title == null ? "" : evt.title),
+                                (evt.location == null ? "" : evt.location),
+                                (byte) i,
+                                (byte) total
+                        ).toByteArray()
+                );
+                if(i == 255) break;
+                else i++;
+            }
+
+            if(b == null) performImmediately(builder);
+        } catch (IOException e) {
+            LOG.warn("Unable to send calendar events", e);
+        }
+    }
+
+    @Override
+    public void onAddCalendarEvent(CalendarEventSpec calendarEventSpec) {
+        calendarEvents.add(calendarEventSpec);
+        sendAllCalendarEvents(null);
+    }
+
+    @Override
+    public void onDeleteCalendarEvent(byte type, long id) {
+        for(CalendarEventSpec evt : calendarEvents) {
+            if(evt.type == type && evt.id == id) {
+                calendarEvents.remove(evt);
+            }
+        }
+        sendAllCalendarEvents(null);
     }
 
     @Override
@@ -763,6 +829,11 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 case SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION:
                 case SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION:
                     sendButtonActions(builder);
+                    break;
+
+                case DeviceSettingsPreferenceConst.PREF_NOTIFICATION_ENABLE:
+                case DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR:
+                    sendCalendarNotificationToggles(builder);
                     break;
 
                 default:

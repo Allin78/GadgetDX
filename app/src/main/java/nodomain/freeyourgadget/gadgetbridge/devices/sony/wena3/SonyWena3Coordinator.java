@@ -94,7 +94,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsCalendarEvents() {
-        return false;
+        return true;
     }
 
     @Override
@@ -190,6 +190,8 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
+                R.xml.devicesettings_notifications_enable,
+                R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_wearlocation,
                 R.xml.devicesettings_donotdisturb_no_auto,
                 R.xml.devicesettings_wena3_auto_power_off,
