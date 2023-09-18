@@ -14,14 +14,14 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity;
 
-public enum NotificationServiceStatusRequestType {
-    LOCATE_PHONE(2),
-    MUSIC_INFO_FETCH(11);
+import androidx.annotation.Nullable;
 
-    public final int value;
-    NotificationServiceStatusRequestType(int val) {
-        this.value = val;
+import java.util.Date;
+
+public class ActivitySyncTimePacketTypeB extends ActivitySyncTimePacketTemplate {
+    public ActivitySyncTimePacketTypeB(@Nullable Date stressLastSyncTime, @Nullable Date bodyEnergyLastSyncTime, @Nullable Date caloriesLastSyncTime, @Nullable Date eventsLastSyncTime) {
+        super((byte) 0x2, stressLastSyncTime, bodyEnergyLastSyncTime, caloriesLastSyncTime, eventsLastSyncTime);
     }
 }

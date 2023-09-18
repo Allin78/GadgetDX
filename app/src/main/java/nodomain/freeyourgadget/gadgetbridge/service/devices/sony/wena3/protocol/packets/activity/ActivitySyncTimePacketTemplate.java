@@ -25,7 +25,7 @@ import java.util.Date;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
-abstract class ActivitySyncRequest implements Wena3Packetable {
+abstract class ActivitySyncTimePacketTemplate implements Wena3Packetable {
     public byte header;
 
     @Nullable
@@ -37,7 +37,7 @@ abstract class ActivitySyncRequest implements Wena3Packetable {
     @Nullable
     public Date date4;
 
-    public ActivitySyncRequest(byte header, @Nullable Date date1, @Nullable Date date2, @Nullable Date date3, @Nullable Date date4) {
+    public ActivitySyncTimePacketTemplate(byte header, @Nullable Date date1, @Nullable Date date2, @Nullable Date date3, @Nullable Date date4) {
         this.header = header;
         this.date1 = date1;
         this.date2 = date2;

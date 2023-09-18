@@ -20,8 +20,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Date;
 
-public class ActivitySyncRequestTypeB extends ActivitySyncRequest {
-    public ActivitySyncRequestTypeB(@Nullable Date stressLastSyncTime, @Nullable Date bodyEnergyLastSyncTime, @Nullable Date caloriesLastSyncTime, @Nullable Date eventsLastSyncTime) {
-        super((byte) 0x2, stressLastSyncTime, bodyEnergyLastSyncTime, caloriesLastSyncTime, eventsLastSyncTime);
+public class ActivitySyncTimePacketTypeA extends ActivitySyncTimePacketTemplate {
+    public ActivitySyncTimePacketTypeA(@Nullable Date stepCountLastSyncTime, @Nullable Date heartRateLastSyncTime, @Nullable Date behaviorLastSyncTime, @Nullable Date vo2MaxLastSyncTime) {
+        super((byte) 0x1, stepCountLastSyncTime, heartRateLastSyncTime, behaviorLastSyncTime, vo2MaxLastSyncTime);
     }
 }

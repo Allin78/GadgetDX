@@ -24,4 +24,8 @@ public class TimeUtil {
     public static int dateToWenaTime(Date date) {
         return (int) ((date.getTime() - SonyWena3Constants.EPOCH_START) / (long)1000);
     }
+
+    public static Date wenaTimeToDate(int wenaTime) {
+        return new Date(((long) wenaTime) * 1000L + SonyWena3Constants.EPOCH_START);
+    }
 }
