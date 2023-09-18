@@ -1,5 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingK
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
+import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
@@ -68,7 +70,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.MenuIconId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.StatusPageId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.VibrationStrength;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceStateInfo;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.BatteryLevelInfo;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.DeviceInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.MusicInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.NotificationServiceStatusRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.NotificationServiceStatusRequestType;
@@ -79,6 +82,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
+    private static final int INCOMING_CALL_ID = 3939;
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3DeviceSupport.class);
     private String lastMusicInfo = null;
     public SonyWena3DeviceSupport() {
@@ -95,7 +99,9 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
-
+        getDevice().setFirmwareVersion("...");
+        getDevice().setFirmwareVersion2("...");
+        
         // Sync current time to device
         sendCurrentTime(builder);
 
@@ -116,9 +122,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         builder.notify(getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID), true);
         builder.notify(getCharacteristic(SonyWena3Constants.ACTIVITY_LOG_CHARACTERISTIC_UUID), true);
 
-        // TODO: Firmware version / device serial
-        getDevice().setFirmwareVersion("");
-        getDevice().setFirmwareVersion2("");
+        // Get serial number and firmware version
+        builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_INFO_UUID));
 
         // Finally, sync sports data forcefully
         forceRequestSync(builder);
@@ -130,7 +135,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     public boolean onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         if(characteristic.getUuid().equals(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID)) {
-            DeviceStateInfo stateInfo = new DeviceStateInfo(characteristic.getValue());
+            BatteryLevelInfo stateInfo = new BatteryLevelInfo(characteristic.getValue());
             getDevice().setBatteryLevel(stateInfo.batteryPercentage);
             return true;
         }
@@ -158,12 +163,23 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     public boolean onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if(characteristic.getUuid().equals(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID)) {
-            DeviceStateInfo stateInfo = new DeviceStateInfo(characteristic.getValue());
+            BatteryLevelInfo stateInfo = new BatteryLevelInfo(characteristic.getValue());
             getDevice().setBatteryLevel(stateInfo.batteryPercentage);
+            return true;
+        } else if(characteristic.getUuid().equals(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_INFO_UUID)) {
+            DeviceInfo deviceInfo = new DeviceInfo(characteristic.getValue());
+            getDevice().setFirmwareVersion(deviceInfo.firmwareName);
+            getDevice().setFirmwareVersion2(deviceInfo.serialNo);
             return true;
         }
         return false;
     }
+
+    @Override
+    public boolean onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
+        return super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite, responseNeeded, offset, value);
+    }
+
 
     private void sendCurrentTime(@Nullable TransactionBuilder b) {
         try {
@@ -208,6 +224,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             TransactionBuilder builder = b == null ? performInitialized("forceSync") : b;
 
             // TODO: Don't request everything, only the needed part
+
+            Date dummy = new Date( (new Date().getTime() - 3600000) );
 
             builder.write(
                     getCharacteristic(SonyWena3Constants.ACTIVITY_LOG_CHARACTERISTIC_UUID),
@@ -267,6 +285,39 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         } else if (stateSpec.state == MusicStateSpec.STATE_STOPPED || stateSpec.state == MusicStateSpec.STATE_PAUSED) {
             lastMusicInfo = "";
             sendMusicInfo("");
+        }
+    }
+
+    @Override
+    public void onSetCallState(CallSpec callSpec) {
+        try {
+            TransactionBuilder builder = performInitialized("sendCall");
+
+            if(callSpec.command == CallSpec.CALL_INCOMING) {
+                builder.write(
+                        getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
+                        new NotificationArrival(
+                                NotificationKind.CALL,
+                                INCOMING_CALL_ID,
+                                callSpec.name,
+                                callSpec.number,
+                                "",
+                                new Date(),
+                                new VibrationOptions(VibrationKind.CONTINUOUS, 0, true),
+                                LedColor.WHITE,
+                                NotificationFlags.NONE
+                        ).toByteArray()
+                );
+            } else {
+                builder.write(
+                        getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
+                        new NotificationRemoval(NotificationKind.CALL, INCOMING_CALL_ID).toByteArray()
+                );
+            }
+
+            performImmediately(builder);
+        } catch (IOException e) {
+            LOG.warn("Unable to send call", e);
         }
     }
 

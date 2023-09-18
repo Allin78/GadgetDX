@@ -31,14 +31,30 @@ abstract class ActivitySyncRequest implements Wena3Packetable {
 
     @Override
     public byte[] toByteArray() {
-        return ByteBuffer.allocate(17)
+        ByteBuffer buf = ByteBuffer.allocate(17)
                 .order(ByteOrder.LITTLE_ENDIAN)
-                .put(header)
-                .putInt(TimeUtil.dateToWenaTime((date1 == null ? (new Date(0)) : date1)))
-                .putInt(TimeUtil.dateToWenaTime((date2 == null ? (new Date(0)) : date2)))
-                .putInt(TimeUtil.dateToWenaTime((date3 == null ? (new Date(0)) : date3)))
-                .putInt(TimeUtil.dateToWenaTime((date4 == null ? (new Date(0)) : date4)))
-                .array();
+                .put(header);
+        if(date1 == null) {
+            buf.putInt(0);
+        } else {
+            buf.putInt(TimeUtil.dateToWenaTime(date1));
+        }
+        if(date2 == null) {
+            buf.putInt(0);
+        } else {
+            buf.putInt(TimeUtil.dateToWenaTime(date2));
+        }
+        if(date3 == null) {
+            buf.putInt(0);
+        } else {
+            buf.putInt(TimeUtil.dateToWenaTime(date3));
+        }
+        if(date4 == null) {
+            buf.putInt(0);
+        } else {
+            buf.putInt(TimeUtil.dateToWenaTime(date4));
+        }
+        return buf.array();
     }
 }
 

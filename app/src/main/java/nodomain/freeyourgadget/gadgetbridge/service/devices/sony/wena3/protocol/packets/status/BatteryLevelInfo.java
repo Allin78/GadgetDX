@@ -1,9 +1,9 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status;
 
-public class DeviceStateInfo {
+public class BatteryLevelInfo {
     public int batteryPercentage;
 
-    public DeviceStateInfo(byte[] packet) {
+    public BatteryLevelInfo(byte[] packet) {
         this.batteryPercentage = Integer.valueOf(packet[0]);
     }
 }
