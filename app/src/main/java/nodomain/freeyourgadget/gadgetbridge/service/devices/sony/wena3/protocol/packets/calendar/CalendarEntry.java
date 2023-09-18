@@ -57,6 +57,8 @@ public class CalendarEntry implements Wena3Packetable {
                 .put((byte) 0x0)
                 .put((byte) 0x0)
                 .put((byte) 0x0)
+                .putInt(0)
+                .putInt(0)
                 .array();
 
     }

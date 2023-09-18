@@ -111,6 +111,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         getDevice().setFirmwareVersion2("...");
 
         sendAllSettings(builder);
+        sendAllCalendarEvents(builder);
 
         // Get battery state
         builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID));
@@ -324,6 +325,10 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        boolean enableNotifications = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_NOTIFICATION_ENABLE, false);
+        if(!enableNotifications) return;
+
         try {
             TransactionBuilder builder = performInitialized("sendNotify");
 
@@ -389,6 +394,10 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onDeleteNotification(int id) {
+        Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        boolean enableNotifications = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_NOTIFICATION_ENABLE, false);
+        if(!enableNotifications) return;
+
         try {
             TransactionBuilder builder = performInitialized("delNotify");
 
@@ -722,26 +731,34 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         try {
             Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
             boolean enableCalendar = prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR, false);
-            if(!enableCalendar) return;
+
             TransactionBuilder builder = b == null ? performInitialized("updateCalendarEvents") : b;
 
-            int i = 1;
-            int total = Math.min(calendarEvents.size(), 255);
-            for(CalendarEventSpec evt: calendarEvents) {
+            if(!enableCalendar || calendarEvents.isEmpty()) {
                 builder.write(
                         getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
-                        new CalendarEntry(
-                                new Date(evt.timestamp * 1000L),
-                                new Date((evt.timestamp * 1000L) + (evt.durationInSeconds * 1000L)),
-                                evt.allDay,
-                                (evt.title == null ? "" : evt.title),
-                                (evt.location == null ? "" : evt.location),
-                                (byte) i,
-                                (byte) total
-                        ).toByteArray()
+                        CalendarEntry.byteArrayForEmptyEvent((byte) 0, (byte) 0)
                 );
-                if(i == 255) break;
-                else i++;
+            }
+            else {
+                int i = 1;
+                int total = Math.min(calendarEvents.size(), 255);
+                for(CalendarEventSpec evt: calendarEvents) {
+                    builder.write(
+                            getCharacteristic(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID),
+                            new CalendarEntry(
+                                    new Date(evt.timestamp * 1000L),
+                                    new Date((evt.timestamp * 1000L) + (evt.durationInSeconds * 1000L)),
+                                    evt.allDay,
+                                    (evt.title == null ? "" : evt.title),
+                                    (evt.location == null ? "" : evt.location),
+                                    (byte) i,
+                                    (byte) total
+                            ).toByteArray()
+                    );
+                    if(i == 255) break;
+                    else i++;
+                }
             }
 
             if(b == null) performImmediately(builder);
@@ -834,6 +851,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 case DeviceSettingsPreferenceConst.PREF_NOTIFICATION_ENABLE:
                 case DeviceSettingsPreferenceConst.PREF_SYNC_CALENDAR:
                     sendCalendarNotificationToggles(builder);
+                    sendAllCalendarEvents(builder);
                     break;
 
                 default:
