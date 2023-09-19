@@ -35,6 +35,7 @@ public class ActivitySyncPacketProcessor {
     private ActivityPacketParser currentParser = null;
     private List<ActivityPacketParser> parsers = new ArrayList<>();
     private int currentSeqNo = RESET_SEQ_NO;
+    private boolean haveHeader = false;
 
     public ActivitySyncPacketProcessor() {}
 
@@ -69,6 +70,7 @@ public class ActivitySyncPacketProcessor {
 
         switch(packet.type) {
             case HEADER:
+                haveHeader = true;
                 finalizeCurrentParserIfNeeded();
                 for(ActivityPacketParser parser: parsers) {
                     if(parser.parseHeader(packet)) {
@@ -76,14 +78,20 @@ public class ActivitySyncPacketProcessor {
                         break;
                     }
                 }
-                LOG.warn("No parsers can understand " + packet.toString());
+                if(currentParser == null) {
+                    LOG.warn("No parsers can understand " + packet.toString());
+                }
                 break;
 
             case DATA:
                 if(currentParser != null) {
                     currentParser.parsePacket(packet);
                 } else {
-                    LOG.warn("No parser known: dropped data packet " + packet.toString());
+                    if(!haveHeader) {
+                        LOG.warn("DATA arrived before HEADER: dropped " + packet.toString());
+                    } else {
+                        LOG.warn("No parser known: dropped data packet " + packet.toString());
+                    }
                 }
                 break;
 
@@ -104,5 +112,6 @@ public class ActivitySyncPacketProcessor {
             currentParser.finishReceiving();
             currentParser = null;
         }
+        haveHeader = false;
     }
 }

@@ -21,20 +21,18 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 
 import java.nio.ByteBuffer;
 
-public class OneBytePerSamplePacketParser extends LinearSamplePacketParser<Integer> {
-    public static final int ONE_MINUTE_IN_MS = 60_000; // 1 sample per minute it seems
-
-    public OneBytePerSamplePacketParser(int headerMarker, int sampleDistanceInMs) {
-        super(headerMarker, sampleDistanceInMs);
+public class CaloriesPacketParser extends LinearSamplePacketParser<Integer> {
+    public CaloriesPacketParser() {
+        super(0x06, OneBytePerSamplePacketParser.ONE_MINUTE_IN_MS);
     }
 
     @Override
     Integer takeSampleFromBuffer(ByteBuffer buffer) {
-        return Integer.valueOf(buffer.get() & 0xFF);
+        return (buffer.getShort() & 65535);
     }
 
     @Override
     boolean canTakeSampleFromBuffer(ByteBuffer buffer) {
-        return buffer.remaining() > 0;
+        return buffer.remaining() >= 2;
     }
 }

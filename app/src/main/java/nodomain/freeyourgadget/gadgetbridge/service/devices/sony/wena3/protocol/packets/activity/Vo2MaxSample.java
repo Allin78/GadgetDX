@@ -17,24 +17,16 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity;
 
-import java.nio.ByteBuffer;
+import java.util.Date;
 
-public class OneBytePerSamplePacketParser extends LinearSamplePacketParser<Integer> {
-    public static final int ONE_MINUTE_IN_MS = 60_000; // 1 sample per minute it seems
+public class Vo2MaxSample {
+    public Date timestamp;
+    public int value;
 
-    public OneBytePerSamplePacketParser(int headerMarker, int sampleDistanceInMs) {
-        super(headerMarker, sampleDistanceInMs);
-    }
-
-    @Override
-    Integer takeSampleFromBuffer(ByteBuffer buffer) {
-        return Integer.valueOf(buffer.get() & 0xFF);
-    }
-
-    @Override
-    boolean canTakeSampleFromBuffer(ByteBuffer buffer) {
-        return buffer.remaining() > 0;
+    public Vo2MaxSample(Date timestamp, int value) {
+        this.timestamp = timestamp;
+        this.value = value;
     }
 }

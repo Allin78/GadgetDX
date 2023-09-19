@@ -20,21 +20,30 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
 import java.nio.ByteBuffer;
+import java.util.Date;
 
-public class OneBytePerSamplePacketParser extends LinearSamplePacketParser<Integer> {
-    public static final int ONE_MINUTE_IN_MS = 60_000; // 1 sample per minute it seems
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.Vo2MaxSample;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
-    public OneBytePerSamplePacketParser(int headerMarker, int sampleDistanceInMs) {
-        super(headerMarker, sampleDistanceInMs);
+public class Vo2MaxPacketParser extends SamplePacketParser<Vo2MaxSample> {
+    public Vo2MaxPacketParser() {
+        super(0x03);
     }
 
     @Override
-    Integer takeSampleFromBuffer(ByteBuffer buffer) {
-        return Integer.valueOf(buffer.get() & 0xFF);
+    Vo2MaxSample takeSampleFromBuffer(ByteBuffer buffer) {
+        Date ts = TimeUtil.wenaTimeToDate(buffer.getInt());
+        int value = buffer.get() & 0xFF;
+        return new Vo2MaxSample(ts, value);
     }
 
     @Override
     boolean canTakeSampleFromBuffer(ByteBuffer buffer) {
-        return buffer.remaining() > 0;
+        return buffer.remaining() >= 5;
+    }
+
+    @Override
+    boolean tryExtractingMetadataFromHeaderBuffer(ByteBuffer buffer) {
+        return true;
     }
 }

@@ -59,10 +59,13 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSuppo
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.ActivitySyncPacketProcessor;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.BehaviorPacketParser;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.CaloriesPacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.EnergyPacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.HeartRatePacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.StepsPacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.StressPacketParser;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.Vo2MaxPacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncDataPacket;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncStartPacket;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncTimePacketTypeA;
@@ -130,6 +133,9 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         activitySyncHandler.registerParser(new HeartRatePacketParser());
         activitySyncHandler.registerParser(new StressPacketParser());
         activitySyncHandler.registerParser(new EnergyPacketParser());
+        activitySyncHandler.registerParser(new BehaviorPacketParser());
+        activitySyncHandler.registerParser(new CaloriesPacketParser());
+        activitySyncHandler.registerParser(new Vo2MaxPacketParser());
     }
     @Override
     public boolean useAutoConnect() {
