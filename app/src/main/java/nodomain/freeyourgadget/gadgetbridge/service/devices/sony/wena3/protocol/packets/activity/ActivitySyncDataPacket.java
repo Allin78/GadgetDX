@@ -56,7 +56,7 @@ public class ActivitySyncDataPacket {
            (reception completed!)
          */
         ByteBuffer buf = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);
-        sequenceNo = buf.get();
+        sequenceNo = Integer.valueOf(buf.get() & 0xFF);
         crc = buf.getShort();
         crc &= 0xFFFF;
         type = PacketType.LUT[buf.get()];
@@ -89,5 +89,9 @@ public class ActivitySyncDataPacket {
                 sb.append(hexString).append(' ');
             }
         return sb.toString().toUpperCase();
+    }
+
+    public ByteBuffer dataBuffer() {
+        return ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
     }
 }

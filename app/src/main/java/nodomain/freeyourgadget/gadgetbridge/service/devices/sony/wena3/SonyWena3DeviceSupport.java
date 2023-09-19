@@ -58,6 +58,11 @@ import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.ActivitySyncPacketProcessor;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.EnergyPacketParser;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.HeartRatePacketParser;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.StepsPacketParser;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers.StressPacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncDataPacket;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncStartPacket;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncTimePacketTypeA;
@@ -114,11 +119,17 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3DeviceSupport.class);
     private String lastMusicInfo = null;
     private List<CalendarEventSpec> calendarEvents = new ArrayList<>();
+    private ActivitySyncPacketProcessor activitySyncHandler = new ActivitySyncPacketProcessor();
     public SonyWena3DeviceSupport() {
         super(LoggerFactory.getLogger(SonyWena3DeviceSupport.class));
         addSupportedService(SonyWena3Constants.COMMON_SERVICE_UUID);
         addSupportedService(SonyWena3Constants.NOTIFICATION_SERVICE_UUID);
         addSupportedService(SonyWena3Constants.ACTIVITY_LOG_SERVICE_UUID);
+
+        activitySyncHandler.registerParser(new StepsPacketParser());
+        activitySyncHandler.registerParser(new HeartRatePacketParser());
+        activitySyncHandler.registerParser(new StressPacketParser());
+        activitySyncHandler.registerParser(new EnergyPacketParser());
     }
     @Override
     public boolean useAutoConnect() {
@@ -181,41 +192,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             }
         } else if(characteristic.getUuid().equals(SonyWena3Constants.ACTIVITY_LOG_CHARACTERISTIC_UUID)) {
             ActivitySyncDataPacket asdp = new ActivitySyncDataPacket(characteristic.getValue());
-            LOG.warn("Activity packet: " + asdp.toString());
-            if(asdp.type == ActivitySyncDataPacket.PacketType.HEADER) {
-                ByteBuffer buf = ByteBuffer.wrap(asdp.data).order(ByteOrder.LITTLE_ENDIAN);
-                byte dataType = buf.get();
-                switch(dataType) {
-                    case 0:
-                        LOG.warn("Type = Steps");
-                        break;
-                    case 1:
-                        LOG.warn("Type = Heart");
-                        break;
-                    case 2:
-                        LOG.warn("Type = Behavior");
-                        break;
-                    case 3:
-                        LOG.warn("Type = Vo2");
-                        break;
-                    case 4:
-                        LOG.warn("Type = Stress");
-                        break;
-                    case 5:
-                        LOG.warn("Type = Energy");
-                        break;
-                    case 6:
-                        LOG.warn("Type = Calories");
-                        break;
-                    default:
-                        LOG.warn("Type = ??? " + dataType);
-                        break;
-                }
-                if(dataType != 0x7) {
-                    Date ts = TimeUtil.wenaTimeToDate(buf.getInt());
-                    LOG.warn("Timestamp = " + ts.toString());
-                }
-            }
+            activitySyncHandler.receivePacket(asdp);
         }
         return false;
     }

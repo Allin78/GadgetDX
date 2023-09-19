@@ -17,7 +17,11 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
-public class ActivityPacketReassembler {
+public class HeartRatePacketParser extends OneBytePerSamplePacketParser {
+    private static final int HEART_PKT_MARKER = 0x01;
+    public HeartRatePacketParser() {
+        super(HEART_PKT_MARKER, ONE_MINUTE_IN_MS);
+    }
 }
