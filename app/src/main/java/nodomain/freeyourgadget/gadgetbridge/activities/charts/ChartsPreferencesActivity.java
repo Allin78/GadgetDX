@@ -25,7 +25,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.activities.AboutUserPreferencesActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractPreferenceFragment;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractSettingsActivityV2;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
@@ -55,15 +54,6 @@ public class ChartsPreferencesActivity extends AbstractSettingsActivityV2 {
             setInputTypeFor("chart_list_max_idle_phase_length", InputType.TYPE_CLASS_NUMBER);
             setInputTypeFor("chart_list_min_steps_per_minute", InputType.TYPE_CLASS_NUMBER);
             setInputTypeFor("chart_list_min_steps_per_minute_for_run", InputType.TYPE_CLASS_NUMBER);
-
-            final Preference aboutUserPref = findPreference("pref_category_activity_personal");
-            if (aboutUserPref != null) {
-                aboutUserPref.setOnPreferenceClickListener(preference -> {
-                    final Intent enableIntent = new Intent(getActivity(), AboutUserPreferencesActivity.class);
-                    startActivity(enableIntent);
-                    return true;
-                });
-            }
         }
     }
 }
