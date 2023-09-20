@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines;
 
+// This is done via a class to be able to init the value from an arbitrary int (e.g. from prefs)
+// Whether listing all cases is needed is a good concern, they are essentially unused because
+// the settings dialog uses a string-array instead...
 public class HomeIconId {
     public static final HomeIconId TIMER = new HomeIconId(256);
     public static final HomeIconId ALARM = new HomeIconId(512);

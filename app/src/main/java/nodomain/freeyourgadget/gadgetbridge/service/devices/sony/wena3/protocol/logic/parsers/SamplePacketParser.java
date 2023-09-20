@@ -24,12 +24,11 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.ActivityPacketParser;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncDataPacket;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 abstract class SamplePacketParser<Sample> implements ActivityPacketParser {
     private static final Logger LOG = LoggerFactory.getLogger(SamplePacketParser.class);
@@ -51,7 +50,7 @@ abstract class SamplePacketParser<Sample> implements ActivityPacketParser {
         currentState = State.READY;
     }
     @Override
-    public boolean parseHeader(ActivitySyncDataPacket packet) {
+    public boolean parseHeader(ActivitySyncDataPacket packet, GBDevice sourceDevice) {
         assert packet.isCrcValid;
         assert packet.type == ActivitySyncDataPacket.PacketType.HEADER;
 
@@ -76,7 +75,7 @@ abstract class SamplePacketParser<Sample> implements ActivityPacketParser {
     }
 
     @Override
-    public void parsePacket(ActivitySyncDataPacket packet) {
+    public void parsePacket(ActivitySyncDataPacket packet, GBDevice sourceDevice) {
         assert currentState == State.RECEIVING;
         assert packet.isCrcValid;
         assert packet.type == ActivitySyncDataPacket.PacketType.DATA;
@@ -89,7 +88,7 @@ abstract class SamplePacketParser<Sample> implements ActivityPacketParser {
     }
 
     @Override
-    public void finishReceiving() {
+    public void finishReceiving(GBDevice device) {
         assert currentState == State.RECEIVING;
         currentState = State.FINISHED;
 

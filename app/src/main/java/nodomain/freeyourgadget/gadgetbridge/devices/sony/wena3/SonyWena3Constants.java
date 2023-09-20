@@ -51,5 +51,14 @@ public class SonyWena3Constants {
 
     public static final int ALARM_SLOTS = 9;
     public static final int ALARM_DEFAULT_SMART_WAKEUP_MARGIN_MINUTES = 10;
+
+    public static final String DB_FIELD_VO2_DATAPOINT_NUMBER = "datapoint";
+    public static final String DB_FIELD_VO2_VALUE = "vo2";
+    public static final String DB_FIELD_STRESS = "stress";
+    public static final String DB_FIELD_STEPS = "steps";
+    public static final String DB_FIELD_HEART_RATE = "heartRate";
+    public static final String DB_FIELD_ENERGY = "energy";
+    public static final String DB_FIELD_CALORIES = "calories";
+
 }
 

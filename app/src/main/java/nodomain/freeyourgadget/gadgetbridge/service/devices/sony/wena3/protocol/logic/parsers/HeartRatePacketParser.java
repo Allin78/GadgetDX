@@ -19,9 +19,55 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRateSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+
 public class HeartRatePacketParser extends OneBytePerSamplePacketParser {
+    private static final Logger LOG = LoggerFactory.getLogger(HeartRatePacketParser.class);
     private static final int HEART_PKT_MARKER = 0x01;
     public HeartRatePacketParser() {
         super(HEART_PKT_MARKER, ONE_MINUTE_IN_MS);
+    }
+
+    @Override
+    public void finishReceiving(GBDevice device) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            SonyWena3HeartRateSampleProvider sampleProvider = new SonyWena3HeartRateSampleProvider(device, db.getDaoSession());
+            Long userId = DBHelper.getUser(db.getDaoSession()).getId();
+            Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+            List<Wena3HeartRateSample> samples = new ArrayList<>();
+
+            Date currentSampleDate = startDate;
+            int i = 0;
+            for(int rawSample: accumulator) {
+                Wena3HeartRateSample gbSample = new Wena3HeartRateSample();
+                gbSample.setDeviceId(deviceId);
+                gbSample.setUserId(userId);
+                gbSample.setTimestamp(currentSampleDate.getTime());
+                gbSample.setHeartRate(rawSample);
+                samples.add(gbSample);
+
+                i++;
+                currentSampleDate = timestampOfSampleAtIndex(i);
+            }
+
+            sampleProvider.addSamples(samples);
+        } catch (Exception e) {
+            LOG.error("Error acquiring database for recording heart rate samples", e);
+        }
+
+        // Finally clean up the parser
+        super.finishReceiving(device);
     }
 }

@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncDataPacket;
 
 public class ActivitySyncPacketProcessor {
@@ -43,10 +44,10 @@ public class ActivitySyncPacketProcessor {
         parsers.add(parser);
     }
 
-    public void receivePacket(ActivitySyncDataPacket packet) {
+    public void receivePacket(ActivitySyncDataPacket packet, GBDevice device) {
         if(packet.sequenceNo != currentSeqNo) {
             LOG.error("There was packet loss (skip "+currentSeqNo+" to "+packet.sequenceNo+")");
-            finalizeCurrentParserIfNeeded();
+            finalizeCurrentParserIfNeeded(device);
             return;
         } else {
             if(currentSeqNo == RESET_SEQ_NO) {
@@ -71,9 +72,9 @@ public class ActivitySyncPacketProcessor {
         switch(packet.type) {
             case HEADER:
                 haveHeader = true;
-                finalizeCurrentParserIfNeeded();
+                finalizeCurrentParserIfNeeded(device);
                 for(ActivityPacketParser parser: parsers) {
-                    if(parser.parseHeader(packet)) {
+                    if(parser.parseHeader(packet, device)) {
                         currentParser = parser;
                         break;
                     }
@@ -85,7 +86,7 @@ public class ActivitySyncPacketProcessor {
 
             case DATA:
                 if(currentParser != null) {
-                    currentParser.parsePacket(packet);
+                    currentParser.parsePacket(packet, device);
                 } else {
                     if(!haveHeader) {
                         LOG.warn("DATA arrived before HEADER: dropped " + packet.toString());
@@ -97,7 +98,7 @@ public class ActivitySyncPacketProcessor {
 
             case FINISH:
                 LOG.info("End of transmission received");
-                finalizeCurrentParserIfNeeded();
+                finalizeCurrentParserIfNeeded(device);
                 break;
         }
     }
@@ -107,9 +108,9 @@ public class ActivitySyncPacketProcessor {
         for(ActivityPacketParser parser: parsers) parser.reset();
     }
 
-    private void finalizeCurrentParserIfNeeded() {
+    private void finalizeCurrentParserIfNeeded(GBDevice device) {
         if(currentParser != null) {
-            currentParser.finishReceiving();
+            currentParser.finishReceiving(device);
             currentParser = null;
         }
         haveHeader = false;

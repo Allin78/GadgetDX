@@ -23,12 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.ActivityPacketParser;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncDataPacket;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 abstract class LinearSamplePacketParser<Sample> extends SamplePacketParser<Sample> {
@@ -43,10 +40,10 @@ abstract class LinearSamplePacketParser<Sample> extends SamplePacketParser<Sampl
     }
 
     @Override
-    public void finishReceiving() {
+    public void finishReceiving(GBDevice device) {
         Date estimatedEndDate = new Date(startDate.getTime() + ((long) accumulator.size() * msBetweenSamples));
         LOG.info("Finished collecting "+accumulator.size()+" samples over "+startDate+" ~ "+estimatedEndDate);
-        super.finishReceiving();
+        super.finishReceiving(device);
     }
 
     @Override
@@ -58,6 +55,12 @@ abstract class LinearSamplePacketParser<Sample> extends SamplePacketParser<Sampl
 
         startDate = TimeUtil.wenaTimeToDate(buffer.getInt());
         return true;
+    }
+
+    public Date timestampOfSampleAtIndex(int index) {
+        assert startDate != null;
+        if(index == 0) return startDate;
+        return new Date(startDate.getTime() + (long) msBetweenSamples * index);
     }
 
     abstract Sample takeSampleFromBuffer(ByteBuffer buffer);

@@ -24,6 +24,7 @@ public class SonyWena3SettingKeys {
     public static final String WEATHER_IN_STATUSBAR = "pref_wena3_weather_in_statusbar";
     public static final String SMART_VIBRATION = "pref_wena3_vibration_smart";
     public static final String RECEIVE_CALLS = "pref_wena3_receive_calls";
+    public static final String BACKGROUND_SYNC = "pref_wena3_background_sync";
 
     public static final String AUTO_POWER_SCHEDULE_KIND = "pref_wena3_power_schedule_kind";
     public static final String AUTO_POWER_SCHEDULE_START_HHMM = "pref_wena3_power_schedule_start";

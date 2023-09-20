@@ -439,28 +439,6 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SONYSWR12_LOW_VIBRATION);
         addPreferenceHandlerFor(PREF_SONYSWR12_SMART_INTERVAL);
 
-        addPreferenceHandlerFor(SonyWena3SettingKeys.RICH_DESIGN_MODE);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.LARGE_FONT_SIZE);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.WEATHER_IN_STATUSBAR);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.SMART_VIBRATION);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.VIBRATION_STRENGTH);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.LEFT_HOME_ICON);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.CENTER_HOME_ICON);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.RIGHT_HOME_ICON);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.DAY_START_HOUR);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_KIND);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_START_HHMM);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_END_HHMM);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION);
-        addPreferenceHandlerFor(SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION);
-        for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
-            addPreferenceHandlerFor(SonyWena3SettingKeys.menuIconKeyFor(i));
-        }
-        for(int i = 0; i < SonyWena3SettingKeys.MAX_STATUS_PAGES; i++) {
-            addPreferenceHandlerFor(SonyWena3SettingKeys.statusPageKeyFor(i));
-        }
-
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_INEAR);
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_AUDIOMODE);
 

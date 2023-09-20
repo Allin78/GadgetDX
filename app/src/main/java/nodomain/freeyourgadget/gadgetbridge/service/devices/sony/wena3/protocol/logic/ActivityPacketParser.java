@@ -19,14 +19,15 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic;
 
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.ActivitySyncDataPacket;
 
 public interface ActivityPacketParser {
     /// Return `true` if further data packets should be accepted by this parser.
     /// Make sure to configure internal state correctly to prepare for incoming data if returning `true`.
     /// Otherwise return `false`.
-    boolean parseHeader(ActivitySyncDataPacket packet);
-    void parsePacket(ActivitySyncDataPacket packet);
-    void finishReceiving();
+    boolean parseHeader(ActivitySyncDataPacket packet, GBDevice sourceDevice);
+    void parsePacket(ActivitySyncDataPacket packet, GBDevice sourceDevice);
+    void finishReceiving(GBDevice device);
     void reset();
 }

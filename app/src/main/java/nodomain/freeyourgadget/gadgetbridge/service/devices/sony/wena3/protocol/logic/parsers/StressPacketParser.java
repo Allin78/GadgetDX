@@ -19,9 +19,54 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+
 public class StressPacketParser extends OneBytePerSamplePacketParser {
+    private static final Logger LOG = LoggerFactory.getLogger(StressPacketParser.class);
     private static final int STRESS_PKT_MARKER = 0x04;
     public StressPacketParser() {
         super(STRESS_PKT_MARKER, ONE_MINUTE_IN_MS);
+    }
+    @Override
+    public void finishReceiving(GBDevice device) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            SonyWena3StressSampleProvider sampleProvider = new SonyWena3StressSampleProvider(device, db.getDaoSession());
+            Long userId = DBHelper.getUser(db.getDaoSession()).getId();
+            Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+            List<Wena3StressSample> samples = new ArrayList<>();
+
+            Date currentSampleDate = startDate;
+            int i = 0;
+            for(int rawSample: accumulator) {
+                Wena3StressSample gbSample = new Wena3StressSample();
+                gbSample.setDeviceId(deviceId);
+                gbSample.setUserId(userId);
+                gbSample.setTimestamp(currentSampleDate.getTime());
+                gbSample.setStress(rawSample);
+                samples.add(gbSample);
+
+                i++;
+                currentSampleDate = timestampOfSampleAtIndex(i);
+            }
+
+            sampleProvider.addSamples(samples);
+        } catch (Exception e) {
+            LOG.error("Error acquiring database for recording stress samples", e);
+        }
+
+        // Finally clean up the parser
+        super.finishReceiving(device);
     }
 }

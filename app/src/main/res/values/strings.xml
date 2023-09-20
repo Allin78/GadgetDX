@@ -2269,6 +2269,9 @@
     <string name="devicetype_miband2_hrx">Mi Band HRX</string>
 
     <string name="prefs_wena3_title_screen">Display Settings</string>
+    <string name="prefs_wena3_title_activity">Activity Settings</string>
+    <string name="prefs_wena3_item_background_sync">Background Activity Data Sync</string>
+    <string name="prefs_wena3_hint_background_sync">Allow the Wena to periodically ask Gadgetbridge to download activity data from the device.</string>
     <string name="prefs_wena3_item_lift_wrist">Lift Wrist To Turn On</string>
     <string name="prefs_wena3_hint_lift_wrist">Turn on the display when you look at your wrist.</string>
     <string name="prefs_wena3_item_large_font">Larger Font Size</string>

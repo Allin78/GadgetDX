@@ -28,17 +28,23 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.SonyWena3DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.unknown.UnknownDeviceSupport;
@@ -76,6 +82,11 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
         return SonyWena3DeviceSupport.class;
     }
 
+    @Override
+    public DeviceSpecificSettingsCustomizer getDeviceSpecificSettingsCustomizer(GBDevice device) {
+        return new SonyWena3SettingsCustomizer();
+    }
+
     @NonNull
     @Override
     public Collection<? extends ScanFilter> createBLEScanFilters() {
@@ -88,7 +99,9 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
-
+        Long deviceId = device.getId();
+        QueryBuilder<?> qb = session.getWena3HeartRateSampleDao().queryBuilder();
+        qb.where(Wena3HeartRateSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
     @NonNull
@@ -105,10 +118,6 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
         return BONDING_STYLE_BOND;
     }
 
-    //////////////////
-    // Capability Definitions
-    /////////////////
-
     @Override
     public boolean supportsCalendarEvents() {
         return true;
@@ -121,12 +130,12 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsActivityDataFetching() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean supportsActivityTracking() {
-        return false;
+        return true;
     }
 
 
@@ -137,7 +146,12 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsStressMeasurement() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public TimeSampleProvider<? extends StressSample> getStressSampleProvider(GBDevice device, DaoSession session) {
+        return new SonyWena3StressSampleProvider(device, session);
     }
 
     @Override
@@ -146,14 +160,25 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsHeartRateMeasurement(GBDevice device) {
+        return true;
+    }
+
+    @Override
     public boolean supportsHeartRateStats() {
-        return false;
+        return true;
     }
 
     @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
-        return null;
+        return new SonyWena3ActivitySampleProvider(device, session);
     }
+
+    @Override
+    public TimeSampleProvider<? extends HeartRateSample> getHeartRateRestingSampleProvider(GBDevice device, DaoSession session) {
+        return new SonyWena3HeartRateSampleProvider(device, session);
+    }
+
 
     @Override
     public InstallHandler findInstallHandler(Uri uri, Context context) {
@@ -192,7 +217,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean isExperimental() {
-        return true;
+        return false;
     }
 
     @Override

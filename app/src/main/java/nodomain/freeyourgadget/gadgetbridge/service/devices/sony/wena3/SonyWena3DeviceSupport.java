@@ -27,8 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,10 +40,17 @@ import java.util.TimeZone;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Constants;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRateSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
@@ -113,7 +118,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherDay;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status.WeatherReport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
@@ -123,6 +127,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private String lastMusicInfo = null;
     private List<CalendarEventSpec> calendarEvents = new ArrayList<>();
     private ActivitySyncPacketProcessor activitySyncHandler = new ActivitySyncPacketProcessor();
+
     public SonyWena3DeviceSupport() {
         super(LoggerFactory.getLogger(SonyWena3DeviceSupport.class));
         addSupportedService(SonyWena3Constants.COMMON_SERVICE_UUID);
@@ -165,8 +170,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         // Get serial number and firmware version
         builder.read(getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_INFO_UUID));
 
-        // Finally, sync sports data forcefully
-        forceRequestSync(builder);
+        // Finally, sync activity data
+        requestActivityDataDownload(builder, false);
 
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
         return builder;
@@ -193,12 +198,21 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 evaluateGBDeviceEvent(findPhoneEvent);
                 return true;
             }
+            else if(request.requestType == StatusRequestType.BACKGROUND_SYNC_REQUEST.value) {
+                Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+                boolean enableSync = prefs.getBoolean(SonyWena3SettingKeys.BACKGROUND_SYNC, true);
+                if(enableSync) {
+                    LOG.info("Request for background activity sync received");
+                    requestActivityDataDownload(null, false);
+                }
+                return true;
+            }
             else {
                 LOG.warn("Unknown NotificationServiceStatusRequest %d", request.requestType);
             }
         } else if(characteristic.getUuid().equals(SonyWena3Constants.ACTIVITY_LOG_CHARACTERISTIC_UUID)) {
             ActivitySyncDataPacket asdp = new ActivitySyncDataPacket(characteristic.getValue());
-            activitySyncHandler.receivePacket(asdp);
+            activitySyncHandler.receivePacket(asdp, getDevice());
         }
         return false;
     }
@@ -262,23 +276,66 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private void forceRequestSync(@Nullable TransactionBuilder b) {
+    @Override
+    public void onFetchRecordedData(int dataTypes) {
+        requestActivityDataDownload(null, true);
+    }
+
+    private void requestActivityDataDownload(@Nullable TransactionBuilder b, boolean syncAll) {
         try {
-            TransactionBuilder builder = b == null ? performInitialized("forceSync") : b;
+            TransactionBuilder builder = b == null ? performInitialized("activitySync") : b;
             BluetoothGattCharacteristic sportsCharacteristic = getCharacteristic(SonyWena3Constants.ACTIVITY_LOG_CHARACTERISTIC_UUID);
 
-            // TODO: Don't request everything, only the needed part
+            Date stepLastSyncTime = null;
+            Date heartLastSyncTime = null;
+            Date behaviorLastSyncTime = null;
+            Date vo2LastSyncTime = null;
+            Date stressLastSyncTime = null;
+            Date energyLastSyncTime = null;
+            Date caloriesLastSyncTime = null;
+            Date eventsLastSyncTime = null;
 
-            Date dummy = null;//new Date( (new Date().getTime() - 3600000) );
+            if(!syncAll) {
+                try (DBHandler db = GBApplication.acquireDB()) {
+                    Wena3HeartRateSample heartSample = new SonyWena3HeartRateSampleProvider(getDevice(), db.getDaoSession()).getLatestSample();
+                    if(heartSample != null) {
+                        heartLastSyncTime = new Date(heartSample.getTimestamp());
+                    }
+
+                    Wena3StressSample stressSample = new SonyWena3StressSampleProvider(getDevice(), db.getDaoSession()).getLatestSample();
+                    if(stressSample != null) {
+                        stressLastSyncTime = new Date(stressSample.getTimestamp());
+                    }
+
+                    Wena3StepsSample stepsSample = new SonyWena3ActivitySampleProvider(getDevice(), db.getDaoSession()).getLatestActivitySample();
+                    if(stepsSample != null) {
+                        stepLastSyncTime = new Date(stepsSample.getTimestamp() * 1000L);
+                    }
+
+                    LOG.info(
+                            "Found last sync dates: " +
+                            "\nsteps = " + stepLastSyncTime +
+                            "\nheart = " + heartLastSyncTime +
+                            "\nbehavior = " + behaviorLastSyncTime +
+                            "\nvo2 = " + vo2LastSyncTime +
+                            "\nstress = " + stressLastSyncTime +
+                            "\nenergy = " + energyLastSyncTime +
+                            "\ncalories = " + caloriesLastSyncTime +
+                            "\nevents = " + eventsLastSyncTime
+                    );
+                } catch (Exception e) {
+                    LOG.warn("Failed to communicate with DB to find last sync timestamps -- syncing everything:", e);
+                }
+            }
 
             builder.write(
                     sportsCharacteristic,
-                    new ActivitySyncTimePacketTypeA(dummy, dummy, dummy, dummy).toByteArray()
+                    new ActivitySyncTimePacketTypeA(stepLastSyncTime, heartLastSyncTime, behaviorLastSyncTime, vo2LastSyncTime).toByteArray()
             );
 
             builder.write(
                     sportsCharacteristic,
-                    new ActivitySyncTimePacketTypeB(dummy, dummy, dummy, dummy).toByteArray()
+                    new ActivitySyncTimePacketTypeB(stressLastSyncTime, energyLastSyncTime, caloriesLastSyncTime, eventsLastSyncTime).toByteArray()
             );
 
             builder.write(sportsCharacteristic, new ActivitySyncStartPacket().toByteArray());
@@ -403,9 +460,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 if(bodyBuilder.length() > 0) {
                     bodyBuilder.append("\n");
                 }
-                bodyBuilder.append("[ ");
                 bodyBuilder.append(notificationSpec.title);
-                bodyBuilder.append(" ]");
+                bodyBuilder.append(":");
             }
 
             if(notificationSpec.subject != null && notificationSpec.subject.length() > 0) {
