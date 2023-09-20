@@ -54,7 +54,6 @@ import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.SonyWena3DeviceSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.unknown.UnknownDeviceSupport;
 
 public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     @Override
@@ -105,7 +104,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
+    protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) {
         Long deviceId = device.getId();
         QueryBuilder<?> qb;
         

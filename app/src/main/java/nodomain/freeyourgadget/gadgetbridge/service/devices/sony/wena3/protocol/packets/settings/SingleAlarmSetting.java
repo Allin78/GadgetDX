@@ -23,12 +23,12 @@ import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class SingleAlarmSetting implements Wena3Packetable {
-    public boolean enable;
+    public final boolean enable;
     // Bitmask: See model.Alarm.ALARM_MON, TUE, ...
-    public byte repetition;
-    public int smartAlarmMargin;
-    public int hour;
-    public int minute;
+    public final byte repetition;
+    public final int smartAlarmMargin;
+    public final int hour;
+    public final int minute;
 
     public SingleAlarmSetting(boolean enable, byte repetition, int smartAlarmMargin, int hour, int minute) {
         this.enable = enable;

@@ -22,9 +22,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -32,7 +30,6 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleCombiner;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3BehaviorSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 

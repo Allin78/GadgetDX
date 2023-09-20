@@ -22,8 +22,8 @@ import java.nio.ByteOrder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class GoalStepsSetting implements Wena3Packetable {
-    public boolean goalNotificationEnabled;
-    public int goalSteps;
+    public final boolean goalNotificationEnabled;
+    public final int goalSteps;
 
     public GoalStepsSetting(boolean goalNotificationEnabled, int goalSteps) {
         this.goalNotificationEnabled = goalNotificationEnabled;

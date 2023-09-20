@@ -21,7 +21,7 @@ public enum VibrationStrength {
     WEAK(1),
     STRONG(2);
 
-    public byte value;
+    public final byte value;
 
     VibrationStrength(int val) {
         this.value = (byte) val;

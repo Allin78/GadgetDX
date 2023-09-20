@@ -22,11 +22,11 @@ import java.nio.ByteOrder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class DoNotDisturbSettings implements Wena3Packetable {
-    public boolean enable;
-    public int startHour;
-    public int startMinute;
-    public int endHour;
-    public int endMinute;
+    public final boolean enable;
+    public final int startHour;
+    public final int startMinute;
+    public final int endHour;
+    public final int endMinute;
 
     public DoNotDisturbSettings(boolean enable, int startHour, int startMinute, int endHour, int endMinute) {
         this.enable = enable;

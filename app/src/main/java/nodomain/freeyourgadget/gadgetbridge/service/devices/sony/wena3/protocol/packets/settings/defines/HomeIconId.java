@@ -42,7 +42,7 @@ public enum HomeIconId {
     MUSIC(4864),
     CAMERA(5120);
 
-    public short value;
+    public final short value;
 
     HomeIconId(final int value) {
         this.value = (short) value;

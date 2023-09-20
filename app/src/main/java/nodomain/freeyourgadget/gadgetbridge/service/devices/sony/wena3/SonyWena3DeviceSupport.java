@@ -44,13 +44,22 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3BehaviorSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3CaloriesSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Constants;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3EnergySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRateSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
@@ -90,23 +99,23 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.CameraAppTypeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DayStartHourSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DeviceButtonActionSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.GoalStepsSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.MenuIconSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.StatusPageOrderSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DeviceButtonActionId;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayDesign;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayOrientation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DisplaySetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.DoNotDisturbSettings;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.FontSize;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.GenderSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.HomeIconId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.GoalStepsSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.HomeIconOrderSetting;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.Language;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.MenuIconSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.SingleAlarmSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.StatusPageOrderSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.TimeZoneSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.VibrationSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DeviceButtonActionId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayDesign;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DisplayOrientation;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.FontSize;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.GenderSetting;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.HomeIconId;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.Language;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.MenuIconId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.StatusPageId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.VibrationStrength;
@@ -125,8 +134,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private static final int INCOMING_CALL_ID = 3939;
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3DeviceSupport.class);
     private String lastMusicInfo = null;
-    private List<CalendarEventSpec> calendarEvents = new ArrayList<>();
-    private ActivitySyncPacketProcessor activitySyncHandler = new ActivitySyncPacketProcessor();
+    private final List<CalendarEventSpec> calendarEvents = new ArrayList<>();
+    private final ActivitySyncPacketProcessor activitySyncHandler = new ActivitySyncPacketProcessor();
 
     public SonyWena3DeviceSupport() {
         super(LoggerFactory.getLogger(SonyWena3DeviceSupport.class));
@@ -174,6 +183,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         requestActivityDataDownload(builder, false);
 
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
+        CalendarReceiver.forceSync();
         return builder;
     }
 
@@ -208,7 +218,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 return true;
             }
             else {
-                LOG.warn("Unknown NotificationServiceStatusRequest %d", request.requestType);
+                LOG.warn("Unknown NotificationServiceStatusRequest " + request.requestType);
             }
         } else if(characteristic.getUuid().equals(SonyWena3Constants.ACTIVITY_LOG_CHARACTERISTIC_UUID)) {
             ActivitySyncDataPacket asdp = new ActivitySyncDataPacket(characteristic.getValue());
@@ -293,7 +303,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             Date stressLastSyncTime = null;
             Date energyLastSyncTime = null;
             Date caloriesLastSyncTime = null;
-            Date eventsLastSyncTime = null;
+            Date eventsLastSyncTime = null; // TODO: find out what this is
 
             if(!syncAll) {
                 try (DBHandler db = GBApplication.acquireDB()) {
@@ -310,6 +320,26 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                     Wena3StepsSample stepsSample = new SonyWena3ActivitySampleProvider(getDevice(), db.getDaoSession()).getLatestActivitySample();
                     if(stepsSample != null) {
                         stepLastSyncTime = new Date(stepsSample.getTimestamp() * 1000L);
+                    }
+
+                    Wena3BehaviorSample behaviorSample = new SonyWena3BehaviorSampleProvider(getDevice(), db.getDaoSession()).getLatestSample();
+                    if(behaviorSample != null) {
+                        behaviorLastSyncTime = new Date(behaviorSample.getTimestamp());
+                    }
+
+                    Wena3Vo2Sample vo2Sample = new SonyWena3Vo2SampleProvider(getDevice(), db.getDaoSession()).getLatestSample();
+                    if(vo2Sample != null) {
+                        vo2LastSyncTime = new Date(vo2Sample.getTimestamp());
+                    }
+
+                    Wena3EnergySample energySample = new SonyWena3EnergySampleProvider(getDevice(), db.getDaoSession()).getLatestSample();
+                    if(energySample != null) {
+                        energyLastSyncTime = new Date(energySample.getTimestamp());
+                    }
+
+                    Wena3CaloriesSample caloriesSample = new SonyWena3CaloriesSampleProvider(getDevice(), db.getDaoSession()).getLatestSample();
+                    if(caloriesSample != null) {
+                        caloriesLastSyncTime = new Date(caloriesSample.getTimestamp());
                     }
 
                     LOG.info(
@@ -370,7 +400,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         if(hasTrackName) {
             sb.append(musicSpec.track.trim());
         }
-        if(hasArtistName && hasArtistName) {
+        if(hasArtistName && hasTrackName) {
             sb.append(" / ");
         }
         if(hasArtistName) {
@@ -630,7 +660,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                 languageCode = Language.JAPANESE;
                 break;
         }
-        LOG.info("Resolved locale: %d", languageCode.ordinal());
+        LOG.info("Resolved locale: " + languageCode.name());
 
         DisplaySetting pkt = new DisplaySetting(
                 prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST, false),
@@ -889,6 +919,11 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (IOException e) {
             LOG.warn("Unable to send calendar events", e);
         }
+    }
+
+    @Override
+    public void onSetTime() {
+        sendCurrentTime(null);
     }
 
     @Override

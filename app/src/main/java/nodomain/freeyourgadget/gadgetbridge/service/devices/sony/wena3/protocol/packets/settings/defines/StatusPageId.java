@@ -26,7 +26,7 @@ public enum StatusPageId {
     ENERGY(6),
     CALORIES(7);
 
-    public byte value;
+    public final byte value;
 
     StatusPageId(int val) {
         this.value = (byte) val;

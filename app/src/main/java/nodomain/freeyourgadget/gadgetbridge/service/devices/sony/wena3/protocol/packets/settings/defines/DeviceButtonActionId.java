@@ -42,7 +42,7 @@ public enum DeviceButtonActionId {
     MUSIC_PREV(784);
 
 
-    public short value;
+    public final short value;
 
     DeviceButtonActionId(int val) {
         this.value = (short) val;

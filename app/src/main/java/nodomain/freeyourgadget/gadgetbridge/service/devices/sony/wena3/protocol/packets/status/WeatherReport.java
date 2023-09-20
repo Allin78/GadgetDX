@@ -23,7 +23,7 @@ import java.util.List;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class WeatherReport implements Wena3Packetable {
-    public List<WeatherDay> fiveDays;
+    public final List<WeatherDay> fiveDays;
 
     public WeatherReport(List<WeatherDay> fiveDays) {
         this.fiveDays = fiveDays;

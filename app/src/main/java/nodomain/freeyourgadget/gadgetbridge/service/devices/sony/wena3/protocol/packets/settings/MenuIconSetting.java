@@ -25,7 +25,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.MenuIconId;
 
 public class MenuIconSetting implements Wena3Packetable {
-    public List<MenuIconId> iconList = new ArrayList<>();
+    public final List<MenuIconId> iconList = new ArrayList<>();
 
     public MenuIconSetting() {
     }

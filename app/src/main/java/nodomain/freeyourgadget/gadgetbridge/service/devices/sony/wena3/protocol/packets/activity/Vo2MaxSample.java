@@ -22,8 +22,8 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import java.util.Date;
 
 public class Vo2MaxSample {
-    public Date timestamp;
-    public int value;
+    public final Date timestamp;
+    public final int value;
 
     public Vo2MaxSample(Date timestamp, int value) {
         this.timestamp = timestamp;

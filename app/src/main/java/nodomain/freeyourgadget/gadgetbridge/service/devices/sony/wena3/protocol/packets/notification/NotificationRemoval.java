@@ -23,8 +23,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.NotificationKind;
 
 public class NotificationRemoval implements Wena3Packetable {
-    public NotificationKind kind;
-    public int id;
+    public final NotificationKind kind;
+    public final int id;
 
     public NotificationRemoval(NotificationKind kind, int id) {
         this.kind = kind;

@@ -26,14 +26,11 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.BehaviorSample;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sonyswr12.entities.activity.ActivityType;
 
 public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena3StepsSample> {
     public SonyWena3ActivitySampleProvider(GBDevice device, DaoSession session) {

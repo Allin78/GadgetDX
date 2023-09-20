@@ -32,7 +32,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 
 abstract class SamplePacketParser<Sample> implements ActivityPacketParser {
     private static final Logger LOG = LoggerFactory.getLogger(SamplePacketParser.class);
-    private int headerMarker;
+    private final int headerMarker;
     public List<Sample> accumulator = new ArrayList<>();
     private enum State {
         READY, RECEIVING, FINISHED

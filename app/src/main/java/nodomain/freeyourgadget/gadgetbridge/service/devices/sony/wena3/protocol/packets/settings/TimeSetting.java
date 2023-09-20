@@ -16,8 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings;
 
-import androidx.annotation.Nullable;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Date;
@@ -26,7 +24,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 public class TimeSetting implements Wena3Packetable {
-    @Nullable public Date currentTime;
+    public final Date currentTime;
 
     public TimeSetting(Date dateTime) {
         this.currentTime = dateTime;

@@ -20,8 +20,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.VibrationStrength;
 
 public class VibrationSetting implements Wena3Packetable {
-    public boolean smartVibration;
-    public VibrationStrength strength;
+    public final boolean smartVibration;
+    public final VibrationStrength strength;
 
     public VibrationSetting(boolean smartVibration, VibrationStrength strength) {
         this.smartVibration = smartVibration;

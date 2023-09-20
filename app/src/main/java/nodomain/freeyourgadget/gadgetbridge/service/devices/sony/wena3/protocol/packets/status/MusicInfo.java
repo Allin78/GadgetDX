@@ -24,7 +24,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class MusicInfo implements Wena3Packetable {
-    public String musicInfoText;
+    public final String musicInfoText;
 
     public MusicInfo(String musicInfoText) {
         this.musicInfoText = musicInfoText;

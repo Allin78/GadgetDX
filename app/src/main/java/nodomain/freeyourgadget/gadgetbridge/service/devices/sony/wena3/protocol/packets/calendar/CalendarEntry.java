@@ -25,14 +25,14 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 public class CalendarEntry implements Wena3Packetable {
-    public Date begin;
-    public Date end;
-    public boolean isAllDay;
-    public String title;
-    public String location;
+    public final Date begin;
+    public final Date end;
+    public final boolean isAllDay;
+    public final String title;
+    public final String location;
     /// 1-based, not index!
-    public byte position;
-    public byte totalItemCount;
+    public final byte position;
+    public final byte totalItemCount;
 
     public CalendarEntry(Date begin, Date end, boolean isAllDay, String title, String location, byte position, byte totalItemCount) {
         this.begin = begin;

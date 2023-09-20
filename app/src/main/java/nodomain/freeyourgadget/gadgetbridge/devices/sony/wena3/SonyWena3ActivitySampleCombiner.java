@@ -34,8 +34,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 // architecture of Gadgetbridge)
 public class SonyWena3ActivitySampleCombiner {
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3ActivitySampleCombiner.class);
-    SonyWena3BehaviorSampleProvider behaviorSampleProvider;
-    SonyWena3ActivitySampleProvider activitySampleProvider;
+    final SonyWena3BehaviorSampleProvider behaviorSampleProvider;
+    final SonyWena3ActivitySampleProvider activitySampleProvider;
 
     public SonyWena3ActivitySampleCombiner(SonyWena3BehaviorSampleProvider behaviorSampleProvider, SonyWena3ActivitySampleProvider activitySampleProvider) {
         this.behaviorSampleProvider = behaviorSampleProvider;

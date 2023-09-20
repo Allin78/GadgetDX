@@ -18,18 +18,17 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Date;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.GenderSetting;
 
 public class BodyPropertiesSetting implements Wena3Packetable {
-    public GenderSetting gender;
-    public short yearOfBirth;
-    public short monthOfBirth;
-    public short dayOfBirth;
-    public short height;
-    public short weight;
+    public final GenderSetting gender;
+    public final short yearOfBirth;
+    public final short monthOfBirth;
+    public final short dayOfBirth;
+    public final short height;
+    public final short weight;
 
     public BodyPropertiesSetting(GenderSetting gender, short yearOfBirth, short monthOfBirth, short dayOfBirth, short height, short weight) {
         this.gender = gender;

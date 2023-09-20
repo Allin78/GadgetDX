@@ -23,9 +23,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.HomeIconId;
 
 public class HomeIconOrderSetting implements Wena3Packetable {
-    public HomeIconId left;
-    public HomeIconId center;
-    public HomeIconId right;
+    public final HomeIconId left;
+    public final HomeIconId center;
+    public final HomeIconId right;
 
     public HomeIconOrderSetting(HomeIconId left, HomeIconId center, HomeIconId right) {
         this.left = left;

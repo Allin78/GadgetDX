@@ -29,7 +29,7 @@ public enum VibrationKind {
     SIREN(8),
     SHORT(9);
 
-    public byte value;
+    public final byte value;
 
     VibrationKind(int value) {
         this.value = (byte) value;

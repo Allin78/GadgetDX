@@ -27,7 +27,6 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractTimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;

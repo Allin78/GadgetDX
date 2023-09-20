@@ -23,13 +23,13 @@ import java.util.List;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class AlarmListSettings implements Wena3Packetable {
-    public static int MAX_ALARMS_IN_PACKET = 3;
+    public static final int MAX_ALARMS_IN_PACKET = 3;
 
     // While the Wena 3 has 9 alarms, the packet fits 3 at most
     // So to update all alarms you need to send 3 packets
-    public List<SingleAlarmSetting> alarms;
+    public final List<SingleAlarmSetting> alarms;
     // Usually 0 for first packet, 3 for second, 6 for third
-    public int alarmListOffset;
+    public final int alarmListOffset;
 
     public AlarmListSettings(List<SingleAlarmSetting> alarms, int alarmListOffset) {
         this.alarms = alarms;

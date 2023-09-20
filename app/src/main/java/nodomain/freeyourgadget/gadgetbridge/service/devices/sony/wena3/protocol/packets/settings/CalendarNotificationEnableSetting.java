@@ -19,8 +19,8 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class CalendarNotificationEnableSetting implements Wena3Packetable {
-    public boolean enableCalendar;
-    public boolean enableNotifications;
+    public final boolean enableCalendar;
+    public final boolean enableNotifications;
 
     public CalendarNotificationEnableSetting(boolean enableCalendar, boolean enableNotifications) {
         this.enableCalendar = enableCalendar;

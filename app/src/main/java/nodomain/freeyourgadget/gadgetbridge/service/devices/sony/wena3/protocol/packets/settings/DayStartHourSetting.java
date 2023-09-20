@@ -19,7 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
 
 public class DayStartHourSetting implements Wena3Packetable {
-    public int dayStartHour;
+    public final int dayStartHour;
 
     public DayStartHourSetting(int dayStartHour) {
         this.dayStartHour = dayStartHour;

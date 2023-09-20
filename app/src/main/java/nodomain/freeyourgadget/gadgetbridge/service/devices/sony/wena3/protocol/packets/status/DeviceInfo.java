@@ -19,11 +19,10 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 public class DeviceInfo {
-    public String firmwareName;
-    public String serialNo;
+    public final String firmwareName;
+    public final String serialNo;
 
     public DeviceInfo(byte[] packet) {
         ByteBuffer buf = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);

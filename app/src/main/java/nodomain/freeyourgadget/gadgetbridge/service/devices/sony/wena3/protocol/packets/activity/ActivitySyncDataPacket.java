@@ -35,12 +35,12 @@ public class ActivitySyncDataPacket {
         static final PacketType[] LUT = new PacketType[] { HEADER, DATA, FINISH };
     }
 
-    public int sequenceNo;
-    public PacketType type;
+    public final int sequenceNo;
+    public final PacketType type;
     public int crc;
     public int expectedCrc;
     public boolean isCrcValid;
-    public byte[] data;
+    public final byte[] data;
 
     public ActivitySyncDataPacket(byte[] packet) {
         /*

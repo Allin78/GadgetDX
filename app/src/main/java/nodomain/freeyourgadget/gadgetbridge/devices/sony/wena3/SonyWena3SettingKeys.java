@@ -35,14 +35,14 @@ public class SonyWena3SettingKeys {
     public static final String RIGHT_HOME_ICON = "pref_wena3_home_icon_right";
     public static final String MENU_ICON_KEY_PREFIX = "pref_wena3_menu_icon_";
     public static final int MAX_MENU_ICONS = 9;
-    public static final String menuIconKeyFor(int number) {
+    public static String menuIconKeyFor(int number) {
         assert number < MAX_MENU_ICONS;
         return MENU_ICON_KEY_PREFIX + number;
     }
 
     public static final String STATUS_PAGE_KEY_PREFIX = "pref_wena3_status_page_";
     public static final int MAX_STATUS_PAGES = 7;
-    public static final String statusPageKeyFor(int number) {
+    public static String statusPageKeyFor(int number) {
         assert number < MAX_STATUS_PAGES;
         return STATUS_PAGE_KEY_PREFIX + number;
     }

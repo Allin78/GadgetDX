@@ -125,7 +125,7 @@ public class Weather {
 
             default:
                 LoggerFactory.getLogger(Weather.class)
-                        .warn("Unknown condition code %d", conditionCode);
+                        .warn("Unknown condition code " + conditionCode);
                 break;
         }
 

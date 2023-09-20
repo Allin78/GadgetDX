@@ -28,9 +28,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3EnergySampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
 public class EnergyPacketParser extends OneBytePerSamplePacketParser {

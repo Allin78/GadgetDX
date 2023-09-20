@@ -27,7 +27,7 @@ public enum LedColor {
     PURPLE(6),
     WHITE(7);
 
-    public byte value;
+    public final byte value;
 
     LedColor(int value) {
         this.value = (byte) value;

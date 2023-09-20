@@ -48,9 +48,9 @@ public class BehaviorSample {
         };
     }
 
-    public Date start;
-    public Date end;
-    public Type type;
+    public final Date start;
+    public final Date end;
+    public final Type type;
 
     public BehaviorSample(Date start, Date end, Type type) {
         this.start = start;

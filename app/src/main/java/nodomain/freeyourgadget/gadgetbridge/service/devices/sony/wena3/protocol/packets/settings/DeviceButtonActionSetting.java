@@ -23,8 +23,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.DeviceButtonActionId;
 
 public class DeviceButtonActionSetting implements Wena3Packetable {
-    public DeviceButtonActionId longPress;
-    public DeviceButtonActionId doubleClick;
+    public final DeviceButtonActionId longPress;
+    public final DeviceButtonActionId doubleClick;
 
     public DeviceButtonActionSetting(DeviceButtonActionId longPress, DeviceButtonActionId doubleClick) {
         this.longPress = longPress;

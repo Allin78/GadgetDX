@@ -26,16 +26,16 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 abstract class ActivitySyncTimePacketTemplate implements Wena3Packetable {
-    public byte header;
+    public final byte header;
 
     @Nullable
-    public Date date1;
+    public final Date date1;
     @Nullable
-    public Date date2;
+    public final Date date2;
     @Nullable
-    public Date date3;
+    public final Date date3;
     @Nullable
-    public Date date4;
+    public final Date date4;
 
     public ActivitySyncTimePacketTemplate(byte header, @Nullable Date date1, @Nullable Date date2, @Nullable Date date3, @Nullable Date date4) {
         this.header = header;

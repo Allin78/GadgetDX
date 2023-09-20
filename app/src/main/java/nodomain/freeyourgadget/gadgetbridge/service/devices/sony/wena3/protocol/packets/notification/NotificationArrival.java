@@ -16,8 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification;
 
-import android.util.Xml;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -32,15 +30,15 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class NotificationArrival implements Wena3Packetable {
-    public NotificationKind kind;
-    public int id;
-    public String title;
-    public String message;
-    public String actionLabel;
-    public Date dateTime;
-    public VibrationOptions vibration;
-    public LedColor ledColor;
-    public NotificationFlags flags;
+    public final NotificationKind kind;
+    public final int id;
+    public final String title;
+    public final String message;
+    public final String actionLabel;
+    public final Date dateTime;
+    public final VibrationOptions vibration;
+    public final LedColor ledColor;
+    public final NotificationFlags flags;
 
     public NotificationArrival(
             NotificationKind kind,

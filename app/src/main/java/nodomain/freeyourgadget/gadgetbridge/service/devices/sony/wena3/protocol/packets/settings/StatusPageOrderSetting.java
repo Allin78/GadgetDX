@@ -22,11 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.Wena3Packetable;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.MenuIconId;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.StatusPageId;
 
 public class StatusPageOrderSetting implements Wena3Packetable {
-    public List<StatusPageId> pages = new ArrayList<>();
+    public final List<StatusPageId> pages = new ArrayList<>();
 
     public StatusPageOrderSetting() {}
 

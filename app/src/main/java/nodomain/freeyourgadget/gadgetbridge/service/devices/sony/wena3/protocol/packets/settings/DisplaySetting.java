@@ -26,13 +26,13 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines.Language;
 
 public class DisplaySetting implements Wena3Packetable {
-    public boolean displayOnRaiseWrist;
-    public Language language;
-    public int displayDuration;
-    public DisplayOrientation orientation;
-    public DisplayDesign design;
-    public FontSize fontSize;
-    public boolean weatherInStatusBar;
+    public final boolean displayOnRaiseWrist;
+    public final Language language;
+    public final int displayDuration;
+    public final DisplayOrientation orientation;
+    public final DisplayDesign design;
+    public final FontSize fontSize;
+    public final boolean weatherInStatusBar;
 
     public DisplaySetting(boolean displayOnRaiseWrist, Language language, int displayDuration, DisplayOrientation orientation, DisplayDesign design, FontSize fontSize, boolean weatherInStatusBar) {
         this.displayOnRaiseWrist = displayOnRaiseWrist;

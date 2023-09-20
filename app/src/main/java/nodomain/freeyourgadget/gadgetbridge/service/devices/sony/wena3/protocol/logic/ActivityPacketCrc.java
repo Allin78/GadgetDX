@@ -19,10 +19,6 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic;
 
-import androidx.core.view.PointerIconCompat;
-
-import java.util.List;
-
 
 public class ActivityPacketCrc {
     private static final int CRC_INITIAL_VALUE = 65535;

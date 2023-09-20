@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings;
 
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
 import java.nio.ByteBuffer;
@@ -26,7 +25,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 
 public class CameraAppTypeSetting implements Wena3Packetable {
     private static final String PHOTOPRO_APP_ID = "com.sonymobile.photopro";
-    public boolean hasXperiaApp;
+    public final boolean hasXperiaApp;
 
     public CameraAppTypeSetting(boolean isXperia) {
         this.hasXperiaApp = isXperia;

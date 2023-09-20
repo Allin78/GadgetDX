@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 
 public class StepsSampleCollection {
-    public Date startDate;
-    public List<Integer> everyMinuteCount;
+    public final Date startDate;
+    public final List<Integer> everyMinuteCount;
 
     public StepsSampleCollection(Date startDate, List<Integer> everyMinuteCount) {
         this.startDate = startDate;

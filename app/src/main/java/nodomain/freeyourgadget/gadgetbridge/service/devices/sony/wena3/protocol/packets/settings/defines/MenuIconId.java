@@ -28,7 +28,7 @@ public enum MenuIconId {
     MUSIC(8),
     CAMERA(9);
 
-    public byte value;
+    public final byte value;
 
     MenuIconId(int value) {
         this.value = (byte) value;

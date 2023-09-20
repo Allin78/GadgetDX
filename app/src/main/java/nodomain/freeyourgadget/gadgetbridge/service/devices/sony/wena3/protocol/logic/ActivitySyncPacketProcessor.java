@@ -34,7 +34,7 @@ public class ActivitySyncPacketProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(ActivitySyncPacketProcessor.class);
 
     private ActivityPacketParser currentParser = null;
-    private List<ActivityPacketParser> parsers = new ArrayList<>();
+    private final List<ActivityPacketParser> parsers = new ArrayList<>();
     private int currentSeqNo = RESET_SEQ_NO;
     private boolean haveHeader = false;
 
@@ -80,7 +80,7 @@ public class ActivitySyncPacketProcessor {
                     }
                 }
                 if(currentParser == null) {
-                    LOG.warn("No parsers can understand " + packet.toString());
+                    LOG.warn("No parsers can understand " + packet);
                 }
                 break;
 
@@ -89,9 +89,9 @@ public class ActivitySyncPacketProcessor {
                     currentParser.parsePacket(packet, device);
                 } else {
                     if(!haveHeader) {
-                        LOG.warn("DATA arrived before HEADER: dropped " + packet.toString());
+                        LOG.warn("DATA arrived before HEADER: dropped " + packet);
                     } else {
-                        LOG.warn("No parser known: dropped data packet " + packet.toString());
+                        LOG.warn("No parser known: dropped data packet " + packet);
                     }
                 }
                 break;
