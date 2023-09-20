@@ -45,22 +45,22 @@ public class ActivitySyncPacketProcessor {
     }
 
     public void receivePacket(ActivitySyncDataPacket packet, GBDevice device) {
+        if(packet.sequenceNo == RESET_SEQ_NO) {
+            LOG.info("Initial packet received, off we go with a sync!");
+            currentSeqNo = 0;
+            resetAll();
+            return;
+        }
+
         if(packet.sequenceNo != currentSeqNo) {
             LOG.error("There was packet loss (skip "+currentSeqNo+" to "+packet.sequenceNo+")");
             finalizeCurrentParserIfNeeded(device);
             return;
         } else {
-            if(currentSeqNo == RESET_SEQ_NO) {
-                LOG.info("Initial packet received, off we go with a sync!");
+            if(currentSeqNo == MAX_SEQ_NO) {
                 currentSeqNo = 0;
-                resetAll();
-                return;
             } else {
-                if(currentSeqNo == MAX_SEQ_NO) {
-                    currentSeqNo = 0;
-                } else {
-                    currentSeqNo ++;
-                }
+                currentSeqNo ++;
             }
         }
 

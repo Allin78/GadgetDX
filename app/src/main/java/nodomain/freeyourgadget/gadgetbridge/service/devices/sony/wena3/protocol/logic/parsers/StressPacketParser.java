@@ -22,6 +22,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,12 +33,18 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 
 public class StressPacketParser extends OneBytePerSamplePacketParser {
     private static final Logger LOG = LoggerFactory.getLogger(StressPacketParser.class);
     private static final int STRESS_PKT_MARKER = 0x04;
     public StressPacketParser() {
         super(STRESS_PKT_MARKER, ONE_MINUTE_IN_MS);
+    }
+    @Override
+    Integer takeSampleFromBuffer(ByteBuffer buffer) {
+        // In this one we actually need signed values, hence the override
+        return Integer.valueOf(buffer.get());
     }
     @Override
     public void finishReceiving(GBDevice device) {
@@ -50,12 +57,17 @@ public class StressPacketParser extends OneBytePerSamplePacketParser {
             Date currentSampleDate = startDate;
             int i = 0;
             for(int rawSample: accumulator) {
-                Wena3StressSample gbSample = new Wena3StressSample();
-                gbSample.setDeviceId(deviceId);
-                gbSample.setUserId(userId);
-                gbSample.setTimestamp(currentSampleDate.getTime());
-                gbSample.setStress(rawSample);
-                samples.add(gbSample);
+                if(rawSample >= -100 && rawSample <= 100) {
+                    Wena3StressSample gbSample = new Wena3StressSample();
+                    gbSample.setDeviceId(deviceId);
+                    gbSample.setUserId(userId);
+                    gbSample.setTimestamp(currentSampleDate.getTime());
+                    gbSample.setStress(rawSample);
+                    gbSample.setType(StressSample.Type.AUTOMATIC);
+                    samples.add(gbSample);
+                } else {
+                    LOG.debug("Discard stress value as out of range: " + rawSample);
+                }
 
                 i++;
                 currentSampleDate = timestampOfSampleAtIndex(i);

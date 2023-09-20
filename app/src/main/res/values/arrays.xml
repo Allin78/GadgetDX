@@ -3121,9 +3121,9 @@
         <item>@string/prefs_wena3_vibration_strength_item_strong</item>
     </string-array>
     <string-array name="prefs_wena3_vibration_strength_values_list">
-        <item>1</item>
-        <item>0</item>
-        <item>2</item>
+        <item>weak</item>
+        <item>normal</item>
+        <item>strong</item>
     </string-array>
 
     <string-array name="prefs_wena3_home_icons_names_list">
@@ -3149,26 +3149,26 @@
         <item>@string/prefs_wena3_home_icon_name_camera</item>
     </string-array>
     <string-array name="prefs_wena3_home_icons_values_list">
-        <item>256</item>
-        <item>512</item>
-        <item>768</item>
-        <!-- <item>1024</item> -->
-        <!-- <item>1280</item> -->
-        <!-- <item>1536</item> -->
-        <item>1792</item>
-        <item>2048</item>
-        <item>2304</item>
-        <item>2560</item>
-        <item>2816</item>
-        <item>3072</item>
-        <item>3328</item>
-        <item>3584</item>
-        <item>3840</item>
-        <item>4096</item>
-        <item>4352</item>
-        <!-- <item>4608</item> -->
-        <item>4864</item>
-        <item>5120</item>
+        <item>timer</item>
+        <item>alarm</item>
+        <item>clock</item>
+        <!-- <item>alexa</item> -->
+        <!-- <item>wena_pay</item> -->
+        <!-- <item>qrio_lock</item> -->
+        <item>edy</item>
+        <item>notification_count</item>
+        <item>schedule</item>
+        <item>pedometer</item>
+        <item>sleep</item>
+        <item>heart_rate</item>
+        <item>vo2max</item>
+        <item>stress</item>
+        <item>energy</item>
+        <item>suica</item>
+        <item>calories</item>
+        <!-- <item>riiiver</item> -->
+        <item>music</item>
+        <item>camera</item>
     </string-array>
 
     <string-array name="prefs_wena3_menu_icons_names_list">
@@ -3184,16 +3184,16 @@
         <item>@string/prefs_wena3_home_icon_name_camera</item>
     </string-array>
     <string-array name="prefs_wena3_menu_icons_values_list">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <!-- <item>4</item> -->
-        <item>5</item>
-        <!-- <item>6</item> -->
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
+        <item>none</item>
+        <item>timer</item>
+        <item>alarm</item>
+        <item>find_phone</item>
+        <!-- <item>alexa</item> -->
+        <item>payment</item>
+        <!-- <item>qrio</item> -->
+        <item>weather</item>
+        <item>music</item>
+        <item>camera</item>
     </string-array>
 
     <string-array name="prefs_wena3_status_pages_list">
@@ -3207,14 +3207,14 @@
         <item>@string/prefs_wena3_home_icon_name_calories</item>
     </string-array>
     <string-array name="prefs_wena3_status_page_values_list">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
+        <item>none</item>
+        <item>pedometer</item>
+        <item>sleep</item>
+        <item>heart_rate</item>
+        <item>vo2max</item>
+        <item>stress</item>
+        <item>energy</item>
+        <item>calories</item>
     </string-array>
 
     <string-array name="prefs_wena3_day_start_list">
@@ -3296,29 +3296,29 @@
         <!-- <item>@string/prefs_wena3_home_icon_name_wena_pay</item> -->
     </string-array>
     <string-array name="prefs_wena3_button_action_values_list">
-        <item>0</item>
-        <!-- <item>1</item> -->
-        <!-- <item>2</item> -->
-        <!-- <item>258</item> -->
-        <!-- <item>514</item> -->
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>262</item>
-        <item>6</item>
-        <item>7</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <!-- <item>15</item> -->
-        <item>16</item>
-        <item>272</item>
-        <item>528</item>
-        <item>784</item>
-        <!-- <item>8</item> -->
+        <item>none</item>
+        <!-- <item>alexa</item> -->
+        <!-- <item>qrio</item> -->
+        <!-- <item>qrio_unlock</item> -->
+        <!-- <item>qrio_lock</item> -->
+        <item>find_phone</item>
+        <item>toggle_nfc</item>
+        <item>toggle_silent</item>
+        <item>start_timer</item>
+        <item>timer</item>
+        <item>weather</item>
+        <item>schedule</item>
+        <item>activity_screen</item>
+        <item>notification_screen</item>
+        <item>suica</item>
+        <item>edy</item>
+        <item>alarm</item>
+        <!-- <item>riiiver</item> -->
+        <item>music</item>
+        <item>toggle_music</item>
+        <item>music_next</item>
+        <item>music_prev</item>
+        <!-- <item>wena_pay</item> -->
     </string-array>
 
     <string-array name="prefs_wena3_vibration_times">
@@ -3349,16 +3349,16 @@
         <item>@string/prefs_wena3_vibration_short</item>
     </string-array>
     <string-array name="prefs_wena3_vibration_pattern_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
+        <item>none</item>
+        <item>continuous</item>
+        <item>basic</item>
+        <item>rapid</item>
+        <item>triple</item>
+        <item>step_up</item>
+        <item>step_down</item>
+        <item>warning</item>
+        <item>siren</item>
+        <item>short</item>
     </string-array>
 
     <string-array name="prefs_wena3_led_patterns">
@@ -3372,13 +3372,13 @@
         <item>@string/prefs_wena3_led_white</item>
     </string-array>
     <string-array name="prefs_wena3_led_pattern_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
+        <item>none</item>
+        <item>red</item>
+        <item>yellow</item>
+        <item>green</item>
+        <item>cyan</item>
+        <item>blue</item>
+        <item>purple</item>
+        <item>white</item>
     </string-array>
 </resources>

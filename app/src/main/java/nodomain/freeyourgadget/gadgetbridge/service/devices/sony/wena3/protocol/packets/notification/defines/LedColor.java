@@ -18,24 +18,19 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines;
 
 public enum LedColor {
-    NONE,
-    RED,
-    YELLOW,
-    GREEN,
-    CYAN,
-    BLUE,
-    PURPLE,
-    WHITE;
+    NONE(0),
+    RED(1),
+    YELLOW(2),
+    GREEN(3),
+    CYAN(4),
+    BLUE(5),
+    PURPLE(6),
+    WHITE(7);
 
-    public static final LedColor[] LUT = new LedColor[] {
-            NONE,
-            RED,
-            YELLOW,
-            GREEN,
-            CYAN,
-            BLUE,
-            PURPLE,
-            WHITE
-    };
+    public byte value;
+
+    LedColor(int value) {
+        this.value = (byte) value;
+    }
 }
 

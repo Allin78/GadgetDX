@@ -29,7 +29,9 @@ import java.util.List;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleCombiner;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3BehaviorSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -62,6 +64,9 @@ public class StepsPacketParser extends OneBytePerSamplePacketParser {
                 currentSampleDate = timestampOfSampleAtIndex(i);
             }
 
+            SonyWena3BehaviorSampleProvider behaviorSampleProvider = new SonyWena3BehaviorSampleProvider(device, db.getDaoSession());
+            SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(behaviorSampleProvider, sampleProvider);
+            combiner.overlayBehaviorStartingAt(startDate);
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording steps samples", e);
         }

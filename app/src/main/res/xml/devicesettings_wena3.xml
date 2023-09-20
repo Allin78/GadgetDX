@@ -21,7 +21,7 @@
     <PreferenceCategory
         android:title="@string/prefs_wena3_notification_settings_title">
         <ListPreference
-            android:defaultValue="2"
+            android:defaultValue="basic"
             android:entries="@array/prefs_wena3_vibration_patterns"
             android:entryValues="@array/prefs_wena3_vibration_pattern_values"
             android:key="pref_wena3_default_vibration"
@@ -37,7 +37,7 @@
             android:title="@string/prefs_wena3_notification_default_vibration_repetition"
             android:summary="%s" />
         <ListPreference
-            android:defaultValue="5"
+            android:defaultValue="blue"
             android:entries="@array/prefs_wena3_led_patterns"
             android:entryValues="@array/prefs_wena3_led_pattern_values"
             android:key="pref_wena3_default_led_color"
@@ -55,7 +55,7 @@
             android:defaultValue="true"
             />
         <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="continuous"
             android:entries="@array/prefs_wena3_vibration_patterns"
             android:entryValues="@array/prefs_wena3_vibration_pattern_values"
             android:key="pref_wena3_call_default_vibration"
@@ -71,7 +71,7 @@
             android:title="@string/prefs_wena3_notification_default_call_vibration_repetition"
             android:summary="%s" />
         <ListPreference
-            android:defaultValue="7"
+            android:defaultValue="white"
             android:entries="@array/prefs_wena3_led_patterns"
             android:entryValues="@array/prefs_wena3_led_pattern_values"
             android:key="pref_wena3_default_call_led_color"
@@ -133,7 +133,7 @@
             android:key="pref_wena3_vibration_strength"
             android:title="@string/prefs_wena3_vibration_strength_item"
             android:icon="@drawable/ic_vibration"
-            android:defaultValue="0"
+            android:defaultValue="normal"
             android:entries="@array/prefs_wena3_vibration_strength_names_list"
             android:entryValues="@array/prefs_wena3_vibration_strength_values_list"
             android:summary="%s" />
@@ -147,14 +147,14 @@
         <ListPreference
             android:key="pref_wena3_button_double_action"
             android:title="@string/prefs_wena3_button_action_item_double"
-            android:defaultValue="0"
+            android:defaultValue="none"
             android:entries="@array/prefs_wena3_button_action_list"
             android:entryValues="@array/prefs_wena3_button_action_values_list"
             android:summary="%s"/>
         <ListPreference
             android:key="pref_wena3_button_long_action"
             android:title="@string/prefs_wena3_button_action_item_long"
-            android:defaultValue="0"
+            android:defaultValue="none"
             android:entries="@array/prefs_wena3_button_action_list"
             android:entryValues="@array/prefs_wena3_button_action_values_list"
             android:summary="%s"/>
@@ -164,7 +164,7 @@
         <ListPreference
             android:key="pref_wena3_home_icon_left"
             android:title="@string/prefs_wena3_home_icon_left_item"
-            android:defaultValue="4864"
+            android:defaultValue="music"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
             android:summary="%s"
@@ -172,7 +172,7 @@
         <ListPreference
             android:key="pref_wena3_home_icon_center"
             android:title="@string/prefs_wena3_home_icon_center_item"
-            android:defaultValue="2560"
+            android:defaultValue="pedometer"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
             android:summary="%s"
@@ -180,7 +180,7 @@
         <ListPreference
             android:key="pref_wena3_home_icon_right"
             android:title="@string/prefs_wena3_home_icon_right_item"
-            android:defaultValue="4352"
+            android:defaultValue="calories"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
             android:summary="%s"
@@ -191,55 +191,55 @@
         android:summary="@string/prefs_wena3_menu_icon_hint">
         <ListPreference
             android:key="pref_wena3_menu_icon_0"
-            android:defaultValue="1"
+            android:defaultValue="timer"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_1"
-            android:defaultValue="2"
+            android:defaultValue="alarm"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_2"
-            android:defaultValue="3"
+            android:defaultValue="find_phone"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_3"
-            android:defaultValue="5"
+            android:defaultValue="payment"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_4"
-            android:defaultValue="7"
+            android:defaultValue="weather"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_5"
-            android:defaultValue="8"
+            android:defaultValue="music"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_6"
-            android:defaultValue="9"
+            android:defaultValue="camera"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_7"
-            android:defaultValue="0"
+            android:defaultValue="none"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_menu_icon_8"
-            android:defaultValue="0"
+            android:defaultValue="none"
             android:entries="@array/prefs_wena3_menu_icons_names_list"
             android:entryValues="@array/prefs_wena3_menu_icons_values_list"
             android:summary="%s" />
@@ -248,43 +248,43 @@
         android:title="@string/prefs_wena3_status_page_title">
         <ListPreference
             android:key="pref_wena3_status_page_0"
-            android:defaultValue="1"
+            android:defaultValue="pedometer"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_status_page_1"
-            android:defaultValue="2"
+            android:defaultValue="sleep"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_status_page_2"
-            android:defaultValue="3"
+            android:defaultValue="heart_rate"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_status_page_3"
-            android:defaultValue="4"
+            android:defaultValue="vo2max"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_status_page_4"
-            android:defaultValue="5"
+            android:defaultValue="stress"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_status_page_5"
-            android:defaultValue="6"
+            android:defaultValue="energy"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />
         <ListPreference
             android:key="pref_wena3_status_page_6"
-            android:defaultValue="7"
+            android:defaultValue="calories"
             android:entries="@array/prefs_wena3_status_pages_list"
             android:entryValues="@array/prefs_wena3_status_page_values_list"
             android:summary="%s" />

@@ -405,8 +405,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             TransactionBuilder builder = performInitialized("sendCall");
 
             if(callSpec.command == CallSpec.CALL_INCOMING) {
-                LedColor led = LedColor.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_CALL_LED_COLOR, 7)];
-                VibrationKind vibra = VibrationKind.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_CALL_VIBRATION_PATTERN, 1)];
+                LedColor led = LedColor.valueOf(prefs.getString(SonyWena3SettingKeys.DEFAULT_CALL_LED_COLOR, LedColor.WHITE.name()).toUpperCase());
+                VibrationKind vibra = VibrationKind.valueOf(prefs.getString(SonyWena3SettingKeys.DEFAULT_CALL_VIBRATION_PATTERN, VibrationKind.CONTINUOUS.name()).toUpperCase());
                 boolean vibraContinuous = false;
                 int vibraRepeats = prefs.getInt(SonyWena3SettingKeys.DEFAULT_CALL_VIBRATION_REPETITION, 0);
                 if(vibraRepeats == 0) {
@@ -487,8 +487,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             NotificationFlags flags = NotificationFlags.NONE;
             // TODO: Figure out how actions work
 
-            LedColor led = LedColor.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_LED_COLOR, 5)];
-            VibrationKind vibra = VibrationKind.LUT[prefs.getInt(SonyWena3SettingKeys.DEFAULT_VIBRATION_PATTERN, 2)];
+            LedColor led = LedColor.valueOf(prefs.getString(SonyWena3SettingKeys.DEFAULT_LED_COLOR, LedColor.BLUE.name()).toUpperCase());
+            VibrationKind vibra = VibrationKind.valueOf(prefs.getString(SonyWena3SettingKeys.DEFAULT_VIBRATION_PATTERN, VibrationKind.BASIC.name()).toUpperCase());
             boolean vibraContinuous = false;
             int vibraRepeats = prefs.getInt(SonyWena3SettingKeys.DEFAULT_VIBRATION_REPETITION, 1);
             if(vibraRepeats == 0) {
@@ -620,7 +620,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         }
         LOG.info("Setting device to locale: " + localeString);
 
-        Language languageCode = Language.ENGLISH;
+    Language languageCode = Language.ENGLISH;
 
         switch (localeString.substring(0, 2)) {
             case "en":
@@ -712,7 +712,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private void sendVibrationSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         boolean smartVibration = prefs.getBoolean(SonyWena3SettingKeys.SMART_VIBRATION, true);
-        VibrationStrength strength = VibrationStrength.fromInt(prefs.getInt(SonyWena3SettingKeys.VIBRATION_STRENGTH, 0));
+        VibrationStrength strength = VibrationStrength.valueOf(prefs.getString(SonyWena3SettingKeys.VIBRATION_STRENGTH, VibrationStrength.NORMAL.name()).toUpperCase());
         VibrationSetting pkt = new VibrationSetting(smartVibration, strength);
 
         b.write(
@@ -723,16 +723,16 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     private void sendHomeScreenSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
-        int leftId = prefs.getInt(SonyWena3SettingKeys.LEFT_HOME_ICON, 4864);
-        int centerId = prefs.getInt(SonyWena3SettingKeys.CENTER_HOME_ICON, 2560);
-        int rightId = prefs.getInt(SonyWena3SettingKeys.RIGHT_HOME_ICON, 4352);
+        String leftIdName = prefs.getString(SonyWena3SettingKeys.LEFT_HOME_ICON, HomeIconId.MUSIC.name()).toUpperCase();
+        String centerIdName = prefs.getString(SonyWena3SettingKeys.CENTER_HOME_ICON, HomeIconId.PEDOMETER.name()).toUpperCase();
+        String rightIdName = prefs.getString(SonyWena3SettingKeys.RIGHT_HOME_ICON, HomeIconId.CALORIES.name()).toUpperCase();
 
         b.write(
                 getCharacteristic(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_CONTROL_UUID),
                 new HomeIconOrderSetting(
-                        new HomeIconId(leftId),
-                        new HomeIconId(centerId),
-                        new HomeIconId(rightId)
+                        HomeIconId.valueOf(leftIdName),
+                        HomeIconId.valueOf(centerIdName),
+                        HomeIconId.valueOf(rightIdName)
                 ).toByteArray()
         );
     }
@@ -741,9 +741,9 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         MenuIconSetting menu = new MenuIconSetting();
         for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
-            int id = prefs.getInt(SonyWena3SettingKeys.menuIconKeyFor(i), 0);
-            if(id != 0) {
-                menu.iconList.add(new MenuIconId(id));
+            String iconIdName = prefs.getString(SonyWena3SettingKeys.menuIconKeyFor(i), MenuIconId.NONE.name()).toUpperCase();
+            if(!iconIdName.equals(MenuIconId.NONE.name())) {
+                menu.iconList.add(MenuIconId.valueOf(iconIdName));
             }
         }
 
@@ -757,9 +757,9 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         StatusPageOrderSetting pageOrderSetting = new StatusPageOrderSetting();
         for(int i = 0; i < SonyWena3SettingKeys.MAX_STATUS_PAGES; i++) {
-            int id = prefs.getInt(SonyWena3SettingKeys.statusPageKeyFor(i), 0);
-            if(id != 0) {
-                pageOrderSetting.pages.add(new StatusPageId(id));
+            String idName = prefs.getString(SonyWena3SettingKeys.statusPageKeyFor(i), StatusPageId.NONE.name()).toUpperCase();
+            if(!idName.equals(StatusPageId.NONE.name())) {
+                pageOrderSetting.pages.add(StatusPageId.valueOf(idName));
             }
         }
 
@@ -807,11 +807,11 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     private void sendButtonActions(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
-        int doubleId = prefs.getInt(SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION, 0);
-        int longId = prefs.getInt(SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION, 0);
+        String doubleIdName = prefs.getString(SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION, DeviceButtonActionId.NONE.name()).toUpperCase();
+        String longIdName = prefs.getString(SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION, DeviceButtonActionId.NONE.name()).toUpperCase();
         DeviceButtonActionSetting setting = new DeviceButtonActionSetting(
-                new DeviceButtonActionId(longId),
-                new DeviceButtonActionId(doubleId)
+                DeviceButtonActionId.valueOf(longIdName),
+                DeviceButtonActionId.valueOf(doubleIdName)
         );
 
         b.write(

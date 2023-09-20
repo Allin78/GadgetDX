@@ -21,6 +21,8 @@ package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
+
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractTimeSampleProvider;
@@ -55,5 +57,11 @@ public class SonyWena3HeartRateSampleProvider extends AbstractTimeSampleProvider
     @Override
     public Wena3HeartRateSample createSample() {
         return new Wena3HeartRateSample();
+    }
+
+    @NonNull
+    @Override
+    public List<Wena3HeartRateSample> getAllSamples(long timestampFrom, long timestampTo) {
+        return super.getAllSamples(timestampFrom, timestampTo);
     }
 }

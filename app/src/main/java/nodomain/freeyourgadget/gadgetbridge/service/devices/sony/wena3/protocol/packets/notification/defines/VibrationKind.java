@@ -18,28 +18,21 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines;
 
 public enum VibrationKind {
-    NONE,
-    CONTINUOUS,
-    BASIC,
-    RAPID,
-    TRIPLE,
-    STEP_UP,
-    STEP_DOWN,
-    WARNING,
-    SIREN,
-    SHORT;
+    NONE(0),
+    CONTINUOUS(1),
+    BASIC(2),
+    RAPID(3),
+    TRIPLE(4),
+    STEP_UP(5),
+    STEP_DOWN(6),
+    WARNING(7),
+    SIREN(8),
+    SHORT(9);
 
-    public static final VibrationKind[] LUT = new VibrationKind[] {
-            NONE,
-            CONTINUOUS,
-            BASIC,
-            RAPID,
-            TRIPLE,
-            STEP_UP,
-            STEP_DOWN,
-            WARNING,
-            SIREN,
-            SHORT
-    };
+    public byte value;
+
+    VibrationKind(int value) {
+        this.value = (byte) value;
+    }
 }
 

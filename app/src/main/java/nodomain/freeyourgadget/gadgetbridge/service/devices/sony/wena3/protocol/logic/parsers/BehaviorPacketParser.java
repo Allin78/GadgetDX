@@ -19,13 +19,25 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
 import java.util.Date;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleCombiner;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3BehaviorSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.BehaviorSample;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 public class BehaviorPacketParser extends SamplePacketParser<BehaviorSample>  {
+    private static final Logger LOG = LoggerFactory.getLogger(BehaviorPacketParser.class);
     public BehaviorPacketParser() {
         super(0x02);
     }
@@ -56,5 +68,36 @@ public class BehaviorPacketParser extends SamplePacketParser<BehaviorSample>  {
     @Override
     boolean canTakeSampleFromBuffer(ByteBuffer buffer) {
         return buffer.remaining() >= 13;
+    }
+
+    @Override
+    public void finishReceiving(GBDevice device) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            SonyWena3BehaviorSampleProvider sampleProvider = new SonyWena3BehaviorSampleProvider(device, db.getDaoSession());
+            Long userId = DBHelper.getUser(db.getDaoSession()).getId();
+            Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+
+            for(BehaviorSample rawSample: accumulator) {
+                Wena3BehaviorSample gbSample = new Wena3BehaviorSample();
+                gbSample.setDeviceId(deviceId);
+                gbSample.setUserId(userId);
+                gbSample.setTimestamp(rawSample.start.getTime());
+                gbSample.setTimestampFrom(rawSample.start.getTime());
+                gbSample.setTimestampTo(rawSample.end.getTime());
+                gbSample.setRawKind(rawSample.type.ordinal());
+                sampleProvider.addSample(gbSample);
+            }
+
+            if(!accumulator.isEmpty()) {
+                SonyWena3ActivitySampleProvider activitySampleProvider = new SonyWena3ActivitySampleProvider(device, db.getDaoSession());
+                SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(sampleProvider, activitySampleProvider);
+                combiner.overlayBehaviorStartingAt(accumulator.get(0).start);
+            }
+        } catch (Exception e) {
+            LOG.error("Error acquiring database for recording Behavior samples", e);
+        }
+
+        // Finally clean up the parser
+        super.finishReceiving(device);
     }
 }

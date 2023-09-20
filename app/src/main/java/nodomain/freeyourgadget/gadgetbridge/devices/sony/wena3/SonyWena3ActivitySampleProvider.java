@@ -26,10 +26,14 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.BehaviorSample;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sonyswr12.entities.activity.ActivityType;
 
 public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena3StepsSample> {
     public SonyWena3ActivitySampleProvider(GBDevice device, DaoSession session) {
@@ -61,12 +65,56 @@ public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena
 
     @Override
     public int normalizeType(int rawType) {
-        return 0;
+        if(rawType < 0 || rawType >= BehaviorSample.Type.LUT.length) return ActivityKind.TYPE_UNKNOWN;
+
+        BehaviorSample.Type internalType = BehaviorSample.Type.LUT[rawType];
+        switch(internalType) {
+            case NOT_WEARING:
+                return ActivityKind.TYPE_NOT_WORN;
+
+            case WALK:
+                return ActivityKind.TYPE_WALKING;
+            case RUN:
+                return ActivityKind.TYPE_RUNNING;
+            case EXERCISE:
+                return ActivityKind.TYPE_EXERCISE;
+
+            case SLEEP_LIGHT:
+                return ActivityKind.TYPE_LIGHT_SLEEP;
+            case SLEEP_REM:
+                return ActivityKind.TYPE_REM_SLEEP;
+            case SLEEP_DEEP:
+                return ActivityKind.TYPE_DEEP_SLEEP;
+
+            case STATIC:
+            case SLEEP_AWAKE:
+            case UNKNOWN:
+            default:
+                return ActivityKind.TYPE_UNKNOWN;
+        }
     }
 
     @Override
     public int toRawActivityKind(int activityKind) {
-        return 0;
+        switch(activityKind) {
+            case ActivityKind.TYPE_NOT_MEASURED:
+            case ActivityKind.TYPE_NOT_WORN:
+                return BehaviorSample.Type.NOT_WEARING.ordinal();
+            case ActivityKind.TYPE_WALKING:
+                return BehaviorSample.Type.WALK.ordinal();
+            case ActivityKind.TYPE_RUNNING:
+                return BehaviorSample.Type.RUN.ordinal();
+            case ActivityKind.TYPE_LIGHT_SLEEP:
+                return BehaviorSample.Type.SLEEP_LIGHT.ordinal();
+            case ActivityKind.TYPE_REM_SLEEP:
+                return BehaviorSample.Type.SLEEP_REM.ordinal();
+            case ActivityKind.TYPE_DEEP_SLEEP:
+                return BehaviorSample.Type.SLEEP_DEEP.ordinal();
+            case ActivityKind.TYPE_EXERCISE:
+                return BehaviorSample.Type.EXERCISE.ordinal();
+            default:
+                return BehaviorSample.Type.UNKNOWN.ordinal();
+        }
     }
 
     @Override

@@ -19,32 +19,32 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 // This is done via a class to be able to init the value from an arbitrary int (e.g. from prefs)
 // Whether listing all cases is needed is a good concern, they are essentially unused because
 // the settings dialog uses a string-array instead...
-public class HomeIconId {
-    public static final HomeIconId TIMER = new HomeIconId(256);
-    public static final HomeIconId ALARM = new HomeIconId(512);
-    public static final HomeIconId CLOCK = new HomeIconId(768);
-    public static final HomeIconId ALEXA = new HomeIconId(1024);
-    public static final HomeIconId WENA_PAY = new HomeIconId(1280);
-    public static final HomeIconId QRIO_LOCK = new HomeIconId(1536);
-    public static final HomeIconId EDY = new HomeIconId(1792);
-    public static final HomeIconId NOTIFICATION_COUNT = new HomeIconId(2048);
-    public static final HomeIconId SCHEDULE = new HomeIconId(2304);
-    public static final HomeIconId PEDOMETER = new HomeIconId(2560);
-    public static final HomeIconId SLEEP = new HomeIconId(2816);
-    public static final HomeIconId HEART_RATE = new HomeIconId(3072);
-    public static final HomeIconId VO2MAX = new HomeIconId(3328);
-    public static final HomeIconId STRESS = new HomeIconId(3584);
-    public static final HomeIconId ENERGY = new HomeIconId(3840);
+public enum HomeIconId {
+    TIMER(256),
+    ALARM(512),
+    CLOCK(768),
+    ALEXA(1024),
+    WENA_PAY(1280),
+    QRIO_LOCK(1536),
+    EDY(1792),
+    NOTIFICATION_COUNT(2048),
+    SCHEDULE(2304),
+    PEDOMETER(2560),
+    SLEEP(2816),
+    HEART_RATE(3072),
+    VO2MAX(3328),
+    STRESS(3584),
+    ENERGY(3840),
 
-    public static final HomeIconId SUICA = new HomeIconId(4096);
-    public static final HomeIconId CALORIES = new HomeIconId(4352);
-    public static final HomeIconId RIIIVER = new HomeIconId(4608);
-    public static final HomeIconId MUSIC = new HomeIconId(4864);
-    public static final HomeIconId CAMERA = new HomeIconId(5120);
+    SUICA(4096),
+    CALORIES(4352),
+    RIIIVER(4608),
+    MUSIC(4864),
+    CAMERA(5120);
 
     public short value;
 
-    public HomeIconId(int value) {
+    HomeIconId(final int value) {
         this.value = (short) value;
     }
 }

@@ -16,11 +16,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines;
 
-public class StatusPageId {
-    // TODO: List enumerations? They seemed to be of no use in HomeIconId etc...
+public enum StatusPageId {
+    NONE(0),
+    PEDOMETER(1),
+    SLEEP(2),
+    HEART_RATE(3),
+    VO2MAX(4),
+    STRESS(5),
+    ENERGY(6),
+    CALORIES(7);
+
     public byte value;
 
-    public StatusPageId(int val) {
+    StatusPageId(int val) {
         this.value = (byte) val;
     }
 }

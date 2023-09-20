@@ -38,12 +38,19 @@ import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2SampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.SonyWena3DeviceSupport;
@@ -100,8 +107,22 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     @Override
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
         Long deviceId = device.getId();
-        QueryBuilder<?> qb = session.getWena3HeartRateSampleDao().queryBuilder();
+        QueryBuilder<?> qb;
+        
+        qb = session.getWena3HeartRateSampleDao().queryBuilder();
         qb.where(Wena3HeartRateSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        qb = session.getWena3BehaviorSampleDao().queryBuilder();
+        qb.where(Wena3BehaviorSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        qb = session.getWena3CaloriesSampleDao().queryBuilder();
+        qb.where(Wena3CaloriesSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        qb = session.getWena3EnergySampleDao().queryBuilder();
+        qb.where(Wena3EnergySampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        qb = session.getWena3StepsSampleDao().queryBuilder();
+        qb.where(Wena3StepsSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        qb = session.getWena3Vo2SampleDao().queryBuilder();
+        qb.where(Wena3Vo2SampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        qb = session.getWena3StressSampleDao().queryBuilder();
+        qb.where(Wena3StressSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
     @NonNull
@@ -156,7 +177,12 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsSpo2() {
-        return false;
+        return true;
+    }
+
+    @Override
+    public TimeSampleProvider<? extends Spo2Sample> getSpo2SampleProvider(GBDevice device, DaoSession session) {
+        return new SonyWena3Vo2SampleProvider(device, session);
     }
 
     @Override

@@ -19,9 +19,21 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.nio.ByteBuffer;
+import java.util.Date;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3CaloriesSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSample;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
 public class CaloriesPacketParser extends LinearSamplePacketParser<Integer> {
+    private static final Logger LOG = LoggerFactory.getLogger(CaloriesPacketParser.class);
     public CaloriesPacketParser() {
         super(0x06, OneBytePerSamplePacketParser.ONE_MINUTE_IN_MS);
     }
@@ -34,5 +46,33 @@ public class CaloriesPacketParser extends LinearSamplePacketParser<Integer> {
     @Override
     boolean canTakeSampleFromBuffer(ByteBuffer buffer) {
         return buffer.remaining() >= 2;
+    }
+    @Override
+    public void finishReceiving(GBDevice device) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            SonyWena3CaloriesSampleProvider sampleProvider = new SonyWena3CaloriesSampleProvider(device, db.getDaoSession());
+            Long userId = DBHelper.getUser(db.getDaoSession()).getId();
+            Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+
+            int i = 0;
+
+            for(int rawSample: accumulator) {
+                Date currentSampleDate = timestampOfSampleAtIndex(i);
+
+                Wena3CaloriesSample gbSample = new Wena3CaloriesSample();
+                gbSample.setDeviceId(deviceId);
+                gbSample.setUserId(userId);
+                gbSample.setTimestamp(currentSampleDate.getTime());
+                gbSample.setCalories(rawSample);
+                sampleProvider.addSample(gbSample);
+
+                i++;
+            }
+        } catch (Exception e) {
+            LOG.error("Error acquiring database for recording Calories samples", e);
+        }
+
+        // Finally clean up the parser
+        super.finishReceiving(device);
     }
 }

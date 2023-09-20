@@ -17,14 +17,13 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.settings.defines;
 
 public enum VibrationStrength {
-    NORMAL,
-    WEAK,
-    STRONG;
+    NORMAL(0),
+    WEAK(1),
+    STRONG(2);
 
-    public static VibrationStrength fromInt(int value) {
-        if(value == WEAK.ordinal()) return WEAK;
-        else if (value == STRONG.ordinal()) return STRONG;
+    public byte value;
 
-        return NORMAL;
+    VibrationStrength(int val) {
+        this.value = (byte) val;
     }
 }

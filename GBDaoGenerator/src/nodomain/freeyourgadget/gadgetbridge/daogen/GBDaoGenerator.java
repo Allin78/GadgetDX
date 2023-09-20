@@ -873,18 +873,19 @@ public class GBDaoGenerator {
 
     private static Entity addWena3BehaviorSample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "Wena3BehaviorSample");
-        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        addCommonTimeSampleProperties("AbstractTimeSample", activitySample, user, device);
 
-        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetter(OVERRIDE);
-        activitySample.addIntProperty(TIMESTAMP_FROM).notNull();
-        activitySample.addIntProperty(TIMESTAMP_TO).notNull();
+        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull();
+        activitySample.addLongProperty(TIMESTAMP_FROM).notNull();
+        activitySample.addLongProperty(TIMESTAMP_TO).notNull();
         return activitySample;
     }
 
     private static Entity addWena3Vo2Sample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "Wena3Vo2Sample");
-        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
-        activitySample.addIntProperty("vo2");
+        addCommonTimeSampleProperties("AbstractSpo2Sample", activitySample, user, device);
+        activitySample.addIntProperty("spo2").notNull();
+        activitySample.addIntProperty("typeNum").notNull().codeBeforeGetter(OVERRIDE);
         activitySample.addIntProperty("datapoint").notNull();
         return activitySample;
     }
@@ -913,14 +914,14 @@ public class GBDaoGenerator {
 
     private static Entity addWena3EnergySample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "Wena3EnergySample");
-        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        addCommonTimeSampleProperties("AbstractTimeSample", activitySample, user, device);
         activitySample.addIntProperty("energy").notNull();
         return activitySample;
     }
 
     private static Entity addWena3CaloriesSample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "Wena3CaloriesSample");
-        addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
+        addCommonTimeSampleProperties("AbstractTimeSample", activitySample, user, device);
         activitySample.addIntProperty("calories").notNull();
         return activitySample;
     }

@@ -19,9 +19,52 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3EnergySampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+
 public class EnergyPacketParser extends OneBytePerSamplePacketParser {
+    private static final Logger LOG = LoggerFactory.getLogger(EnergyPacketParser.class);
     private static final int ENERGY_PKT_MARKER = 0x05;
     public EnergyPacketParser() {
         super(ENERGY_PKT_MARKER, ONE_MINUTE_IN_MS);
+    }
+    @Override
+    public void finishReceiving(GBDevice device) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            SonyWena3EnergySampleProvider sampleProvider = new SonyWena3EnergySampleProvider(device, db.getDaoSession());
+            Long userId = DBHelper.getUser(db.getDaoSession()).getId();
+            Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+
+            int i = 0;
+
+            for(int rawSample: accumulator) {
+                Date currentSampleDate = timestampOfSampleAtIndex(i);
+
+                Wena3EnergySample gbSample = new Wena3EnergySample();
+                gbSample.setDeviceId(deviceId);
+                gbSample.setUserId(userId);
+                gbSample.setTimestamp(currentSampleDate.getTime());
+                gbSample.setEnergy(rawSample);
+                sampleProvider.addSample(gbSample);
+
+                i++;
+            }
+        } catch (Exception e) {
+            LOG.error("Error acquiring database for recording Energy samples", e);
+        }
+
+        // Finally clean up the parser
+        super.finishReceiving(device);
     }
 }

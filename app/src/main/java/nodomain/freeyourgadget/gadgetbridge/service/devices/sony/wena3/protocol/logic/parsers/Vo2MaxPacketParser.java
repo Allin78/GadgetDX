@@ -19,13 +19,26 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.logic.parsers;
 
-import java.nio.ByteBuffer;
-import java.util.Date;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.Vo2MaxSample;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.util.TimeUtil;
 
 public class Vo2MaxPacketParser extends SamplePacketParser<Vo2MaxSample> {
+    private static final Logger LOG = LoggerFactory.getLogger(Vo2MaxPacketParser.class);
     public Vo2MaxPacketParser() {
         super(0x03);
     }
@@ -45,5 +58,39 @@ public class Vo2MaxPacketParser extends SamplePacketParser<Vo2MaxSample> {
     @Override
     boolean tryExtractingMetadataFromHeaderBuffer(ByteBuffer buffer) {
         return true;
+    }
+
+    @Override
+    public void finishReceiving(GBDevice device) {
+        try (DBHandler db = GBApplication.acquireDB()) {
+            SonyWena3Vo2SampleProvider sampleProvider = new SonyWena3Vo2SampleProvider(device, db.getDaoSession());
+            Long userId = DBHelper.getUser(db.getDaoSession()).getId();
+            Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+
+            Date currentSampleDate = null;
+            int currentDateDatapoint = 0;
+
+            for(Vo2MaxSample rawSample: accumulator) {
+                if(currentSampleDate == null || currentSampleDate != rawSample.timestamp) {
+                    currentDateDatapoint = 0;
+                    currentSampleDate = rawSample.timestamp;
+                } else {
+                    currentDateDatapoint ++;
+                }
+                Wena3Vo2Sample gbSample = new Wena3Vo2Sample();
+                gbSample.setDeviceId(deviceId);
+                gbSample.setUserId(userId);
+                gbSample.setTimestamp(currentSampleDate.getTime());
+                gbSample.setDatapoint(currentDateDatapoint);
+                gbSample.setType(Spo2Sample.Type.AUTOMATIC);
+                gbSample.setSpo2(rawSample.value);
+                sampleProvider.addSample(gbSample);
+            }
+        } catch (Exception e) {
+            LOG.error("Error acquiring database for recording Vo2 samples", e);
+        }
+
+        // Finally clean up the parser
+        super.finishReceiving(device);
     }
 }
