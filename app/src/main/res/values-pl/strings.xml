@@ -933,7 +933,7 @@
     <string name="about_additional_device_support">Dodatkowe wsparcie dla urządzeń</string>
     <string name="menuitem_cycles">Śledzenie cyklu</string>
     <string name="menuitem_breathing">Oddychanie</string>
-    <string name="devicetype_pinetime_jf">PineTime (Firmware JF)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="activity_summary_detail">Szczegóły aktywności sportowej</string>
     <string name="activity_type_jump_roping">Skakanka</string>
     <string name="pref_title_weather_summary">Używane przez dostawcę pogody LineageOS. Inne wersje systemu Android powinny używać innej aplikacji, np. Weather notification. Więcej informacji znajdziesz na stronie projektu Gadgetbridge.</string>

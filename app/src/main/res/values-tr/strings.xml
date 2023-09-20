@@ -962,7 +962,7 @@
     <string name="pref_check_permission_status">İzin durumunu denetle</string>
     <string name="companiondevice_pairing">CompanionDevice Eşleştirme</string>
     <string name="require_location_provider">Konum etkinleştirilmelidir</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Ürün Yazılımı)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="ascentSeconds">Artan</string>
     <string name="descentSeconds">Azalma</string>
     <string name="activity_detail_show_gps_label">GPS İzlemesini Göster</string>

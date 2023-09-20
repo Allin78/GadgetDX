@@ -979,7 +979,7 @@
     <string name="descentMeters">Discesa</string>
     <string name="ascentMeters">Salita</string>
     <string name="distanceMeters">Distanza</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="activity_summary_detail">Dettagli dell\'Attività Sportiva</string>
     <string name="strokes_unit">bracc</string>
     <string name="strokes_second">bracc/s</string>

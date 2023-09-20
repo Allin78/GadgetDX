@@ -89,7 +89,7 @@ public class GBDaoGenerator {
         addBangleJSActivitySample(schema, user, device);
         addCasioGBX100Sample(schema, user, device);
         addFitProActivitySample(schema, user, device);
-        addPineTimeActivitySample(schema, user, device);
+        addInfiniTimeActivitySample(schema, user, device);
         addWithingsSteelHRActivitySample(schema, user, device);
         addHybridHRActivitySample(schema, user, device);
         addVivomoveHrActivitySample(schema, user, device);
@@ -840,8 +840,8 @@ public class GBDaoGenerator {
         return activitySample;
     }
 
-    private static Entity addPineTimeActivitySample(Schema schema, Entity user, Entity device) {
-        Entity activitySample = addEntity(schema, "PineTimeActivitySample");
+    private static Entity addInfiniTimeActivitySample(Schema schema, Entity user, Entity device) {
+        Entity activitySample = addEntity(schema, "InfiniTimeActivitySample");
         activitySample.implementsSerializable();
         addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
         activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetterAndSetter(OVERRIDE);

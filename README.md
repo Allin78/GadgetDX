@@ -31,7 +31,7 @@ vendor's servers.
 
 [List of changes](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/master/CHANGELOG.md)
 
-## Supported Devices
+## Supported
 **(WARNING: Some of them WIP and some of them without maintainer)**
 
 - Amazfit
@@ -100,7 +100,7 @@ vendor's servers.
 - [Nut Mini 3, Nut 2 and possibly others](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Nut)
 - Pebble
 	- [Pebble, Steel, Time, Time Steel, Time Round, 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Pebble)
-- PineTime (InfiniTime Firmware)
+- InfiniTime
 - Roidmi, Roidmi 3, Mojietu 3 (Bluetooth FM Transmitters)
 - [SMA](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/SMA) Q2 (SMA-Q2-OSS Firmware)
 - [Sony Headphones](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)

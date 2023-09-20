@@ -997,7 +997,7 @@
     <string name="companiondevice_pairing_details">Включает поддержку нового API CompanionDevice (работает только на Android 8 или выше), что повысит надежность, если службу необходимо перезапустить в фоновом режиме, для достижения эффекта требуется повторное сопряжение с помощью Gadgetbridge</string>
     <string name="companiondevice_pairing">Сопряжение с CompanionDevice</string>
     <string name="require_location_provider">Местоположение должно быть включено</string>
-    <string name="devicetype_pinetime_jf">PineTime (Прошивка JF)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="activity_summary_detail">Детали спортивной деятельности</string>
     <string name="activity_type_yoga">Йога</string>

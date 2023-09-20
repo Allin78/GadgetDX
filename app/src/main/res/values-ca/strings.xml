@@ -1006,7 +1006,7 @@
     <string name="menuitem_breathing">Respiració</string>
     <string name="devicetype_lefun">Lefun</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="devicetype_amazfit_gts2">Amazfit GTS 2</string>
     <string name="devicetype_amazfit_gtr2">Amazfit GTR 2</string>

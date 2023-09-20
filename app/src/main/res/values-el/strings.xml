@@ -968,7 +968,7 @@
     <string name="require_location_provider">Η τοποθεσία πρέπει να είναι ενεργοποιημένη</string>
     <string name="menuitem_cycles">Περίοδος</string>
     <string name="menuitem_breathing">Αναπνοή</string>
-    <string name="devicetype_pinetime_jf">PineTime (Υλικολογισμικό JF )</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="devicetype_miband5">Mi Band 5</string>
     <string name="activity_summary_edit_name_title">Επεξεργασία ετικέτας</string>

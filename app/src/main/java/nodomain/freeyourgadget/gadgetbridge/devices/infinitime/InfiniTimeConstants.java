@@ -14,12 +14,12 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
+package nodomain.freeyourgadget.gadgetbridge.devices.infinitime;
 
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import java.util.UUID;
 
-public class PineTimeJFConstants {
+public class InfiniTimeConstants {
     public static final UUID UUID_SERVICE_MUSIC_CONTROL = UUID.fromString("00000000-78fc-48fe-8e23-433b3a1942d0");
 
     public static final UUID UUID_CHARACTERISTICS_MUSIC_EVENT = UUID.fromString("00000001-78fc-48fe-8e23-433b3a1942d0");

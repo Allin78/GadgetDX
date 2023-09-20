@@ -1123,7 +1123,7 @@
     <string name="devicetype_lefun">Lefun</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
     <string name="devicetype_amazfit_vergel">Amazfit Verge Lite</string>
-    <string name="devicetype_pinetime_jf">PineTime (Firmware JF)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="devicetype_casiogbx100">Casio GBX-100</string>
     <string name="devicetype_watchxplus">Watch X Plus</string>

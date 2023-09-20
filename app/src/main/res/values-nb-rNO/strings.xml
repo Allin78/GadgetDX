@@ -971,7 +971,7 @@
     <string name="permission_granting_mandatory">Alle disse tilgangene er påkrevd og ustabilitet kan oppstå hvis de ikke innvilges</string>
     <string name="about_additional_contributions">Mange takk til alle ulistede bidragsytere for kode, oversettelser, støtte, idéer, motivasjon, feilrapporter, penger… ✊</string>
     <string name="about_core_team_title">Kjernelag (sortert etter første kodebidrag)</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF-fastvare)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="activity_summary_detail">Sportaktivitetsdetalj</string>
     <string name="activity_type_jump_roping">Hoppetau</string>
     <string name="activity_type_indoor_cycling">Innendørssykling</string>

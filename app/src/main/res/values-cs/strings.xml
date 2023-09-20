@@ -978,7 +978,7 @@
     <string name="menuitem_stress">Stres</string>
     <string name="menuitem_cycles">Menstruační kalendář</string>
     <string name="menuitem_breathing">Dýchání</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="devicetype_miband5">Mi Band 5</string>
     <string name="activity_summary_detail">Detaily Sportovní Aktivity</string>

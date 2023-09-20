@@ -133,7 +133,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.no1f1.No1F1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nothing.Ear1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nut.NutCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeJFCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.infinitime.InfiniTimeCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.qc35.QC35Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.qhybrid.QHybridCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.roidmi.Roidmi1Coordinator;
@@ -365,7 +365,7 @@ public class DeviceHelper {
         result.add(new MakibesHR3Coordinator());
         result.add(new BangleJSCoordinator());
         result.add(new TLW64Coordinator());
-        result.add(new PineTimeJFCoordinator());
+        result.add(new InfiniTimeCoordinator());
         result.add(new SG2Coordinator());
         result.add(new LefunDeviceCoordinator());
         result.add(new BohemicSmartBraceletDeviceCoordinator());

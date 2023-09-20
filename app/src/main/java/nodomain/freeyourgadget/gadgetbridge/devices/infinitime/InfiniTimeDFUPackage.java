@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
+package nodomain.freeyourgadget.gadgetbridge.devices.infinitime;
 
 import com.google.gson.annotations.SerializedName;
 

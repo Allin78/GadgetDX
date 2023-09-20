@@ -1388,7 +1388,7 @@
     <string name="menuitem_worldclock">World Clock</string>
     <string name="menuitem_breathing">Breathing</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_miband5">Mi Band 5</string>
     <string name="activity_summary_yesterday">Yesterday</string>
     <string name="prefs_right">Right</string>

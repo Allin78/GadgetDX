@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
+package nodomain.freeyourgadget.gadgetbridge.devices.infinitime;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -41,15 +41,15 @@ import nodomain.freeyourgadget.gadgetbridge.util.UriHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.ZipFile;
 import nodomain.freeyourgadget.gadgetbridge.util.ZipFileException;
 
-public class PineTimeInstallHandler implements InstallHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(PineTimeInstallHandler.class);
+public class InfiniTimeInstallHandler implements InstallHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(InfiniTimeInstallHandler.class);
     private static final Pattern binNameVersionPattern = Pattern.compile(".*-((?:\\d+\\.){2}\\d+).bin$");
 
     private final Context context;
 
     private InfiniTimeDFUPackage dfuPackageManifest;
 
-    public PineTimeInstallHandler(Uri uri, Context context) {
+    public InfiniTimeInstallHandler(Uri uri, Context context) {
         this.context = context;
 
         UriHelper uriHelper;
@@ -87,7 +87,7 @@ public class PineTimeInstallHandler implements InstallHandler {
             return;
         }
 
-        if (device.getType() != DeviceType.PINETIME_JF || !device.isConnected()) {
+        if (device.getType() != DeviceType.INFINITIME || !device.isConnected()) {
             LOG.error("Firmware cannot be installed (not connected or wrong device)");
             installActivity.setInfoText("Firmware cannot be installed (not connected or wrong device)");
             installActivity.setInstallEnabled(false);
@@ -102,12 +102,12 @@ public class PineTimeInstallHandler implements InstallHandler {
 
         GenericItem installItem = new GenericItem();
         installItem.setIcon(R.drawable.ic_firmware);
-        installItem.setName("PineTime firmware");
+        installItem.setName("InfiniTime firmware");
         installItem.setDetails(getVersion());
 
         installActivity.setInfoText(context.getString(R.string.firmware_install_warning, "(unknown)"));
         installActivity.setInstallItem(installItem);
-        LOG.debug("Initialized PineTimeInstallHandler");
+        LOG.debug("Initialized InfiniTimeInstallHandler");
     }
 
     @Override

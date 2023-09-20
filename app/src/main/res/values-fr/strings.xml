@@ -1014,7 +1014,7 @@ Temps de sommeil préféré en heures</string>
     <string name="menuitem_stress">Stress</string>
     <string name="menuitem_breathing">Respiration</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
-    <string name="devicetype_pinetime_jf">PineTime (Micrologiciel JF)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="devicetype_amazfit_trex">Amazfit T-Rex</string>
     <string name="devicetype_miband5">Mi Band 5</string>

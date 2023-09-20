@@ -110,7 +110,7 @@ public enum DeviceType {
     BANGLEJS(160, R.drawable.ic_device_banglejs, R.drawable.ic_device_banglejs_disabled, R.string.devicetype_banglejs),
     FOSSILQHYBRID(170, R.drawable.ic_device_zetime, R.drawable.ic_device_zetime_disabled, R.string.devicetype_qhybrid),
     TLW64(180, R.drawable.ic_device_default, R.drawable.ic_device_default_disabled, R.string.devicetype_tlw64),
-    PINETIME_JF(190, R.drawable.ic_device_pinetime, R.drawable.ic_device_pinetime_disabled, R.string.devicetype_pinetime_jf),
+    INFINITIME(190, R.drawable.ic_device_infinitime, R.drawable.ic_device_infinitime_disabled, R.string.devicetype_infinitime),
     MIJIA_LYWSD02(200, R.drawable.ic_device_pebble, R.drawable.ic_device_pebble_disabled, R.string.devicetype_mijia_lywsd02),
     LEFUN(210, R.drawable.ic_device_h30_h10, R.drawable.ic_device_h30_h10_disabled, R.string.devicetype_lefun),
     BOHEMIC_SMART_BRACELET(211, R.drawable.ic_device_h30_h10, R.drawable.ic_device_h30_h10_disabled, R.string.devicetype_bohemic_smart_bracelet),

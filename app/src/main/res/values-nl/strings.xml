@@ -1148,7 +1148,7 @@
     <string name="pref_title_upper_button_function_short">Bovenknop kort</string>
     <string name="devicetype_lefun">Lefun</string>
     <string name="devicetype_sg2">Lemfo SG2</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="activity_error_no_app_for_png">Installeer een geschikte app om de schermafbeelding te delen.</string>
     <string name="activity_summary_detail">Activiteitdetails</string>
     <string name="activity_type_badminton">Badminton</string>

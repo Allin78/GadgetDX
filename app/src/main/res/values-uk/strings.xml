@@ -1020,7 +1020,7 @@
     <string name="menuitem_stress">Напруженість</string>
     <string name="menuitem_cycles">Відстеження циклу</string>
     <string name="menuitem_breathing">Дихання</string>
-    <string name="devicetype_pinetime_jf">PineTime (Прошивка JF)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="devicetype_tlw64">TLW64</string>
     <string name="activity_summary_yesterday">Вчора</string>
     <string name="activity_summary_today">Сьогодні</string>

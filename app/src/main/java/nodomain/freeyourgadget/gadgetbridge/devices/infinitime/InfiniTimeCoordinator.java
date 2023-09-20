@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
+package nodomain.freeyourgadget.gadgetbridge.devices.infinitime;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,22 +34,22 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.pinetime.PineTimeJFSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.infinitime.InfiniTimeSupport;
 
-public class PineTimeJFCoordinator extends AbstractBLEDeviceCoordinator {
+public class InfiniTimeCoordinator extends AbstractBLEDeviceCoordinator {
     @NonNull
     @Override
     public DeviceType getSupportedType(GBDeviceCandidate candidate) {
         String name = candidate.getName();
-        if (name != null && (name.startsWith("Pinetime-JF") || name.startsWith("InfiniTime"))) {
-            return DeviceType.PINETIME_JF;
+        if (name != null && (name.startsWith("InfiniTime") || name.startsWith("InfiniTime"))) {
+            return DeviceType.INFINITIME;
         }
         return DeviceType.UNKNOWN;
     }
 
     @Override
     public DeviceType getDeviceType() {
-        return DeviceType.PINETIME_JF;
+        return DeviceType.INFINITIME;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class PineTimeJFCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public InstallHandler findInstallHandler(Uri uri, Context context) {
-        PineTimeInstallHandler handler = new PineTimeInstallHandler(uri, context);
+        InfiniTimeInstallHandler handler = new InfiniTimeInstallHandler(uri, context);
         return handler.isValid() ? handler : null;
     }
 
@@ -78,7 +78,7 @@ public class PineTimeJFCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
-        return new PineTimeActivitySampleProvider(device, session);
+        return new InfiniTimeActivitySampleProvider(device, session);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class PineTimeJFCoordinator extends AbstractBLEDeviceCoordinator {
     @NonNull
     @Override
     public Class<? extends DeviceSupport> getDeviceSupportClass() {
-        return PineTimeJFSupport.class;
+        return InfiniTimeSupport.class;
     }
 
     @Override

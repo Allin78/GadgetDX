@@ -75,7 +75,7 @@ public class WaspOSCoordinator extends AbstractBLEDeviceCoordinator {
         if (name != null && (
               name.startsWith("DS-D6") ||
               name.startsWith("K9") ||
-              name.startsWith("PineTime") ||
+              name.startsWith("InfiniTime") ||
               name.startsWith("P8")))
             return DeviceType.WASPOS;
 

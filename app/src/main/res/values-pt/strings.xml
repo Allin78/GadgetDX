@@ -970,7 +970,7 @@
     <string name="ascentMeters">Subida</string>
     <string name="distanceMeters">Distância</string>
     <string name="activity_summary_detail">Detalhes de atividade de desporto</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="error_location_enabled_mandatory">A localização deve ser ligada para procurar aparelhos</string>
     <string name="companiondevice_pairing_details">Ativa o novo suporte à API CompanionDevice (tem efeito apenas em Android 8 ou mais novo) que vai aumentar a confiabilidade se o serviço precisar ser reiniciado em segundo plano, requer novo emparelhamento usando o Gadgetbridge para ter um efeito</string>
     <string name="companiondevice_pairing">Pareamento de CompanionDevice</string>

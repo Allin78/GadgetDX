@@ -944,7 +944,7 @@
     <string name="companiondevice_pairing_details">Habilita o novo suporte à API CompanionDevice (tem efeito apenas em Android 8 ou mais novo) que vai aumentar a confiabilidade se o serviço precisar ser reiniciado em segundo plano, requer novo emparelhamento usando o Gadgetbridge para ter um efeito</string>
     <string name="companiondevice_pairing">Pareamento de CompanionDevice</string>
     <string name="require_location_provider">Localização deve estar habilitada</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="averageStrokeDistance">Distância média das braçadas</string>
     <string name="averageStride">Média da caminhada</string>
     <string name="averageKMPaceSeconds">Ritmo</string>

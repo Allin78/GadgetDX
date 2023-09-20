@@ -14,7 +14,7 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather;
+package nodomain.freeyourgadget.gadgetbridge.devices.infinitime.weather;
 
 /**
  * Implemented based on and other material:
@@ -31,7 +31,7 @@ public class WeatherData {
      * <p>
      * So, this function only returns PrecipitationType
      */
-    public static final PrecipitationType mapOpenWeatherConditionToPineTimePrecipitation(int openWeatherMapCondition) {
+    public static final PrecipitationType mapOpenWeatherConditionToInfiniTimePrecipitation(int openWeatherMapCondition) {
         switch (openWeatherMapCondition) {
             // Group 2xx: Thunderstorm
             case 200:  // Thunderstorm with light rain
@@ -143,7 +143,7 @@ public class WeatherData {
      * <p>
      * So, this function only returns ObscurationType
      */
-    public static final ObscurationType mapOpenWeatherConditionToPineTimeObscuration(int openWeatherMapCondition) {
+    public static final ObscurationType mapOpenWeatherConditionToInfiniTimeObscuration(int openWeatherMapCondition) {
         switch (openWeatherMapCondition) {
             // Group 2xx: Thunderstorm
             case 200:  // Thunderstorm with light rain
@@ -266,7 +266,7 @@ public class WeatherData {
      * <p>
      * So, this function only returns SpecialType
      */
-    public static final SpecialType mapOpenWeatherConditionToPineTimeSpecial(int openWeatherMapCondition) {
+    public static final SpecialType mapOpenWeatherConditionToInfiniTimeSpecial(int openWeatherMapCondition) {
         switch (openWeatherMapCondition) {
             // Group 2xx: Thunderstorm
             case 200:  // Thunderstorm with light rain

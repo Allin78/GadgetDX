@@ -760,7 +760,7 @@
     <string name="activity_prefs_chart_min_heart_rate">Minimum pulzus</string>
     <string name="widget_5_minutes">5 perc</string>
     <string name="maxAltitude">Maximum</string>
-    <string name="devicetype_pinetime_jf">PineTime (JF Firmware)</string>
+    <string name="devicetype_infinitime">InfiniTime</string>
     <string name="minAltitude">Minimum</string>
     <string name="arabic">Arab</string>
     <string name="maxSpeed">Maximum</string>

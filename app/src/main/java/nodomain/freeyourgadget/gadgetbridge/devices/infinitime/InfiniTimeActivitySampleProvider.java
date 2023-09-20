@@ -1,4 +1,4 @@
-package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
+package nodomain.freeyourgadget.gadgetbridge.devices.infinitime;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -6,19 +6,19 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.PineTimeActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.entities.PineTimeActivitySampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.InfiniTimeActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.InfiniTimeActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.util.Optional;
 
 import java.util.List;
 
-public class PineTimeActivitySampleProvider extends AbstractSampleProvider<PineTimeActivitySample> {
+public class InfiniTimeActivitySampleProvider extends AbstractSampleProvider<InfiniTimeActivitySample> {
     private GBDevice mDevice;
     private DaoSession mSession;
 
-    public PineTimeActivitySampleProvider(GBDevice device, DaoSession session) {
+    public InfiniTimeActivitySampleProvider(GBDevice device, DaoSession session) {
         super(device, session);
 
         mSession = session;
@@ -26,26 +26,26 @@ public class PineTimeActivitySampleProvider extends AbstractSampleProvider<PineT
     }
 
     @Override
-    public AbstractDao<PineTimeActivitySample, ?> getSampleDao() {
-        return getSession().getPineTimeActivitySampleDao();
+    public AbstractDao<InfiniTimeActivitySample, ?> getSampleDao() {
+        return getSession().getInfiniTimeActivitySampleDao();
     }
 
     @Nullable
     @Override
     protected Property getRawKindSampleProperty() {
-        return PineTimeActivitySampleDao.Properties.RawKind;
+        return InfiniTimeActivitySampleDao.Properties.RawKind;
     }
 
     @NonNull
     @Override
     protected Property getTimestampSampleProperty() {
-        return PineTimeActivitySampleDao.Properties.Timestamp;
+        return InfiniTimeActivitySampleDao.Properties.Timestamp;
     }
 
     @NonNull
     @Override
     protected Property getDeviceIdentifierSampleProperty() {
-        return PineTimeActivitySampleDao.Properties.DeviceId;
+        return InfiniTimeActivitySampleDao.Properties.DeviceId;
     }
 
     @Override
@@ -69,12 +69,12 @@ public class PineTimeActivitySampleProvider extends AbstractSampleProvider<PineT
      * @return the newly created "empty" sample
      */
     @Override
-    public PineTimeActivitySample createActivitySample() {
-        return new PineTimeActivitySample();
+    public InfiniTimeActivitySample createActivitySample() {
+        return new InfiniTimeActivitySample();
     }
 
-    public Optional<PineTimeActivitySample> getSampleForTimestamp(int timestamp) {
-        List<PineTimeActivitySample> foundSamples = this.getGBActivitySamples(timestamp, timestamp, ActivityKind.TYPE_ALL);
+    public Optional<InfiniTimeActivitySample> getSampleForTimestamp(int timestamp) {
+        List<InfiniTimeActivitySample> foundSamples = this.getGBActivitySamples(timestamp, timestamp, ActivityKind.TYPE_ALL);
         if (foundSamples.size() == 0) {
             return Optional.empty();
         }

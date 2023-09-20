@@ -409,8 +409,8 @@
         <service android:name=".service.NotificationCollectorMonitorService" />
         <service android:name=".service.DeviceCommunicationService" />
         <service
-            android:name=".devices.pinetime.PineTimeDFUService"
-            android:label="PineTime Nordic DFU service" />
+            android:name=".devices.infinitime.InfiniTimeDFUService"
+            android:label="InfiniTime Nordic DFU service" />
 
         <receiver
             android:name=".externalevents.GenericWeatherReceiver"

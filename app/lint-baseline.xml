@@ -3219,7 +3219,7 @@
         errorLine1="        String name = candidate.getDevice().getName();"
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/pinetime/PineTimeJFCoordinator.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/infinitime/InfiniTimeCoordinator.java"
             line="43"
             column="23"/>
     </issue>
@@ -3230,7 +3230,7 @@
         errorLine1="        String name = candidate.getDevice().getName();"
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/pinetime/PineTimeJFCoordinator.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/devices/infinitime/InfiniTimeCoordinator.java"
             line="43"
             column="23"/>
     </issue>
@@ -4979,7 +4979,7 @@
         errorLine1="        logDebug(String.format(&quot;onReceiveStepsSample: \ndayStepCount=%d, \nsteps=%d, \ndiff=%d, \nprevoiusDayStepCount=%d, &quot;, dayStepCount, steps, diff, prevoiusDayStepCount));"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="1019"
             column="18"/>
     </issue>
@@ -4990,7 +4990,7 @@
         errorLine1="        logDebug(String.format(&quot;onReceiveStepsSample: \ndayStepCount=%d, \nsteps=%d, \ndiff=%d, \nprevoiusDayStepCount=%d, &quot;, dayStepCount, steps, diff, prevoiusDayStepCount));"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="1019"
             column="18"/>
     </issue>
@@ -5001,7 +5001,7 @@
         errorLine1="        logDebug(String.format(&quot;onReceiveHeartRateMeasurement: \nheartrate=%d&quot;, heartrate));"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="1062"
             column="18"/>
     </issue>
@@ -5012,7 +5012,7 @@
         errorLine1="        logDebug(String.format(&quot;onReceiveHeartRateMeasurement: \nheartrate=%d&quot;, heartrate));"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="1062"
             column="18"/>
     </issue>
@@ -5023,7 +5023,7 @@
         errorLine1="        logDebug(String.format(&quot;getDayStartEnd: \ntimeStamp=%d (%s), \ntimeStampStartUtc=%d (-offset=%s), \ntimeStampEndUtc=%d (-offset=%s)&quot;, timeStampUtc, calTimeStamp.getTime(), timeStampStartUtc, start.getTime(), timeStampEndUtc, end.getTime()));"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="1128"
             column="18"/>
     </issue>
@@ -5034,7 +5034,7 @@
         errorLine1="        logDebug(String.format(&quot;getDayStartEnd: \ntimeStamp=%d (%s), \ntimeStampStartUtc=%d (-offset=%s), \ntimeStampEndUtc=%d (-offset=%s)&quot;, timeStampUtc, calTimeStamp.getTime(), timeStampStartUtc, start.getTime(), timeStampEndUtc, end.getTime()));"
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="1128"
             column="18"/>
     </issue>
@@ -6151,7 +6151,7 @@
         errorLine1="            int heartrate = Byte.toUnsignedInt(characteristic.getValue()[1]);"
         errorLine2="                                 ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="689"
             column="34"/>
     </issue>
@@ -6162,7 +6162,7 @@
         errorLine1="            int heartrate = Byte.toUnsignedInt(characteristic.getValue()[1]);"
         errorLine2="                                 ~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="689"
             column="34"/>
     </issue>
@@ -22012,7 +22012,7 @@
         errorLine1="                &quot;\&quot;DEVICE_ID\&quot; ) ON CONFLICT REPLACE)&quot; + ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? &quot; WITHOUT ROWID;&quot; : &quot;;&quot;)"
         errorLine2="                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/entities/PineTimeActivitySampleDao.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/entities/InfiniTimeActivitySampleDao.java"
             line="61"
             column="60"/>
     </issue>
@@ -22023,7 +22023,7 @@
         errorLine1="                &quot;\&quot;DEVICE_ID\&quot; ) ON CONFLICT REPLACE)&quot; + ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? &quot; WITHOUT ROWID;&quot; : &quot;;&quot;)"
         errorLine2="                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/entities/PineTimeActivitySampleDao.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/entities/InfiniTimeActivitySampleDao.java"
             line="61"
             column="60"/>
     </issue>
@@ -22034,7 +22034,7 @@
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="486"
             column="13"/>
     </issue>
@@ -22045,7 +22045,7 @@
         errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/pinetime/PineTimeJFSupport.java"
+            file="src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/infinitime/InfiniTimeSupport.java"
             line="486"
             column="13"/>
     </issue>

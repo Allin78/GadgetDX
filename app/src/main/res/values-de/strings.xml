@@ -947,7 +947,7 @@
     <string name="companiondevice_pairing">CompanionDevice Gerätepaarung</string>
     <string name="require_location_provider">Standort muss aktiviert sein</string>
     <string name="devicetype_tlw64">TLW64</string>
-    <string name="devicetype_pinetime_jf">PimeTime (JF Firmware)</string>
+    <string name="devicetype_InfiniTime">InfiniTime</string>
     <string name="activity_detail_show_gps_label">GPS-Track anzeigen</string>
     <string name="activity_detail_duration_label">Dauer</string>
     <string name="activity_detail_end_label">Ende</string>

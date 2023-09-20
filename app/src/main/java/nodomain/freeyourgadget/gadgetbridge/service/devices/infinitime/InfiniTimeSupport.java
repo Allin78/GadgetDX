@@ -15,12 +15,12 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.service.devices.pinetime;
+package nodomain.freeyourgadget.gadgetbridge.service.devices.infinitime;
 
-import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToCloudCover;
-import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeObscuration;
-import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimePrecipitation;
-import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeSpecial;
+import static nodomain.freeyourgadget.gadgetbridge.devices.infinitime.weather.WeatherData.mapOpenWeatherConditionToCloudCover;
+import static nodomain.freeyourgadget.gadgetbridge.devices.infinitime.weather.WeatherData.mapOpenWeatherConditionToInfiniTimeObscuration;
+import static nodomain.freeyourgadget.gadgetbridge.devices.infinitime.weather.WeatherData.mapOpenWeatherConditionToInfiniTimePrecipitation;
+import static nodomain.freeyourgadget.gadgetbridge.devices.infinitime.weather.WeatherData.mapOpenWeatherConditionToInfiniTimeSpecial;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -71,13 +71,13 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallContro
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeActivitySampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeDFUService;
-import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeInstallHandler;
-import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeJFConstants;
-import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData;
+import nodomain.freeyourgadget.gadgetbridge.devices.infinitime.InfiniTimeActivitySampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.infinitime.InfiniTimeDFUService;
+import nodomain.freeyourgadget.gadgetbridge.devices.infinitime.InfiniTimeInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.infinitime.InfiniTimeConstants;
+import nodomain.freeyourgadget.gadgetbridge.devices.infinitime.weather.WeatherData;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
-import nodomain.freeyourgadget.gadgetbridge.entities.PineTimeActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.InfiniTimeActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
@@ -109,13 +109,13 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.deviceinfo.Dev
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
-public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuLogListener {
-    private static final Logger LOG = LoggerFactory.getLogger(PineTimeJFSupport.class);
+public class InfiniTimeSupport extends AbstractBTLEDeviceSupport implements DfuLogListener {
+    private static final Logger LOG = LoggerFactory.getLogger(InfiniTimeSupport.class);
     private final GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
     private final GBDeviceEventBatteryInfo batteryCmd = new GBDeviceEventBatteryInfo();
 
-    private final DeviceInfoProfile<PineTimeJFSupport> deviceInfoProfile;
-    private final BatteryInfoProfile<PineTimeJFSupport> batteryInfoProfile;
+    private final DeviceInfoProfile<InfiniTimeSupport> deviceInfoProfile;
+    private final BatteryInfoProfile<InfiniTimeSupport> batteryInfoProfile;
 
     private final int MaxNotificationLength = 100;
     private int firmwareVersionMajor = 0;
@@ -134,7 +134,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     String lastAlbum;
     String lastTrack;
     String lastArtist;
-    PineTimeInstallHandler handler;
+    InfiniTimeInstallHandler handler;
     DfuServiceController controller;
 
     private final DfuProgressListener progressListener = new DfuProgressListenerAdapter() {
@@ -252,18 +252,18 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         }
     };
 
-    public PineTimeJFSupport() {
+    public InfiniTimeSupport() {
         super(LOG);
         addSupportedService(GattService.UUID_SERVICE_ALERT_NOTIFICATION);
         addSupportedService(GattService.UUID_SERVICE_CURRENT_TIME);
         addSupportedService(GattService.UUID_SERVICE_DEVICE_INFORMATION);
         addSupportedService(GattService.UUID_SERVICE_BATTERY_SERVICE);
-        addSupportedService(PineTimeJFConstants.UUID_SERVICE_MUSIC_CONTROL);
-        addSupportedService(PineTimeJFConstants.UUID_SERVICE_WEATHER);
-        addSupportedService(PineTimeJFConstants.UUID_SERVICE_NAVIGATION);
-        addSupportedService(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
-        addSupportedService(PineTimeJFConstants.UUID_SERVICE_MOTION);
-        addSupportedService(PineTimeJFConstants.UUID_SERVICE_HEART_RATE);
+        addSupportedService(InfiniTimeConstants.UUID_SERVICE_MUSIC_CONTROL);
+        addSupportedService(InfiniTimeConstants.UUID_SERVICE_WEATHER);
+        addSupportedService(InfiniTimeConstants.UUID_SERVICE_NAVIGATION);
+        addSupportedService(InfiniTimeConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
+        addSupportedService(InfiniTimeConstants.UUID_SERVICE_MOTION);
+        addSupportedService(InfiniTimeConstants.UUID_SERVICE_HEART_RATE);
 
         IntentListener mListener = new IntentListener() {
             @Override
@@ -281,7 +281,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         deviceInfoProfile.addListener(mListener);
         addSupportedProfile(deviceInfoProfile);
 
-        AlertNotificationProfile<PineTimeJFSupport> alertNotificationProfile = new AlertNotificationProfile<>(this);
+        AlertNotificationProfile<InfiniTimeSupport> alertNotificationProfile = new AlertNotificationProfile<>(this);
         addSupportedProfile(alertNotificationProfile);
 
         batteryInfoProfile = new BatteryInfoProfile<>(this);
@@ -331,8 +331,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         if (navigationInfoSpec.distanceToTurn == null) {
             navigationInfoSpec.distanceToTurn = "";
         }
-        safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_NARRATIVE, navigationInfoSpec.instruction.getBytes(StandardCharsets.UTF_8));
-        safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_MAN_DISTANCE, navigationInfoSpec.distanceToTurn.getBytes(StandardCharsets.UTF_8));
+        safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_NAVIGATION_NARRATIVE, navigationInfoSpec.instruction.getBytes(StandardCharsets.UTF_8));
+        safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_NAVIGATION_MAN_DISTANCE, navigationInfoSpec.distanceToTurn.getBytes(StandardCharsets.UTF_8));
         String iconname;
         switch (navigationInfoSpec.nextAction) {
             case NavigationInfoSpec.ACTION_CONTINUE:
@@ -380,7 +380,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 break;
         }
 
-        safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_FLAGS, iconname.getBytes(StandardCharsets.UTF_8));
+        safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_NAVIGATION_FLAGS, iconname.getBytes(StandardCharsets.UTF_8));
         builder.queue(getQueue());
     }
 
@@ -418,7 +418,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     @Override
     public void onInstallApp(Uri uri) {
         try {
-            handler = new PineTimeInstallHandler(uri, getContext());
+            handler = new InfiniTimeInstallHandler(uri, getContext());
 
             if (handler.isValid()) {
                 gbDevice.setBusyTask("firmware upgrade");
@@ -430,7 +430,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                         .setMtu(23)
                         .setZip(uri);
 
-                controller = starter.start(getContext(), PineTimeDFUService.class);
+                controller = starter.start(getContext(), InfiniTimeDFUService.class);
                 DfuServiceListenerHelper.registerProgressListener(getContext(), progressListener);
                 DfuServiceListenerHelper.registerLogListener(getContext(), this);
 
@@ -466,18 +466,18 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         requestDeviceInfo(builder);
         onSetTime();
         setWorldClocks();
-        builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_EVENT), true);
-        BluetoothGattCharacteristic alertNotificationEventCharacteristic = getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
+        builder.notify(getCharacteristic(InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_EVENT), true);
+        BluetoothGattCharacteristic alertNotificationEventCharacteristic = getCharacteristic(InfiniTimeConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
         if (alertNotificationEventCharacteristic != null) {
             builder.notify(alertNotificationEventCharacteristic, true);
         }
 
-        if (getSupportedServices().contains(PineTimeJFConstants.UUID_SERVICE_MOTION)) {
-            builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_STEP_COUNT), true);
-            //builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_RAW_XYZ_VALUES), false); // issue #2527
+        if (getSupportedServices().contains(InfiniTimeConstants.UUID_SERVICE_MOTION)) {
+            builder.notify(getCharacteristic(InfiniTimeConstants.UUID_CHARACTERISTIC_MOTION_STEP_COUNT), true);
+            //builder.notify(getCharacteristic(InfiniTimeConstants.UUID_CHARACTERISTIC_MOTION_RAW_XYZ_VALUES), false); // issue #2527
         }
 
-        builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT), true);
+        builder.notify(getCharacteristic(InfiniTimeConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT), true);
 
         setInitialized(builder);
         batteryInfoProfile.requestBatteryInfo(builder);
@@ -496,25 +496,25 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
             if (musicSpec.album != null && !musicSpec.album.equals(lastAlbum)) {
                 lastAlbum = musicSpec.album;
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_ALBUM, musicSpec.album.getBytes());
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_ALBUM, musicSpec.album.getBytes());
             }
             if (musicSpec.track != null && !musicSpec.track.equals(lastTrack)) {
                 lastTrack = musicSpec.track;
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_TRACK, musicSpec.track.getBytes());
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_TRACK, musicSpec.track.getBytes());
             }
             if (musicSpec.artist != null && !musicSpec.artist.equals(lastArtist)) {
                 lastArtist = musicSpec.artist;
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_ARTIST, musicSpec.artist.getBytes());
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_ARTIST, musicSpec.artist.getBytes());
             }
 
             if (musicSpec.duration != MusicSpec.MUSIC_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_LENGTH_TOTAL, intToBytes(musicSpec.duration));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_LENGTH_TOTAL, intToBytes(musicSpec.duration));
             }
             if (musicSpec.trackNr != MusicSpec.MUSIC_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_TRACK_NUMBER, intToBytes(musicSpec.trackNr));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_TRACK_NUMBER, intToBytes(musicSpec.trackNr));
             }
             if (musicSpec.trackCount != MusicSpec.MUSIC_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_TRACK_TOTAL, intToBytes(musicSpec.trackCount));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_TRACK_TOTAL, intToBytes(musicSpec.trackCount));
             }
 
             builder.queue(getQueue());
@@ -533,23 +533,23 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 if (stateSpec.state == MusicStateSpec.STATE_PLAYING) {
                     state[0] = 0x01;
                 }
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_STATUS, state);
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_STATUS, state);
             }
 
             if (stateSpec.playRate != MusicStateSpec.STATE_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_PLAYBACK_SPEED, intToBytes(stateSpec.playRate));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_PLAYBACK_SPEED, intToBytes(stateSpec.playRate));
             }
 
             if (stateSpec.position != MusicStateSpec.STATE_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_POSITION, intToBytes(stateSpec.position));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_POSITION, intToBytes(stateSpec.position));
             }
 
             if (stateSpec.repeat != MusicStateSpec.STATE_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_REPEAT, intToBytes(stateSpec.repeat));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_REPEAT, intToBytes(stateSpec.repeat));
             }
 
             if (stateSpec.shuffle != MusicStateSpec.STATE_UNKNOWN) {
-                safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_SHUFFLE, intToBytes(stateSpec.repeat));
+                safeWriteToCharacteristic(builder, InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_SHUFFLE, intToBytes(stateSpec.repeat));
             }
 
             builder.queue(getQueue());
@@ -607,7 +607,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
 
             TransactionBuilder builder = new TransactionBuilder("set world clocks");
-            builder.write(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_WORLD_TIME), baos.toByteArray());
+            builder.write(getCharacteristic(InfiniTimeConstants.UUID_CHARACTERISTIC_WORLD_TIME), baos.toByteArray());
             builder.queue(getQueue());
         } catch (Exception e) {
             LOG.error("Error sending world clocks", e);
@@ -632,7 +632,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         }
 
         UUID characteristicUUID = characteristic.getUuid();
-        if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTICS_MUSIC_EVENT)) {
+        if (characteristicUUID.equals(InfiniTimeConstants.UUID_CHARACTERISTICS_MUSIC_EVENT)) {
             byte[] value = characteristic.getValue();
             GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
 
@@ -660,7 +660,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
             evaluateGBDeviceEvent(deviceEventMusicControl);
             return true;
-        } else if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT)) {
+        } else if (characteristicUUID.equals(InfiniTimeConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT)) {
             byte[] value = characteristic.getValue();
             GBDeviceEventCallControl deviceEventCallControl = new GBDeviceEventCallControl();
             switch (value[0]) {
@@ -678,14 +678,14 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
             evaluateGBDeviceEvent(deviceEventCallControl);
             return true;
-        } else if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_STEP_COUNT)) {
+        } else if (characteristicUUID.equals(InfiniTimeConstants.UUID_CHARACTERISTIC_MOTION_STEP_COUNT)) {
             int steps = BLETypeConversions.toUint32(characteristic.getValue());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("onCharacteristicChanged: MotionService:Steps=" + steps);
             }
             onReceiveStepsSample(steps);
             return true;
-        } else if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT)) {
+        } else if (characteristicUUID.equals(InfiniTimeConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT)) {
             int heartrate = Byte.toUnsignedInt(characteristic.getValue()[1]);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("onCharacteristicChanged: HeartRateMeasurement:HeartRate=" + heartrate);
@@ -725,7 +725,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
@@ -755,7 +755,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
@@ -781,7 +781,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
@@ -808,7 +808,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
@@ -836,14 +836,14 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
             }
 
             // Current weather condition
-            if (mapOpenWeatherConditionToPineTimePrecipitation(weatherSpec.currentConditionCode) != WeatherData.PrecipitationType.Length) {
+            if (mapOpenWeatherConditionToInfiniTimePrecipitation(weatherSpec.currentConditionCode) != WeatherData.PrecipitationType.Length) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
                     new CborEncoder(baos).encode(new CborBuilder()
@@ -851,7 +851,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
                             .put("Expires", 60 * 60 * 6) // 6h
                             .put("EventType", WeatherData.EventType.Precipitation.value)
-                            .put("Type", (int) mapOpenWeatherConditionToPineTimePrecipitation(weatherSpec.currentConditionCode).value)
+                            .put("Type", (int) mapOpenWeatherConditionToInfiniTimePrecipitation(weatherSpec.currentConditionCode).value)
                             .put("Amount", (int) 0)
                             .end()
                             .build()
@@ -862,13 +862,13 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
             }
 
-            if (mapOpenWeatherConditionToPineTimeObscuration(weatherSpec.currentConditionCode) != WeatherData.ObscurationType.Length) {
+            if (mapOpenWeatherConditionToInfiniTimeObscuration(weatherSpec.currentConditionCode) != WeatherData.ObscurationType.Length) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
                     new CborEncoder(baos).encode(new CborBuilder()
@@ -876,7 +876,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
                             .put("Expires", 60 * 60 * 6) // 6h
                             .put("EventType", WeatherData.EventType.Obscuration.value)
-                            .put("Type", (int) mapOpenWeatherConditionToPineTimeObscuration(weatherSpec.currentConditionCode).value)
+                            .put("Type", (int) mapOpenWeatherConditionToInfiniTimeObscuration(weatherSpec.currentConditionCode).value)
                             .put("Amount", (int) 65535)
                             .end()
                             .build()
@@ -887,13 +887,13 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
             }
 
-            if (mapOpenWeatherConditionToPineTimeSpecial(weatherSpec.currentConditionCode) != WeatherData.SpecialType.Length) {
+            if (mapOpenWeatherConditionToInfiniTimeSpecial(weatherSpec.currentConditionCode) != WeatherData.SpecialType.Length) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
                     new CborEncoder(baos).encode(new CborBuilder()
@@ -901,7 +901,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
                             .put("Expires", 60 * 60 * 6) // 6h
                             .put("EventType", WeatherData.EventType.Special.value)
-                            .put("Type", mapOpenWeatherConditionToPineTimeSpecial(weatherSpec.currentConditionCode).value)
+                            .put("Type", mapOpenWeatherConditionToInfiniTimeSpecial(weatherSpec.currentConditionCode).value)
                             .end()
                             .build()
                     );
@@ -911,7 +911,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
@@ -935,7 +935,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 byte[] encodedBytes = baos.toByteArray();
                 TransactionBuilder builder = createTransactionBuilder("WeatherData");
                 safeWriteToCharacteristic(builder,
-                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        InfiniTimeConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
                         encodedBytes);
 
                 builder.queue(getQueue());
@@ -1011,7 +1011,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     }
 
     private void onReceiveStepsSample(int timeStamp, int steps) {
-        PineTimeActivitySample sample = new PineTimeActivitySample();
+        InfiniTimeActivitySample sample = new InfiniTimeActivitySample();
 
         int dayStepCount = this.getStepsOnDay(timeStamp);
         int prevoiusDayStepCount = this.getStepsOnDay(timeStamp - DAY_SECONDS);
@@ -1057,7 +1057,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     }
 
     private void onReceiveHeartRateMeasurement(int timeStamp, int heartrate) {
-        PineTimeActivitySample sample = new PineTimeActivitySample();
+        InfiniTimeActivitySample sample = new InfiniTimeActivitySample();
 
         logDebug(String.format("onReceiveHeartRateMeasurement: \nheartrate=%d", heartrate));
 
@@ -1089,15 +1089,15 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
             this.getDayStartEnd(timeStamp, dayStart, dayEnd);
 
-            PineTimeActivitySampleProvider provider = new PineTimeActivitySampleProvider(this.getDevice(), dbHandler.getDaoSession());
+            InfiniTimeActivitySampleProvider provider = new InfiniTimeActivitySampleProvider(this.getDevice(), dbHandler.getDaoSession());
 
-            List<PineTimeActivitySample> samples = provider.getAllActivitySamples(
+            List<InfiniTimeActivitySample> samples = provider.getAllActivitySamples(
                     (int) (dayStart.getTimeInMillis() / 1000L),
                     (int) (dayEnd.getTimeInMillis() / 1000L));
 
             int totalSteps = 0;
 
-            for (PineTimeActivitySample sample : samples) {
+            for (InfiniTimeActivitySample sample : samples) {
                 totalSteps += sample.getSteps();
             }
 
@@ -1129,22 +1129,22 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     }
 
 
-    private void addGBActivitySamples(PineTimeActivitySample[] samples) {
+    private void addGBActivitySamples(InfiniTimeActivitySample[] samples) {
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
 
             User user = DBHelper.getUser(dbHandler.getDaoSession());
             Device device = DBHelper.getDevice(this.getDevice(), dbHandler.getDaoSession());
 
-            PineTimeActivitySampleProvider provider = new PineTimeActivitySampleProvider(this.getDevice(), dbHandler.getDaoSession());
+            InfiniTimeActivitySampleProvider provider = new InfiniTimeActivitySampleProvider(this.getDevice(), dbHandler.getDaoSession());
 
-            for (PineTimeActivitySample sample : samples) {
+            for (InfiniTimeActivitySample sample : samples) {
                 sample.setDevice(device);
                 sample.setUser(user);
                 sample.setProvider(provider);
 
                 sample.setRawIntensity(ActivitySample.NOT_MEASURED);
 
-                Optional<PineTimeActivitySample> storedSample = provider.getSampleForTimestamp(sample.getTimestamp());
+                Optional<InfiniTimeActivitySample> storedSample = provider.getSampleForTimestamp(sample.getTimestamp());
                 if (storedSample.isPresent()) {
                     sample.setHeartRate(Math.max(sample.getHeartRate(), storedSample.get().getHeartRate()));
                     sample.setSteps(Math.max(sample.getSteps(), storedSample.get().getSteps()));
@@ -1163,8 +1163,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         }
     }
 
-    private void addGBActivitySample(PineTimeActivitySample sample) {
-        this.addGBActivitySamples(new PineTimeActivitySample[]{sample});
+    private void addGBActivitySample(InfiniTimeActivitySample sample) {
+        this.addGBActivitySamples(new InfiniTimeActivitySample[]{sample});
     }
 
     private void logDebug(String logMessage) {
