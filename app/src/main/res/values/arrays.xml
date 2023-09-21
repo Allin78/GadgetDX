@@ -3397,24 +3397,24 @@
 
     <string-array name="prefs_wena3_led_patterns">
         <item>@string/prefs_wena3_led_none</item>
-        <item>@string/prefs_wena3_led_red</item>
-        <item>@string/prefs_wena3_led_yellow</item>
-        <item>@string/prefs_wena3_led_green</item>
-        <item>@string/prefs_wena3_led_cyan</item>
-        <item>@string/prefs_wena3_led_blue</item>
-        <item>@string/prefs_wena3_led_purple</item>
-        <item>@string/prefs_wena3_led_white</item>
+        <item>@string/red</item>
+        <item>@string/yellow</item>
+        <item>@string/green</item>
+        <item>@string/cyan</item>
+        <item>@string/blue</item>
+        <item>@string/purple</item>
+        <item>@string/white</item>
     </string-array>
     <string-array name="prefs_wena3_led_patterns_with_default">
         <item>@string/pref_default</item>
         <item>@string/prefs_wena3_led_none</item>
-        <item>@string/prefs_wena3_led_red</item>
-        <item>@string/prefs_wena3_led_yellow</item>
-        <item>@string/prefs_wena3_led_green</item>
-        <item>@string/prefs_wena3_led_cyan</item>
-        <item>@string/prefs_wena3_led_blue</item>
-        <item>@string/prefs_wena3_led_purple</item>
-        <item>@string/prefs_wena3_led_white</item>
+        <item>@string/red</item>
+        <item>@string/yellow</item>
+        <item>@string/green</item>
+        <item>@string/cyan</item>
+        <item>@string/blue</item>
+        <item>@string/purple</item>
+        <item>@string/white</item>
     </string-array>
     <string-array name="prefs_wena3_led_pattern_values">
         <item>none</item>

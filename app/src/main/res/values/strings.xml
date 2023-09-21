@@ -2272,6 +2272,14 @@
     <string name="prefs_home_icon_center_item">Center</string>
     <string name="prefs_home_icon_right_item">Right</string>
 
+    <string name="red">Red</string>
+    <string name="yellow">Yellow</string>
+    <string name="green">Green</string>
+    <string name="cyan">Cyan</string>
+    <string name="blue">Blue</string>
+    <string name="purple">Purple</string>
+    <string name="white">White</string>
+
     <string name="prefs_wena3_title_screen">Display Settings</string>
     <string name="prefs_wena3_title_activity">Activity Settings</string>
     <string name="prefs_wena3_item_background_sync">Background Activity Data Sync</string>
@@ -2343,11 +2351,4 @@
     <string name="prefs_wena3_vibration_siren">Siren</string>
     <string name="prefs_wena3_vibration_short">Short</string>
     <string name="prefs_wena3_led_none">No LED</string>
-    <string name="prefs_wena3_led_red">Red</string>
-    <string name="prefs_wena3_led_yellow">Yellow</string>
-    <string name="prefs_wena3_led_green">Green</string>
-    <string name="prefs_wena3_led_cyan">Cyan</string>
-    <string name="prefs_wena3_led_blue">Blue</string>
-    <string name="prefs_wena3_led_purple">Purple</string>
-    <string name="prefs_wena3_led_white">White</string>
 </resources>
