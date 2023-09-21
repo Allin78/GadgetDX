@@ -116,7 +116,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
         qb.where(Wena3CaloriesSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
         qb = session.getWena3EnergySampleDao().queryBuilder();
         qb.where(Wena3EnergySampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
-        qb = session.getWena3StepsSampleDao().queryBuilder();
+        qb = session.getWena3ActivitySampleDao().queryBuilder();
         qb.where(Wena3StepsSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
         qb = session.getWena3Vo2SampleDao().queryBuilder();
         qb.where(Wena3Vo2SampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
@@ -176,12 +176,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsSpo2() {
-        return true;
-    }
-
-    @Override
-    public TimeSampleProvider<? extends Spo2Sample> getSpo2SampleProvider(GBDevice device, DaoSession session) {
-        return new SonyWena3Vo2SampleProvider(device, session);
+        return false;
     }
 
     @Override

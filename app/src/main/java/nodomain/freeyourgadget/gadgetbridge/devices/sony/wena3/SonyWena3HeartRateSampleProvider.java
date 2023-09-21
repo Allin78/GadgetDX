@@ -58,10 +58,4 @@ public class SonyWena3HeartRateSampleProvider extends AbstractTimeSampleProvider
     public Wena3HeartRateSample createSample() {
         return new Wena3HeartRateSample();
     }
-
-    @NonNull
-    @Override
-    public List<Wena3HeartRateSample> getAllSamples(long timestampFrom, long timestampTo) {
-        return super.getAllSamples(timestampFrom, timestampTo);
-    }
 }

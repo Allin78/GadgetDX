@@ -26,20 +26,20 @@ import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSampleDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.BehaviorSample;
 
-public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena3StepsSample> {
+public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena3ActivitySample> {
     public SonyWena3ActivitySampleProvider(GBDevice device, DaoSession session) {
         super(device, session);
     }
 
     @Override
-    public AbstractDao<Wena3StepsSample, ?> getSampleDao() {
-        return getSession().getWena3StepsSampleDao();
+    public AbstractDao<Wena3ActivitySample, ?> getSampleDao() {
+        return getSession().getWena3ActivitySampleDao();
     }
 
     @Nullable
@@ -51,13 +51,13 @@ public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena
     @NonNull
     @Override
     protected Property getTimestampSampleProperty() {
-        return Wena3StepsSampleDao.Properties.Timestamp;
+        return Wena3ActivitySampleDao.Properties.Timestamp;
     }
 
     @NonNull
     @Override
     protected Property getDeviceIdentifierSampleProperty() {
-        return Wena3StepsSampleDao.Properties.DeviceId;
+        return Wena3ActivitySampleDao.Properties.DeviceId;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class SonyWena3ActivitySampleProvider extends AbstractSampleProvider<Wena
     }
 
     @Override
-    public Wena3StepsSample createActivitySample() {
-        return new Wena3StepsSample();
+    public Wena3ActivitySample createActivitySample() {
+        return new Wena3ActivitySample();
     }
 }

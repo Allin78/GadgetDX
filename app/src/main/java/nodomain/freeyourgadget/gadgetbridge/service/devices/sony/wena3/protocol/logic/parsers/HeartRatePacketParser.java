@@ -29,6 +29,8 @@ import java.util.List;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleCombiner;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRateSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -63,6 +65,12 @@ public class HeartRatePacketParser extends OneBytePerSamplePacketParser {
             }
 
             sampleProvider.addSamples(samples);
+
+            if(!accumulator.isEmpty()) {
+                SonyWena3ActivitySampleProvider activitySampleProvider = new SonyWena3ActivitySampleProvider(device, db.getDaoSession());
+                SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(activitySampleProvider);
+                combiner.overlayHeartRateStartingAt(startDate, sampleProvider);
+            }
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording heart rate samples", e);
         }

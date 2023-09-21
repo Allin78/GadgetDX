@@ -26,7 +26,9 @@ import java.util.Date;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.activity.BehaviorSample;
 
 // The sole purpose of this part of code is to take the Behavior samples
@@ -34,23 +36,40 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.
 // architecture of Gadgetbridge)
 public class SonyWena3ActivitySampleCombiner {
     private static final Logger LOG = LoggerFactory.getLogger(SonyWena3ActivitySampleCombiner.class);
-    final SonyWena3BehaviorSampleProvider behaviorSampleProvider;
     final SonyWena3ActivitySampleProvider activitySampleProvider;
 
-    public SonyWena3ActivitySampleCombiner(SonyWena3BehaviorSampleProvider behaviorSampleProvider, SonyWena3ActivitySampleProvider activitySampleProvider) {
-        this.behaviorSampleProvider = behaviorSampleProvider;
+    public SonyWena3ActivitySampleCombiner(SonyWena3ActivitySampleProvider activitySampleProvider) {
         this.activitySampleProvider = activitySampleProvider;
     }
 
-    public void overlayBehaviorStartingAt(Date startDate) {
+    public void overlayBehaviorStartingAt(Date startDate, SonyWena3BehaviorSampleProvider behaviorSampleProvider) {
         List<Wena3BehaviorSample> behaviorSamples = behaviorSampleProvider.getAllSamples(startDate.getTime(), Long.MAX_VALUE);
         for(Wena3BehaviorSample behaviorSample: behaviorSamples) {
-            List<Wena3StepsSample> activitySamplesForThisRange = activitySampleProvider.getAllActivitySamples((int)(behaviorSample.getTimestampFrom() / 1000L), (int)(behaviorSample.getTimestampTo() / 1000L));
+            List<Wena3ActivitySample> activitySamplesForThisRange = activitySampleProvider.getAllActivitySamples((int)(behaviorSample.getTimestampFrom() / 1000L), (int)(behaviorSample.getTimestampTo() / 1000L));
 
-            LOG.info("Changing " + activitySamplesForThisRange.size() + " samples to: " + BehaviorSample.Type.LUT[behaviorSample.getRawKind()].name());
-            for(Wena3StepsSample stepSample: activitySamplesForThisRange) {
-                stepSample.setRawKind(behaviorSample.getRawKind());
-                activitySampleProvider.addGBActivitySample(stepSample);
+            LOG.debug("Changing " + activitySamplesForThisRange.size() + " samples to behavior type: " + BehaviorSample.Type.LUT[behaviorSample.getRawKind()].name());
+            for(Wena3ActivitySample activitySample: activitySamplesForThisRange) {
+                activitySample.setRawKind(behaviorSample.getRawKind());
+                activitySampleProvider.addGBActivitySample(activitySample);
+            }
+        }
+    }
+
+    public void overlayHeartRateStartingAt(Date startDate, SonyWena3HeartRateSampleProvider heartRateSampleProvider) {
+        List<Wena3HeartRateSample> heartRateSamples = heartRateSampleProvider.getAllSamples(startDate.getTime(), Long.MAX_VALUE);
+        for(int i = 0; i < heartRateSamples.size(); i ++) {
+            HeartRateSample currentSample = heartRateSamples.get(i);
+            HeartRateSample nextSample = (i == heartRateSamples.size() - 1) ? null : heartRateSamples.get(i + 1);
+
+            List<Wena3ActivitySample> activitySamplesInRange = activitySampleProvider.getAllActivitySamples(
+                    (int) (currentSample.getTimestamp() / 1000L),
+                    (nextSample == null ? Integer.MAX_VALUE : ((int) (nextSample.getTimestamp() / 1000L)))
+            );
+
+            LOG.debug("Changing " + activitySamplesInRange.size() + " samples to heart rate: " + currentSample.getHeartRate());
+            for(Wena3ActivitySample activitySample: activitySamplesInRange) {
+                activitySample.setHeartRate(currentSample.getHeartRate());
+                activitySampleProvider.addGBActivitySample(activitySample);
             }
         }
     }

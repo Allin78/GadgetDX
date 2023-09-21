@@ -30,7 +30,8 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleCombiner;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3ActivitySampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3BehaviorSampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRateSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
 public class StepsPacketParser extends OneBytePerSamplePacketParser {
@@ -50,7 +51,7 @@ public class StepsPacketParser extends OneBytePerSamplePacketParser {
             Date currentSampleDate = startDate;
             int i = 0;
             for(int rawSample: accumulator) {
-                Wena3StepsSample gbSample = new Wena3StepsSample();
+                Wena3ActivitySample gbSample = new Wena3ActivitySample();
                 gbSample.setDeviceId(deviceId);
                 gbSample.setUserId(userId);
                 gbSample.setTimestamp((int)(currentSampleDate.getTime() / 1000L));
@@ -61,9 +62,13 @@ public class StepsPacketParser extends OneBytePerSamplePacketParser {
                 currentSampleDate = timestampOfSampleAtIndex(i);
             }
 
+            SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(sampleProvider);
+
             SonyWena3BehaviorSampleProvider behaviorSampleProvider = new SonyWena3BehaviorSampleProvider(device, db.getDaoSession());
-            SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(behaviorSampleProvider, sampleProvider);
-            combiner.overlayBehaviorStartingAt(startDate);
+            combiner.overlayBehaviorStartingAt(startDate, behaviorSampleProvider);
+
+            SonyWena3HeartRateSampleProvider heartRateSampleProvider = new SonyWena3HeartRateSampleProvider(device, db.getDaoSession());
+            combiner.overlayHeartRateStartingAt(startDate, heartRateSampleProvider);
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording steps samples", e);
         }

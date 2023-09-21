@@ -56,7 +56,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StepsSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
@@ -317,7 +317,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                         stressLastSyncTime = new Date(stressSample.getTimestamp());
                     }
 
-                    Wena3StepsSample stepsSample = new SonyWena3ActivitySampleProvider(getDevice(), db.getDaoSession()).getLatestActivitySample();
+                    Wena3ActivitySample stepsSample = new SonyWena3ActivitySampleProvider(getDevice(), db.getDaoSession()).getLatestActivitySample();
                     if(stepsSample != null) {
                         stepLastSyncTime = new Date(stepsSample.getTimestamp() * 1000L);
                     }

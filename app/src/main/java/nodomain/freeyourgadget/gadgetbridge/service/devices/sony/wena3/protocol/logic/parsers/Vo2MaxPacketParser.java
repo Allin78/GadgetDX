@@ -80,8 +80,7 @@ public class Vo2MaxPacketParser extends SamplePacketParser<Vo2MaxSample> {
                 gbSample.setUserId(userId);
                 gbSample.setTimestamp(currentSampleDate.getTime());
                 gbSample.setDatapoint(currentDateDatapoint);
-                gbSample.setType(Spo2Sample.Type.AUTOMATIC);
-                gbSample.setSpo2(rawSample.value);
+                gbSample.setVo2(rawSample.value);
                 sampleProvider.addSample(gbSample);
             }
         } catch (Exception e) {

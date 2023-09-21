@@ -90,8 +90,8 @@ public class BehaviorPacketParser extends SamplePacketParser<BehaviorSample>  {
 
             if(!accumulator.isEmpty()) {
                 SonyWena3ActivitySampleProvider activitySampleProvider = new SonyWena3ActivitySampleProvider(device, db.getDaoSession());
-                SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(sampleProvider, activitySampleProvider);
-                combiner.overlayBehaviorStartingAt(accumulator.get(0).start);
+                SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(activitySampleProvider);
+                combiner.overlayBehaviorStartingAt(accumulator.get(0).start, sampleProvider);
             }
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording Behavior samples", e);

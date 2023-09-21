@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(52, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(55, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -97,7 +97,7 @@ public class GBDaoGenerator {
         addWena3EnergySample(schema, user, device);
         addWena3BehaviorSample(schema, user, device);
         addWena3CaloriesSample(schema, user, device);
-        addWena3StepsSample(schema, user, device);
+        addWena3ActivitySample(schema, user, device);
         addWena3HeartRateSample(schema, user, device);
         addWena3Vo2Sample(schema, user, device);
         addWena3StressSample(schema, user, device);
@@ -883,9 +883,8 @@ public class GBDaoGenerator {
 
     private static Entity addWena3Vo2Sample(Schema schema, Entity user, Entity device) {
         Entity activitySample = addEntity(schema, "Wena3Vo2Sample");
-        addCommonTimeSampleProperties("AbstractSpo2Sample", activitySample, user, device);
-        activitySample.addIntProperty("spo2").notNull();
-        activitySample.addIntProperty("typeNum").notNull().codeBeforeGetter(OVERRIDE);
+        addCommonTimeSampleProperties("AbstractTimeSample", activitySample, user, device);
+        activitySample.addIntProperty("vo2").notNull();
         activitySample.addIntProperty("datapoint").notNull();
         return activitySample;
     }
@@ -898,10 +897,11 @@ public class GBDaoGenerator {
         return stressSample;
     }
 
-    private static Entity addWena3StepsSample(Schema schema, Entity user, Entity device) {
-        Entity activitySample = addEntity(schema, "Wena3StepsSample");
+    private static Entity addWena3ActivitySample(Schema schema, Entity user, Entity device) {
+        Entity activitySample = addEntity(schema, "Wena3ActivitySample");
         addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
         activitySample.addIntProperty(SAMPLE_STEPS).notNull();
+        addHeartRateProperties(activitySample);
         return activitySample;
     }
 
