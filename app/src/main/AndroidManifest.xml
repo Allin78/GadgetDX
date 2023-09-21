@@ -398,7 +398,7 @@
         </activity>
         <activity
             android:exported="false"
-            android:name=".devices.sony.wena3.per_app_notifications.SonyWena3PerAppNotificationSettingsActivity"
+            android:name=".activities.app_specific_notifications.AppSpecificNotificationSettingsActivity"
             android:label="@string/prefs_wena3_notification_per_app_settings_title"
             android:parentActivityName=".activities.devicesettings.DeviceSettingsActivity">
             <intent-filter>
@@ -408,9 +408,9 @@
         </activity>
         <activity
             android:exported="false"
-            android:name=".devices.sony.wena3.per_app_notifications.SonyWena3PerAppNotificationSettingDetailActivity"
+            android:name=".activities.app_specific_notifications.AppSpecificNotificationSettingsDetailActivity"
             android:label="@string/prefs_wena3_notification_per_app_settings_title"
-            android:parentActivityName=".devices.sony.wena3.per_app_notifications.SonyWena3PerAppNotificationSettingsActivity"
+            android:parentActivityName=".activities.app_specific_notifications.AppSpecificNotificationSettingsActivity"
             />
 
         <service

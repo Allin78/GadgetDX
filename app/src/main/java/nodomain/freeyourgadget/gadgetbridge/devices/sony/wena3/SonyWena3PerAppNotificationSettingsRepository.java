@@ -17,15 +17,15 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.per_app_notifications;
+package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import de.greenrobot.dao.query.QueryBuilder;
+import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSettingDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3PerAppNotificationSetting;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3PerAppNotificationSettingDao;
+import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSetting;
 
 public class SonyWena3PerAppNotificationSettingsRepository {
     private final DaoSession session;
@@ -35,24 +35,24 @@ public class SonyWena3PerAppNotificationSettingsRepository {
     }
 
     @Nullable
-    public Wena3PerAppNotificationSetting getSettingsForAppId(String appId) {
-        QueryBuilder<Wena3PerAppNotificationSetting> qb = session.getWena3PerAppNotificationSettingDao().queryBuilder();
+    public AppSpecificNotificationSetting getSettingsForAppId(String appId) {
+        QueryBuilder<AppSpecificNotificationSetting> qb = session.getAppSpecificNotificationSettingDao().queryBuilder();
         return qb
-                .where(Wena3PerAppNotificationSettingDao.Properties.PackageId.eq(appId))
+                .where(AppSpecificNotificationSettingDao.Properties.PackageId.eq(appId))
                 .build().unique();
     }
 
     private void deleteForAppId(@NonNull String appId) {
-        QueryBuilder<Wena3PerAppNotificationSetting> qb = session.getWena3PerAppNotificationSettingDao().queryBuilder();
-        qb.where(Wena3PerAppNotificationSettingDao.Properties.PackageId.eq(appId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        QueryBuilder<AppSpecificNotificationSetting> qb = session.getAppSpecificNotificationSettingDao().queryBuilder();
+        qb.where(AppSpecificNotificationSettingDao.Properties.PackageId.eq(appId)).buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
-    public void setSettingsForAppId(@NonNull String appId, @Nullable Wena3PerAppNotificationSetting settings) {
+    public void setSettingsForAppId(@NonNull String appId, @Nullable AppSpecificNotificationSetting settings) {
         if (settings == null) {
             deleteForAppId(appId);
         } else {
             settings.setPackageId(appId);
-            session.getWena3PerAppNotificationSettingDao().insertOrReplace(settings);
+            session.getAppSpecificNotificationSettingDao().insertOrReplace(settings);
         }
     }
 }

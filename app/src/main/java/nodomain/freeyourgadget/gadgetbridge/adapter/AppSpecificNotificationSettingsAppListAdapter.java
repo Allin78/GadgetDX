@@ -1,21 +1,22 @@
-/*  Copyright (C) 2017-2020 abettenburg, AndrewBedscastle, Carsten Pfeiffer,
-    Daniele Gobbetti
-
-    This file is part of Gadgetbridge.
-
-    Gadgetbridge is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as published
-    by the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    Gadgetbridge is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.per_app_notifications;
+/*
+ *   Copyright (C) 2023 akasaka / Genjitsu Labs
+ *
+ *     This file is part of Gadgetbridge.
+ *
+ *     Gadgetbridge is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU Affero General Public License as published
+ *     by the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Gadgetbridge is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU Affero General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Affero General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package nodomain.freeyourgadget.gadgetbridge.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +37,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedList;
@@ -46,14 +46,15 @@ import java.util.Set;
 import androidx.recyclerview.widget.RecyclerView;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.app_specific_notifications.AppSpecificNotificationSettingsDetailActivity;
 
 import static nodomain.freeyourgadget.gadgetbridge.GBApplication.packageNameToPebbleMsgSender;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SonyWena3PerAppNotificationSettingsAdapter extends RecyclerView.Adapter<SonyWena3PerAppNotificationSettingsAdapter.AppNotificationSettingsViewHolder> implements Filterable {
-    protected static final Logger LOG = LoggerFactory.getLogger(SonyWena3PerAppNotificationSettingsAdapter.class);
+public class AppSpecificNotificationSettingsAppListAdapter extends RecyclerView.Adapter<AppSpecificNotificationSettingsAppListAdapter.AppNotificationSettingsViewHolder> implements Filterable {
+    protected static final Logger LOG = LoggerFactory.getLogger(AppSpecificNotificationSettingsAppListAdapter.class);
 
     public static final String STRING_EXTRA_PACKAGE_NAME = "packageName";
     public static final String STRING_EXTRA_PACKAGE_TITLE = "packageTitle";
@@ -66,7 +67,7 @@ public class SonyWena3PerAppNotificationSettingsAdapter extends RecyclerView.Ada
 
     private ApplicationFilter applicationFilter;
 
-    public SonyWena3PerAppNotificationSettingsAdapter(int layoutId, Context context) {
+    public AppSpecificNotificationSettingsAppListAdapter(int layoutId, Context context) {
         mLayoutId = layoutId;
         mContext = context;
         mPm = context.getPackageManager();
@@ -106,14 +107,14 @@ public class SonyWena3PerAppNotificationSettingsAdapter extends RecyclerView.Ada
         holder.deviceImageView.setImageDrawable(appInfo.loadIcon(mPm));
 
         holder.itemView.setOnClickListener(v -> {
-            Intent intentStartNotificationFilterActivity = new Intent(mContext, SonyWena3PerAppNotificationSettingDetailActivity.class);
+            Intent intentStartNotificationFilterActivity = new Intent(mContext, AppSpecificNotificationSettingsDetailActivity.class);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_TITLE, mNameMap.get(appInfo));
             mContext.startActivity(intentStartNotificationFilterActivity);
         });
 
         holder.btnConfigureApp.setOnClickListener(view -> {
-            Intent intentStartNotificationFilterActivity = new Intent(mContext, SonyWena3PerAppNotificationSettingDetailActivity.class);
+            Intent intentStartNotificationFilterActivity = new Intent(mContext, AppSpecificNotificationSettingsDetailActivity.class);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_TITLE, mNameMap.get(appInfo));
             mContext.startActivity(intentStartNotificationFilterActivity);
@@ -201,11 +202,11 @@ public class SonyWena3PerAppNotificationSettingsAdapter extends RecyclerView.Ada
 
     private class ApplicationFilter extends Filter {
 
-        private final SonyWena3PerAppNotificationSettingsAdapter adapter;
+        private final AppSpecificNotificationSettingsAppListAdapter adapter;
         private final List<ApplicationInfo> originalList;
         private final List<ApplicationInfo> filteredList;
 
-        private ApplicationFilter(SonyWena3PerAppNotificationSettingsAdapter adapter, List<ApplicationInfo> originalList) {
+        private ApplicationFilter(AppSpecificNotificationSettingsAppListAdapter adapter, List<ApplicationInfo> originalList) {
             super();
             this.originalList = new ArrayList<>(originalList);
             this.filteredList = new ArrayList<>();

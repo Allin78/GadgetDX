@@ -17,7 +17,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.per_app_notifications;
+package nodomain.freeyourgadget.gadgetbridge.activities.app_specific_notifications;
 
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -31,21 +31,22 @@ import org.slf4j.LoggerFactory;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
+import nodomain.freeyourgadget.gadgetbridge.adapter.AppSpecificNotificationSettingsAppListAdapter;
 
-public class SonyWena3PerAppNotificationSettingsActivity extends AbstractGBActivity {
+public class AppSpecificNotificationSettingsActivity extends AbstractGBActivity {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SonyWena3PerAppNotificationSettingsActivity.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AppSpecificNotificationSettingsActivity.class);
 
-    private SonyWena3PerAppNotificationSettingsAdapter appListAdapter;
+    private AppSpecificNotificationSettingsAppListAdapter appListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wena3_appsettings);
+        setContentView(R.layout.activity_app_specific_notification_settings);
         RecyclerView appListView = findViewById(R.id.appListView);
         appListView.setLayoutManager(new LinearLayoutManager(this));
 
-        appListAdapter = new SonyWena3PerAppNotificationSettingsAdapter(R.layout.item_wena3_applist, this);
+        appListAdapter = new AppSpecificNotificationSettingsAppListAdapter(R.layout.item_app_specific_notification_app_list, this);
 
         appListView.setAdapter(appListAdapter);
 

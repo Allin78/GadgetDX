@@ -52,13 +52,13 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRat
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.per_app_notifications.SonyWena3PerAppNotificationSettingsRepository;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3PerAppNotificationSettingsRepository;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3PerAppNotificationSetting;
+import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSetting;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
@@ -538,14 +538,14 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             int vibraRepeats = prefs.getInt(SonyWena3SettingKeys.DEFAULT_VIBRATION_REPETITION, 1);
 
             if(notificationSpec.sourceAppId != null) {
-                Wena3PerAppNotificationSetting appSpecificSetting = perAppNotificationSettingsRepository.getSettingsForAppId(notificationSpec.sourceAppId);
+                AppSpecificNotificationSetting appSpecificSetting = perAppNotificationSettingsRepository.getSettingsForAppId(notificationSpec.sourceAppId);
                 if(appSpecificSetting != null) {
-                    if(appSpecificSetting.getLedPatternIdName() != null) {
-                        led = LedColor.valueOf(appSpecificSetting.getLedPatternIdName().toUpperCase());
+                    if(appSpecificSetting.getLedPattern() != null) {
+                        led = LedColor.valueOf(appSpecificSetting.getLedPattern().toUpperCase());
                     }
 
-                    if(appSpecificSetting.getVibrationPatternIdName() != null) {
-                        vibra = VibrationKind.valueOf(appSpecificSetting.getVibrationPatternIdName().toUpperCase());
+                    if(appSpecificSetting.getVibrationPattern() != null) {
+                        vibra = VibrationKind.valueOf(appSpecificSetting.getVibrationPattern().toUpperCase());
                     }
 
                     if(appSpecificSetting.getVibrationCount() != null) {

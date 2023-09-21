@@ -17,10 +17,9 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.per_app_notifications;
+package nodomain.freeyourgadget.gadgetbridge.activities.app_specific_notifications;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 
@@ -31,12 +30,14 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
-import nodomain.freeyourgadget.gadgetbridge.entities.Wena3PerAppNotificationSetting;
+import nodomain.freeyourgadget.gadgetbridge.adapter.AppSpecificNotificationSettingsAppListAdapter;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3PerAppNotificationSettingsRepository;
+import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.LedColor;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationKind;
 
-public class SonyWena3PerAppNotificationSettingDetailActivity extends AbstractGBActivity {
-    private static final Logger LOG = LoggerFactory.getLogger(SonyWena3PerAppNotificationSettingDetailActivity.class);
+public class AppSpecificNotificationSettingsDetailActivity extends AbstractGBActivity {
+    private static final Logger LOG = LoggerFactory.getLogger(AppSpecificNotificationSettingsDetailActivity.class);
 
     private SonyWena3PerAppNotificationSettingsRepository repository = null;
     private String bundleId = null;
@@ -54,9 +55,9 @@ public class SonyWena3PerAppNotificationSettingDetailActivity extends AbstractGB
         mSpinnerVibrationPattern = findViewById(R.id.spinnerVibraType);
         mSpinnerVibrationCount = findViewById(R.id.spinnerVibraCount);
 
-        String title = getIntent().getStringExtra(SonyWena3PerAppNotificationSettingsAdapter.STRING_EXTRA_PACKAGE_TITLE);
+        String title = getIntent().getStringExtra(AppSpecificNotificationSettingsAppListAdapter.STRING_EXTRA_PACKAGE_TITLE);
         setTitle(title);
-        bundleId = getIntent().getStringExtra(SonyWena3PerAppNotificationSettingsAdapter.STRING_EXTRA_PACKAGE_NAME);
+        bundleId = getIntent().getStringExtra(AppSpecificNotificationSettingsAppListAdapter.STRING_EXTRA_PACKAGE_NAME);
 
         try (DBHandler db = GBApplication.acquireDB()) {
             repository = new SonyWena3PerAppNotificationSettingsRepository(db.getDaoSession());
@@ -74,17 +75,17 @@ public class SonyWena3PerAppNotificationSettingDetailActivity extends AbstractGB
             finish();
         });
 
-        Wena3PerAppNotificationSetting setting = repository.getSettingsForAppId(bundleId);
+        AppSpecificNotificationSetting setting = repository.getSettingsForAppId(bundleId);
         if(setting != null) {
-            if(setting.getLedPatternIdName() != null) {
-                LedColor color = LedColor.valueOf(setting.getLedPatternIdName().toUpperCase());
+            if(setting.getLedPattern() != null) {
+                LedColor color = LedColor.valueOf(setting.getLedPattern().toUpperCase());
                 mSpinnerLedPattern.setSelection(color.ordinal() + 1);
             } else {
                 mSpinnerLedPattern.setSelection(0);
             }
 
-            if(setting.getVibrationPatternIdName() != null) {
-                VibrationKind kind = VibrationKind.valueOf(setting.getVibrationPatternIdName().toUpperCase());
+            if(setting.getVibrationPattern() != null) {
+                VibrationKind kind = VibrationKind.valueOf(setting.getVibrationPattern().toUpperCase());
                 mSpinnerVibrationPattern.setSelection(kind.ordinal() + 1);
             } else {
                 mSpinnerVibrationPattern.setSelection(0);
@@ -115,7 +116,7 @@ public class SonyWena3PerAppNotificationSettingDetailActivity extends AbstractGB
             vibraTimes = mSpinnerVibrationCount.getSelectedItemPosition() - 1;
         }
 
-        Wena3PerAppNotificationSetting setting = new Wena3PerAppNotificationSetting(
+        AppSpecificNotificationSetting setting = new AppSpecificNotificationSetting(
                 bundleId,
                 led == null ? null : led.name().toLowerCase(),
                 vibra == null ? null : vibra.name().toLowerCase(),

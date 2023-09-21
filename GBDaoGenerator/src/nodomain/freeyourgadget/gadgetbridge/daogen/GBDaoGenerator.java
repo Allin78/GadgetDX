@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(57, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(58, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -101,13 +101,13 @@ public class GBDaoGenerator {
         addWena3HeartRateSample(schema, user, device);
         addWena3Vo2Sample(schema, user, device);
         addWena3StressSample(schema, user, device);
-        addWena3PerAppSetting(schema);
 
         addCalendarSyncState(schema, device);
         addAlarms(schema, user, device);
         addReminders(schema, user, device);
         addWorldClocks(schema, user, device);
         addContacts(schema, user, device);
+        addAppSpecificNotificationSettings(schema);
 
         Entity notificationFilter = addNotificationFilters(schema);
 
@@ -886,7 +886,7 @@ public class GBDaoGenerator {
         Entity activitySample = addEntity(schema, "Wena3Vo2Sample");
         addCommonTimeSampleProperties("AbstractTimeSample", activitySample, user, device);
         activitySample.addIntProperty("vo2").notNull();
-        activitySample.addIntProperty("datapoint").notNull();
+        activitySample.addIntProperty("datapoint").notNull().primaryKey();
         return activitySample;
     }
 
@@ -928,11 +928,11 @@ public class GBDaoGenerator {
         return activitySample;
     }
 
-    private static Entity addWena3PerAppSetting(Schema schema) {
-        Entity perAppSetting = addEntity(schema, "Wena3PerAppNotificationSetting");
+    private static Entity addAppSpecificNotificationSettings(Schema schema) {
+        Entity perAppSetting = addEntity(schema, "AppSpecificNotificationSetting");
         perAppSetting.addStringProperty("packageId").notNull().primaryKey();
-        perAppSetting.addStringProperty("ledPatternIdName");
-        perAppSetting.addStringProperty("vibrationPatternIdName");
+        perAppSetting.addStringProperty("ledPattern");
+        perAppSetting.addStringProperty("vibrationPattern");
         perAppSetting.addIntProperty("vibrationCount");
         return perAppSetting;
     }
