@@ -769,9 +769,20 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     private void sendMenuSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
+        String[] csv = prefs.getString(SonyWena3SettingKeys.MENU_ICON_CSV_KEY,
+            MenuIconId.ALARM.name() + "," +
+                    MenuIconId.FIND_PHONE.name() + "," +
+                    MenuIconId.WEATHER.name() + "," +
+                    MenuIconId.CAMERA.name() + "," +
+                    MenuIconId.MUSIC.name() + "," +
+                    MenuIconId.PAYMENT.name()
+                )
+                .toUpperCase()
+                .split(",");
+
         MenuIconSetting menu = new MenuIconSetting();
-        for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
-            String iconIdName = prefs.getString(SonyWena3SettingKeys.menuIconKeyFor(i), MenuIconId.NONE.name()).toUpperCase();
+
+        for(String iconIdName: csv) {
             if(!iconIdName.equals(MenuIconId.NONE.name())) {
                 menu.iconList.add(MenuIconId.valueOf(iconIdName));
             }
@@ -786,8 +797,18 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private void sendStatusPageSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         StatusPageOrderSetting pageOrderSetting = new StatusPageOrderSetting();
-        for(int i = 0; i < SonyWena3SettingKeys.MAX_STATUS_PAGES; i++) {
-            String idName = prefs.getString(SonyWena3SettingKeys.statusPageKeyFor(i), StatusPageId.NONE.name()).toUpperCase();
+        String[] csv = prefs.getString(SonyWena3SettingKeys.STATUS_PAGE_CSV_KEY,
+                        StatusPageId.PEDOMETER.name() + "," +
+                                StatusPageId.SLEEP.name() + "," +
+                                StatusPageId.HEART_RATE.name() + "," +
+                                StatusPageId.VO2MAX.name() + "," +
+                                StatusPageId.STRESS.name() + "," +
+                                StatusPageId.ENERGY.name() + "," +
+                                StatusPageId.CALORIES.name()
+                )
+                .toUpperCase()
+                .split(",");
+        for(String idName: csv) {
             if(!idName.equals(StatusPageId.NONE.name())) {
                 pageOrderSetting.pages.add(StatusPageId.valueOf(idName));
             }
@@ -946,11 +967,15 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     public void onSendConfiguration(String config) {
         try {
             TransactionBuilder builder = performInitialized("sendConfig");
-            if(config.startsWith(SonyWena3SettingKeys.MENU_ICON_KEY_PREFIX)) {
-                sendMenuSettings(builder);
-            } else if(config.startsWith(SonyWena3SettingKeys.STATUS_PAGE_KEY_PREFIX)) {
-                sendStatusPageSettings(builder);
-            } else switch (config) {
+            switch (config) {
+                case SonyWena3SettingKeys.STATUS_PAGE_CSV_KEY:
+                    sendStatusPageSettings(builder);
+                    break;
+
+                case SonyWena3SettingKeys.MENU_ICON_CSV_KEY:
+                    sendMenuSettings(builder);
+                    break;
+
                 case DeviceSettingsPreferenceConst.PREF_SCREEN_LIFT_WRIST:
                 case DeviceSettingsPreferenceConst.PREF_LANGUAGE:
                 case DeviceSettingsPreferenceConst.PREF_SCREEN_TIMEOUT:

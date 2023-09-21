@@ -33,19 +33,10 @@ public class SonyWena3SettingKeys {
     public static final String LEFT_HOME_ICON = "pref_wena3_home_icon_left";
     public static final String CENTER_HOME_ICON = "pref_wena3_home_icon_center";
     public static final String RIGHT_HOME_ICON = "pref_wena3_home_icon_right";
-    public static final String MENU_ICON_KEY_PREFIX = "pref_wena3_menu_icon_";
-    public static final int MAX_MENU_ICONS = 9;
-    public static String menuIconKeyFor(int number) {
-        assert number < MAX_MENU_ICONS;
-        return MENU_ICON_KEY_PREFIX + number;
-    }
-
-    public static final String STATUS_PAGE_KEY_PREFIX = "pref_wena3_status_page_";
+    public static final String MENU_ICON_CSV_KEY = "pref_wena3_menu_icon_csv";
+    public static final String STATUS_PAGE_CSV_KEY = "pref_wena3_status_pages_csv";
     public static final int MAX_STATUS_PAGES = 7;
-    public static String statusPageKeyFor(int number) {
-        assert number < MAX_STATUS_PAGES;
-        return STATUS_PAGE_KEY_PREFIX + number;
-    }
+
     public static final String DEFAULT_CALL_LED_COLOR = "pref_wena3_default_call_led_color";
     public static final String DEFAULT_LED_COLOR = "pref_wena3_default_led_color";
     public static final String DEFAULT_CALL_VIBRATION_PATTERN = "pref_wena3_call_default_vibration";

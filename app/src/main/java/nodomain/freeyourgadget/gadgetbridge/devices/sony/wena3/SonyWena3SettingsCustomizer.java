@@ -48,12 +48,8 @@ public class SonyWena3SettingsCustomizer implements DeviceSpecificSettingsCustom
         handler.addPreferenceHandlerFor(SonyWena3SettingKeys.AUTO_POWER_SCHEDULE_END_HHMM);
         handler.addPreferenceHandlerFor(SonyWena3SettingKeys.BUTTON_DOUBLE_PRESS_ACTION);
         handler.addPreferenceHandlerFor(SonyWena3SettingKeys.BUTTON_LONG_PRESS_ACTION);
-        for(int i = 0; i < SonyWena3SettingKeys.MAX_MENU_ICONS; i++) {
-            handler.addPreferenceHandlerFor(SonyWena3SettingKeys.menuIconKeyFor(i));
-        }
-        for(int i = 0; i < SonyWena3SettingKeys.MAX_STATUS_PAGES; i++) {
-            handler.addPreferenceHandlerFor(SonyWena3SettingKeys.statusPageKeyFor(i));
-        }
+        handler.addPreferenceHandlerFor(SonyWena3SettingKeys.MENU_ICON_CSV_KEY);
+        handler.addPreferenceHandlerFor(SonyWena3SettingKeys.STATUS_PAGE_CSV_KEY);
     }
 
     @Override

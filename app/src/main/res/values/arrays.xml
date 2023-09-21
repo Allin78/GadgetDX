@@ -3172,7 +3172,6 @@
     </string-array>
 
     <string-array name="prefs_wena3_menu_icons_names_list">
-        <item>@string/menuitem_nothing</item>
         <item>@string/menuitem_timer</item>
         <item>@string/menuitem_alarm</item>
         <item>@string/menuitem_findphone</item>
@@ -3184,7 +3183,6 @@
         <item>@string/menuitem_takephoto</item>
     </string-array>
     <string-array name="prefs_wena3_menu_icons_values_list">
-        <item>none</item>
         <item>timer</item>
         <item>alarm</item>
         <item>find_phone</item>
@@ -3195,9 +3193,16 @@
         <item>music</item>
         <item>camera</item>
     </string-array>
+    <string-array name="prefs_wena3_menu_icons_default_list">
+        <item>alarm</item>
+        <item>find_phone</item>
+        <item>weather</item>
+        <item>camera</item>
+        <item>music</item>
+        <item>payment</item>
+    </string-array>
 
     <string-array name="prefs_wena3_status_pages_list">
-        <item>@string/menuitem_nothing</item>
         <item>@string/prefs_wena3_home_icon_name_pedometer</item>
         <item>@string/menuitem_sleep</item>
         <item>@string/menuitem_hr</item>
@@ -3207,7 +3212,15 @@
         <item>@string/prefs_wena3_home_icon_name_calories</item>
     </string-array>
     <string-array name="prefs_wena3_status_page_values_list">
-        <item>none</item>
+        <item>pedometer</item>
+        <item>sleep</item>
+        <item>heart_rate</item>
+        <item>vo2max</item>
+        <item>stress</item>
+        <item>energy</item>
+        <item>calories</item>
+    </string-array>
+    <string-array name="prefs_wena3_status_page_default_list">
         <item>pedometer</item>
         <item>sleep</item>
         <item>heart_rate</item>
