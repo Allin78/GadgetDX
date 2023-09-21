@@ -3348,8 +3348,29 @@
         <item>3</item>
         <item>4</item>
     </string-array>
+    <string-array name="prefs_wena3_vibration_times_with_default">
+        <item>@string/pref_default</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_0</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_1</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_2</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_3</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_4</item>
+    </string-array>
 
     <string-array name="prefs_wena3_vibration_patterns">
+        <item>@string/prefs_wena3_vibration_none</item>
+        <item>@string/prefs_wena3_vibration_continuous</item>
+        <item>@string/prefs_wena3_vibration_basic</item>
+        <item>@string/prefs_wena3_vibration_rapid</item>
+        <item>@string/prefs_wena3_vibration_triple</item>
+        <item>@string/prefs_wena3_vibration_step_up</item>
+        <item>@string/prefs_wena3_vibration_step_down</item>
+        <item>@string/prefs_wena3_vibration_warning</item>
+        <item>@string/prefs_wena3_vibration_siren</item>
+        <item>@string/prefs_wena3_vibration_short</item>
+    </string-array>
+    <string-array name="prefs_wena3_vibration_patterns_with_default">
+        <item>@string/pref_default</item>
         <item>@string/prefs_wena3_vibration_none</item>
         <item>@string/prefs_wena3_vibration_continuous</item>
         <item>@string/prefs_wena3_vibration_basic</item>
@@ -3375,6 +3396,17 @@
     </string-array>
 
     <string-array name="prefs_wena3_led_patterns">
+        <item>@string/prefs_wena3_led_none</item>
+        <item>@string/prefs_wena3_led_red</item>
+        <item>@string/prefs_wena3_led_yellow</item>
+        <item>@string/prefs_wena3_led_green</item>
+        <item>@string/prefs_wena3_led_cyan</item>
+        <item>@string/prefs_wena3_led_blue</item>
+        <item>@string/prefs_wena3_led_purple</item>
+        <item>@string/prefs_wena3_led_white</item>
+    </string-array>
+    <string-array name="prefs_wena3_led_patterns_with_default">
+        <item>@string/pref_default</item>
         <item>@string/prefs_wena3_led_none</item>
         <item>@string/prefs_wena3_led_red</item>
         <item>@string/prefs_wena3_led_yellow</item>

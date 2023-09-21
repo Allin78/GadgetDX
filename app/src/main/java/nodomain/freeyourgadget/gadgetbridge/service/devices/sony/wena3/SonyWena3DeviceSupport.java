@@ -52,11 +52,13 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRat
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.per_app_notifications.SonyWena3PerAppNotificationSettingsRepository;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.entities.Wena3PerAppNotificationSetting;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
@@ -136,6 +138,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private String lastMusicInfo = null;
     private final List<CalendarEventSpec> calendarEvents = new ArrayList<>();
     private final ActivitySyncPacketProcessor activitySyncHandler = new ActivitySyncPacketProcessor();
+    private SonyWena3PerAppNotificationSettingsRepository perAppNotificationSettingsRepository = null;
 
     public SonyWena3DeviceSupport() {
         super(LoggerFactory.getLogger(SonyWena3DeviceSupport.class));
@@ -159,6 +162,14 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
+        if(perAppNotificationSettingsRepository == null) {
+            try (DBHandler db = GBApplication.acquireDB()) {
+                perAppNotificationSettingsRepository = new SonyWena3PerAppNotificationSettingsRepository(db.getDaoSession());
+            } catch(Exception e) {
+                LOG.error("Failed to get DB for the notification settings repository", e);
+                perAppNotificationSettingsRepository = null;
+            }
+        }
         getDevice().setFirmwareVersion("...");
         getDevice().setFirmwareVersion2("...");
 
@@ -216,6 +227,10 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                     requestActivityDataDownload(null, false);
                 }
                 return true;
+            }
+            else if(request.requestType == StatusRequestType.GET_CALENDAR.value) {
+                CalendarReceiver.forceSync();
+                sendAllCalendarEvents(null);
             }
             else {
                 LOG.warn("Unknown NotificationServiceStatusRequest " + request.requestType);
@@ -288,7 +303,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onFetchRecordedData(int dataTypes) {
-        requestActivityDataDownload(null, true);
+        requestActivityDataDownload(null, false);
     }
 
     private void requestActivityDataDownload(@Nullable TransactionBuilder b, boolean syncAll) {
@@ -521,6 +536,24 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
             VibrationKind vibra = VibrationKind.valueOf(prefs.getString(SonyWena3SettingKeys.DEFAULT_VIBRATION_PATTERN, VibrationKind.BASIC.name()).toUpperCase());
             boolean vibraContinuous = false;
             int vibraRepeats = prefs.getInt(SonyWena3SettingKeys.DEFAULT_VIBRATION_REPETITION, 1);
+
+            if(notificationSpec.sourceAppId != null) {
+                Wena3PerAppNotificationSetting appSpecificSetting = perAppNotificationSettingsRepository.getSettingsForAppId(notificationSpec.sourceAppId);
+                if(appSpecificSetting != null) {
+                    if(appSpecificSetting.getLedPatternIdName() != null) {
+                        led = LedColor.valueOf(appSpecificSetting.getLedPatternIdName().toUpperCase());
+                    }
+
+                    if(appSpecificSetting.getVibrationPatternIdName() != null) {
+                        vibra = VibrationKind.valueOf(appSpecificSetting.getVibrationPatternIdName().toUpperCase());
+                    }
+
+                    if(appSpecificSetting.getVibrationCount() != null) {
+                        vibraRepeats = appSpecificSetting.getVibrationCount();
+                    }
+                }
+            }
+
             if(vibraRepeats == 0) {
                 vibraContinuous = true;
             }

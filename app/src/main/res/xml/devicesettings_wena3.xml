@@ -44,6 +44,11 @@
             android:icon="@drawable/ic_circle"
             android:title="@string/prefs_wena3_notification_default_led"
             android:summary="%s" />
+        <Preference
+            android:title="@string/prefs_wena3_notification_per_app_settings_title"
+            android:icon="@drawable/ic_widgets">
+            <intent android:action=".SonyWena3PerAppNotificationSettingsActivity"/>
+        </Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/prefs_wena3_receive_calls_title">

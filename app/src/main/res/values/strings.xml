@@ -2327,6 +2327,7 @@
     <string name="prefs_wena3_notification_vibration_repetition_2">Twice</string>
     <string name="prefs_wena3_notification_vibration_repetition_3">3 times</string>
     <string name="prefs_wena3_notification_vibration_repetition_4">4 times</string>
+    <string name="prefs_wena3_notification_per_app_settings_title">Per-app Notification Settings</string>
     <string name="prefs_wena3_notification_default_led">Notification LED Color</string>
     <string name="prefs_wena3_notification_default_call_vibration">Incoming Call Vibration</string>
     <string name="prefs_wena3_notification_default_call_vibration_repetition">Incoming Call Vibration Repeat</string>
