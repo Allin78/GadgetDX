@@ -47,9 +47,9 @@ public class ActivitySyncPacketProcessor {
     public void receivePacket(ActivitySyncDataPacket packet, GBDevice device) {
         if(packet.sequenceNo == RESET_SEQ_NO) {
             LOG.info("Initial packet received, off we go with a sync!");
-            currentSeqNo = 0;
+            currentSeqNo = RESET_SEQ_NO;
             resetAll();
-            return;
+            // Do NOT return here: the initial packet is still a packet!
         }
 
         if(packet.sequenceNo != currentSeqNo) {
@@ -57,7 +57,7 @@ public class ActivitySyncPacketProcessor {
             finalizeCurrentParserIfNeeded(device);
             return;
         } else {
-            if(currentSeqNo == MAX_SEQ_NO) {
+            if(currentSeqNo == MAX_SEQ_NO || currentSeqNo == RESET_SEQ_NO) {
                 currentSeqNo = 0;
             } else {
                 currentSeqNo ++;
