@@ -17,7 +17,7 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3;
+package nodomain.freeyourgadget.gadgetbridge.database;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,10 +27,12 @@ import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSett
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSetting;
 
-public class SonyWena3PerAppNotificationSettingsRepository {
+// TODO: Distinguish by device ID as well to allow for different settings per device.
+// I didn't know how to get a device ID from a settings activity, so I left it as is.
+public class AppSpecificNotificationSettingsRepository {
     private final DaoSession session;
 
-    public SonyWena3PerAppNotificationSettingsRepository(@NonNull DaoSession session) {
+    public AppSpecificNotificationSettingsRepository(@NonNull DaoSession session) {
         this.session = session;
     }
 

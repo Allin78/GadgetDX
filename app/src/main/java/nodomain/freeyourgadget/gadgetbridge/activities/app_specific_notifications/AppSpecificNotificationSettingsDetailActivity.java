@@ -31,15 +31,17 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.adapter.AppSpecificNotificationSettingsAppListAdapter;
-import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3PerAppNotificationSettingsRepository;
+import nodomain.freeyourgadget.gadgetbridge.database.AppSpecificNotificationSettingsRepository;
 import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSetting;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.LedColor;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationKind;
 
+// TODO: This is currently very bound to the Wena-specific enums and types. The best option would be to get a list of enum strings from the Coordinator of the device for which the settings are being altered.
+
 public class AppSpecificNotificationSettingsDetailActivity extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(AppSpecificNotificationSettingsDetailActivity.class);
 
-    private SonyWena3PerAppNotificationSettingsRepository repository = null;
+    private AppSpecificNotificationSettingsRepository repository = null;
     private String bundleId = null;
 
     private Spinner mSpinnerLedPattern;
@@ -60,7 +62,7 @@ public class AppSpecificNotificationSettingsDetailActivity extends AbstractGBAct
         bundleId = getIntent().getStringExtra(AppSpecificNotificationSettingsAppListAdapter.STRING_EXTRA_PACKAGE_NAME);
 
         try (DBHandler db = GBApplication.acquireDB()) {
-            repository = new SonyWena3PerAppNotificationSettingsRepository(db.getDaoSession());
+            repository = new AppSpecificNotificationSettingsRepository(db.getDaoSession());
         } catch(Exception e) {
             LOG.error("Failed to acquire DB", e);
         }

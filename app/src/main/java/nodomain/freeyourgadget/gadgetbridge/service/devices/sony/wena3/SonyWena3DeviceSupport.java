@@ -52,7 +52,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3HeartRat
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3SettingKeys;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3StressSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3Vo2SampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3.SonyWena3PerAppNotificationSettingsRepository;
+import nodomain.freeyourgadget.gadgetbridge.database.AppSpecificNotificationSettingsRepository;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3BehaviorSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3CaloriesSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3EnergySample;
@@ -138,7 +138,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private String lastMusicInfo = null;
     private final List<CalendarEventSpec> calendarEvents = new ArrayList<>();
     private final ActivitySyncPacketProcessor activitySyncHandler = new ActivitySyncPacketProcessor();
-    private SonyWena3PerAppNotificationSettingsRepository perAppNotificationSettingsRepository = null;
+    private AppSpecificNotificationSettingsRepository perAppNotificationSettingsRepository = null;
 
     public SonyWena3DeviceSupport() {
         super(LoggerFactory.getLogger(SonyWena3DeviceSupport.class));
@@ -164,7 +164,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         if(perAppNotificationSettingsRepository == null) {
             try (DBHandler db = GBApplication.acquireDB()) {
-                perAppNotificationSettingsRepository = new SonyWena3PerAppNotificationSettingsRepository(db.getDaoSession());
+                perAppNotificationSettingsRepository = new AppSpecificNotificationSettingsRepository(db.getDaoSession());
             } catch(Exception e) {
                 LOG.error("Failed to get DB for the notification settings repository", e);
                 perAppNotificationSettingsRepository = null;
