@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(55, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(56, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -901,6 +901,7 @@ public class GBDaoGenerator {
         Entity activitySample = addEntity(schema, "Wena3ActivitySample");
         addCommonActivitySampleProperties("AbstractActivitySample", activitySample, user, device);
         activitySample.addIntProperty(SAMPLE_STEPS).notNull();
+        activitySample.addIntProperty(SAMPLE_RAW_KIND).notNull().codeBeforeGetter(OVERRIDE);
         addHeartRateProperties(activitySample);
         return activitySample;
     }
