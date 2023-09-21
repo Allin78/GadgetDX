@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -76,6 +78,7 @@ public class BehaviorPacketParser extends SamplePacketParser<BehaviorSample>  {
             SonyWena3BehaviorSampleProvider sampleProvider = new SonyWena3BehaviorSampleProvider(device, db.getDaoSession());
             Long userId = DBHelper.getUser(db.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
+            List<Wena3BehaviorSample> samples = new ArrayList<>();
 
             for(BehaviorSample rawSample: accumulator) {
                 Wena3BehaviorSample gbSample = new Wena3BehaviorSample();
@@ -85,8 +88,9 @@ public class BehaviorPacketParser extends SamplePacketParser<BehaviorSample>  {
                 gbSample.setTimestampFrom(rawSample.start.getTime());
                 gbSample.setTimestampTo(rawSample.end.getTime());
                 gbSample.setRawKind(rawSample.type.ordinal());
-                sampleProvider.addSample(gbSample);
+                samples.add(gbSample);
             }
+            sampleProvider.addSamples(samples);
 
             if(!accumulator.isEmpty()) {
                 SonyWena3ActivitySampleProvider activitySampleProvider = new SonyWena3ActivitySampleProvider(device, db.getDaoSession());

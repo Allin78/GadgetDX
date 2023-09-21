@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -55,6 +57,7 @@ public class CaloriesPacketParser extends LinearSamplePacketParser<Integer> {
             Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
 
             int i = 0;
+            List<Wena3CaloriesSample> samples = new ArrayList<>();
 
             for(int rawSample: accumulator) {
                 Date currentSampleDate = timestampOfSampleAtIndex(i);
@@ -64,10 +67,12 @@ public class CaloriesPacketParser extends LinearSamplePacketParser<Integer> {
                 gbSample.setUserId(userId);
                 gbSample.setTimestamp(currentSampleDate.getTime());
                 gbSample.setCalories(rawSample);
-                sampleProvider.addSample(gbSample);
+                samples.add(gbSample);
 
                 i++;
             }
+
+            sampleProvider.addSamples(samples);
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording Calories samples", e);
         }

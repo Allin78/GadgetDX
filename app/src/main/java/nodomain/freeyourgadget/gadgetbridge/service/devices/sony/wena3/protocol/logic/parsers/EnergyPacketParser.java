@@ -22,7 +22,9 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -43,7 +45,7 @@ public class EnergyPacketParser extends OneBytePerSamplePacketParser {
             SonyWena3EnergySampleProvider sampleProvider = new SonyWena3EnergySampleProvider(device, db.getDaoSession());
             Long userId = DBHelper.getUser(db.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
-
+            List<Wena3EnergySample> samples = new ArrayList<>();
             int i = 0;
 
             for(int rawSample: accumulator) {
@@ -54,10 +56,11 @@ public class EnergyPacketParser extends OneBytePerSamplePacketParser {
                 gbSample.setUserId(userId);
                 gbSample.setTimestamp(currentSampleDate.getTime());
                 gbSample.setEnergy(rawSample);
-                sampleProvider.addSample(gbSample);
+                samples.add(gbSample);
 
                 i++;
             }
+            sampleProvider.addSamples(samples);
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording Energy samples", e);
         }

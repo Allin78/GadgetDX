@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -64,7 +66,7 @@ public class Vo2MaxPacketParser extends SamplePacketParser<Vo2MaxSample> {
             SonyWena3Vo2SampleProvider sampleProvider = new SonyWena3Vo2SampleProvider(device, db.getDaoSession());
             Long userId = DBHelper.getUser(db.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
-
+            List<Wena3Vo2Sample> samples = new ArrayList<>();
             Date currentSampleDate = null;
             int currentDateDatapoint = 0;
 
@@ -81,8 +83,9 @@ public class Vo2MaxPacketParser extends SamplePacketParser<Vo2MaxSample> {
                 gbSample.setTimestamp(currentSampleDate.getTime());
                 gbSample.setDatapoint(currentDateDatapoint);
                 gbSample.setVo2(rawSample.value);
-                sampleProvider.addSample(gbSample);
+                samples.add(gbSample);
             }
+            sampleProvider.addSamples(samples);
         } catch (Exception e) {
             LOG.error("Error acquiring database for recording Vo2 samples", e);
         }

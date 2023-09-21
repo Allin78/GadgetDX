@@ -22,6 +22,7 @@ package nodomain.freeyourgadget.gadgetbridge.devices.sony.wena3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,20 +45,23 @@ public class SonyWena3ActivitySampleCombiner {
 
     public void overlayBehaviorStartingAt(Date startDate, SonyWena3BehaviorSampleProvider behaviorSampleProvider) {
         List<Wena3BehaviorSample> behaviorSamples = behaviorSampleProvider.getAllSamples(startDate.getTime(), Long.MAX_VALUE);
+        List<Wena3ActivitySample> alteredSamples = new ArrayList<>();
         for(Wena3BehaviorSample behaviorSample: behaviorSamples) {
             List<Wena3ActivitySample> activitySamplesForThisRange = activitySampleProvider.getAllActivitySamples((int)(behaviorSample.getTimestampFrom() / 1000L), (int)(behaviorSample.getTimestampTo() / 1000L));
 
             LOG.debug("Changing " + activitySamplesForThisRange.size() + " samples to behavior type: " + BehaviorSample.Type.LUT[behaviorSample.getRawKind()].name());
             for(Wena3ActivitySample activitySample: activitySamplesForThisRange) {
                 activitySample.setRawKind(behaviorSample.getRawKind());
-                activitySampleProvider.addGBActivitySample(activitySample);
+                alteredSamples.add(activitySample);
             }
         }
+        activitySampleProvider.addGBActivitySamples(alteredSamples.toArray(new Wena3ActivitySample[alteredSamples.size()]));
     }
 
     public void overlayHeartRateStartingAt(Date startDate, SonyWena3HeartRateSampleProvider heartRateSampleProvider) {
         List<Wena3HeartRateSample> heartRateSamples = heartRateSampleProvider.getAllSamples(startDate.getTime(), Long.MAX_VALUE);
-        for(int i = 0; i < heartRateSamples.size(); i ++) {
+        List<Wena3ActivitySample> alteredSamples = new ArrayList<>();
+        for(int i = 0; i < heartRateSamples.size(); i++) {
             HeartRateSample currentSample = heartRateSamples.get(i);
             HeartRateSample nextSample = (i == heartRateSamples.size() - 1) ? null : heartRateSamples.get(i + 1);
 
@@ -69,8 +73,9 @@ public class SonyWena3ActivitySampleCombiner {
             LOG.debug("Changing " + activitySamplesInRange.size() + " samples to heart rate: " + currentSample.getHeartRate());
             for(Wena3ActivitySample activitySample: activitySamplesInRange) {
                 activitySample.setHeartRate(currentSample.getHeartRate());
-                activitySampleProvider.addGBActivitySample(activitySample);
+                alteredSamples.add(activitySample);
             }
         }
+        activitySampleProvider.addGBActivitySamples(alteredSamples.toArray(new Wena3ActivitySample[alteredSamples.size()]));
     }
 }

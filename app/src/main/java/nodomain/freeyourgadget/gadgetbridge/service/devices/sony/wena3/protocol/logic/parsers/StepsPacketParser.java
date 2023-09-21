@@ -22,7 +22,9 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
@@ -47,7 +49,7 @@ public class StepsPacketParser extends OneBytePerSamplePacketParser {
             SonyWena3ActivitySampleProvider sampleProvider = new SonyWena3ActivitySampleProvider(device, db.getDaoSession());
             Long userId = DBHelper.getUser(db.getDaoSession()).getId();
             Long deviceId = DBHelper.getDevice(device, db.getDaoSession()).getId();
-
+            List<Wena3ActivitySample> samples = new ArrayList<>();
             Date currentSampleDate = startDate;
             int i = 0;
             for(int rawSample: accumulator) {
@@ -56,11 +58,12 @@ public class StepsPacketParser extends OneBytePerSamplePacketParser {
                 gbSample.setUserId(userId);
                 gbSample.setTimestamp((int)(currentSampleDate.getTime() / 1000L));
                 gbSample.setSteps(rawSample);
-                sampleProvider.addGBActivitySample(gbSample);
+                samples.add(gbSample);
 
                 i++;
                 currentSampleDate = timestampOfSampleAtIndex(i);
             }
+            sampleProvider.addGBActivitySamples(samples.toArray(new Wena3ActivitySample[samples.size()]));
 
             SonyWena3ActivitySampleCombiner combiner = new SonyWena3ActivitySampleCombiner(sampleProvider);
 
