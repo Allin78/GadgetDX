@@ -49,7 +49,7 @@ public class SonyWena3ActivitySampleCombiner {
 
             LOG.info("Changing " + activitySamplesForThisRange.size() + " samples to: " + BehaviorSample.Type.LUT[behaviorSample.getRawKind()].name());
             for(Wena3StepsSample stepSample: activitySamplesForThisRange) {
-                stepSample.setRawKind(behaviorSample.getRawKind());stepSample.setHeartRate(100);
+                stepSample.setRawKind(behaviorSample.getRawKind());
                 activitySampleProvider.addGBActivitySample(stepSample);
             }
         }

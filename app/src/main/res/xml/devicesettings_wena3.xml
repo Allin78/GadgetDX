@@ -91,7 +91,7 @@
             android:summary="%s"
             android:title="@string/prefs_screen_timeout" />
         <SwitchPreference
-            android:title="@string/prefs_wena3_item_lift_wrist"
+            android:title="@string/mi2_prefs_activate_display_on_lift"
             android:key="pref_screen_lift_wrist"
             android:icon="@drawable/ic_watch"
             android:summary="@string/prefs_wena3_hint_lift_wrist"
@@ -163,7 +163,7 @@
         android:title="@string/prefs_wena3_home_icon_title">
         <ListPreference
             android:key="pref_wena3_home_icon_left"
-            android:title="@string/prefs_wena3_home_icon_left_item"
+            android:title="@string/prefs_home_icon_left_item"
             android:defaultValue="music"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
@@ -171,7 +171,7 @@
             android:icon="@drawable/ic_wena_icon_left" />
         <ListPreference
             android:key="pref_wena3_home_icon_center"
-            android:title="@string/prefs_wena3_home_icon_center_item"
+            android:title="@string/prefs_home_icon_center_item"
             android:defaultValue="pedometer"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
@@ -179,7 +179,7 @@
             android:icon="@drawable/ic_wena_icon_center" />
         <ListPreference
             android:key="pref_wena3_home_icon_right"
-            android:title="@string/prefs_wena3_home_icon_right_item"
+            android:title="@string/prefs_home_icon_right_item"
             android:defaultValue="calories"
             android:entries="@array/prefs_wena3_home_icons_names_list"
             android:entryValues="@array/prefs_wena3_home_icons_values_list"
