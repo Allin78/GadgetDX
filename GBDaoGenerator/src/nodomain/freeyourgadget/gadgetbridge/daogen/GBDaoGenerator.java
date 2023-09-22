@@ -43,7 +43,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(58, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(59, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -107,7 +107,7 @@ public class GBDaoGenerator {
         addReminders(schema, user, device);
         addWorldClocks(schema, user, device);
         addContacts(schema, user, device);
-        addAppSpecificNotificationSettings(schema);
+        addAppSpecificNotificationSettings(schema, device);
 
         Entity notificationFilter = addNotificationFilters(schema);
 
@@ -928,12 +928,14 @@ public class GBDaoGenerator {
         return activitySample;
     }
 
-    private static Entity addAppSpecificNotificationSettings(Schema schema) {
+    private static Entity addAppSpecificNotificationSettings(Schema schema, Entity device) {
         Entity perAppSetting = addEntity(schema, "AppSpecificNotificationSetting");
         perAppSetting.addStringProperty("packageId").notNull().primaryKey();
+        Property deviceId = perAppSetting.addLongProperty("deviceId").primaryKey().notNull().getProperty();
+        perAppSetting.addToOne(device, deviceId);
         perAppSetting.addStringProperty("ledPattern");
         perAppSetting.addStringProperty("vibrationPattern");
-        perAppSetting.addIntProperty("vibrationCount");
+        perAppSetting.addStringProperty("vibrationRepetition");
         return perAppSetting;
     }
 }

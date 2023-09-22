@@ -46,12 +46,16 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Wena3StressSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.Wena3Vo2SampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.model.AbstractNotificationPattern;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.SonyWena3DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.LedColor;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationCount;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines.VibrationKind;
 
 public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     @Override
@@ -257,6 +261,42 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
                 R.xml.devicesettings_wena3_auto_power_off,
                 R.xml.devicesettings_goal_notification,
                 R.xml.devicesettings_wena3,
+        };
+    }
+
+
+    public boolean supportsNotificationVibrationPatterns() {
+        return true;
+    }
+
+    public boolean supportsNotificationVibrationRepetitionPatterns() {
+        return true;
+    }
+
+    public boolean supportsNotificationLedPatterns() {
+        return true;
+    }
+
+    public AbstractNotificationPattern[] getNotificationVibrationPatterns() {
+        return new AbstractNotificationPattern[] {
+                VibrationKind.NONE, VibrationKind.BASIC,
+                VibrationKind.CONTINUOUS, VibrationKind.RAPID,
+                VibrationKind.TRIPLE, VibrationKind.STEP_UP, VibrationKind.STEP_DOWN,
+                VibrationKind.WARNING, VibrationKind.SIREN, VibrationKind.SHORT
+        };
+    }
+
+    public AbstractNotificationPattern[] getNotificationVibrationRepetitionPatterns() {
+        return new AbstractNotificationPattern[] {
+                VibrationCount.ONCE, VibrationCount.TWICE, VibrationCount.THREE, VibrationCount.FOUR,
+                VibrationCount.INDEFINITE
+        };
+    }
+
+    public AbstractNotificationPattern[] getNotificationLedPatterns() {
+        return new AbstractNotificationPattern[] {
+                LedColor.NONE, LedColor.RED, LedColor.YELLOW, LedColor.GREEN,
+                LedColor.CYAN, LedColor.PURPLE, LedColor.WHITE
         };
     }
 }

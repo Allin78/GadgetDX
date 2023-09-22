@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractGBActivity;
 import nodomain.freeyourgadget.gadgetbridge.adapter.AppSpecificNotificationSettingsAppListAdapter;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
 public class AppSpecificNotificationSettingsActivity extends AbstractGBActivity {
 
@@ -46,7 +47,8 @@ public class AppSpecificNotificationSettingsActivity extends AbstractGBActivity 
         RecyclerView appListView = findViewById(R.id.appListView);
         appListView.setLayoutManager(new LinearLayoutManager(this));
 
-        appListAdapter = new AppSpecificNotificationSettingsAppListAdapter(R.layout.item_app_specific_notification_app_list, this);
+        GBDevice device = getIntent().getParcelableExtra(GBDevice.EXTRA_DEVICE);
+        appListAdapter = new AppSpecificNotificationSettingsAppListAdapter(R.layout.item_app_specific_notification_app_list, this, device);
 
         appListView.setAdapter(appListAdapter);
 

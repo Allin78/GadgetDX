@@ -164,7 +164,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         if(perAppNotificationSettingsRepository == null) {
-            perAppNotificationSettingsRepository = new AppSpecificNotificationSettingsRepository();
+            perAppNotificationSettingsRepository = new AppSpecificNotificationSettingsRepository(getDevice());
         }
         getDevice().setFirmwareVersion("...");
         getDevice().setFirmwareVersion2("...");
@@ -543,8 +543,8 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
                         vibra = VibrationKind.valueOf(appSpecificSetting.getVibrationPattern().toUpperCase());
                     }
 
-                    if(appSpecificSetting.getVibrationCount() != null) {
-                        vibraRepeats = appSpecificSetting.getVibrationCount();
+                    if(appSpecificSetting.getVibrationRepetition() != null) {
+                        vibraRepeats = Integer.valueOf(appSpecificSetting.getVibrationRepetition());
                     }
                 }
             }

@@ -47,6 +47,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.app_specific_notifications.AppSpecificNotificationSettingsDetailActivity;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 
 import static nodomain.freeyourgadget.gadgetbridge.GBApplication.packageNameToPebbleMsgSender;
 
@@ -63,16 +64,19 @@ public class AppSpecificNotificationSettingsAppListAdapter extends RecyclerView.
     private final int mLayoutId;
     private final Context mContext;
     private final PackageManager mPm;
+    private GBDevice mDevice;
     private final IdentityHashMap<ApplicationInfo, String> mNameMap;
 
     private ApplicationFilter applicationFilter;
 
-    public AppSpecificNotificationSettingsAppListAdapter(int layoutId, Context context) {
+    public AppSpecificNotificationSettingsAppListAdapter(int layoutId, Context context, GBDevice device) {
         mLayoutId = layoutId;
         mContext = context;
         mPm = context.getPackageManager();
+        mDevice = device;
 
         applicationInfoList = getAllApplications();
+
 
         // sort the package list by label and blacklist status
         mNameMap = new IdentityHashMap<>(applicationInfoList.size());
@@ -110,6 +114,7 @@ public class AppSpecificNotificationSettingsAppListAdapter extends RecyclerView.
             Intent intentStartNotificationFilterActivity = new Intent(mContext, AppSpecificNotificationSettingsDetailActivity.class);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_TITLE, mNameMap.get(appInfo));
+            intentStartNotificationFilterActivity.putExtra(GBDevice.EXTRA_DEVICE, mDevice);
             mContext.startActivity(intentStartNotificationFilterActivity);
         });
 
@@ -117,6 +122,7 @@ public class AppSpecificNotificationSettingsAppListAdapter extends RecyclerView.
             Intent intentStartNotificationFilterActivity = new Intent(mContext, AppSpecificNotificationSettingsDetailActivity.class);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_NAME, appInfo.packageName);
             intentStartNotificationFilterActivity.putExtra(STRING_EXTRA_PACKAGE_TITLE, mNameMap.get(appInfo));
+            intentStartNotificationFilterActivity.putExtra(GBDevice.EXTRA_DEVICE, mDevice);
             mContext.startActivity(intentStartNotificationFilterActivity);
         });
     }

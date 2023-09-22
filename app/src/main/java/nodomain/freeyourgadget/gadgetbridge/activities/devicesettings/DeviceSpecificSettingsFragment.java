@@ -41,6 +41,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.CalBlacklistActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureContacts;
 import nodomain.freeyourgadget.gadgetbridge.activities.ConfigureWorldClocks;
 import nodomain.freeyourgadget.gadgetbridge.activities.AbstractPreferenceFragment;
+import nodomain.freeyourgadget.gadgetbridge.activities.app_specific_notifications.AppSpecificNotificationSettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.loyaltycards.LoyaltyCardsSettingsConst;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
@@ -897,6 +898,16 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         if (loyaltyCards != null) {
             loyaltyCards.setOnPreferenceClickListener(preference -> {
                 final Intent intent = new Intent(getContext(), LoyaltyCardsSettingsActivity.class);
+                intent.putExtra(GBDevice.EXTRA_DEVICE, getDevice());
+                startActivity(intent);
+                return true;
+            });
+        }
+
+        final Preference notificationSettings = findPreference(PREFS_PER_APP_NOTIFICATION_SETTINGS);
+        if(notificationSettings != null) {
+            notificationSettings.setOnPreferenceClickListener(preference -> {
+                final Intent intent = new Intent(getContext(), AppSpecificNotificationSettingsActivity.class);
                 intent.putExtra(GBDevice.EXTRA_DEVICE, getDevice());
                 startActivity(intent);
                 return true;

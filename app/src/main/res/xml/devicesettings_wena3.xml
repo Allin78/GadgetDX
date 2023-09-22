@@ -46,7 +46,8 @@
             android:summary="%s" />
         <Preference
             android:title="@string/prefs_wena3_notification_per_app_settings_title"
-            android:icon="@drawable/ic_widgets">
+            android:icon="@drawable/ic_widgets"
+            android:key="pref_per_app_notification_settings">
             <intent android:action=".SonyWena3PerAppNotificationSettingsActivity"/>
         </Preference>
     </PreferenceCategory>

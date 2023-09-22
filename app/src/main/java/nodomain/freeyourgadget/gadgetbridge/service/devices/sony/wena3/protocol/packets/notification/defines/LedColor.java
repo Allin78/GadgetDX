@@ -17,20 +17,38 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines;
 
-public enum LedColor {
-    NONE(0),
-    RED(1),
-    YELLOW(2),
-    GREEN(3),
-    CYAN(4),
-    BLUE(5),
-    PURPLE(6),
-    WHITE(7);
+import android.content.Context;
+
+import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.model.AbstractNotificationPattern;
+
+public enum LedColor implements AbstractNotificationPattern {
+    NONE(0, R.string.prefs_wena3_led_none),
+    RED(1, R.string.red),
+    YELLOW(2, R.string.yellow),
+    GREEN(3, R.string.green),
+    CYAN(4, R.string.cyan),
+    BLUE(5, R.string.blue),
+    PURPLE(6, R.string.purple),
+    WHITE(7, R.string.white);
 
     public final byte value;
+    private final int stringId;
 
-    LedColor(int value) {
+    LedColor(int value, int stringId) {
         this.value = (byte) value;
+        this.stringId = stringId;
+    }
+
+
+    @Override
+    public String getUserReadableName(Context context) {
+        return context.getString(stringId);
+    }
+
+    @Override
+    public String getValue() {
+        return name();
     }
 }
 

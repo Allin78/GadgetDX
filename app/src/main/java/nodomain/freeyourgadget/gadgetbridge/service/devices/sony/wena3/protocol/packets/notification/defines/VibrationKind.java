@@ -17,22 +17,40 @@
 
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.notification.defines;
 
-public enum VibrationKind {
-    NONE(0),
-    CONTINUOUS(1),
-    BASIC(2),
-    RAPID(3),
-    TRIPLE(4),
-    STEP_UP(5),
-    STEP_DOWN(6),
-    WARNING(7),
-    SIREN(8),
-    SHORT(9);
+import android.content.Context;
+
+import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.model.AbstractNotificationPattern;
+
+public enum VibrationKind implements AbstractNotificationPattern {
+    NONE(0, R.string.prefs_wena3_vibration_none),
+    CONTINUOUS(1, R.string.prefs_wena3_vibration_continuous),
+    BASIC(2, R.string.prefs_wena3_vibration_basic),
+    RAPID(3, R.string.prefs_wena3_vibration_rapid),
+    TRIPLE(4, R.string.prefs_wena3_vibration_triple),
+    STEP_UP(5, R.string.prefs_wena3_vibration_step_up),
+    STEP_DOWN(6, R.string.prefs_wena3_vibration_step_down),
+    WARNING(7, R.string.prefs_wena3_vibration_warning),
+    SIREN(8, R.string.prefs_wena3_vibration_siren),
+    SHORT(9, R.string.prefs_wena3_vibration_short);
 
     public final byte value;
+    private final int stringId;
 
-    VibrationKind(int value) {
+    VibrationKind(int value, int stringId) {
         this.value = (byte) value;
+        this.stringId = stringId;
+    }
+
+
+    @Override
+    public String getUserReadableName(Context context) {
+        return context.getString(stringId);
+    }
+
+    @Override
+    public String getValue() {
+        return name();
     }
 }
 
