@@ -22,7 +22,11 @@ package nodomain.freeyourgadget.gadgetbridge.database;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.greenrobot.dao.query.QueryBuilder;
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSettingDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSetting;
@@ -30,23 +34,33 @@ import nodomain.freeyourgadget.gadgetbridge.entities.AppSpecificNotificationSett
 // TODO: Distinguish by device ID as well to allow for different settings per device.
 // I didn't know how to get a device ID from a settings activity, so I left it as is.
 public class AppSpecificNotificationSettingsRepository {
-    private final DaoSession session;
+    private static final Logger LOG = LoggerFactory.getLogger(AppSpecificNotificationSettingsRepository.class);
 
-    public AppSpecificNotificationSettingsRepository(@NonNull DaoSession session) {
-        this.session = session;
+    public AppSpecificNotificationSettingsRepository() {
     }
 
     @Nullable
     public AppSpecificNotificationSetting getSettingsForAppId(String appId) {
-        QueryBuilder<AppSpecificNotificationSetting> qb = session.getAppSpecificNotificationSettingDao().queryBuilder();
-        return qb
-                .where(AppSpecificNotificationSettingDao.Properties.PackageId.eq(appId))
-                .build().unique();
+        try (DBHandler db = GBApplication.acquireDB()) {
+            DaoSession session = db.getDaoSession();
+            QueryBuilder<AppSpecificNotificationSetting> qb = session.getAppSpecificNotificationSettingDao().queryBuilder();
+            return qb
+                    .where(AppSpecificNotificationSettingDao.Properties.PackageId.eq(appId))
+                    .build().unique();
+        } catch (Exception e) {
+            LOG.error("Failed to get DB handle", e);
+        }
+        return null;
     }
 
     private void deleteForAppId(@NonNull String appId) {
-        QueryBuilder<AppSpecificNotificationSetting> qb = session.getAppSpecificNotificationSettingDao().queryBuilder();
-        qb.where(AppSpecificNotificationSettingDao.Properties.PackageId.eq(appId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        try (DBHandler db = GBApplication.acquireDB()) {
+            DaoSession session = db.getDaoSession();
+            QueryBuilder<AppSpecificNotificationSetting> qb = session.getAppSpecificNotificationSettingDao().queryBuilder();
+            qb.where(AppSpecificNotificationSettingDao.Properties.PackageId.eq(appId)).buildDelete().executeDeleteWithoutDetachingEntities();
+        } catch (Exception e) {
+            LOG.error("Failed to get DB handle", e);
+        }
     }
 
     public void setSettingsForAppId(@NonNull String appId, @Nullable AppSpecificNotificationSetting settings) {
@@ -54,7 +68,12 @@ public class AppSpecificNotificationSettingsRepository {
             deleteForAppId(appId);
         } else {
             settings.setPackageId(appId);
-            session.getAppSpecificNotificationSettingDao().insertOrReplace(settings);
+            try (DBHandler db = GBApplication.acquireDB()) {
+                DaoSession session = db.getDaoSession();
+                session.getAppSpecificNotificationSettingDao().insertOrReplace(settings);
+            } catch (Exception e) {
+                LOG.error("Failed to get DB handle", e);
+            }
         }
     }
 }

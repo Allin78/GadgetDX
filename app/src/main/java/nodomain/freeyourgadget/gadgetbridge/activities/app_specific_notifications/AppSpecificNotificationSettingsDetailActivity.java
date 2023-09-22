@@ -61,12 +61,7 @@ public class AppSpecificNotificationSettingsDetailActivity extends AbstractGBAct
         setTitle(title);
         bundleId = getIntent().getStringExtra(AppSpecificNotificationSettingsAppListAdapter.STRING_EXTRA_PACKAGE_NAME);
 
-        try (DBHandler db = GBApplication.acquireDB()) {
-            repository = new AppSpecificNotificationSettingsRepository(db.getDaoSession());
-        } catch(Exception e) {
-            LOG.error("Failed to acquire DB", e);
-        }
-
+        repository = new AppSpecificNotificationSettingsRepository();
         mButtonDelete.setOnClickListener(view -> {
             repository.setSettingsForAppId(bundleId, null);
             finish();

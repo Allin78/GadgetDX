@@ -164,12 +164,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
         if(perAppNotificationSettingsRepository == null) {
-            try (DBHandler db = GBApplication.acquireDB()) {
-                perAppNotificationSettingsRepository = new AppSpecificNotificationSettingsRepository(db.getDaoSession());
-            } catch(Exception e) {
-                LOG.error("Failed to get DB for the notification settings repository", e);
-                perAppNotificationSettingsRepository = null;
-            }
+            perAppNotificationSettingsRepository = new AppSpecificNotificationSettingsRepository();
         }
         getDevice().setFirmwareVersion("...");
         getDevice().setFirmwareVersion2("...");
