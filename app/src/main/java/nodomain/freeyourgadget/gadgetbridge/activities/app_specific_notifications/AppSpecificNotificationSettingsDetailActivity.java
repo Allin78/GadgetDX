@@ -142,7 +142,7 @@ public class AppSpecificNotificationSettingsDetailActivity extends AbstractGBAct
             if(setting.getVibrationRepetition() != null) {
                 int idx = mVibrationCountValues.indexOf(setting.getVibrationRepetition());
                 if(idx >= 0) {
-                    mSpinnerVibrationCount.setSelection(idx);
+                    mSpinnerVibrationCount.setSelection(idx + 1);
                 }
             } else {
                 mSpinnerVibrationCount.setSelection(0);
