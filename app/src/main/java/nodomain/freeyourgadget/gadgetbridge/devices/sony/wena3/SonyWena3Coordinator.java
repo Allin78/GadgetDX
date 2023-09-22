@@ -296,7 +296,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     public AbstractNotificationPattern[] getNotificationLedPatterns() {
         return new AbstractNotificationPattern[] {
                 LedColor.NONE, LedColor.RED, LedColor.YELLOW, LedColor.GREEN,
-                LedColor.CYAN, LedColor.PURPLE, LedColor.WHITE
+                LedColor.CYAN, LedColor.BLUE, LedColor.PURPLE, LedColor.WHITE
         };
     }
 }
