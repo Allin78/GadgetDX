@@ -20,6 +20,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
+
 public class DeviceInfo {
     public final String firmwareName;
     public final String serialNo;
@@ -30,5 +32,12 @@ public class DeviceInfo {
         buf.get(fwNameStr);
         serialNo = Integer.toString(buf.getInt());
         firmwareName = new String(fwNameStr, StandardCharsets.UTF_8);
+    }
+
+    public GBDeviceEventVersionInfo toDeviceEvent() {
+        final GBDeviceEventVersionInfo gbDeviceEventVersionInfo = new GBDeviceEventVersionInfo();
+        gbDeviceEventVersionInfo.fwVersion = firmwareName;
+        gbDeviceEventVersionInfo.fwVersion2 = serialNo;
+        return gbDeviceEventVersionInfo;
     }
 }

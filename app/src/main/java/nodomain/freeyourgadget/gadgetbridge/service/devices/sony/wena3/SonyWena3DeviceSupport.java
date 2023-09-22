@@ -39,6 +39,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
@@ -202,7 +203,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     public boolean onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         if(characteristic.getUuid().equals(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID)) {
             BatteryLevelInfo stateInfo = new BatteryLevelInfo(characteristic.getValue());
-            getDevice().setBatteryLevel(stateInfo.batteryPercentage);
+            handleGBDeviceEvent(stateInfo.toDeviceEvent());
             return true;
         }
         else if (characteristic.getUuid().equals(SonyWena3Constants.NOTIFICATION_SERVICE_CHARACTERISTIC_UUID)) {
@@ -246,12 +247,11 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     public boolean onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if(characteristic.getUuid().equals(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_STATE_UUID)) {
             BatteryLevelInfo stateInfo = new BatteryLevelInfo(characteristic.getValue());
-            getDevice().setBatteryLevel(stateInfo.batteryPercentage);
+            handleGBDeviceEvent(stateInfo.toDeviceEvent());
             return true;
         } else if(characteristic.getUuid().equals(SonyWena3Constants.COMMON_SERVICE_CHARACTERISTIC_INFO_UUID)) {
             DeviceInfo deviceInfo = new DeviceInfo(characteristic.getValue());
-            getDevice().setFirmwareVersion(deviceInfo.firmwareName);
-            getDevice().setFirmwareVersion2(deviceInfo.serialNo);
+            handleGBDeviceEvent(deviceInfo.toDeviceEvent());
             return true;
         }
         return false;
@@ -803,13 +803,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private void sendMenuSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         String[] csv = prefs.getString(SonyWena3SettingKeys.MENU_ICON_CSV_KEY,
-            MenuIconId.ALARM.name() + "," +
-                    MenuIconId.FIND_PHONE.name() + "," +
-                    MenuIconId.WEATHER.name() + "," +
-                    MenuIconId.CAMERA.name() + "," +
-                    MenuIconId.MUSIC.name() + "," +
-                    MenuIconId.PAYMENT.name()
-                )
+                        String.join(",", getContext().getResources().getStringArray(R.array.prefs_wena3_menu_icons_default_list)))
                 .toUpperCase()
                 .split(",");
 
@@ -831,14 +825,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         StatusPageOrderSetting pageOrderSetting = new StatusPageOrderSetting();
         String[] csv = prefs.getString(SonyWena3SettingKeys.STATUS_PAGE_CSV_KEY,
-                        StatusPageId.PEDOMETER.name() + "," +
-                                StatusPageId.SLEEP.name() + "," +
-                                StatusPageId.HEART_RATE.name() + "," +
-                                StatusPageId.VO2MAX.name() + "," +
-                                StatusPageId.STRESS.name() + "," +
-                                StatusPageId.ENERGY.name() + "," +
-                                StatusPageId.CALORIES.name()
-                )
+                        String.join(",", getContext().getResources().getStringArray(R.array.prefs_wena3_status_page_default_list)))
                 .toUpperCase()
                 .split(",");
         for(String idName: csv) {
@@ -1021,7 +1008,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
 
                 case SonyWena3SettingKeys.SMART_WAKEUP_MARGIN_MINUTES:
                     // Resend alarms
-                    GBApplication.deviceService(gbDevice).onSetAlarms(new ArrayList<>(DBHelper.getAlarms(gbDevice)));
+                    onSetAlarms(new ArrayList<>(DBHelper.getAlarms(gbDevice)));
                     break;
 
                 case DeviceSettingsPreferenceConst.PREF_DO_NOT_DISTURB_NOAUTO:

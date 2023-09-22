@@ -16,10 +16,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3.protocol.packets.status;
 
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
+
 public class BatteryLevelInfo {
     public final int batteryPercentage;
 
     public BatteryLevelInfo(byte[] packet) {
         this.batteryPercentage = Integer.valueOf(packet[0]);
+    }
+
+    public GBDeviceEventBatteryInfo toDeviceEvent() {
+        final GBDeviceEventBatteryInfo deviceEventBatteryInfo = new GBDeviceEventBatteryInfo();
+        deviceEventBatteryInfo.level = batteryPercentage;
+        return deviceEventBatteryInfo;
     }
 }
