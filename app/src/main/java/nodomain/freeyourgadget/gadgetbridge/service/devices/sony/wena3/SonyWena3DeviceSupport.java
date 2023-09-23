@@ -19,6 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.sony.wena3;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -798,7 +799,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
     private void sendMenuSettings(TransactionBuilder b) {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         String[] csv = prefs.getString(SonyWena3SettingKeys.MENU_ICON_CSV_KEY,
-                        String.join(",", getContext().getResources().getStringArray(R.array.prefs_wena3_menu_icons_default_list)))
+                        TextUtils.join(",", getContext().getResources().getStringArray(R.array.prefs_wena3_menu_icons_default_list)))
                 .toUpperCase()
                 .split(",");
 
@@ -820,7 +821,7 @@ public class SonyWena3DeviceSupport extends AbstractBTLEDeviceSupport {
         Prefs prefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress()));
         StatusPageOrderSetting pageOrderSetting = new StatusPageOrderSetting();
         String[] csv = prefs.getString(SonyWena3SettingKeys.STATUS_PAGE_CSV_KEY,
-                        String.join(",", getContext().getResources().getStringArray(R.array.prefs_wena3_status_page_default_list)))
+                        TextUtils.join(",", getContext().getResources().getStringArray(R.array.prefs_wena3_status_page_default_list)))
                 .toUpperCase()
                 .split(",");
         for(String idName: csv) {

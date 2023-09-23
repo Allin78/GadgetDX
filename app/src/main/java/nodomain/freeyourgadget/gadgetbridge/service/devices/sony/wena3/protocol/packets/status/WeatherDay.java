@@ -30,8 +30,8 @@ public class WeatherDay {
         this.night = night;
         // For some reason, Wena uses Farenheit on the wire, but Celsius on display...
         // Assume a middle ground input in Kelvin.
-        this.temperatureMaximum = Math.toIntExact(Math.round(WeatherUtils.celsiusToFahrenheit(temperatureMaximum - 273.15)));
-        this.temperatureMinimum = Math.toIntExact(Math.round(WeatherUtils.celsiusToFahrenheit(temperatureMinimum - 273.15)));
+        this.temperatureMaximum = (int) Math.round(WeatherUtils.celsiusToFahrenheit(temperatureMaximum - 273.15));
+        this.temperatureMinimum = (int) Math.round(WeatherUtils.celsiusToFahrenheit(temperatureMinimum - 273.15));
     }
 
     public static WeatherDay fromSpec(WeatherSpec.Daily daily) {
