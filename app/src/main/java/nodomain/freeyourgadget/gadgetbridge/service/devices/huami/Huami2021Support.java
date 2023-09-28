@@ -281,7 +281,7 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     }
 
     @Override
-    protected void sendFindDeviceCommand(boolean start) {
+    public void sendFindDeviceCommand(boolean start) {
         final byte findBandCommand = start ? FIND_BAND_START : FIND_BAND_STOP_FROM_PHONE;
 
         LOG.info("Sending find band {}", start);
@@ -1000,7 +1000,7 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     }
 
     @Override
-    protected void setRawSensor(final boolean enable) {
+    public void setRawSensor(final boolean enable) {
         LOG.info("Set raw sensor to {}", enable);
         rawSensor = enable;
 

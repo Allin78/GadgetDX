@@ -24,6 +24,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -134,6 +135,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.Fet
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.operations.HuamiFetchDebugLogsOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsCannedMessagesService;
 import nodomain.freeyourgadget.gadgetbridge.util.MediaManager;
+import nodomain.freeyourgadget.gadgetbridge.util.SleepAsAndroidReceiver;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -330,6 +332,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
 
     private RealtimeSamplesSupport realtimeSamplesSupport;
 
+    private final SleepAsAndroidReceiver sleepAsAndroidReceiver = new SleepAsAndroidReceiver();
+
     protected boolean isMusicAppStarted = false;
     protected MediaManager mediaManager;
     private boolean heartRateNotifyEnabled;
@@ -343,6 +347,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     protected Huami2021ChunkedDecoder huami2021ChunkedDecoder;
 
     private final Queue<AbstractFetchOperation> fetchOperationQueue = new LinkedList<>();
+    private boolean rawSensor =false;
 
     public HuamiSupport() {
         this(LOG);
@@ -381,6 +386,12 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
 
         try {
+            SleepAsAndroidReceiver.setDeviceSupport(this);
+            IntentFilter filter = new IntentFilter();
+            filter.addAction("com.urbandroid.sleep.watch");
+            filter.addAction(DeviceService.ACTION_REALTIME_SAMPLES);
+            LocalBroadcastManager.getInstance(GBApplication.getContext()).registerReceiver(sleepAsAndroidReceiver, filter);
+
             byte authFlags = getAuthFlags();
             byte cryptFlags = getCryptFlags();
             heartRateNotifyEnabled = false;
@@ -1649,7 +1660,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         return findDeviceInterval;
     }
 
-    protected void sendFindDeviceCommand(boolean start) {
+    public void sendFindDeviceCommand(boolean start) {
         BluetoothGattCharacteristic characteristic = getCharacteristic(UUID_CHARACTERISTIC_ALERT_LEVEL);
         try {
             TransactionBuilder builder = performInitialized("find huami");
@@ -2985,9 +2996,7 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     public void onTestNewFunction() {
         //requestMTU(23);
         try {
-            final TransactionBuilder builder = performInitialized("test request");
-            writeToConfiguration(builder, HuamiService.COMMAND_REQUEST_WORKOUT_ACTIVITY_TYPES);
-            builder.queue(getQueue());
+            setRawSensor(!rawSensor);
         } catch (final Exception e) {
             LOG.error("onTestNewFunction failed", e);
         }
@@ -4286,11 +4295,72 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
         }
     }
 
-    protected void setRawSensor(final boolean enable) {
-        LOG.info("setRawSensor not implemented for HuamiSupport");
-    }
+    public void setRawSensor(final boolean enable) {
+        LOG.info("Set raw sensor to {}", enable);
+         rawSensor = enable;
+
+        try {
+            final TransactionBuilder builder = performInitialized("set raw sensor");
+            if (enable) {
+                builder.write(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_RAW_SENSOR_CONTROL), Huami2021Service.CMD_RAW_SENSOR_START_1);
+                builder.write(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_RAW_SENSOR_CONTROL), Huami2021Service.CMD_RAW_SENSOR_START_2);
+                builder.write(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_RAW_SENSOR_CONTROL), Huami2021Service.CMD_RAW_SENSOR_START_3);
+            } else {
+                builder.write(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_RAW_SENSOR_CONTROL), Huami2021Service.CMD_RAW_SENSOR_STOP);
+            }
+            builder.notify(getCharacteristic(HuamiService.UUID_CHARACTERISTIC_RAW_SENSOR_DATA), enable);
+            builder.queue(getQueue());
+        } catch (final IOException e) {
+            LOG.error("Unable to set raw sensor", e);
+        }    }
 
     protected void handleRawSensorData(final byte[] value) {
-        LOG.warn("handleRawSensorData not implemented for HuamiSupport");
+        // The g values seem to vary between -4100 and 4100, so we scale them
+        final float scaleFactor = 4100f;
+        final float gravity = -9.81f;
+
+        final ByteBuffer buf = ByteBuffer.wrap(value).order(ByteOrder.LITTLE_ENDIAN);
+        final byte type = buf.get();
+        final int index = buf.get() & 0xff; // always incrementing, for each type
+
+        if (type == 0x00) {
+            // g-sensor x y z values, per second
+            if ((value.length - 2) % 6 != 0) {
+                LOG.warn("Raw sensor value for type 0 not divisible by 6");
+                return;
+            }
+
+            for (int i = 2; i < value.length; i += 6) {
+                final int x = (BLETypeConversions.toUint16(value, i) << 16) >> 16;
+                final int y = (BLETypeConversions.toUint16(value, i + 2) << 16) >> 16;
+                final int z = (BLETypeConversions.toUint16(value, i + 4) << 16) >> 16;
+
+                final float gx = (x * gravity) / scaleFactor;
+                final float gy = (y * gravity) / scaleFactor;
+                final float gz = (z * gravity) / scaleFactor;
+
+                sleepAsAndroidReceiver.onAccelDataChange(gx,gy,gz);
+
+                LOG.info("Raw sensor g: x={} y={} z={}", gx, gy, gz);
+            }
+        } else if (type == 0x01) {
+            // TODO not sure what this is?
+            if ((value.length - 2) % 4 != 0) {
+                LOG.warn("Raw sensor value for type 1 not divisible by 4");
+                return;
+            }
+
+            for (int i = 2; i < value.length; i += 4) {
+                int val = BLETypeConversions.toUint32(value, i);
+                LOG.info("Raw sensor 1: {}", val);
+            }
+        } else if (type == 0x07) {
+            // Timestamp for the targetType, sent in intervals of ~10 seconds
+            final int targetType = buf.get() & 0xff;
+            final long tsMillis = buf.getLong();
+            LOG.debug("Raw sensor timestamp for type={} index={}: {}", targetType, index, new Date(tsMillis));
+        } else {
+            LOG.warn("Unknown raw sensor type: {}", GB.hexdump(value));
+        }
     }
 }
