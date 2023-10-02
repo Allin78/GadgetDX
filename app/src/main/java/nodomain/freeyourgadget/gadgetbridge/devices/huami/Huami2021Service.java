@@ -20,7 +20,6 @@ public class Huami2021Service {
     /**
      * Endpoints for 2021 chunked protocol
      */
-    public static final short CHUNKED2021_ENDPOINT_WEATHER = 0x000e;
     public static final short CHUNKED2021_ENDPOINT_CONNECTION = 0x0015;
     public static final short CHUNKED2021_ENDPOINT_USER_INFO = 0x0017;
     public static final short CHUNKED2021_ENDPOINT_STEPS = 0x0016;
@@ -113,12 +112,6 @@ public class Huami2021Service {
     public static final int WORKOUT_GPS_FLAG_POSITION = 0x40000;
     public static final byte WORKOUT_STATUS_START = 0x01;
     public static final byte WORKOUT_STATUS_END = 0x04;
-
-    /**
-     * Weather, for {@link Huami2021Service#CHUNKED2021_ENDPOINT_WEATHER}.
-     */
-    public static final byte WEATHER_CMD_SET_DEFAULT_LOCATION = 0x09;
-    public static final byte WEATHER_CMD_DEFAULT_LOCATION_ACK = 0x0a;
 
     /**
      * User Info, for {@link Huami2021Service#CHUNKED2021_ENDPOINT_USER_INFO}.

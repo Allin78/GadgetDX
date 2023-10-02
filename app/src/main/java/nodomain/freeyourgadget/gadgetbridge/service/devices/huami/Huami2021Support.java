@@ -127,8 +127,8 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.service
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsMorningUpdatesService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsPhoneService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsWatchfaceService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsWeatherService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsWifiService;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
@@ -168,6 +168,7 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
     private final ZeppOsRemindersService remindersService = new ZeppOsRemindersService(this);
     private final ZeppOsLoyaltyCardService loyaltyCardService = new ZeppOsLoyaltyCardService(this);
     private final ZeppOsMusicService musicService = new ZeppOsMusicService(this);
+    private final ZeppOsWeatherService weatherService = new ZeppOsWeatherService(this);
 
     private final Map<Short, AbstractZeppOsService> mServiceMap = new LinkedHashMap<Short, AbstractZeppOsService>() {{
         put(servicesService.getEndpoint(), servicesService);
@@ -193,6 +194,7 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
         put(remindersService.getEndpoint(), remindersService);
         put(loyaltyCardService.getEndpoint(), loyaltyCardService);
         put(musicService.getEndpoint(), musicService);
+        put(weatherService.getEndpoint(), weatherService);
     }};
 
     public Huami2021Support() {
@@ -813,33 +815,7 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
 
     @Override
     public void onSendWeather(final ArrayList<WeatherSpec> weatherSpecs) {
-        final WeatherSpec weatherSpec = weatherSpecs.get(0);
-
-        // Weather is not sent directly to the bands, they send HTTP requests for each location.
-        // When we have a weather update, set the default location to that location on the band.
-        // TODO: Support for multiple weather locations
-
-        final String locationKey = "1.234,-5.678,xiaomi_accu:" + System.currentTimeMillis(); // dummy
-        final String locationName = weatherSpec.location;
-
-        try {
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            baos.write(Huami2021Service.WEATHER_CMD_SET_DEFAULT_LOCATION);
-            baos.write((byte) 0x02); // ? 2 for current, 4 for default
-            baos.write((byte) 0x00); // ?
-            baos.write((byte) 0x00); // ?
-            baos.write((byte) 0x00); // ?
-            baos.write(locationKey.getBytes(StandardCharsets.UTF_8));
-            baos.write((byte) 0x00); // ?
-            baos.write(locationName.getBytes(StandardCharsets.UTF_8));
-            baos.write((byte) 0x00); // ?
-
-            final TransactionBuilder builder = performInitialized("set weather location");
-            writeToChunked2021(builder, Huami2021Service.CHUNKED2021_ENDPOINT_WEATHER, baos.toByteArray(), false);
-            builder.queue(getQueue());
-        } catch (final Exception e) {
-            LOG.error("Failed to set weather location", e);
-        }
+        weatherService.onSendWeather(weatherSpecs);
     }
 
     @Override
@@ -1107,9 +1083,6 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
             case CHUNKED2021_ENDPOINT_COMPAT:
                 LOG.warn("Unexpected compat payload {}", GB.hexdump(payload));
                 return;
-            case CHUNKED2021_ENDPOINT_WEATHER:
-                handle2021Weather(payload);
-                return;
             case CHUNKED2021_ENDPOINT_WORKOUT:
                 handle2021Workout(payload);
                 return;
@@ -1253,16 +1226,6 @@ public abstract class Huami2021Support extends HuamiSupport implements ZeppOsFil
                 return;
             default:
                 LOG.warn("Unexpected heart rate byte {}", String.format("0x%02x", payload[0]));
-        }
-    }
-
-    protected void handle2021Weather(final byte[] payload) {
-        switch (payload[0]) {
-            case WEATHER_CMD_DEFAULT_LOCATION_ACK:
-                LOG.info("Weather default location ACK, status = {}", payload[1]);
-                return;
-            default:
-                LOG.warn("Unexpected weather byte {}", String.format("0x%02x", payload[0]));
         }
     }
 

@@ -47,6 +47,7 @@ import java.util.Map;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiWeatherConditions;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsWeatherService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.webview.CurrentPosition;
 
 /**
@@ -80,10 +81,30 @@ public class Huami2021Weather {
             .create();
 
     public static Response handleHttpRequest(final String path, final Map<String, String> query) {
-        final WeatherSpec weatherSpec = Weather.getInstance().getWeatherSpec();
+        if (path.equals("/weather/tide")) {
+            // Handle tide separately (but we don't currently support it)
+            final int tideDays = getQueryNum(query, "days", 10);
+            return new TideResponse(tideDays);
+        }
+
+        // Resolve the WeatherSpec for the requested location
+        final String locationKey = query.get("locationKey");
+        if (locationKey == null) {
+            LOG.warn("No location key in '{}'", path);
+            return new Huami2021Weather.ErrorResponse(404, -2001, "Not found");
+        }
+
+        final List<WeatherSpec> weatherSpecs = Weather.getInstance().getWeatherSpecs();
+        WeatherSpec weatherSpec = null;
+        for (final WeatherSpec w : weatherSpecs) {
+            if (ZeppOsWeatherService.weatherKey(w).equals(locationKey)) {
+                weatherSpec = w;
+                break;
+            }
+        }
 
         if (weatherSpec == null) {
-            LOG.error("No weather in weather instance");
+            LOG.error("No weather for '{}' in instance", locationKey);
             return new Huami2021Weather.ErrorResponse(404, -2001, "Not found");
         }
 
@@ -101,9 +122,6 @@ public class Huami2021Weather {
                 return new HourlyResponse(weatherSpec, hours);
             case "/weather/alerts":
                 return new AlertsResponse(weatherSpec);
-            case "/weather/tide":
-                final int tideDays = getQueryNum(query, "days", 10);
-                return new TideResponse(weatherSpec, tideDays);
         }
 
         LOG.error("Unknown weather path {}", path);
@@ -500,8 +518,8 @@ public class Huami2021Weather {
         public String poiKey; // lat,lon,POI_ID
         public List<TideDataEntry> tideData = new ArrayList<>();
 
-        public TideResponse(final WeatherSpec weatherSpec, int tideDays) {
-            pubTime = new Date(weatherSpec.timestamp * 1000L);
+        public TideResponse(int tideDays) {
+            pubTime = new Date(System.currentTimeMillis());
 
             // Fill all entries, even if without data
             final Calendar pubTimeDate = Calendar.getInstance();
