@@ -20,6 +20,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service;
 
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.*;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -1004,9 +1006,9 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 break;
             }
             case ACTION_SEND_WEATHER: {
-                WeatherSpec weatherSpec = intent.getParcelableExtra(EXTRA_WEATHER);
-                if (weatherSpec != null) {
-                    deviceSupport.onSendWeather(weatherSpec);
+                ArrayList<WeatherSpec> weatherSpecs = (ArrayList<WeatherSpec>) intent.getSerializableExtra(EXTRA_WEATHER);
+                if (weatherSpecs != null) {
+                    deviceSupport.onSendWeather(weatherSpecs);
                 }
                 break;
             }

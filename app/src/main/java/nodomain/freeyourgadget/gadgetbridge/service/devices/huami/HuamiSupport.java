@@ -3091,7 +3091,8 @@ public abstract class HuamiSupport extends AbstractBTLEDeviceSupport implements 
     }
 
     @Override
-    public void onSendWeather(WeatherSpec weatherSpec) {
+    public void onSendWeather(ArrayList<WeatherSpec> weatherSpecs) {
+        WeatherSpec weatherSpec = weatherSpecs.get(0);
         final DeviceCoordinator coordinator = gbDevice.getDeviceCoordinator();
         if (!coordinator.supportsWeather()) {
             return;

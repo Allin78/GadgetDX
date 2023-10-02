@@ -133,7 +133,7 @@ public interface EventHandler {
 
     void onTestNewFunction();
 
-    void onSendWeather(WeatherSpec weatherSpec);
+    void onSendWeather(ArrayList<WeatherSpec> weatherSpecs);
 
     void onSetFmFrequency(float frequency);
 

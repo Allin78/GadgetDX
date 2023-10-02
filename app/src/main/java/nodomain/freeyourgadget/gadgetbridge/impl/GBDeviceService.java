@@ -485,9 +485,9 @@ public class GBDeviceService implements DeviceService {
     }
 
     @Override
-    public void onSendWeather(WeatherSpec weatherSpec) {
+    public void onSendWeather(ArrayList<WeatherSpec> weatherSpecs) {
         Intent intent = createIntent().setAction(ACTION_SEND_WEATHER)
-                .putExtra(EXTRA_WEATHER, (Parcelable) weatherSpec);
+                .putExtra(EXTRA_WEATHER, weatherSpecs);
         invokeService(intent);
     }
 
