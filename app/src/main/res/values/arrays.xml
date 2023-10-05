@@ -2665,6 +2665,7 @@
         <item>@string/p_pai</item>
         <item>@string/p_speed_zones</item>
         <item>@string/p_live_stats</item>
+        <item>@string/p_temperature</item>
     </string-array>
 
 

@@ -362,6 +362,28 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public boolean supportsActivityTabs() {
+        return true;
+    }
+    @Override
+    public boolean supportsSleepMeasurement() {
+        return true;
+    }
+    @Override
+    public boolean supportsStepCounter() {
+        return true;
+    }
+    @Override
+    public boolean supportsSpeedzones() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsTemperatureMeasurement() {
+        return false;
+    }
+
+    @Override
     public boolean supportsSpo2() {
         return false;
     }
