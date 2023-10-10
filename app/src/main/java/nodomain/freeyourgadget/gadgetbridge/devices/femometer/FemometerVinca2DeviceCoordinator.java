@@ -5,6 +5,8 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.regex.Pattern;
+
 import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -15,8 +17,6 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.FemometerVinca2TemperatureSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.FemometerVinca2TemperatureSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.femometer.FemometerVinca2DeviceSupport;
 
@@ -24,16 +24,6 @@ public class FemometerVinca2DeviceCoordinator extends AbstractDeviceCoordinator 
     @Override
     public String getManufacturer() {
         return "Joytech Healthcare";
-    }
-
-    @Override
-    public String getAppCacheSortFilename() {
-        return "null";
-    }
-
-    @Override
-    public String getAppFileExtension() {
-        return "null";
     }
 
     @NonNull
@@ -47,15 +37,11 @@ public class FemometerVinca2DeviceCoordinator extends AbstractDeviceCoordinator 
         return new FemometerVinca2SampleProvider(device, session);
     }
 
-    @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        String name = candidate.getName();
-        if (name != null && name.equals("BM-Vinca2")) {
-            return DeviceType.FEMOMETER_VINCA2;
-        }
-        return DeviceType.UNKNOWN;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile("BM-Vinca2");
     }
+
 
     @Override
     public int getDeviceNameResource() {

@@ -3,12 +3,10 @@ package nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.healthThermom
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
-import android.util.Log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -83,16 +81,15 @@ public class HealthThermometerProfile <T extends AbstractBTLEDeviceSupport> exte
 
     private void handleMeasurementInterval(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         // todo: not implemented
-        Log.d("Femometer", "Measurement Interval: " + Arrays.toString(characteristic.getValue()));
-        Log.d("Femometer", "Measurement Interval: " + ValueDecoder.decodeInt(characteristic));
+        LOG.debug("Health thermometer received Measurement Interval: " + ValueDecoder.decodeInt(characteristic));
     }
 
     private void handleTemperatureMeasurement(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         /*
-         * This contains as bits:
-         * the unit (celsius (0) or fahrenheit (1)) (bit 0 or 7 depending on direction)
-         * if a timestamp is present (1) or not present (0) (bit 1 or 6 depending on direction)
-         * if a temperature type is present (1) or not present (0) (bit 2 or 5 depending on direction)
+         * This metadata contains as bits:
+         * the unit (celsius (0) or fahrenheit (1)) (bit 7 (last bit))
+         * if a timestamp is present (1) or not present (0) (bit 6)
+         * if a temperature type is present (1) or not present (0) (bit 5)
          */
         byte metadata = characteristic.getValue()[0];
         // todo: evaluate this byte to enable support for devices without timestamp or temperature-type
