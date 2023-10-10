@@ -175,23 +175,6 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
         builder.queue(getQueue());
     }
 
-
-    @Override
-    public void onFetchRecordedData(int dataTypes) {
-        // todo: this is only for debugging, remove this
-        try (DBHandler db = GBApplication.acquireDB()) {
-            FemometerVinca2SampleProvider sampleProvider = new FemometerVinca2SampleProvider(getDevice(), db.getDaoSession());
-            for (FemometerVinca2TemperatureSample sample : sampleProvider.getSampleDao().loadAll()){
-                TemperatureInfo info = new TemperatureInfo();
-                info.setTemperature(sample.getTemperature());
-                info.setTimestamp(new Date(sample.getTimestamp()));
-                sendIntentToOtherApps(info);
-            }
-        } catch (Exception e) {
-            LOG.error("Error acquiring database", e);
-        }
-    }
-
     @Override
     public void onSetAlarms(ArrayList<? extends Alarm> alarms) {
         try {

@@ -93,11 +93,6 @@ public class FemometerVinca2DeviceCoordinator extends AbstractDeviceCoordinator 
     }
 
     @Override
-    public boolean supportsActivityDataFetching() {
-        return true;
-    }
-
-    @Override
     public int getAlarmSlotCount(final GBDevice device) {
         return 1;
     }
