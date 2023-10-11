@@ -50,12 +50,12 @@ public class FemometerVinca2DeviceCoordinator extends AbstractDeviceCoordinator 
 
     @Override
     public int getDefaultIconResource() {
-        return R.drawable.ic_device_default;
+        return R.drawable.ic_device_thermometer;
     }
 
     @Override
     public int getDisabledIconResource() {
-        return R.drawable.ic_device_default_disabled;
+        return R.drawable.ic_device_thermometer_disabled;
     }
 
 
