@@ -42,6 +42,7 @@ public class DripMeasurementBroadcaster {
             intent.setType("text/json");
             intent.setPackage("com.drip"); // Hardcoding target app / package
             getContext().sendBroadcast(intent);
+            LOG.debug("Sent Broadcast to com.drip: " + intent.getAction() + ", " + intent.getExtras());
         } catch (JSONException e) {
             LOG.error("Failed to build intent", e);
         }

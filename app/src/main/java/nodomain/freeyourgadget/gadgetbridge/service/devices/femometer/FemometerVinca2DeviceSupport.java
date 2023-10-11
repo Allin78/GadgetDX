@@ -281,6 +281,8 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (Exception e) {
             LOG.error("Error acquiring database", e);
         }
-        DripMeasurementBroadcaster.sendMeasurement(info);
+        if (GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREF_INTENTS_DRIP, false)) {
+            DripMeasurementBroadcaster.sendMeasurement(info);
+        }
     }
 }

@@ -362,5 +362,6 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_VOICE_SERVICE_LANGUAGE = "voice_service_language";
 
     public static final String PREF_TEMPERATURE_SCALE_CF = "temperature_scale_cf";
+    public static final String PREF_INTENTS_DRIP = "intents_drip";
     public static final String PREF_FEMOMETER_MEASUREMENT_MODE = "femometer_measurement_mode";
 }
