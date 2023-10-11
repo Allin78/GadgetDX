@@ -1316,7 +1316,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             prevMusicStateObject = o;
             LOG.info("prevMusicState 2: " + String.valueOf(prevMusicStateObject));
         } catch (JSONException e) {
-            LOG.info("JSXNException: " + e.getLocalizedMessage());
+            LOG.info("JSONException: " + e.getLocalizedMessage());
         }
     }
 
