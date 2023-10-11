@@ -534,11 +534,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     LOG.info("volumeCurrent: " + volumeCurrent);
                     final int volumeUpper = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                     LOG.info("volumeUpper: " + volumeUpper);
-                    int volumeLower = 0;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                        volumeLower = audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC);
-                        LOG.info("volumeLower: " + volumeLower);
-                    }
                     uartTxJSON(
                             "send media volume info",
                             new JSONObject("{t:'audio', l:{c:"+volumeCurrent+",u:"+volumeUpper+"}}")
