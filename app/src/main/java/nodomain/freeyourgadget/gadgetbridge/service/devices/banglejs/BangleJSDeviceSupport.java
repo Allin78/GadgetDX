@@ -526,25 +526,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 evaluateGBDeviceEvent(deviceEventFindPhone);
             } break;
             case "music": {
-                if (json.getString("n").equals("vs")) { // vs = Volume Set. This part is heavily inspired by `GBDeviceEventMusicControl.onReceive()`
-                    Context context = GBApplication.getContext();
-                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-
-                    float levelCmd = json.getInt("e");
-                    final int volumePercentage = (byte) levelCmd;
-                    LOG.info("volumePercentage: " + volumePercentage);
-                    final int volumeMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                    LOG.info("volumeMax: " + volumeMax);
-                    final int volumeMin;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                        volumeMin = audioManager.getStreamMinVolume(AudioManager.STREAM_MUSIC);
-                        LOG.info("volumeMin: " + volumeMin);
-                    }
-                    final int volumeLevel = volumeMax * volumePercentage / 100;
-                    LOG.info("volumeLevel: " + volumeLevel);
-                    audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volumeLevel, 0);
-                    GBApplication.deviceService().onSetPhoneVolume(volumePercentage); // This is here to imitate the implementation I used for inspiration. But after testing it doesn't seem to do anything?
-                } else if (json.getString("n").equals("vg")) { // vg = Volume Get
+                if (json.getString("n").equals("vg")) { // vg = Volume Get level
 
                     Context context = GBApplication.getContext();
                     AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
