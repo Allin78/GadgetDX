@@ -1,3 +1,20 @@
+/*  Copyright (C) 2023 Alicia Hormann
+
+    This file is part of Gadgetbridge.
+
+    Gadgetbridge is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Gadgetbridge is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 package nodomain.freeyourgadget.gadgetbridge.service.devices.femometer;
 
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -78,7 +95,7 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
                 if (info == null) return;
                 GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
                 versionCmd.hwVersion = info.getHardwareRevision();
-                versionCmd.fwVersion = info.getSoftwareRevision(); // firmware always reported null
+                versionCmd.fwVersion = info.getSoftwareRevision(); // firmwareRevision always reported as null
                 handleGBDeviceEvent(versionCmd);
             }
         };
@@ -119,16 +136,10 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     /**
-     * @param hex formatted like '2ea3' (has to be even length)
+     * @param data An int smaller equal 255 (0xff)
      */
-    private byte[] hexToBytes(String hex) {
-        int len = hex.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
-                    + Character.digit(hex.charAt(i+1), 16));
-        }
-        return data;
+    private byte[] byteArray(int data) {
+        return new byte[]{(byte) data};
     }
 
     @Override
@@ -146,18 +157,18 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
 
         // Mystery stuff that happens in original app, not sure if its required
         BluetoothGattCharacteristic c2 = getCharacteristic(CONFIGURATION_SERVICE_SETTING_CHARACTERISTIC);
-        builder.write(c2, hexToBytes("21"));
-        builder.write(c2, hexToBytes("02"));
-        builder.write(c2, hexToBytes("03"));
-        builder.write(c2, hexToBytes("05"));
+        builder.write(c2, byteArray(0x21));
+        builder.write(c2, byteArray(0x02));
+        builder.write(c2, byteArray(0x03));
+        builder.write(c2, byteArray(0x05));
 
         // Sync Time
-        onSetTime();
+        setCurrentTime(builder);
 
         // Init Thermometer
         builder.notify(getCharacteristic(CONFIGURATION_SERVICE_INDICATION_CHARACTERISTIC), true);
         healthThermometerProfile.enableNotify(builder, true);
-        healthThermometerProfile.setMeasurementInterval(builder, hexToBytes("0100"));
+        healthThermometerProfile.setMeasurementInterval(builder, new byte[]{(byte) 0x01, (byte) 0x00});
 
         // mark the device as initialized
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
@@ -166,13 +177,16 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onSetTime() {
+        TransactionBuilder builder = new TransactionBuilder("set time");
+        setCurrentTime(builder);
+        builder.queue(getQueue());
+    }
+
+    private void setCurrentTime(TransactionBuilder builder) {
         // Same Code as in PineTime (without the local time)
         GregorianCalendar now = BLETypeConversions.createCalendar();
         byte[] bytesCurrentTime = BLETypeConversions.calendarToCurrentTime(now, 0);
-
-        TransactionBuilder builder = new TransactionBuilder("set time");
         builder.write(getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_CURRENT_TIME), bytesCurrentTime);
-        builder.queue(getQueue());
     }
 
     @Override
@@ -181,12 +195,14 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
             TransactionBuilder builder = performInitialized("applyThermometerSetting");
 
             Alarm alarm  = alarms.get(0);
-            String alarm_hex = alarm.getEnabled()? "01" : "00"; // first byte 00/01: turn alarm off/on
-            alarm_hex += String.format("%02X", alarm.getHour()); // second byte: hour
-            alarm_hex += String.format("%02X", alarm.getMinute()); // third byte: minute
+            byte[] alarm_bytes = new byte[] {
+                    (byte) (alarm.getEnabled()? 0x01 : 0x00),  // first byte 01/00: turn alarm on/off
+                    (byte) alarm.getHour(),                    // second byte: hour
+                    (byte) alarm.getMinute()                   // third byte: minute
+            };
 
-            builder.write(getCharacteristic(CONFIGURATION_SERVICE_ALARM_CHARACTERISTIC), hexToBytes(alarm_hex));
-            builder.write(getCharacteristic(CONFIGURATION_SERVICE_SETTING_CHARACTERISTIC), hexToBytes("01"));
+            builder.write(getCharacteristic(CONFIGURATION_SERVICE_ALARM_CHARACTERISTIC), alarm_bytes);
+            builder.write(getCharacteristic(CONFIGURATION_SERVICE_SETTING_CHARACTERISTIC), byteArray(0x01));
             // read-request on char1 results in given alarm
             builder.queue(getQueue());
         } catch (IOException e) {
@@ -210,8 +226,8 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
                     break;
                 case DeviceSettingsPreferenceConst.PREF_TEMPERATURE_SCALE_CF:
                     String scale = sharedPreferences.getString(DeviceSettingsPreferenceConst.PREF_TEMPERATURE_SCALE_CF,  "c");
-                    String value = "c".equals(scale) ? "0a" : "0b";
-                    applySetting(hexToBytes(value), null);
+                    int value = "c".equals(scale) ? 0x0a : 0x0b;
+                    applySetting(byteArray(value), null);
             }
             builder.queue(getQueue());
         } catch (IOException e) {
@@ -223,17 +239,17 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
      * modes (0- quick, 1- normal, 2- long)
      */
     private void setMeasurementMode(SharedPreferences sharedPreferences) {
-        String measurementMode = sharedPreferences.getString(DeviceSettingsPreferenceConst.PREF_FEMOMETER_MEASUREMENT_MODE, "0");
-        byte[] confirmation = hexToBytes("1e");
+        String measurementMode = sharedPreferences.getString(DeviceSettingsPreferenceConst.PREF_FEMOMETER_MEASUREMENT_MODE, "normal");
+        byte[] confirmation = byteArray(0x1e);
         switch (measurementMode) {
-            case "0":
-                applySetting(hexToBytes("1a"), confirmation);
+            case "quick":
+                applySetting(byteArray(0x1a), confirmation);
                 break;
-            case "1":
-                applySetting(hexToBytes("1c"), confirmation);
+            case "normal":
+                applySetting(byteArray(0x1c), confirmation);
                 break;
-            case "2":
-                applySetting(hexToBytes("1d"), confirmation);
+            case "precise":
+                applySetting(byteArray(0x1d), confirmation);
                 break;
         }
     }
@@ -243,13 +259,13 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
      */
     private void setVolume(SharedPreferences sharedPreferences) {
         int volume = sharedPreferences.getInt(DeviceSettingsPreferenceConst.PREF_VOLUME, 50);
-        byte[] confirmation = hexToBytes("fd");
+        byte[] confirmation = byteArray(0xfd);
         if (volume < 11) {
-            applySetting(hexToBytes("09"), confirmation);
+            applySetting(byteArray(0x09), confirmation);
         } else if (volume < 21) {
-            applySetting(hexToBytes("14"), confirmation);
+            applySetting(byteArray(0x14), confirmation);
         } else {
-            applySetting(hexToBytes("16"), confirmation);
+            applySetting(byteArray(0x16), confirmation);
         }
     }
 
