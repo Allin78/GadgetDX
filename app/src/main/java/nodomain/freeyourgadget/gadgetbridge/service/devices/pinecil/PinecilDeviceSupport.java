@@ -64,6 +64,7 @@ public class PinecilDeviceSupport extends AbstractBTLEDeviceSupport {
         // mark the device as initialized
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
 
+        // request firmware version
         builder.read(getCharacteristic(PinecilConstants.UUID_CHARACTERISTIC_BULK_BUILD));
 
         // // lines below are just for trying things, will be removed later
