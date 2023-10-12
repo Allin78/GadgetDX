@@ -17,9 +17,13 @@ vendor's servers.
 [![Donate](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Gadgetbridge/donate)
 
 
-[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/Freeyourgadget/Gadgetbridge.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Freeyourgadget/Gadgetbridge/context:java)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/Freeyourgadget/Gadgetbridge.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Freeyourgadget/Gadgetbridge/alerts)
 [![Translate](https://hosted.weblate.org/widgets/freeyourgadget/-/gadgetbridge/svg-badge.svg)](https://hosted.weblate.org/projects/freeyourgadget/gadgetbridge)
+
+## Code Licenses
+
+* Gadgetbrige is licensed under the AGPLv3
+* Files in app/src/main/java/net/osmand/ and app/src/main/aidl/net/osmand/ are licensed under the GPLv3 by OsmAnd BV
+
 
 ## Download
 
@@ -33,12 +37,19 @@ vendor's servers.
 - Amazfit
 	- [Band 5](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Band-5), [Band 7](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Band-7) [**\[!\]**](#special-pairing-procedures)
 	- [Bip](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip)
-	- [Bip Lite](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-Lite), [Bip S](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-S), [Bip U](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-U) [**\[!\]**](#special-pairing-procedures)
+	- [Bip Lite](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-Lite), [Bip S](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-S), [Bip U, Bip U Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-U) [**\[!\]**](#special-pairing-procedures)
+	- [Bip 3 Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-3-Pro) [**\[!\]**](#special-pairing-procedures)
+	- [Bip 5 (experimental)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Bip-5) [**\[!\]**](#special-pairing-procedures)
 	- [Cor](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cor), [Cor 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cor-2)
-	- [GTR](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-3), [GTR 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-4) [**\[!\]**](#special-pairing-procedures)
+	- [Falcon (experimental)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Falcon) [**\[!\]**](#special-pairing-procedures)
+	- [GTR](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR), [GTR 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-3), [GTR 3 Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-3-Pro), [GTR 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-4) [**\[!\]**](#special-pairing-procedures)
+	- [GTR Mini](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTR-Mini) [**\[!\]**](#special-pairing-procedures)
 	- [GTS](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 2/2e](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS), [GTS 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-3), [GTS 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-4), [GTS 4 Mini](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-GTS-4-Mini) [**\[!\]**](#special-pairing-procedures) 
 	- [Neo](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Neo) [**\[!\]**](#special-pairing-procedures) 
-	- T-Rex, [T-Rex 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/T-Rex-2) [**\[!\]**](#special-pairing-procedures)
+	- T-Rex, T-Rex Pro, [T-Rex 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-T-Rex-2) [**\[!\]**](#special-pairing-procedures)
+	- [T-Rex Ultra (experimental)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-T-Rex-Ultra) [**\[!\]**](#special-pairing-procedures)
+	- [Cheetah (Round/Square) (experimental)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cheetah) [**\[!\]**](#special-pairing-procedures)
+	- [Cheetah Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Amazfit-Cheetah-Pro) [**\[!\]**](#special-pairing-procedures)
 	- Verge Lite [**\[!\]**](#special-pairing-procedures)
 	- [X ](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-5) [**\[!\]**](#special-pairing-procedures)
 - [Bangle.js](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Bangle.js)
@@ -47,6 +58,8 @@ vendor's servers.
     - Casio GB-X6900B
     - Casio GB-6900B
     - Casio GB-5600B
+    - Casio GW-B5600
+    - Casio GMW-B5000 (untested)
     - Casio STB-1000
     - Casio GBX-100
     - Casio GBD-100
@@ -62,12 +75,15 @@ vendor's servers.
     - [Galaxy Buds Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds-pro)
     - [Galaxy Buds2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds2)
     - [Galaxy Buds2 Pro](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Galaxy-Buds#galaxy-buds2-pro)
-
+- Garmin
+    - Vívomove HR
 - [HPlus Devices (e.g. ZeBand)](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/HPlus)
 - ID115
 - [iTag](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/iTag)
 - JYou Y5
 - Lefun
+  - Lefun ID115 Plus
+  - Other clones: bohemic smart bracelet
 - Lenovo
 	- Watch 9
 	- [Watch X (Plus)](https://codeberg.org/mamutcho/Gadgetbridge/wiki)
@@ -77,6 +93,7 @@ vendor's servers.
 	- [Band, Band 1A, Band 1S](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band), [Band 2](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-2), [Band 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-3)
 	- [Band 4](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-4), [Band 5](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-5), [Band 6](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-6) [**\[!\]**](#special-pairing-procedures)
 	- [Xiaomi Smart Band 7](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Mi-Band-7) [**\[!\]**](#special-pairing-procedures)
+	- Xiaomi Temperature and Humidity Monitor Clock (LYWSD02/LYWSD02MMC) (partial support)
 	- Scale 2 (Currently only displays a toast after stepping on the scale)
 - [MyKronoz ZeTime](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/MyKronoz-ZeTime)
 - NO.1 F1
@@ -87,11 +104,13 @@ vendor's servers.
 - PineTime (InfiniTime Firmware)
 - Roidmi, Roidmi 3, Mojietu 3 (Bluetooth FM Transmitters)
 - [SMA](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/SMA) Q2 (SMA-Q2-OSS Firmware)
-- [Sony Headphones](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)
-	- LinkBuds S
-	- WH-1000XM2, WH-1000XM3, WH-1000XM4
-	- WF-SP800N
-	- WF-1000XM3, WF-1000XM4
+- Sony
+	- [Headphones](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Headphones)
+		- LinkBuds S
+		- WH-1000XM2, WH-1000XM3, WH-1000XM4, WH-1000XM5
+		- WF-SP800N
+		- WF-1000XM3, WF-1000XM4, WF-1000XM5 (experimental)
+	- [Wena 3](https://codeberg.org/Freeyourgadget/Gadgetbridge/wiki/Sony-Wena-3)
 - Teclast H10, H30
 - TLW64
 - Vibratissimo (Experimental)

@@ -18,7 +18,6 @@
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,7 +47,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,7 +86,6 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryJsonSummary;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.SwipeEvents;
@@ -188,7 +189,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                     }
 
                     layout.startAnimation(animFadeRight);
-                    show_hide_gpx_menu();
+                    updateMenuItems();
                 } else {
                     layout.startAnimation(animBounceRight);
                 }
@@ -211,7 +212,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
 
 
                     layout.startAnimation(animFadeLeft);
-                    show_hide_gpx_menu();
+                    updateMenuItems();
                 } else {
                     layout.startAnimation(animBounceLeft);
                 }
@@ -260,7 +261,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                 input.setLayoutParams(params);
                 container.addView(input);
 
-                new AlertDialog.Builder(ActivitySummaryDetail.this)
+                new MaterialAlertDialogBuilder(ActivitySummaryDetail.this)
                         .setView(container)
                         .setCancelable(true)
                         .setTitle(ActivitySummaryDetail.this.getString(R.string.activity_summary_edit_name_title))
@@ -292,7 +293,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                 export_path = get_path();
                 filesGpxList = get_gpx_file_list();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(ActivitySummaryDetail.this);
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(ActivitySummaryDetail.this);
                 builder.setTitle(R.string.activity_summary_detail_select_gpx_track);
                 ArrayAdapter<String> directory_listing = new ArrayAdapter<String>(ActivitySummaryDetail.this, android.R.layout.simple_list_item_1, filesGpxList);
                 builder.setSingleChoiceItems(directory_listing, 0, new DialogInterface.OnClickListener() {
@@ -306,7 +307,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
                             message = String.format("%s?", getString(R.string.activity_summary_detail_clear_gpx_track));
                         }
 
-                        new AlertDialog.Builder(ActivitySummaryDetail.this)
+                        new MaterialAlertDialogBuilder(ActivitySummaryDetail.this)
                                 .setCancelable(true)
                                 .setIcon(R.drawable.ic_warning)
                                 .setTitle(R.string.activity_summary_detail_editing_gpx_track)
@@ -417,7 +418,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
     }
 
     private void makeSummaryContent(BaseActivitySummary item) {
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+        final DeviceCoordinator coordinator = gbDevice.getDeviceCoordinator();
         final ActivitySummaryParser summaryParser = coordinator.getActivitySummaryParser(gbDevice);
 
         //make view of data from summaryData of item
@@ -560,8 +561,17 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
             case R.id.activity_action_take_screenshot:
                 take_share_screenshot(ActivitySummaryDetail.this);
                 return true;
+            case R.id.activity_action_show_gpx:
+                viewGpxTrack(ActivitySummaryDetail.this);
+                return true;
             case R.id.activity_action_share_gpx:
-                share_gpx_track(ActivitySummaryDetail.this);
+                shareGpxTrack(ActivitySummaryDetail.this, currentItem);
+                return true;
+            case R.id.activity_action_dev_share_raw_summary:
+                shareRawSummary(ActivitySummaryDetail.this, currentItem);
+                return true;
+            case R.id.activity_action_dev_share_raw_details:
+                shareRawDetails(ActivitySummaryDetail.this, currentItem);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -604,7 +614,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         }
     }
 
-    private void share_gpx_track(Context context) {
+    private void viewGpxTrack(Context context) {
         final String gpxTrack = currentItem.getGpxTrack();
 
         if (gpxTrack != null) {
@@ -618,16 +628,63 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         }
     }
 
-    private void show_hide_gpx_menu() {
-        String gpxTrack = null;
+    private static void shareGpxTrack(final Context context, final BaseActivitySummary summary) {
+        try {
+            AndroidUtils.shareFile(context, new File(summary.getGpxTrack()));
+        } catch (final Exception e) {
+            GB.toast(context, "Unable to share GPX track: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
+        }
+    }
+
+    private static void shareRawSummary(final Context context, final BaseActivitySummary summary) {
+        if (summary.getRawSummaryData() == null) {
+            GB.toast(context, "No raw summary in this activity", Toast.LENGTH_LONG, GB.WARN);
+            return;
+        }
+
+        final String rawSummaryFilename = FileUtils.makeValidFileName(String.format("%s_summary.bin", DateTimeUtils.formatIso8601(summary.getStartTime())));
+
+        try {
+            AndroidUtils.shareBytesAsFile(context, rawSummaryFilename, summary.getRawSummaryData());
+        } catch (final Exception e) {
+            GB.toast(context, "Unable to share GPX track: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
+        }
+    }
+
+    private static void shareRawDetails(final Context context, final BaseActivitySummary summary) {
+        if (summary.getRawDetailsPath() == null) {
+            GB.toast(context, "No raw details in this activity", Toast.LENGTH_LONG, GB.WARN);
+            return;
+        }
+
+        try {
+            AndroidUtils.shareFile(context, new File(summary.getRawDetailsPath()));
+        } catch (final Exception e) {
+            GB.toast(context, "Unable to share raw details: " + e.getMessage(), Toast.LENGTH_LONG, GB.ERROR, e);
+        }
+    }
+
+    private void updateMenuItems() {
+        boolean hasGpx = false;
+        boolean hasRawSummary = false;
+        boolean hasRawDetails = false;
+
         if (currentItem != null) {
-            gpxTrack = currentItem.getGpxTrack();
+            hasGpx = currentItem.getGpxTrack() != null;
+            hasRawSummary = currentItem.getRawSummaryData() != null;
+
+            final String rawDetailsPath = currentItem.getRawDetailsPath();
+            if (rawDetailsPath != null) {
+                hasRawDetails = new File(rawDetailsPath).exists();
+            }
         }
-        if (gpxTrack == null) {
-            mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_share_gpx).setVisible(false);
-        } else {
-            mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_share_gpx).setVisible(true);
-        }
+
+        mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_show_gpx).setVisible(hasGpx);
+        mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_share_gpx).setVisible(hasGpx);
+        mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_dev_share_raw_summary).setVisible(hasRawSummary);
+        mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_dev_share_raw_details).setVisible(hasRawDetails);
+        final MenuItem devToolsMenu = mOptionsMenu.findItem(R.id.activity_detail_overflowMenu).getSubMenu().findItem(R.id.activity_action_dev_tools);
+        devToolsMenu.setVisible(devToolsMenu.getSubMenu().hasVisibleItems());
     }
 
     private void showCanvas() {
@@ -663,7 +720,7 @@ public class ActivitySummaryDetail extends AbstractGBActivity {
         super.onCreateOptionsMenu(menu);
         mOptionsMenu = menu;
         getMenuInflater().inflate(R.menu.activity_take_screenshot_menu, menu);
-        show_hide_gpx_menu();
+        updateMenuItems();
         return true;
     }
 

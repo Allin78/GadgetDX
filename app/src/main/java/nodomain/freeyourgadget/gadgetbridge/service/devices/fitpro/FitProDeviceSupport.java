@@ -89,7 +89,6 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.fitpro.FitProConstant
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
-import android.net.Uri;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -134,12 +133,8 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
-import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
-import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
@@ -204,7 +199,7 @@ public class FitProDeviceSupport extends AbstractBTLEDeviceSupport {
 
         builder.notify(getCharacteristic(UUID_CHARACTERISTIC_RX), true);
         builder.notify(getCharacteristic(GattService.UUID_SERVICE_BATTERY_SERVICE), true);
-        builder.setGattCallback(this);
+        builder.setCallback(this);
 
         deviceInfoProfile.requestDeviceInfo(builder);
         batteryInfoProfile.requestBatteryInfo(builder);

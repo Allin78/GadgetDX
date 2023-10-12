@@ -1,4 +1,4 @@
-/*  Copyright (C) 2021 José Rebelo
+/*  Copyright (C) 2023 José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -43,6 +43,8 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.SonyHeadphonesSupport;
 
 public abstract class SonyHeadphonesCoordinator extends AbstractBLClassicDeviceCoordinator {
     @Override
@@ -91,7 +93,7 @@ public abstract class SonyHeadphonesCoordinator extends AbstractBLClassicDeviceC
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 0;
     }
 
@@ -106,7 +108,7 @@ public abstract class SonyHeadphonesCoordinator extends AbstractBLClassicDeviceC
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -178,6 +180,12 @@ public abstract class SonyHeadphonesCoordinator extends AbstractBLClassicDeviceC
                 settings.add(R.xml.devicesettings_sony_headphones_ambient_sound_control);
             }
 
+            if (supports(SonyHeadphonesCapabilities.SpeakToChatConfig)) {
+                settings.add(R.xml.devicesettings_sony_headphones_speak_to_chat_with_settings);
+            } else if (supports(SonyHeadphonesCapabilities.SpeakToChatEnabled)) {
+                settings.add(R.xml.devicesettings_sony_headphones_speak_to_chat_simple);
+            }
+
             if (supports(SonyHeadphonesCapabilities.AncOptimizer)) {
                 settings.add(R.xml.devicesettings_sony_headphones_anc_optimizer);
             }
@@ -190,6 +198,7 @@ public abstract class SonyHeadphonesCoordinator extends AbstractBLClassicDeviceC
             put(SonyHeadphonesCapabilities.SoundPosition, R.xml.devicesettings_sony_headphones_sound_position);
             put(SonyHeadphonesCapabilities.SurroundMode, R.xml.devicesettings_sony_headphones_surround_mode);
             put(SonyHeadphonesCapabilities.AudioUpsampling, R.xml.devicesettings_sony_headphones_audio_upsampling);
+            put(SonyHeadphonesCapabilities.Volume, R.xml.devicesettings_volume);
         }});
 
         addSettingsUnderHeader(settings, R.xml.devicesettings_header_system, new LinkedHashMap<SonyHeadphonesCapabilities, Integer>() {{
@@ -249,5 +258,21 @@ public abstract class SonyHeadphonesCoordinator extends AbstractBLClassicDeviceC
 
     public boolean preferServiceV2() {
         return false;
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return SonyHeadphonesSupport.class;
+    }
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_sony_overhead;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_sony_overhead_disabled;
     }
 }

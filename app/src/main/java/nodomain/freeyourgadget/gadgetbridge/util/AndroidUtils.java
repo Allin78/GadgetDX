@@ -17,16 +17,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.util;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelUuid;
 import android.os.Parcelable;
@@ -40,7 +41,13 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.color.DynamicColors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Locale;
@@ -49,6 +56,8 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 
 public class AndroidUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(AndroidUtils.class);
+
     /**
      * Creates a new {@link ParcelUuid} array with the contents of the given uuids.
      * The given array is expected to contain only {@link ParcelUuid} elements.
@@ -108,7 +117,19 @@ public class AndroidUtils {
      */
     public static String getTextColorHex(Context context) {
         int color;
-        if (GBApplication.isDarkThemeEnabled()) {
+        if (DynamicColors.isDynamicColorAvailable() && GBApplication.areDynamicColorsEnabled()) {
+            Context dynamicColorContext;
+            if (GBApplication.isDarkThemeEnabled()) {
+                dynamicColorContext = DynamicColors.wrapContextIfAvailable(context, R.style.GadgetbridgeThemeDynamicDark);
+            } else {
+                dynamicColorContext = DynamicColors.wrapContextIfAvailable(context, R.style.GadgetbridgeThemeDynamicLight);
+            }
+            int[] attrsToResolve = {R.attr.colorOnSurface};
+            @SuppressLint("ResourceType")
+            TypedArray ta = dynamicColorContext.obtainStyledAttributes(attrsToResolve);
+            color = ta.getColor(0, 0);
+            ta.recycle();
+        } else if (GBApplication.isDarkThemeEnabled()) {
             color = context.getResources().getColor(R.color.primarytext_dark);
         } else {
             color = context.getResources().getColor(R.color.primarytext_light);
@@ -122,7 +143,19 @@ public class AndroidUtils {
      */
     public static String getBackgroundColorHex(Context context) {
         int color;
-        if (GBApplication.isDarkThemeEnabled()) {
+        if (DynamicColors.isDynamicColorAvailable() && GBApplication.areDynamicColorsEnabled()) {
+            Context dynamicColorContext;
+            if (GBApplication.isDarkThemeEnabled()) {
+                dynamicColorContext = DynamicColors.wrapContextIfAvailable(context, R.style.GadgetbridgeThemeDynamicDark);
+            } else {
+                dynamicColorContext = DynamicColors.wrapContextIfAvailable(context, R.style.GadgetbridgeThemeDynamicLight);
+            }
+            int[] attrsToResolve = {R.attr.colorSurface};
+            @SuppressLint("ResourceType")
+            TypedArray ta = dynamicColorContext.obtainStyledAttributes(attrsToResolve);
+            color = ta.getColor(0, 0);
+            ta.recycle();
+        } else if (GBApplication.isDarkThemeEnabled()) {
             color = context.getResources().getColor(R.color.cardview_dark_background);
         } else {
             color = context.getResources().getColor(R.color.cardview_light_background);
@@ -243,5 +276,64 @@ public class AndroidUtils {
         } catch (ActivityNotFoundException e) {
             Toast.makeText(context, R.string.activity_error_no_app_for_gpx, Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static void shareBytesAsFile(final Context context, final String name, final byte[] bytes) throws IOException {
+        final File cacheDir = context.getCacheDir();
+        final File rawCacheDir = new File(cacheDir, "raw");
+        rawCacheDir.mkdir();
+        final File file = new File(rawCacheDir, name);
+
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(bytes);
+        } catch (final IOException e) {
+            LOG.error("Failed to write bytes to temporary file", e);
+            return;
+        }
+
+        shareFile(context, file);
+    }
+
+    public static void shareFile(final Context context, final File file) throws IOException {
+        if (!file.exists()) {
+            LOG.warn("File {} does not exist", file.getPath());
+            return;
+        }
+
+        shareFile(context, file, "*/*");
+    }
+
+    public static void shareFile(final Context context, final File file, final String type) throws IOException {
+        final Uri contentUri = FileProvider.getUriForFile(
+                context,
+                context.getApplicationContext().getPackageName() + ".screenshot_provider",
+                file
+        );
+
+        final Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType(type);
+        intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            context.startActivity(Intent.createChooser(intent, "Share file"));
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, R.string.activity_error_share_failed, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void openWebsite(String url){
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        GBApplication.getContext().startActivity(i);
+    }
+
+    public static void openApp(String packageName) throws ClassNotFoundException {
+        Context context = GBApplication.getContext();
+
+        Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        if(launchIntent == null){
+            throw new ClassNotFoundException("App " + packageName + " cannot be found");
+        }
+        GBApplication.getContext().startActivity(launchIntent);
     }
 }

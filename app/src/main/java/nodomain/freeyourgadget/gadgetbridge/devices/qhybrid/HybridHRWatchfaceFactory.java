@@ -47,6 +47,7 @@ public class HybridHRWatchfaceFactory {
     private static final int PREVIEW_WIDTH = 192;
     private static final int PREVIEW_HEIGHT = 192;
     private ArrayList<JSONObject> widgets = new ArrayList<>();
+    private JSONObject menuStructure = new JSONObject();
 
     public HybridHRWatchfaceFactory(String name) {
         watchfaceName = name.replaceAll("[^-A-Za-z0-9]", "");
@@ -103,11 +104,12 @@ public class HybridHRWatchfaceFactory {
                 case "widgetCalories":
                 case "widgetActiveMins":
                 case "widgetChanceOfRain":
+                case "widgetUV":
                     widget.put("type", "comp");
                     widget.put("name", widgetDesc.getWidgetType());
                     widget.put("goal_ring", false);
                     widget.put("color", widgetDesc.getColor() == HybridHRWatchfaceWidget.COLOR_WHITE ? "white" : "black");
-                    if (widgetDesc.getBackground() != "") {
+                    if (!widgetDesc.getBackground().equals("")) {
                         widget.put("bg", widgetDesc.getBackground() + widgetDesc.getColor() + ".rle");
                     }
                     break;
@@ -127,6 +129,10 @@ public class HybridHRWatchfaceFactory {
         } catch (JSONException e) {
             LOG.warn("JSON error", e);
         }
+    }
+
+    public void setMenuStructure(JSONObject menuStructure){
+        this.menuStructure = menuStructure;
     }
 
     public void addWidgets(ArrayList<HybridHRWatchfaceWidget> widgets) {
@@ -184,6 +190,7 @@ public class HybridHRWatchfaceFactory {
             if (includeWidget("widgetCalories") > 0) code.put("widgetCalories", context.getAssets().open("fossil_hr/widgetCalories.bin"));
             if (includeWidget("widgetActiveMins") > 0) code.put("widgetActiveMins", context.getAssets().open("fossil_hr/widgetActiveMins.bin"));
             if (includeWidget("widgetChanceOfRain") > 0) code.put("widgetChanceOfRain", context.getAssets().open("fossil_hr/widgetChanceOfRain.bin"));
+            if (includeWidget("widgetUV") > 0) code.put("widgetUV", context.getAssets().open("fossil_hr/widgetUV.bin"));
             for (int i=0; i<includeWidget("widget2ndTZ"); i++) {
                 code.put("widget2ndTZ" + i, context.getAssets().open("fossil_hr/widget2ndTZ.bin"));
             }
@@ -308,6 +315,8 @@ public class HybridHRWatchfaceFactory {
         config.put("powersave_hands", settings.getPowersaveHands());
         config.put("light_up_on_notification", settings.getLightUpOnNotification());
         configuration.put("config", config);
+
+        configuration.put("menu_structure", menuStructure);
 
         return configuration.toString();
     }

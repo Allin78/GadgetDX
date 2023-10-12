@@ -4,11 +4,13 @@
         <item>@string/pref_theme_system</item>
         <item>@string/pref_theme_light</item>
         <item>@string/pref_theme_dark</item>
+        <item>@string/pref_theme_dynamic</item>
     </string-array>
     <string-array name="pref_theme_values">
         <item>@string/pref_theme_value_system</item>
         <item>@string/pref_theme_value_light</item>
         <item>@string/pref_theme_value_dark</item>
+        <item>@string/pref_theme_value_dynamic</item>
     </string-array>
 
     <string-array name="pref_language_options">
@@ -319,6 +321,19 @@
         <item>@string/p_off</item>
         <item>@string/p_on</item>
         <item>@string/p_scheduled</item>
+    </string-array>
+
+    <string-array name="activate_display_on_lift_with_smart">
+        <item>@string/off</item>
+        <item>@string/on</item>
+        <item>@string/mi2_dnd_scheduled</item>
+        <item>@string/smart</item>
+    </string-array>
+    <string-array name="activate_display_on_lift_with_smart_values">
+        <item>@string/p_off</item>
+        <item>@string/p_on</item>
+        <item>@string/p_scheduled</item>
+        <item>@string/p_smart</item>
     </string-array>
 
     <string-array name="activate_display_on_lift_sensitivity">
@@ -663,6 +678,27 @@
         <item>rowing_machine</item>
     </string-array>
 
+    <string-array name="pref_morning_updates_categories">
+        <item>@string/menuitem_weather</item>
+        <item>@string/battery</item>
+        <item>@string/menuitem_sleep</item>
+        <item>@string/menuitem_events</item>
+        <item>@string/menuitem_pai</item>
+        <item>@string/yesterdays_activity</item>
+        <item>@string/menuitem_zepp_coach</item>
+        <item>@string/menuitem_cycles</item>
+    </string-array>
+    <string-array name="pref_morning_updates_categories_values">
+        <item>weather</item>
+        <item>battery</item>
+        <item>sleep</item>
+        <item>event</item>
+        <item>pai</item>
+        <item>yesterdays_activity</item>
+        <item>zepp_coach</item>
+        <item>cycle_tracking</item>
+    </string-array>
+
     <string-array name="pref_gps_mode_preset">
         <item>@string/accuracy</item>
         <item>@string/balanced</item>
@@ -722,9 +758,38 @@
         <item>low</item>
     </string-array>
 
+    <string-array name="pref_zepp_os_watchfaces">
+        <!-- GTR 4 -->
+        <item>@string/zepp_os_watchface_red_fantasy</item>
+        <item>@string/zepp_os_watchface_multiple_data</item>
+        <item>@string/zepp_os_watchface_rush</item>
+        <item>@string/zepp_os_watchface_minimalist</item>
+        <item>@string/zepp_os_watchface_simplicity_data</item>
+        <item>@string/zepp_os_watchface_vibrant</item>
+        <item>@string/zepp_os_watchface_business_style</item>
+        <item>@string/zepp_os_watchface_emerald_moonlight</item>
+        <item>@string/zepp_os_watchface_rotating_earth</item>
+        <item>@string/zepp_os_watchface_superposition</item>
+    </string-array>
+
+    <string-array name="pref_zepp_os_watchfaces_values">
+        <!-- GTR 4 -->
+        <item>red_fantasy</item>
+        <item>multiple_data</item>
+        <item>rush</item>
+        <item>minimalist</item>
+        <item>simplicity_data</item>
+        <item>vibrant</item>
+        <item>business_style</item>
+        <item>emerald_moonlight</item>
+        <item>rotating_earth</item>
+        <item>superposition</item>
+    </string-array>
+
     <string-array name="pref_zepp_os_apps">
         <item>@string/menuitem_activity</item>
         <item>@string/menuitem_alarm</item>
+        <item>@string/menuitem_alexa</item>
         <item>@string/menuitem_alexa</item>
         <item>@string/menuitem_barometer</item>
         <item>@string/menuitem_breathing</item>
@@ -762,6 +827,9 @@
         <item>@string/menuitem_worldclock</item>
         <item>@string/menuitem_alipay</item>
         <item>@string/menuitem_wechat_pay</item>
+        <item>@string/menuitem_cards</item>
+        <item>@string/menuitem_mi_ai</item>
+        <item>@string/menuitem_zepp_coach</item>
         <!-- dummy item -->
         <item>@string/menuitem_more</item>
     </string-array>
@@ -770,6 +838,7 @@
         <item>activity</item>
         <item>alarm</item>
         <item>alexa</item>
+        <item>alexa2</item>
         <item>barometer</item>
         <item>breathing</item>
         <item>calendar</item>
@@ -806,8 +875,71 @@
         <item>worldclock</item>
         <item>alipay</item>
         <item>wechat_pay</item>
+        <item>cards</item>
+        <item>mi_ai</item>
+        <item>zepp_coach</item>
         <!-- dummy item -->
         <item>more</item>
+    </string-array>
+
+    <string-array name="pref_zepp_os_shortcut_cards">
+        <item>@string/menuitem_weather</item>
+        <item>@string/menuitem_aqi</item>
+        <item>@string/menuitem_forecast</item>
+        <item>@string/menuitem_pai</item>
+        <item>@string/menuitem_alarm</item>
+        <item>@string/menuitem_sleep</item>
+        <item>@string/menuitem_hr</item>
+        <item>@string/menuitem_activity</item>
+        <item>@string/menuitem_spo2</item>
+        <item>@string/menuitem_phone</item>
+        <item>@string/menuitem_events</item>
+        <item>@string/menuitem_stress</item>
+        <item>@string/menuitem_worldclock</item>
+        <item>@string/menuitem_todo</item>
+        <item>@string/menuitem_countdown</item>
+        <item>@string/menuitem_last_workout</item>
+        <item>@string/menuitem_total_workout</item>
+        <item>@string/menuitem_workout_status</item>
+        <item>@string/menuitem_vo2_max</item>
+        <item>@string/menuitem_music</item>
+        <item>@string/menuitem_cycles</item>
+        <item>@string/menuitem_one_tap_measuring</item>
+        <item>@string/menuitem_breathing</item>
+        <item>@string/menuitem_stopwatch</item>
+        <item>@string/menuitem_recommendation</item>
+        <item>@string/menuitem_zepp_coach</item>
+        <item>@string/menuitem_alexa</item>
+    </string-array>
+
+    <string-array name="pref_zepp_os_shortcut_cards_values">
+        <item>weather</item>
+        <item>aqi</item>
+        <item>forecast</item>
+        <item>pai</item>
+        <item>alarm</item>
+        <item>sleep</item>
+        <item>heartrate</item>
+        <item>activity</item>
+        <item>spo2</item>
+        <item>phone</item>
+        <item>events</item>
+        <item>stress</item>
+        <item>worldclock</item>
+        <item>todo</item>
+        <item>countdown</item>
+        <item>last_workout</item>
+        <item>total_workout</item>
+        <item>workout_status</item>
+        <item>vo2_max</item>
+        <item>music</item>
+        <item>cycle_tracking</item>
+        <item>one_tap_measuring</item>
+        <item>breathing</item>
+        <item>stopwatch</item>
+        <item>recommendation</item>
+        <item>zepp_coach</item>
+        <item>alexa</item>
     </string-array>
 
     <string-array name="pref_huami2021_control_center">
@@ -990,6 +1122,93 @@
         <item>street_dance</item>
         <item>zumba</item>
         <item>indoor_ice_skating</item>
+    </string-array>
+
+    <string-array name="pref_withings_steel_activity_types">
+        <item>@string/activity_type_outdoor_running</item>
+        <item>@string/activity_type_hiking</item>
+        <item>@string/activity_type_biking</item>
+        <item>@string/activity_type_swimming</item>
+        <item>@string/activity_type_surfing</item>
+        <item>@string/activity_type_windsurfing</item>
+        <item>@string/activity_type_kitesurfing</item>
+        <item>@string/activity_type_tennis</item>
+        <item>@string/activity_type_pingpong</item>
+        <item>@string/activity_type_squash</item>
+        <item>@string/activity_type_badminton</item>
+        <item>@string/activity_type_basketball</item>
+        <item>@string/activity_type_soccer</item>
+        <item>@string/activity_type_football</item>
+        <item>@string/activity_type_rugby</item>
+        <item>@string/activity_type_volleyball</item>
+        <item>@string/activity_type_baseball</item>
+        <item>@string/activity_type_handball</item>
+        <item>@string/activity_type_golf</item>
+        <item>@string/activity_type_gymnastics</item>
+        <item>@string/activity_type_elliptical</item>
+        <item>@string/activity_type_pilates</item>
+        <item>@string/activity_type_yoga</item>
+        <item>@string/activity_type_dancing</item>
+        <item>@string/activity_type_zumba</item>
+        <item>@string/activity_type_weightlifting</item>
+        <item>@string/activity_type_boxing</item>
+        <item>@string/activity_type_skiing</item>
+        <item>@string/activity_type_snowboarding</item>
+        <item>@string/activity_type_rowing_machine</item>
+        <item>@string/activity_type_hockey</item>
+        <item>@string/activity_type_icehockey</item>
+        <item>@string/activity_type_climbing</item>
+        <item>@string/activity_type_iceskating</item>
+        <item>@string/activity_type_riding</item>
+        <item>@string/activity_type_other</item>
+    </string-array>
+
+    <string-array name="pref_withings_steel_activity_types_values">
+        <item>running</item>
+        <item>hiking</item>
+        <item>biking</item>
+        <item>swimming</item>
+        <item>surfing</item>
+        <item>windsurfing</item>
+        <item>kitesurfing</item>
+        <item>tennis</item>
+        <item>pingpong</item>
+        <item>squash</item>
+        <item>badminton</item>
+        <item>basketball</item>
+        <item>soccer</item>
+        <item>football</item>
+        <item>rugby</item>
+        <item>volleyball</item>
+        <item>baseball</item>
+        <item>handball</item>
+        <item>golf</item>
+        <item>gymnastics</item>
+        <item>elliptical</item>
+        <item>pilates</item>
+        <item>yoga</item>
+        <item>dancing</item>
+        <item>zumba</item>
+        <item>weightlifting</item>
+        <item>boxing</item>
+        <item>skiing</item>
+        <item>snowboarding</item>
+        <item>rowing_machine</item>
+        <item>hockey</item>
+        <item>icehockey</item>
+        <item>climbing</item>
+        <item>iceskating</item>
+        <item>riding</item>
+        <item>other</item>
+    </string-array>
+
+    <string-array name="pref_withings_steel_activity_types_default">
+        <item>running</item>
+        <item>hiking</item>
+        <item>biking</item>
+        <item>swimming</item>
+        <item>climbing</item>
+        <item>other</item>
     </string-array>
 
     <string-array name="pref_neo_display_items">
@@ -1340,6 +1559,69 @@
         <item>@string/p_menuitem_more</item>
     </string-array>
 
+    <string-array name="pref_bip3pro_display_items">
+        <item>@string/menuitem_goal</item>
+        <item>@string/menuitem_hr</item>
+        <item>@string/menuitem_pai</item>
+        <item>@string/menuitem_workout</item>
+        <item>@string/menuitem_activity</item>
+        <item>@string/menuitem_sleep</item>
+        <item>@string/menuitem_weather</item>
+        <item>@string/menuitem_alarm</item>
+        <item>@string/menuitem_stopwatch</item>
+        <item>@string/menuitem_timer</item>
+        <item>@string/menuitem_breathing</item>
+        <item>@string/menuitem_stress</item>
+        <item>@string/menuitem_spo2</item>
+        <item>@string/menuitem_worldclock</item>
+        <item>@string/menuitem_music</item>
+        <item>@string/menuitem_cycles</item>
+        <item>@string/menuitem_settings</item>
+        <item>@string/menuitem_more</item>
+    </string-array>
+
+    <string-array name="pref_bip3pro_display_items_values">
+        <item>@string/p_menuitem_goal</item>
+        <item>@string/p_menuitem_hr</item>
+        <item>@string/p_menuitem_pai</item>
+        <item>@string/p_menuitem_workout</item>
+        <item>@string/p_menuitem_activity</item>
+        <item>@string/p_menuitem_sleep</item>
+        <item>@string/p_menuitem_weather</item>
+        <item>@string/p_menuitem_alarm</item>
+        <item>@string/p_menuitem_stopwatch</item>
+        <item>@string/p_menuitem_timer</item>
+        <item>@string/p_menuitem_breathing</item>
+        <item>@string/p_menuitem_stress</item>
+        <item>@string/p_menuitem_spo2</item>
+        <item>@string/p_menuitem_worldclock</item>
+        <item>@string/p_menuitem_music</item>
+        <item>@string/p_menuitem_cycles</item>
+        <item>@string/p_menuitem_settings</item>
+        <item>@string/p_menuitem_more</item>
+    </string-array>
+
+    <string-array name="pref_bip3pro_display_items_default">
+        <item>@string/p_menuitem_goal</item>
+        <item>@string/p_menuitem_hr</item>
+        <item>@string/p_menuitem_pai</item>
+        <item>@string/p_menuitem_workout</item>
+        <item>@string/p_menuitem_activity</item>
+        <item>@string/p_menuitem_sleep</item>
+        <item>@string/p_menuitem_weather</item>
+        <item>@string/p_menuitem_alarm</item>
+        <item>@string/p_menuitem_stopwatch</item>
+        <item>@string/p_menuitem_timer</item>
+        <item>@string/p_menuitem_breathing</item>
+        <item>@string/p_menuitem_stress</item>
+        <item>@string/p_menuitem_spo2</item>
+        <item>@string/p_menuitem_worldclock</item>
+        <item>@string/p_menuitem_music</item>
+        <item>@string/p_menuitem_cycles</item>
+        <item>@string/p_menuitem_settings</item>
+        <item>@string/p_menuitem_more</item>
+    </string-array>
+
     <string-array name="pref_gts2mini_display_items">
         <item>@string/menuitem_goal</item>
         <item>@string/menuitem_hr</item>
@@ -1417,6 +1699,7 @@
         <item>@string/p_menuitem_findphone</item>
         <item>@string/p_menuitem_takephoto</item>
         <item>@string/p_menuitem_settings</item>
+        <item>@string/p_menuitem_alexa</item>
         <item>@string/p_menuitem_more</item>
     </string-array>
 
@@ -1781,11 +2064,13 @@
     <string-array name="pref_message_privacy_mode">
         <item name="off">@string/pref_message_privacy_mode_off</item>
         <item name="complete">@string/pref_message_privacy_mode_complete</item>
+        <item name="bodyonly">@string/pref_message_privacy_mode_bodyonly</item>
     </string-array>
 
     <string-array name="pref_message_privacy_mode_values">
         <item>@string/p_message_privacy_mode_off</item>
         <item>@string/p_message_privacy_mode_complete</item>
+        <item>@string/p_message_privacy_mode_bodyonly</item>
     </string-array>
 
 
@@ -1793,11 +2078,18 @@
         <item name="auto">@string/automatic</item>
         <item name="zh_CN">@string/simplified_chinese</item>
         <item name="zh_TW">@string/traditional_chinese</item>
-        <item name="en_US">@string/english</item>
-        <item name="es_ES">@string/spanish</item>
+        <item name="en_AU">@string/english_au</item>
+        <item name="en_CA">@string/english_ca</item>
+        <item name="en_GB">@string/english_gb</item>
+        <item name="en_IN">@string/english_in</item>
+        <item name="en_US">@string/english_us</item>
+        <item name="es_ES">@string/spanish_es</item>
+        <item name="es_MX">@string/spanish_mx</item>
+        <item name="es_US">@string/spanish_us</item>
         <item name="de_DE">@string/german</item>
         <item name="it_IT">@string/italian</item>
-        <item name="fr_FR">@string/french</item>
+        <item name="fr_CA">@string/french_ca</item>
+        <item name="fr_FR">@string/french_fr</item>
         <item name="pt_BR">@string/portuguese_br</item>
         <item name="pt_PT">@string/portuguese_pt</item>
         <item name="nl_NL">@string/dutch</item>
@@ -1820,10 +2112,17 @@
         <item>auto</item>
         <item>zh_CN</item>
         <item>zh_TW</item>
+        <item>en_AU</item>
+        <item>en_CA</item>
+        <item>en_GB</item>
+        <item>en_IN</item>
         <item>en_US</item>
         <item>es_ES</item>
+        <item>es_MX</item>
+        <item>es_US</item>
         <item>de_DE</item>
         <item>it_IT</item>
+        <item>fr_CA</item>
         <item>fr_FR</item>
         <item>pt_BR</item>
         <item>pt_PT</item>
@@ -2338,6 +2637,8 @@
         <item>@string/weeksleepchart_sleep_a_week</item>
         <item>@string/weeksleepchart_sleep_a_month</item>
         <item>@string/weekstepschart_steps_a_month</item>
+        <item>@string/menuitem_stress</item>
+        <item>@string/menuitem_pai</item>
         <item>@string/stats_title</item>
         <item>@string/liveactivity_live_activity</item>
     </string-array>
@@ -2348,6 +2649,8 @@
         <item>@string/p_sleep</item>
         <item>@string/p_sleep_week</item>
         <item>@string/p_steps_week</item>
+        <item>@string/p_stress</item>
+        <item>@string/p_pai</item>
         <item>@string/p_speed_zones</item>
         <item>@string/p_live_stats</item>
     </string-array>
@@ -2358,6 +2661,8 @@
         <item>@string/p_sleep</item>
         <item>@string/p_sleep_week</item>
         <item>@string/p_steps_week</item>
+        <item>@string/p_stress</item>
+        <item>@string/p_pai</item>
         <item>@string/p_speed_zones</item>
         <item>@string/p_live_stats</item>
     </string-array>
@@ -2767,6 +3072,8 @@
     <string-array name="pref_transliteration_languages">
         <item>@string/arabic</item>
         <item>@string/bengali</item>
+        <item>@string/common_symbols</item>
+        <item>@string/croatian</item>
         <item>@string/czech</item>
         <item>@string/estonian</item>
         <item>@string/extended_ascii</item>
@@ -2777,6 +3084,7 @@
         <item>@string/hebrew</item>
         <item>@string/icelandic</item>
         <item>@string/korean</item>
+        <item>@string/latvian</item>
         <item>@string/lithuanian</item>
         <item>@string/persian</item>
         <item>@string/polish</item>
@@ -2789,6 +3097,8 @@
     <string-array name="pref_transliteration_languages_values">
         <item>arabic</item>
         <item>bengali</item>
+        <item>common_symbols</item>
+        <item>croatian</item>
         <item>czech</item>
         <item>estonian</item>
         <item>extended_ascii</item>
@@ -2799,6 +3109,7 @@
         <item>hebrew</item>
         <item>icelandic</item>
         <item>korean</item>
+        <item>latvian</item>
         <item>lithuanian</item>
         <item>persian</item>
         <item>polish</item>
@@ -2810,5 +3121,294 @@
 
     <string-array name="pref_transliteration_languages_default">
         <!-- transliteration disabled by default -->
+    </string-array>
+
+    <string-array name="prefs_wena3_vibration_strength_names_list">
+        <item>@string/prefs_wena3_vibration_strength_item_weak</item>
+        <item>@string/prefs_wena3_vibration_strength_item_medium</item>
+        <item>@string/prefs_wena3_vibration_strength_item_strong</item>
+    </string-array>
+    <string-array name="prefs_wena3_vibration_strength_values_list">
+        <item>weak</item>
+        <item>normal</item>
+        <item>strong</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_home_icons_names_list">
+        <item>@string/menuitem_timer</item>
+        <item>@string/menuitem_alarm</item>
+        <item>@string/prefs_wena3_home_icon_name_clock</item>
+        <!-- <item>@string/menuitem_alexa</item> -->
+        <!-- <item>@string/prefs_wena3_home_icon_name_wena_pay</item> -->
+        <!-- <item>@string/prefs_wena3_home_icon_name_qrio</item> -->
+        <item>@string/prefs_wena3_home_icon_name_edy</item>
+        <item>@string/menuitem_notifications</item>
+        <item>@string/menuitem_events</item>
+        <item>@string/prefs_wena3_home_icon_name_pedometer</item>
+        <item>@string/menuitem_sleep</item>
+        <item>@string/menuitem_hr</item>
+        <item>@string/menuitem_vo2_max</item>
+        <item>@string/menuitem_stress</item>
+        <item>@string/prefs_wena3_home_icon_name_energy</item>
+        <item>@string/prefs_wena3_home_icon_name_suica</item>
+        <item>@string/prefs_wena3_home_icon_name_calories</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_riiiver</item> -->
+        <item>@string/menuitem_music</item>
+        <item>@string/menuitem_takephoto</item>
+    </string-array>
+    <string-array name="prefs_wena3_home_icons_values_list">
+        <item>timer</item>
+        <item>alarm</item>
+        <item>clock</item>
+        <!-- <item>alexa</item> -->
+        <!-- <item>wena_pay</item> -->
+        <!-- <item>qrio_lock</item> -->
+        <item>edy</item>
+        <item>notification_count</item>
+        <item>schedule</item>
+        <item>pedometer</item>
+        <item>sleep</item>
+        <item>heart_rate</item>
+        <item>vo2max</item>
+        <item>stress</item>
+        <item>energy</item>
+        <item>suica</item>
+        <item>calories</item>
+        <!-- <item>riiiver</item> -->
+        <item>music</item>
+        <item>camera</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_menu_icons_names_list">
+        <item>@string/menuitem_timer</item>
+        <item>@string/menuitem_alarm</item>
+        <item>@string/menuitem_findphone</item>
+        <!-- <item>@string/menuitem_alexa</item> -->
+        <item>@string/prefs_wena3_menu_icon_name_payment</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_qrio</item> -->
+        <item>@string/menuitem_weather</item>
+        <item>@string/menuitem_music</item>
+        <item>@string/menuitem_takephoto</item>
+    </string-array>
+    <string-array name="prefs_wena3_menu_icons_values_list">
+        <item>timer</item>
+        <item>alarm</item>
+        <item>find_phone</item>
+        <!-- <item>alexa</item> -->
+        <item>payment</item>
+        <!-- <item>qrio</item> -->
+        <item>weather</item>
+        <item>music</item>
+        <item>camera</item>
+    </string-array>
+    <string-array name="prefs_wena3_menu_icons_default_list">
+        <item>alarm</item>
+        <item>find_phone</item>
+        <item>weather</item>
+        <item>camera</item>
+        <item>music</item>
+        <item>payment</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_status_pages_list">
+        <item>@string/prefs_wena3_home_icon_name_pedometer</item>
+        <item>@string/menuitem_sleep</item>
+        <item>@string/menuitem_hr</item>
+        <item>@string/menuitem_vo2_max</item>
+        <item>@string/menuitem_stress</item>
+        <item>@string/prefs_wena3_home_icon_name_energy</item>
+        <item>@string/prefs_wena3_home_icon_name_calories</item>
+    </string-array>
+    <string-array name="prefs_wena3_status_page_values_list">
+        <item>pedometer</item>
+        <item>sleep</item>
+        <item>heart_rate</item>
+        <item>vo2max</item>
+        <item>stress</item>
+        <item>energy</item>
+        <item>calories</item>
+    </string-array>
+    <string-array name="prefs_wena3_status_page_default_list">
+        <item>pedometer</item>
+        <item>sleep</item>
+        <item>heart_rate</item>
+        <item>vo2max</item>
+        <item>stress</item>
+        <item>energy</item>
+        <item>calories</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_day_start_list">
+        <item>00:00</item>
+        <item>01:00</item>
+        <item>02:00</item>
+        <item>03:00</item>
+        <item>04:00</item>
+        <item>05:00</item>
+        <item>06:00</item>
+        <item>07:00</item>
+        <item>08:00</item>
+        <item>09:00</item>
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:00</item>
+        <item>13:00</item>
+        <item>14:00</item>
+        <item>15:00</item>
+        <item>16:00</item>
+        <item>17:00</item>
+        <item>18:00</item>
+        <item>19:00</item>
+        <item>20:00</item>
+        <item>21:00</item>
+        <item>22:00</item>
+        <item>23:00</item>
+    </string-array>
+    <string-array name="prefs_wena3_day_start_values_list">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+        <item>23</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_button_action_list">
+        <item>@string/menuitem_nothing</item>
+        <!-- <item>@string/menuitem_alexa</item> -->
+        <!-- <item>@string/prefs_wena3_home_icon_name_qrio</item> -->
+        <!-- <item>@string/prefs_wena3_button_action_name_qrio_unlock</item> -->
+        <!-- <item>@string/prefs_wena3_button_action_name_qrio_lock</item> -->
+        <item>@string/menuitem_findphone</item>
+        <item>@string/menuitem_nfc</item>
+        <item>@string/menuitem_dnd</item>
+        <item>@string/prefs_wena3_button_action_name_start_timer</item>
+        <item>@string/menuitem_timer</item>
+        <item>@string/menuitem_weather</item>
+        <item>@string/menuitem_events</item>
+        <item>@string/prefs_wena3_button_action_name_activity_screen</item>
+        <item>@string/menuitem_notifications</item>
+        <item>@string/prefs_wena3_home_icon_name_suica</item>
+        <item>@string/prefs_wena3_home_icon_name_edy</item>
+        <item>@string/menuitem_alarm</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_riiiver</item> -->
+        <item>@string/menuitem_music</item>
+        <item>@string/pref_media_playpause</item>
+        <item>@string/pref_media_next</item>
+        <item>@string/pref_media_previous</item>
+        <!-- <item>@string/prefs_wena3_home_icon_name_wena_pay</item> -->
+    </string-array>
+    <string-array name="prefs_wena3_button_action_values_list">
+        <item>none</item>
+        <!-- <item>alexa</item> -->
+        <!-- <item>qrio</item> -->
+        <!-- <item>qrio_unlock</item> -->
+        <!-- <item>qrio_lock</item> -->
+        <item>find_phone</item>
+        <item>toggle_nfc</item>
+        <item>toggle_silent</item>
+        <item>start_timer</item>
+        <item>timer</item>
+        <item>weather</item>
+        <item>schedule</item>
+        <item>activity_screen</item>
+        <item>notification_screen</item>
+        <item>suica</item>
+        <item>edy</item>
+        <item>alarm</item>
+        <!-- <item>riiiver</item> -->
+        <item>music</item>
+        <item>toggle_music</item>
+        <item>music_next</item>
+        <item>music_prev</item>
+        <!-- <item>wena_pay</item> -->
+    </string-array>
+
+    <string-array name="prefs_wena3_vibration_times">
+        <item>@string/prefs_wena3_notification_vibration_repetition_0</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_1</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_2</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_3</item>
+        <item>@string/prefs_wena3_notification_vibration_repetition_4</item>
+    </string-array>
+    <string-array name="prefs_wena3_vibration_times_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_vibration_patterns">
+        <item>@string/prefs_wena3_vibration_none</item>
+        <item>@string/prefs_wena3_vibration_continuous</item>
+        <item>@string/prefs_wena3_vibration_basic</item>
+        <item>@string/prefs_wena3_vibration_rapid</item>
+        <item>@string/prefs_wena3_vibration_triple</item>
+        <item>@string/prefs_wena3_vibration_step_up</item>
+        <item>@string/prefs_wena3_vibration_step_down</item>
+        <item>@string/prefs_wena3_vibration_warning</item>
+        <item>@string/prefs_wena3_vibration_siren</item>
+        <item>@string/prefs_wena3_vibration_short</item>
+    </string-array>
+    <string-array name="prefs_wena3_vibration_pattern_values">
+        <item>none</item>
+        <item>continuous</item>
+        <item>basic</item>
+        <item>rapid</item>
+        <item>triple</item>
+        <item>step_up</item>
+        <item>step_down</item>
+        <item>warning</item>
+        <item>siren</item>
+        <item>short</item>
+    </string-array>
+
+    <string-array name="prefs_wena3_led_patterns">
+        <item>@string/prefs_wena3_led_none</item>
+        <item>@string/red</item>
+        <item>@string/yellow</item>
+        <item>@string/green</item>
+        <item>@string/cyan</item>
+        <item>@string/blue</item>
+        <item>@string/purple</item>
+        <item>@string/white</item>
+    </string-array>
+    <string-array name="prefs_wena3_led_pattern_values">
+        <item>none</item>
+        <item>red</item>
+        <item>yellow</item>
+        <item>green</item>
+        <item>cyan</item>
+        <item>blue</item>
+        <item>purple</item>
+        <item>white</item>
+    </string-array>
+
+    <string-array name="temperature_scales_cf">
+        <item>@string/temperature_scale_celsius</item>
+        <item>@string/temperature_scale_fahrenheit</item>
+    </string-array>
+    <string-array name="temperature_scales_cf_values">
+        <item>c</item>
+        <item>f</item>
     </string-array>
 </resources>

@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.miband;
 
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType.AGPS_UIHH;
+
 import android.content.Context;
 import android.net.Uri;
 
@@ -26,21 +28,21 @@ import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.InstallActivity;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType.AGPS_UIHH;
-import static nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType.WATCHFACE;
-
 public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMiBandFWInstallHandler.class);
 
+    protected final Uri mUri;
     protected final Context mContext;
     protected AbstractMiBandFWHelper helper;
     private String errorMessage;
 
     public AbstractMiBandFWInstallHandler(Uri uri, Context context) {
+        mUri = uri;
         mContext = context;
 
         try {
@@ -49,6 +51,10 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             errorMessage = e.getMessage();
             LOG.warn(errorMessage, e);
         }
+    }
+
+    public Uri getUri() {
+        return mUri;
     }
 
     public Context getContext() {
@@ -62,7 +68,8 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
     protected abstract AbstractMiBandFWHelper createHelper(Uri uri, Context context) throws IOException;
 
     private GenericItem createInstallItem(GBDevice device) {
-        return new GenericItem(mContext.getString(R.string.installhandler_firmware_name, mContext.getString(device.getType().getName()), helper.getFirmwareKind(), helper.getHumanFirmwareVersion()));
+        DeviceCoordinator coordinator = device.getDeviceCoordinator();
+        return new GenericItem(mContext.getString(R.string.installhandler_firmware_name, mContext.getString(coordinator.getDeviceNameResource()), helper.getFirmwareKind(), helper.getHumanFirmwareVersion()));
     }
 
     protected String getFwUpgradeNotice() {
@@ -77,7 +84,11 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             return;
         }
 
-        if (!isSupportedDeviceType(device) || !device.isInitialized()) {
+        if (!isSupportedDeviceType(device)) {
+            installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_supported));
+            installActivity.setInstallEnabled(false);
+            return;
+        } else if (!device.isInitialized()) {
             installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_ready));
             installActivity.setInstallEnabled(false);
             return;
@@ -91,8 +102,10 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             return;
         }
 
+        DeviceCoordinator coordinator = device.getDeviceCoordinator();
+
         GenericItem fwItem = createInstallItem(device);
-        fwItem.setIcon(device.getType().getIcon());
+        fwItem.setIcon(coordinator.getDefaultIconResource());
 
         if (!helper.isFirmwareGenerallyCompatibleWith(device)) {
             fwItem.setDetails(mContext.getString(R.string.miband_fwinstaller_incompatible_version));
@@ -101,7 +114,7 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
             return;
         }
         StringBuilder builder = new StringBuilder();
-        if (helper.getFirmwareType() != WATCHFACE && helper.getFirmwareType() != AGPS_UIHH) {
+        if (!helper.getFirmwareType().isWatchface() && !helper.getFirmwareType().isApp() && helper.getFirmwareType() != AGPS_UIHH) {
             if (helper.isSingleFirmware()) {
                 builder.append(getFwUpgradeNotice());
             } else {
@@ -120,6 +133,9 @@ public abstract class AbstractMiBandFWInstallHandler implements InstallHandler {
                 // TODO: set a UNKNOWN (question mark) button
             }
         }
+
+        installActivity.setPreview(helper.getPreview());
+
         installActivity.setInfoText(builder.toString());
         installActivity.setInstallItem(fwItem);
         installActivity.setInstallEnabled(true);

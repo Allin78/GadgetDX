@@ -28,7 +28,9 @@ import java.io.InputStream;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.InstallActivity;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.operations.ZeppOsAgpsFile;
@@ -76,6 +78,20 @@ public class ZeppOsAgpsInstallHandler implements InstallHandler {
             return;
         }
 
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
+        if (!(coordinator instanceof Huami2021Coordinator)) {
+            LOG.warn("Coordinator is not a Huami2021Coordinator: {}", coordinator.getClass());
+            installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_supported));
+            installActivity.setInstallEnabled(false);
+            return;
+        }
+        final Huami2021Coordinator huami2021coordinator = (Huami2021Coordinator) coordinator;
+        if (!huami2021coordinator.supportsAgpsUpdates()) {
+            installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_supported));
+            installActivity.setInstallEnabled(false);
+            return;
+        }
+
         if (!device.isInitialized()) {
             installActivity.setInfoText(mContext.getString(R.string.fwapp_install_device_not_ready));
             installActivity.setInstallEnabled(false);
@@ -83,7 +99,7 @@ public class ZeppOsAgpsInstallHandler implements InstallHandler {
         }
 
         final GenericItem fwItem = createInstallItem(device);
-        fwItem.setIcon(device.getType().getIcon());
+        fwItem.setIcon(coordinator.getDefaultIconResource());
 
         if (file == null) {
             fwItem.setDetails(mContext.getString(R.string.miband_fwinstaller_incompatible_version));
@@ -111,9 +127,10 @@ public class ZeppOsAgpsInstallHandler implements InstallHandler {
     }
 
     private GenericItem createInstallItem(final GBDevice device) {
+        DeviceCoordinator coordinator = device.getDeviceCoordinator();
         final String firmwareName = mContext.getString(
                 R.string.installhandler_firmware_name,
-                mContext.getString(device.getType().getName()),
+                mContext.getString(coordinator.getDeviceNameResource()),
                 mContext.getString(R.string.kind_agps_bundle),
                 ""
         );

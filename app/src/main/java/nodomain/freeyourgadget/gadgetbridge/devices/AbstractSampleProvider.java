@@ -17,12 +17,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
 import de.greenrobot.dao.query.QueryBuilder;
@@ -33,7 +34,6 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
 /**
  * Base class for all sample providers. A Sample provider is device specific and provides
@@ -74,7 +74,7 @@ public abstract class AbstractSampleProvider<T extends AbstractActivitySample> i
 
     @Override
     public List<T> getSleepSamples(int timestamp_from, int timestamp_to) {
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(getDevice());
+        final DeviceCoordinator coordinator = getDevice().getDeviceCoordinator();
 
         // If the device does not support REM sleep, we need to exclude its bit from the activity type
         int sleepActivityType = ActivityKind.TYPE_SLEEP;

@@ -25,14 +25,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -49,15 +48,17 @@ public class GBDeviceAppAdapter extends RecyclerView.Adapter<GBDeviceAppAdapter.
     private final int mLayoutId;
     private final List<GBDeviceApp> appList;
     private final AbstractAppManagerFragment mParentFragment;
+    private final boolean allowReorder;
 
     public List<GBDeviceApp> getAppList() {
         return appList;
     }
 
-    public GBDeviceAppAdapter(List<GBDeviceApp> list, int layoutId, AbstractAppManagerFragment parentFragment) {
+    public GBDeviceAppAdapter(List<GBDeviceApp> list, int layoutId, AbstractAppManagerFragment parentFragment, boolean reorder) {
         mLayoutId = layoutId;
         appList = list;
         mParentFragment = parentFragment;
+        allowReorder = reorder;
     }
 
     @Override
@@ -135,6 +136,7 @@ public class GBDeviceAppAdapter extends RecyclerView.Adapter<GBDeviceAppAdapter.
             }
         });
 
+        holder.mDragHandle.setVisibility(allowReorder ? View.VISIBLE : View.GONE);
         holder.mDragHandle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {

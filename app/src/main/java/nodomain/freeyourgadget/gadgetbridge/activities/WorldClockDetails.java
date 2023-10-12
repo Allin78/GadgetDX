@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
@@ -30,6 +29,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.slf4j.Logger;
@@ -42,7 +42,6 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.WorldClock;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
@@ -80,7 +79,7 @@ public class WorldClockDetails extends AbstractGBActivity {
         worldClockCode = findViewById(R.id.world_clock_code);
 
         device = getIntent().getParcelableExtra(GBDevice.EXTRA_DEVICE);
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
 
         final String[] timezoneIDs = TimeZone.getAvailableIDs();
         timezoneAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, timezoneIDs);
@@ -89,7 +88,7 @@ public class WorldClockDetails extends AbstractGBActivity {
         cardTimezone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(WorldClockDetails.this).setAdapter(timezoneAdapter, new DialogInterface.OnClickListener() {
+                new MaterialAlertDialogBuilder(WorldClockDetails.this).setAdapter(timezoneAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         worldClock.setTimeZoneId(timezoneIDs[i]);
@@ -182,7 +181,7 @@ public class WorldClockDetails extends AbstractGBActivity {
     }
 
     public void updateUiFromWorldClock() {
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
         final int maxLabelLength = coordinator.getWorldClocksLabelLength();
 
         worldClockEnabled.setChecked(worldClock.getEnabled() == null || worldClock.getEnabled());

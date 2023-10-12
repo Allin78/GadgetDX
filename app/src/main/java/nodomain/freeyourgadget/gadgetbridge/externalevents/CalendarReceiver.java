@@ -29,11 +29,12 @@ import org.slf4j.LoggerFactory;
 import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import de.greenrobot.dao.query.QueryBuilder;
+import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
@@ -42,9 +43,9 @@ import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncStateDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
-import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class CalendarReceiver extends BroadcastReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(CalendarReceiver.class);
@@ -223,5 +224,11 @@ public class CalendarReceiver extends BroadcastReceiver {
                         .buildDelete().executeDeleteWithoutDetachingEntities();
             }
         }
+    }
+
+    public static void forceSync() {
+        final Intent intent = new Intent("FORCE_CALENDAR_SYNC");
+        intent.setPackage(BuildConfig.APPLICATION_ID);
+        GBApplication.getContext().sendBroadcast(intent);
     }
 }

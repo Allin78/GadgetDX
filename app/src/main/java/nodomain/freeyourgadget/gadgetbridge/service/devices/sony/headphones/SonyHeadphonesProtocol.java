@@ -40,6 +40,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.Equali
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.EqualizerPreset;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.PauseWhenTakenOff;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.QuickAccess;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SpeakToChatConfig;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SpeakToChatEnabled;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.VoiceNotifications;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SoundPosition;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SurroundMode;
@@ -115,8 +117,12 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                             break;
                         case 0x03:
                             // LinkBuds S 2.0.2: 01:00:03:00:00:07:00:00
-                        default:
+                            // WH-1000XM5 1.1.3: 01:00:03:00:00:00:00:00
+                            // WF-1000XM5 2.0.1: 01:00:03:00:10:04:00:00
                             protocolImpl = new SonyProtocolImplV3(getDevice());
+                            break;
+                        default:
+                            LOG.error("Unexpected version for payload of length 8: {}", message.getPayload()[2]);
                             return null;
                     }
                 } else {
@@ -196,6 +202,9 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
             case DeviceSettingsPreferenceConst.PREF_SONY_AUDIO_UPSAMPLING:
                 configRequest = protocolImpl.setAudioUpsampling(AudioUpsampling.fromPreferences(prefs));
                 break;
+            case DeviceSettingsPreferenceConst.PREF_VOLUME:
+                configRequest = protocolImpl.setVolume(prefs.getInt(config, 15));
+                break;
             case DeviceSettingsPreferenceConst.PREF_SONY_TOUCH_SENSOR:
                 configRequest = protocolImpl.setTouchSensor(TouchSensor.fromPreferences(prefs));
                 break;
@@ -220,11 +229,13 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                 LOG.warn("Connection to two devices not implemented ('{}')", config);
                 return super.encodeSendConfiguration(config);
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT:
+                configRequest = protocolImpl.setSpeakToChatEnabled(SpeakToChatEnabled.fromPreferences(prefs));
+                break;
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT_SENSITIVITY:
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT_FOCUS_ON_VOICE:
             case DeviceSettingsPreferenceConst.PREF_SONY_SPEAK_TO_CHAT_TIMEOUT:
-                LOG.warn("Speak-to-chat is not implemented ('{}')", config);
-                return super.encodeSendConfiguration(config);
+                configRequest = protocolImpl.setSpeakToChatConfig(SpeakToChatConfig.fromPreferences(prefs));
+                break;
             default:
                 LOG.warn("Unknown config '{}'", config);
                 return super.encodeSendConfiguration(config);

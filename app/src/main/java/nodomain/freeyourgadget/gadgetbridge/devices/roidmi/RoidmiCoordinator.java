@@ -21,12 +21,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLClassicDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -84,7 +86,7 @@ public abstract class RoidmiCoordinator extends AbstractBLClassicDeviceCoordinat
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 0;
     }
 
@@ -99,7 +101,7 @@ public abstract class RoidmiCoordinator extends AbstractBLClassicDeviceCoordinat
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -137,5 +139,15 @@ public abstract class RoidmiCoordinator extends AbstractBLClassicDeviceCoordinat
     @Override
     public int[] getColorPresets() {
         return RoidmiConst.COLOR_PRESETS;
+    }
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_roidmi;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_roidmi_disabled;
     }
 }

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
@@ -34,33 +35,22 @@ import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.zetime.ZeTimeDeviceSupport;
 
 
 public class ZeTimeCoordinator extends AbstractBLEDeviceCoordinator {
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.ZETIME;
-    }
-
     @NonNull
     @Override
     public Collection<? extends ScanFilter> createBLEScanFilters() {
         return super.createBLEScanFilters();
     }
 
-    @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        String name = candidate.getDevice().getName();
-        if (name != null && name.startsWith("ZeTime")) {
-            return DeviceType.ZETIME;
-        }
-        return DeviceType.UNKNOWN;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile("ZeTime.*");
     }
-
     @Nullable
     @Override
     public Class<? extends Activity> getPairingActivity() {
@@ -73,7 +63,7 @@ public class ZeTimeCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 3; // FIXME - check the real value
     }
 
@@ -118,7 +108,7 @@ public class ZeTimeCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -169,5 +159,28 @@ public class ZeTimeCoordinator extends AbstractBLEDeviceCoordinator {
                 R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_transliteration
         };
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return ZeTimeDeviceSupport.class;
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_mykronoz_zetime;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_zetime;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_zetime_disabled;
     }
 }

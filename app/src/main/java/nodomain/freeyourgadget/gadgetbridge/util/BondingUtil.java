@@ -20,7 +20,6 @@ import static androidx.core.app.ActivityCompat.startIntentSenderForResult;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.toast;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.companion.AssociationRequest;
@@ -37,6 +36,8 @@ import android.os.Looper;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,14 +189,14 @@ public class BondingUtil {
     /**
      * Checks the type of bonding needed for the device and continues accordingly
      */
-    public static void initiateCorrectBonding(final BondingInterface bondingInterface, final GBDeviceCandidate deviceCandidate) {
-        int bondingStyle = DeviceHelper.getInstance().getCoordinator(deviceCandidate).getBondingStyle();
+    public static void initiateCorrectBonding(final BondingInterface bondingInterface, final GBDeviceCandidate deviceCandidate, DeviceCoordinator coordinator) {
+        int bondingStyle = coordinator.getBondingStyle();
         if (bondingStyle == DeviceCoordinator.BONDING_STYLE_NONE ||
             bondingStyle == DeviceCoordinator.BONDING_STYLE_LAZY ) {
             // Do nothing
             return;
         } else if (bondingStyle == DeviceCoordinator.BONDING_STYLE_ASK) {
-            new AlertDialog.Builder(bondingInterface.getContext())
+            new MaterialAlertDialogBuilder(bondingInterface.getContext())
                     .setCancelable(true)
                     .setTitle(bondingInterface.getContext().getString(R.string.discovery_pair_title, deviceCandidate.getName()))
                     .setMessage(bondingInterface.getContext().getString(R.string.discovery_pair_question))
@@ -396,6 +397,7 @@ public class BondingUtil {
         return new CompanionDeviceManager.Callback() {
             @Override
             public void onFailure(CharSequence error) {
+                LOG.error("Bonding failed immediately: {}", error);
                 toast(bondingInterface.getContext(), bondingInterface.getContext().getString(R.string.discovery_bonding_failed_immediately), Toast.LENGTH_SHORT, GB.ERROR);
             }
 

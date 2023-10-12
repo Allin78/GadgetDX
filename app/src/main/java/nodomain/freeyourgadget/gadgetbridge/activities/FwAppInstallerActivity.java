@@ -21,16 +21,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.NavUtils;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -47,9 +50,9 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceManager;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.model.ItemWithDetails;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 
@@ -59,6 +62,7 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
     private static final String ITEM_DETAILS = "details";
 
     private TextView fwAppInstallTextView;
+    private ImageView previewImage;
     private Button installButton;
     private Uri uri;
     private GBDevice device;
@@ -178,6 +182,7 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
         itemAdapter = new ItemWithDetailsAdapter(this, items);
         itemListView.setAdapter(itemAdapter);
         fwAppInstallTextView = findViewById(R.id.infoTextView);
+        previewImage = findViewById(R.id.previewImage);
         installButton = findViewById(R.id.installButton);
         progressBar = findViewById(R.id.installProgressBar);
         progressText = findViewById(R.id.installProgressText);
@@ -256,13 +261,16 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
     private List<DeviceCoordinator> getAllCoordinatorsConnectedFirst() {
         DeviceManager deviceManager = ((GBApplication) getApplicationContext()).getDeviceManager();
         List<DeviceCoordinator> connectedCoordinators = new ArrayList<>();
-        List<DeviceCoordinator> allCoordinators = DeviceHelper.getInstance().getAllCoordinators();
+        List<DeviceCoordinator> allCoordinators = new ArrayList<>(DeviceType.values().length);
+        for(DeviceType type : DeviceType.values()){
+            allCoordinators.add(type.getDeviceCoordinator());
+        }
         List<DeviceCoordinator> sortedCoordinators = new ArrayList<>(allCoordinators.size());
 
         List<GBDevice> devices = deviceManager.getSelectedDevices();
         for(GBDevice connectedDevice : devices){
             if (connectedDevice.isConnected()) {
-                DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(connectedDevice);
+                DeviceCoordinator coordinator = connectedDevice.getDeviceCoordinator();
                 if (coordinator != null) {
                     connectedCoordinators.add(coordinator);
                 }
@@ -298,6 +306,16 @@ public class FwAppInstallerActivity extends AbstractGBActivity implements Instal
     @Override
     public void setInfoText(String text) {
         fwAppInstallTextView.setText(text);
+    }
+
+    @Override
+    public void setPreview(@Nullable final Bitmap bitmap) {
+        previewImage.setImageBitmap(bitmap);
+        if (previewImage == null) {
+            previewImage.setVisibility(View.GONE);
+        } else {
+            previewImage.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

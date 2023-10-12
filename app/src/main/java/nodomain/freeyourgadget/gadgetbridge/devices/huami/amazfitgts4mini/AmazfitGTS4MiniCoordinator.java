@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitgts4mini;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.net.Uri;
 
@@ -25,39 +24,59 @@ import androidx.annotation.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.regex.Pattern;
+
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuami2021FWInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.amazfitgts4mini.AmazfitGTS4MiniSupport;
 
 public class AmazfitGTS4MiniCoordinator extends Huami2021Coordinator {
     private static final Logger LOG = LoggerFactory.getLogger(AmazfitGTS4MiniCoordinator.class);
 
+    @Override
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile(HuamiConst.AMAZFIT_GTS4_MINI_NAME + ".*");
+    }
+
     @NonNull
     @Override
-    public DeviceType getSupportedType(final GBDeviceCandidate candidate) {
-        try {
-            final BluetoothDevice device = candidate.getDevice();
-            final String name = device.getName();
-            if (name != null && name.startsWith(HuamiConst.AMAZFIT_GTS4_MINI_NAME)) {
-                return DeviceType.AMAZFITGTS4MINI;
-            }
-        } catch (final Exception e) {
-            LOG.error("unable to check device support", e);
-        }
-
-        return DeviceType.UNKNOWN;
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return AmazfitGTS4MiniSupport.class;
     }
 
     @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.AMAZFITGTS4MINI;
+    public AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context) {
+        return new AmazfitGTS4MiniFWInstallHandler(uri, context);
     }
 
     @Override
-    public AbstractHuami2021FWInstallHandler findInstallHandler(final Uri uri, final Context context) {
-        final AmazfitGTS4MiniFWInstallHandler handler = new AmazfitGTS4MiniFWInstallHandler(uri, context);
-        return handler.isValid() ? handler : null;
+    public boolean sendAgpsAsFileTransfer() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+        return false;
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_amazfit_gts4_mini;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_amazfit_bip;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_amazfit_bip_disabled;
     }
 }

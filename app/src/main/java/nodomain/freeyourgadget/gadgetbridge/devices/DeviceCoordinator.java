@@ -18,20 +18,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.le.ScanFilter;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
@@ -39,10 +41,18 @@ import nodomain.freeyourgadget.gadgetbridge.capabilities.password.PasswordCapabi
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.model.AbstractNotificationPattern;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.PaiSample;
+import nodomain.freeyourgadget.gadgetbridge.model.SleepRespiratoryRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
+import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.ServiceDeviceSupport;
 
 /**
  * This interface is implemented at least once for every supported gadget device.
@@ -103,17 +113,6 @@ public interface DeviceCoordinator {
     }
 
     /**
-     * Checks whether this coordinator handles the given candidate.
-     * Returns the supported device type for the given candidate or
-     * DeviceType.UNKNOWN
-     *
-     * @param candidate
-     * @return the supported device type for the given candidate.
-     */
-    @NonNull
-    DeviceType getSupportedType(GBDeviceCandidate candidate);
-
-    /**
      * Returns the type of connection, Classic of BLE
      *
      * @return ConnectionType
@@ -129,14 +128,6 @@ public interface DeviceCoordinator {
     boolean supports(GBDeviceCandidate candidate);
 
     /**
-     * Checks whether this candidate handles the given device.
-     *
-     * @param device
-     * @return true if this coordinator handles the given device.
-     */
-    boolean supports(GBDevice device);
-
-    /**
      * Returns a list of scan filters that shall be used to discover devices supported
      * by this coordinator.
      * @return the list of scan filters, may be empty
@@ -144,7 +135,7 @@ public interface DeviceCoordinator {
     @NonNull
     Collection<? extends ScanFilter> createBLEScanFilters();
 
-    GBDevice createDevice(GBDeviceCandidate candidate);
+    GBDevice createDevice(GBDeviceCandidate candidate, DeviceType type);
 
     /**
      * Deletes all information, including all related database content about the
@@ -152,13 +143,6 @@ public interface DeviceCoordinator {
      * @throws GBException
      */
     void deleteDevice(GBDevice device) throws GBException;
-
-    /**
-     * Returns the kind of device type this coordinator supports.
-     *
-     * @return
-     */
-    DeviceType getDeviceType();
 
     /**
      * Returns the Activity class to be started in order to perform a pairing of a
@@ -185,7 +169,7 @@ public interface DeviceCoordinator {
     /**
      * Returns true if activity tracking is supported by the device
      * (with this coordinator).
-     * This enables the ChartsActivity.
+     * This enables the ActivityChartsActivity.
      *
      * @return
      */
@@ -198,6 +182,36 @@ public interface DeviceCoordinator {
      * usually recorded with additional features, like e.g. GPS.
      */
     boolean supportsActivityTracks();
+
+    /**
+     * Returns true if stress measurement and fetching is supported by the device
+     * (with this coordinator).
+     */
+    boolean supportsStressMeasurement();
+
+    /**
+     * Returns true if SpO2 measurement and fetching is supported by the device
+     * (with this coordinator).
+     */
+    boolean supportsSpo2();
+
+    /**
+     * Returns true if heart rate stats (max, resting, manual) measurement and fetching is supported
+     * by the device (with this coordinator).
+     */
+    boolean supportsHeartRateStats();
+
+    /**
+     * Returns true if PAI (Personal Activity Intelligence) measurement and fetching is supported by
+     * the device (with this coordinator).
+     */
+    boolean supportsPai();
+
+    /**
+     * Returns true if sleep respiratory rate measurement and fetching is supported by
+     * the device (with this coordinator).
+     */
+    boolean supportsSleepRespiratoryRate();
 
     /**
      * Returns true if activity data fetching is supported AND possible at this
@@ -215,6 +229,41 @@ public interface DeviceCoordinator {
      * @return
      */
     SampleProvider<? extends ActivitySample> getSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for stress data, for the device being supported.
+     */
+    TimeSampleProvider<? extends StressSample> getStressSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for SpO2 data, for the device being supported.
+     */
+    TimeSampleProvider<? extends Spo2Sample> getSpo2SampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for max HR data, for the device being supported.
+     */
+    TimeSampleProvider<? extends HeartRateSample> getHeartRateMaxSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for resting HR data, for the device being supported.
+     */
+    TimeSampleProvider<? extends HeartRateSample> getHeartRateRestingSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for manual HR data, for the device being supported.
+     */
+    TimeSampleProvider<? extends HeartRateSample> getHeartRateManualSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for PAI data, for the device being supported.
+     */
+    TimeSampleProvider<? extends PaiSample> getPaiSampleProvider(GBDevice device, DaoSession session);
+
+    /**
+     * Returns the sample provider for sleep respiratory rate data, for the device being supported.
+     */
+    TimeSampleProvider<? extends SleepRespiratoryRateSample> getSleepRespiratoryRateSampleProvider(GBDevice device, DaoSession session);
 
     /**
      * Returns the {@link ActivitySummaryParser} for the device being supported.
@@ -255,7 +304,7 @@ public interface DeviceCoordinator {
      *
      * @return
      */
-    int getAlarmSlotCount();
+    int getAlarmSlotCount(GBDevice device);
 
     /**
      * Returns true if this device/coordinator supports alarms with smart wakeup
@@ -296,7 +345,7 @@ public interface DeviceCoordinator {
      *
      * @return
      */
-    boolean supportsAppsManagement();
+    boolean supportsAppsManagement(GBDevice device);
 
     /**
      * Returns the Activity class that will be used to manage device apps.
@@ -341,6 +390,11 @@ public interface DeviceCoordinator {
      * Returns how/if the given device should be bonded before connecting to it.
      */
     int getBondingStyle();
+
+    /**
+     * Returns true if this device is in an experimental state / not tested.
+     */
+    boolean isExperimental();
 
     /**
      * Indicates whether the device has some kind of calender we can sync to.
@@ -402,6 +456,11 @@ public interface DeviceCoordinator {
      * a menu on the device.
      */
     boolean supportsDisabledWorldClocks();
+
+    /**
+     * Indicates the maximum number of slots available for contacts in the device.
+     */
+    int getContactsSlotCount(GBDevice device);
 
     /**
      * Indicates whether the device has an led which supports custom colors
@@ -475,4 +534,50 @@ public interface DeviceCoordinator {
     PasswordCapabilityImpl.Mode getPasswordCapability();
 
     List<HeartRateCapability.MeasurementInterval> getHeartRateMeasurementIntervals();
+
+    boolean supportsNavigation();
+
+    int getOrderPriority();
+
+    @NonNull
+    Class<? extends DeviceSupport> getDeviceSupportClass();
+
+    EnumSet<ServiceDeviceSupport.Flags> getInitialFlags();
+
+    @StringRes
+    int getDeviceNameResource();
+
+    @DrawableRes
+    int getDefaultIconResource();
+
+    @DrawableRes
+    int getDisabledIconResource();
+
+    /**
+     * Whether the device supports a variety of vibration patterns for notifications.
+     */
+    boolean supportsNotificationVibrationPatterns();
+    /**
+     * Whether the device supports a variety of vibration pattern repetitions for notifications.
+     */
+    boolean supportsNotificationVibrationRepetitionPatterns();
+
+    /**
+     * Whether the device supports a variety of LED patterns for notifications.
+     */
+    boolean supportsNotificationLedPatterns();
+    /**
+     * What vibration pattern repetitions for notifications are supported by the device.
+     */
+     AbstractNotificationPattern[] getNotificationVibrationPatterns();
+    /**
+     * What vibration pattern repetitions for notifications are supported by the device.
+     * Technote: this is not an int or a range because some devices (e.g. Wena 3) only allow
+     * a very specific set of value combinations here.
+     */
+    AbstractNotificationPattern[] getNotificationVibrationRepetitionPatterns();
+    /**
+     * What LED patterns for notifications are supported by the device.
+     */
+    AbstractNotificationPattern[] getNotificationLedPatterns();
 }

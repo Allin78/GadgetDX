@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.qhybrid;
 
+import static nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil.invertBitmapColors;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,8 +30,6 @@ import java.util.LinkedHashMap;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
-
-import static nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil.invertBitmapColors;
 
 public class HybridHRWatchfaceWidget implements Serializable {
     private String widgetType;
@@ -76,8 +76,9 @@ public class HybridHRWatchfaceWidget implements Serializable {
         widgetTypes.put("widgetCalories", context.getString(R.string.watchface_widget_type_calories));
         widgetTypes.put("widget2ndTZ", context.getString(R.string.watchface_widget_type_2nd_tz));
         widgetTypes.put("widgetActiveMins", context.getString(R.string.watchface_widget_type_active_mins));
+        widgetTypes.put("widgetChanceOfRain", context.getString(R.string.watchface_widget_type_chance_rain));
+        widgetTypes.put("widgetUV", context.getString(R.string.watchface_widget_type_uv_index));
         widgetTypes.put("widgetCustom", context.getString(R.string.watchface_widget_type_custom));
-//        widgetTypes.put("widgetChanceOfRain", context.getString(R.string.watchface_widget_type_chance_rain));  // Disabled due to missing support in Gadgetbridge
         return widgetTypes;
     }
 

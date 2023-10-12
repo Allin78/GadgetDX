@@ -24,12 +24,15 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.LoyaltyCard;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.Contact;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
@@ -51,7 +54,11 @@ public interface EventHandler {
 
     void onSetReminders(ArrayList<? extends Reminder> reminders);
 
+    void onSetLoyaltyCards(ArrayList<LoyaltyCard> cards);
+
     void onSetWorldClocks(ArrayList<? extends WorldClock> clocks);
+
+    void onSetContacts(ArrayList<? extends Contact> contacts);
 
     void onSetCallState(CallSpec callSpec);
 
@@ -67,6 +74,8 @@ public interface EventHandler {
      * @param volume the volume percentage (0 to 100).
      */
     void onSetPhoneVolume(final float volume);
+
+    void onSetNavigationInfo(NavigationInfoSpec navigationInfoSpec);
 
     void onEnableRealtimeSteps(boolean enable);
 

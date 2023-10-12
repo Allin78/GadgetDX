@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.adapter;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -34,7 +33,6 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 /**
@@ -62,16 +60,18 @@ public class DeviceCandidateAdapter extends ArrayAdapter<GBDeviceCandidate> {
         TextView deviceAddressLabel = view.findViewById(R.id.item_details);
         TextView deviceStatus = view.findViewById(R.id.item_status);
 
+        DeviceCoordinator coordinator = device.getDeviceType().getDeviceCoordinator();
+
         String name = formatDeviceCandidate(device);
         deviceNameLabel.setText(name);
         deviceAddressLabel.setText(device.getMacAddress());
-        deviceImageView.setImageResource(device.getDeviceType().getIcon());
+        deviceImageView.setImageResource(coordinator.getDefaultIconResource());
 
         final List<String> statusLines = new ArrayList<>();
-        if (device.getDevice().getBondState() == BluetoothDevice.BOND_BONDED) {
+        if (device.isBonded()) {
             statusLines.add(getContext().getString(R.string.device_is_currently_bonded));
             if (!GBApplication.getPrefs().getBoolean("ignore_bonded_devices", true)) { // This could be passed to the constructor instead
-                deviceImageView.setImageResource(device.getDeviceType().getDisabledIcon());
+                deviceImageView.setImageResource(coordinator.getDisabledIconResource());
             }
         }
 
@@ -79,7 +79,9 @@ public class DeviceCandidateAdapter extends ArrayAdapter<GBDeviceCandidate> {
             statusLines.add(getContext().getString(R.string.device_unsupported));
         }
 
-        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+        if (coordinator.isExperimental()) {
+            statusLines.add(getContext().getString(R.string.device_experimental));
+        }
         if (coordinator.getBondingStyle() == DeviceCoordinator.BONDING_STYLE_REQUIRE_KEY) {
             statusLines.add(getContext().getString(R.string.device_requires_key));
         }

@@ -19,40 +19,41 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.impl;
 
+import static nodomain.freeyourgadget.gadgetbridge.util.JavaExtensions.coalesce;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
-import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.LoyaltyCard;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.Contact;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
 import nodomain.freeyourgadget.gadgetbridge.util.RtlUtils;
-
-import static nodomain.freeyourgadget.gadgetbridge.util.JavaExtensions.coalesce;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class GBDeviceService implements DeviceService {
@@ -66,11 +67,14 @@ public class GBDeviceService implements DeviceService {
             EXTRA_NOTIFICATION_BODY,
             EXTRA_NOTIFICATION_SOURCENAME,
             EXTRA_CALL_DISPLAYNAME,
+            EXTRA_CALL_SOURCENAME,
             EXTRA_MUSIC_ARTIST,
             EXTRA_MUSIC_ALBUM,
             EXTRA_MUSIC_TRACK,
             EXTRA_CALENDAREVENT_TITLE,
-            EXTRA_CALENDAREVENT_DESCRIPTION
+            EXTRA_CALENDAREVENT_DESCRIPTION,
+            EXTRA_CALENDAREVENT_LOCATION,
+            EXTRA_CALENDAREVENT_CALNAME,
     };
     private static final Logger LOG = LoggerFactory.getLogger(GBDeviceService.class);
 
@@ -159,9 +163,10 @@ public class GBDeviceService implements DeviceService {
 
     @Override
     public void onNotification(NotificationSpec notificationSpec) {
-        boolean hideMessageDetails = GBApplication.getPrefs().getString("pref_message_privacy_mode",
-                GBApplication.getContext().getString(R.string.p_message_privacy_mode_off))
-                .equals(GBApplication.getContext().getString(R.string.p_message_privacy_mode_complete));
+        String messagePrivacyMode = GBApplication.getPrefs().getString("pref_message_privacy_mode",
+                GBApplication.getContext().getString(R.string.p_message_privacy_mode_off));
+        boolean hideMessageDetails = messagePrivacyMode.equals(GBApplication.getContext().getString(R.string.p_message_privacy_mode_complete));
+        boolean hideMessageBodyOnly = messagePrivacyMode.equals(GBApplication.getContext().getString(R.string.p_message_privacy_mode_bodyonly));
 
         Intent intent = createIntent().setAction(ACTION_NOTIFICATION)
                 .putExtra(EXTRA_NOTIFICATION_FLAGS, notificationSpec.flags)
@@ -169,7 +174,7 @@ public class GBDeviceService implements DeviceService {
                 .putExtra(EXTRA_NOTIFICATION_SENDER, hideMessageDetails ? null : coalesce(notificationSpec.sender, getContactDisplayNameByNumber(notificationSpec.phoneNumber)))
                 .putExtra(EXTRA_NOTIFICATION_SUBJECT, hideMessageDetails ? null : notificationSpec.subject)
                 .putExtra(EXTRA_NOTIFICATION_TITLE, hideMessageDetails ? null : notificationSpec.title)
-                .putExtra(EXTRA_NOTIFICATION_BODY, hideMessageDetails ? null : notificationSpec.body)
+                .putExtra(EXTRA_NOTIFICATION_BODY, hideMessageDetails || hideMessageBodyOnly ? null : notificationSpec.body)
                 .putExtra(EXTRA_NOTIFICATION_ID, notificationSpec.getId())
                 .putExtra(EXTRA_NOTIFICATION_TYPE, notificationSpec.type)
                 .putExtra(EXTRA_NOTIFICATION_ACTIONS, notificationSpec.attachedActions)
@@ -223,6 +228,8 @@ public class GBDeviceService implements DeviceService {
         Intent intent = createIntent().setAction(ACTION_CALLSTATE)
                 .putExtra(EXTRA_CALL_PHONENUMBER, callSpec.number)
                 .putExtra(EXTRA_CALL_DISPLAYNAME, callSpec.name)
+                .putExtra(EXTRA_CALL_SOURCENAME, callSpec.sourceName)
+                .putExtra(EXTRA_CALL_SOURCEAPPID, callSpec.sourceAppId)
                 .putExtra(EXTRA_CALL_COMMAND, callSpec.command)
                 .putExtra(EXTRA_CALL_DNDSUPPRESSED, callSpec.dndSuppressed);
         invokeService(intent);
@@ -262,9 +269,23 @@ public class GBDeviceService implements DeviceService {
     }
 
     @Override
+    public void onSetLoyaltyCards(final ArrayList<LoyaltyCard> cards) {
+        final Intent intent = createIntent().setAction(ACTION_SET_LOYALTY_CARDS)
+                .putExtra(EXTRA_LOYALTY_CARDS, cards);
+        invokeService(intent);
+    }
+
+    @Override
     public void onSetWorldClocks(ArrayList<? extends WorldClock> clocks) {
         Intent intent = createIntent().setAction(ACTION_SET_WORLD_CLOCKS)
                 .putExtra(EXTRA_WORLD_CLOCKS, clocks);
+        invokeService(intent);
+    }
+
+    @Override
+    public void onSetContacts(ArrayList<? extends Contact> contacts) {
+        Intent intent = createIntent().setAction(ACTION_SET_CONTACTS)
+                .putExtra(EXTRA_CONTACTS, contacts);
         invokeService(intent);
     }
 
@@ -277,6 +298,16 @@ public class GBDeviceService implements DeviceService {
                 .putExtra(EXTRA_MUSIC_DURATION, musicSpec.duration)
                 .putExtra(EXTRA_MUSIC_TRACKCOUNT, musicSpec.trackCount)
                 .putExtra(EXTRA_MUSIC_TRACKNR, musicSpec.trackNr);
+        invokeService(intent);
+    }
+
+    @Override
+    public void onSetNavigationInfo(NavigationInfoSpec navigationInfoSpec) {
+        Intent intent = createIntent().setAction(ACTION_SETNAVIGATIONINFO)
+                .putExtra(EXTRA_NAVIGATION_INSTRUCTION, navigationInfoSpec.instruction)
+                .putExtra(EXTRA_NAVIGATION_NEXT_ACTION, navigationInfoSpec.nextAction)
+                .putExtra(EXTRA_NAVIGATION_DISTANCE_TO_TURN, navigationInfoSpec.distanceToTurn)
+                .putExtra(EXTRA_NAVIGATION_ETA, navigationInfoSpec.ETA);
         invokeService(intent);
     }
 

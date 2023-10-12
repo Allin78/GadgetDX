@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
 public class BluetoothPairingRequestReceiver extends BroadcastReceiver {
     private static final Logger LOG = LoggerFactory.getLogger(BluetoothConnectReceiver.class);
@@ -56,7 +55,7 @@ public class BluetoothPairingRequestReceiver extends BroadcastReceiver {
         try {
             gbDevice = service.getDeviceByAddress(device.getAddress());
 
-            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+            DeviceCoordinator coordinator = gbDevice.getDeviceCoordinator();
             try {
                 if (coordinator.getBondingStyle() == DeviceCoordinator.BONDING_STYLE_NONE) {
                     LOG.info("Aborting unwanted pairing request");

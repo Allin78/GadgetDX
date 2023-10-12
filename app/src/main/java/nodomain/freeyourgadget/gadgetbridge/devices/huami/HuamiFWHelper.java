@@ -18,11 +18,13 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.huami;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.AbstractMiBandFWHelper;
@@ -131,5 +133,14 @@ public abstract class HuamiFWHelper extends AbstractMiBandFWHelper {
 
     public AbstractHuamiFirmwareInfo getFirmwareInfo() {
         return firmwareInfo;
+    }
+
+    @Override
+    public Bitmap getPreview() {
+        if (firmwareInfo != null) {
+            return firmwareInfo.getPreview();
+        }
+
+        return null;
     }
 }

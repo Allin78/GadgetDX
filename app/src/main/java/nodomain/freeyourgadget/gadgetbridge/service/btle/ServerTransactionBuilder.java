@@ -18,10 +18,11 @@ package nodomain.freeyourgadget.gadgetbridge.service.btle;
 
 import android.bluetooth.BluetoothDevice;
 
+import androidx.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.annotation.Nullable;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.ServerResponseAction;
 
 public class ServerTransactionBuilder {
@@ -54,8 +55,8 @@ public class ServerTransactionBuilder {
      *
      * @param callback the callback to set, may be null
      */
-    public void setGattCallback(@Nullable GattServerCallback callback) {
-        mTransaction.setGattCallback(callback);
+    public void setCallback(@Nullable GattServerCallback callback) {
+        mTransaction.setCallback(callback);
     }
 
     public

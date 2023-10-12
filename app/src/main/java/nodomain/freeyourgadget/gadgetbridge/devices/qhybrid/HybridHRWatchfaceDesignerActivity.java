@@ -17,13 +17,13 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.qhybrid;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -31,7 +31,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,19 +40,17 @@ import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,10 +65,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -81,8 +75,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport;
+import nodomain.freeyourgadget.gadgetbridge.util.AndroidUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implements View.OnClickListener, View.OnLongClickListener, View.OnDragListener {
@@ -115,7 +109,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                     }
                 } else {
                     readyToCloseActivity = false;
-                    new AlertDialog.Builder(HybridHRWatchfaceDesignerActivity.this)
+                    new MaterialAlertDialogBuilder(HybridHRWatchfaceDesignerActivity.this)
                             .setMessage(R.string.watchface_upload_failed)
                             .setPositiveButton(R.string.ok, null)
                             .show();
@@ -141,7 +135,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         intentFilter.addAction(QHybridSupport.QHYBRID_ACTION_UPLOADED_FILE);
         LocalBroadcastManager.getInstance(this).registerReceiver(fileUploadReceiver, intentFilter);
 
-        mCoordinator = DeviceHelper.getInstance().getCoordinator(mGBDevice);
+        mCoordinator = mGBDevice.getDeviceCoordinator();
         calculateDisplayImageSize();
         backgroundImageView = findViewById(R.id.hybridhr_background_image);
 
@@ -162,6 +156,14 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         findViewById(R.id.watchface_rotate_left).setOnClickListener(this);
         findViewById(R.id.watchface_rotate_right).setOnClickListener(this);
         findViewById(R.id.watchface_remove_image).setOnClickListener(this);
+        findViewById(R.id.button_watchface_open_menu_companion).setOnClickListener(this);
+        findViewById(R.id.button_watchface_reset_menu_structure).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        reloadMenuStructureIndicator();
     }
 
     @Override
@@ -215,7 +217,8 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.button_edit_name) {
+        int buttonId = v.getId();
+        if (buttonId == R.id.button_edit_name) {
             final EditText input = new EditText(this);
             input.setText(watchfaceName);
             input.setId(0);
@@ -223,7 +226,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
             input.setLayoutParams(lp);
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setView(input)
                     .setNegativeButton(R.string.fossil_hr_new_action_cancel, null)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -234,7 +237,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                     })
                     .setTitle(R.string.watchface_dialog_title_set_name)
                     .show();
-        } else if (v.getId() == R.id.watchface_invert_colors) {
+        } else if (buttonId == R.id.watchface_invert_colors) {
             if (selectedBackgroundImage != null) {
                 selectedBackgroundImage = BitmapUtil.invertBitmapColors(selectedBackgroundImage);
                 for (int i=0; i<widgets.size(); i++) {
@@ -249,28 +252,57 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                     defaultWidgetColor = HybridHRWatchfaceWidget.COLOR_WHITE;
                 }
             }
-        } else if (v.getId() == R.id.button_set_background) {
+        } else if (buttonId == R.id.button_set_background) {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("image/*");
             startActivityForResult(intent, CHILD_ACTIVITY_IMAGE_CHOOSER);
-        } else if (v.getId() == R.id.button_add_widget) {
+        } else if (buttonId == R.id.button_add_widget) {
             showWidgetEditPopup(-1);
-        } else if (v.getId() == R.id.button_watchface_settings) {
+        } else if (buttonId == R.id.button_watchface_settings) {
             showWatchfaceSettingsPopup();
-        } else if (v.getId() == R.id.watchface_rotate_left) {
+        } else if (buttonId == R.id.watchface_rotate_left) {
             if (selectedBackgroundImage != null) {
                 selectedBackgroundImage = BitmapUtil.rotateImage(selectedBackgroundImage, -90);
                 renderWatchfacePreview();
             }
-        } else if (v.getId() == R.id.watchface_rotate_right) {
+        } else if (buttonId== R.id.watchface_rotate_right) {
             if (selectedBackgroundImage != null) {
                 selectedBackgroundImage = BitmapUtil.rotateImage(selectedBackgroundImage, 90);
                 renderWatchfacePreview();
             }
-        } else if (v.getId() == R.id.watchface_remove_image) {
+        } else if (buttonId == R.id.watchface_remove_image) {
             deleteWatchfaceBackground();
             renderWatchfacePreview();
+        } else if(buttonId == R.id.button_watchface_open_menu_companion){
+            try {
+                AndroidUtils.openApp("d.d.hrmenucompanion");
+            } catch (Exception e) {
+                GB.toast(getString(R.string.error_menu_companion_not_installed), Toast.LENGTH_SHORT, GB.INFO);
+
+                AndroidUtils.openWebsite("https://github.com/dakhnod/Fossil-HR-Menu-Companion/releases/latest");
+            }
+        } else if(buttonId == R.id.button_watchface_reset_menu_structure) {
+            SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
+            prefs.edit().remove("MENU_STRUCTURE_JSON").apply();
+            GB.toast(getString(R.string.info_menu_structure_removed), Toast.LENGTH_SHORT, GB.INFO);
+            reloadMenuStructureIndicator();
+        }
+    }
+
+    private void reloadMenuStructureIndicator(){
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
+        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "");
+
+        boolean active = !menuStructureJson.isEmpty();
+
+        ((Button) findViewById(R.id.button_watchface_reset_menu_structure))
+                .setEnabled(active);
+        findViewById(R.id.fossil_menu_structure_hint_container).setVisibility(active ? View.VISIBLE : View.GONE);
+
+        if(active){
+            ((TextView)findViewById(R.id.text_watchface_menu_structure))
+                    .setText(getString(R.string.info_menu_structure_contents, menuStructureJson));
         }
     }
 
@@ -580,6 +612,18 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
         wfFactory.setSettings(watchfaceSettings);
         wfFactory.setBackground(selectedBackgroundImage);
         wfFactory.addWidgets(widgets);
+
+        SharedPreferences prefs = GBApplication.getDeviceSpecificSharedPrefs(mGBDevice.getAddress());
+        String menuStructureJson = prefs.getString("MENU_STRUCTURE_JSON", "");
+        if(!menuStructureJson.isEmpty()){
+            try {
+                JSONObject menuStructure = new JSONObject(menuStructureJson);
+                wfFactory.setMenuStructure(menuStructure);
+            } catch (JSONException e) {
+                LOG.error("Error loading menu structure", e);
+            }
+        }
+
         try {
             File tempFile = File.createTempFile("tmpWatchfaceFile", null);
             tempFile.deleteOnExit();
@@ -605,7 +649,7 @@ public class HybridHRWatchfaceDesignerActivity extends AbstractGBActivity implem
                 File cacheDir = mCoordinator.getAppCacheDir();
                 File destFile = new File(cacheDir, app.getUUID().toString() + mCoordinator.getAppFileExtension());
                 if (destFile.exists()) {
-                    new AlertDialog.Builder(this)
+                    new MaterialAlertDialogBuilder(this)
                             .setMessage(R.string.watchface_cache_confirm_overwrite)
                             .setNegativeButton(R.string.no, null)
                             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {

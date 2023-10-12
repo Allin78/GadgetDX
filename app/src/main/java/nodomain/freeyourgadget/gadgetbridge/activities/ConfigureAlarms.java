@@ -47,7 +47,6 @@ import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
 
 public class ConfigureAlarms extends AbstractGBActivity {
@@ -119,8 +118,8 @@ public class ConfigureAlarms extends AbstractGBActivity {
     }
 
     private void addMissingAlarms(List<Alarm> alarms) {
-        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(getGbDevice());
-        int supportedNumAlarms = coordinator.getAlarmSlotCount();
+        DeviceCoordinator coordinator = getGbDevice().getDeviceCoordinator();
+        int supportedNumAlarms = coordinator.getAlarmSlotCount(getGbDevice());
         if (supportedNumAlarms > alarms.size()) {
             try (DBHandler db = GBApplication.acquireDB()) {
                 DaoSession daoSession = db.getDaoSession();

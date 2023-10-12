@@ -17,49 +17,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.huami.miband2;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.net.Uri;
+
+import androidx.annotation.NonNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.annotation.NonNull;
+import java.util.EnumSet;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.ServiceDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband2.MiBand2Support;
 
 public class MiBand2HRXCoordinator extends HuamiCoordinator {
     private static final Logger LOG = LoggerFactory.getLogger(MiBand2HRXCoordinator.class);
 
     @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.MIBAND2;
-    }
-
-    @NonNull
-    @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        try {
-            BluetoothDevice device = candidate.getDevice();
-            String name = device.getName();
-            if (name != null && (name.equalsIgnoreCase(HuamiConst.MI_BAND2_NAME_HRX) || name.equalsIgnoreCase("Mi Band 2i"))) {
-                return DeviceType.MIBAND2;
-            }
-        } catch (Exception ex) {
-            LOG.error("unable to check device support", ex);
-        }
-        return DeviceType.UNKNOWN;
-    }
-
-    @Override
-    public boolean supports(GBDevice device) {
-        return getDeviceType().equals(device.getType()) && device.getName().equals("Mi Band HRX");
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile(
+                HuamiConst.MI_BAND2_NAME_HRX + "|Mi Band 2i",
+                Pattern.CASE_INSENSITIVE
+        );
     }
 
     @Override
@@ -86,6 +72,11 @@ public class MiBand2HRXCoordinator extends HuamiCoordinator {
     }
 
     @Override
+    public boolean supportsDebugLogs() {
+        return false;
+    }
+
+    @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
                 R.xml.devicesettings_miband2,
@@ -100,5 +91,31 @@ public class MiBand2HRXCoordinator extends HuamiCoordinator {
                 R.xml.devicesettings_huami2021_fetch_operation_time_unit,
                 R.xml.devicesettings_transliteration
         };
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return MiBand2Support.class;
+    }
+
+    @Override
+    public EnumSet<ServiceDeviceSupport.Flags> getInitialFlags() {
+        return EnumSet.of(ServiceDeviceSupport.Flags.THROTTLING, ServiceDeviceSupport.Flags.BUSY_CHECKING);
+    }
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_miband2;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_miband2_disabled;
+    }
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_miband2_hrx;
     }
 }

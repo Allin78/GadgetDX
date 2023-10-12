@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="application_name_generic">Gadgetbridge</string>
     <string name="title_activity_controlcenter_generic">Gadgetbridge</string>
     <string name="action_settings">Pengaturan</string>
@@ -1929,7 +1929,7 @@
 \n 
 \nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
     <string name="pref_title_banglejs_txt_bitmap_size">Ukuran Teks Bitmap</string>
-    <string name="pref_summary_banglejs_txt_bitmap_size">Jika \'Teks sebagai Bitmap\' diaktifkan, ukuran apa teks seharusnya ditampilkan\?</string>
+    <string name="pref_summary_banglejs_txt_bitmap_size">Ukuran yang digunakan untuk rendering teks bitmap</string>
     <string name="pref_summary_banglejs_webview_url">Jika Anda ingin pemuat aplikasi kustom letakkan URL https://…/android.html di sini. Jika tidak tinggalkan kosong untuk https://banglejs.com/apps</string>
     <string name="pref_title_pebble_sync_health">Sinkron Kesehatan Pebble</string>
     <string name="pref_summary_enable_pebblekit">Aktifkan dukungan eksperimental untuk aplikasi Android menggunakan PebbleKit</string>
@@ -2105,4 +2105,286 @@
     <string name="activity_type_rowing">Mendayung</string>
     <string name="pref_workout_detection_time_summary">Jumlah menit olahraga harus berlangsung sebelum mendeteksinya</string>
     <string name="pref_workout_detection_enabled">Deteksi diaktifkan</string>
+    <string name="georgian">Georgia</string>
+    <string name="devicetype_soflow_s06">SoFlow SO6</string>
+    <string name="devicetype_galaxybuds_2_pro">Galaxy Buds2 Pro</string>
+    <string name="pref_title_lock_unlock">Kunci</string>
+    <string name="pref_workout_keep_screen_on_title">Biarkan layar nyala saat berolahraga</string>
+    <string name="pref_camera_remote_title">Remot Kamera</string>
+    <string name="pref_camera_remote_summary">Memperbolehkan jam tangan untuk memicu kamera ponsel</string>
+    <string name="wifi_ssid">SSID</string>
+    <string name="wifi_hotspot_status">Keadaan Hotspot Wi-Fi</string>
+    <string name="wifi_hotspot_stop_summary">Hentikan hotspot Wi-Fi di jam tangan</string>
+    <string name="croatian">Kroasia</string>
+    <string name="status">Keadaan</string>
+    <string name="wifi_hotspot">Hotspot Wi-Fi</string>
+    <string name="wifi_hotspot_summary">Atur hotspot Wi-Fi di jam tangan</string>
+    <string name="ftp_server_configuration">Konfigurasi Server FTP</string>
+    <string name="pref_workout_keep_screen_on_summary">Layar akan terus nyala saat berolahraga, dan kecerahan akan diatur untuk menampilkan data olahraga waktu nyata secara berkelanjutan</string>
+    <string name="stop">Berhenti</string>
+    <string name="wifi_hotspot_configuration">Konfigurasi Hotspot Wi-Fi</string>
+    <string name="ftp_server_status">Keadaan Server FTP</string>
+    <string name="wifi_hotspot_start_summary">Mulai hotspot Wi-Fi di jam tangan</string>
+    <string name="ftp_server">Server FTP</string>
+    <string name="ftp_server_start_summary">Mulai server FTP di jam tangan</string>
+    <string name="address">Alamat</string>
+    <string name="ftp_server_summary">Kontrol server FTP di jam tangan</string>
+    <string name="ftp_server_stop_summary">Hentikan server FTP di jam tangan</string>
+    <string name="ftp_server_root_dir">Direktori Akar</string>
+    <string name="username">Nama pengguna</string>
+    <string name="sony_speak_to_chat_summary">Nonaktifkan peredam bising secara otomatis saat Anda mulai berbicara.</string>
+    <string name="pref_summary_notification_cache_while_disconnected">Kirim notifikasi yang terlewat ketika sebuah perangkat menghubungkan kembali setelah di luar jangka</string>
+    <string name="pref_morning_updates_categories_title">Kategori Pembaruan Pagi</string>
+    <string name="pref_title_notification_cache_while_disconnected">Tembolok saat di luar jangka</string>
+    <string name="pref_morning_updates_title">Pembaruan Pagi</string>
+    <string name="pref_morning_updates_summary">Menampilkan pembaruan setiap pagi</string>
+    <string name="pref_morning_updates_categories_summary">Daftar kategori untuk ditampilkan setiap pagi</string>
+    <string name="yesterdays_activity">Aktivitas Kemarin</string>
+    <string name="pref_summary_receive_calls_watch">Lakukan dan terima panggilan secara langsung di jam tangan</string>
+    <string name="bluetooth_calls">Panggilan Bluetooth</string>
+    <string name="bluetooth_calls_pairing">Penyandingan panggilan Bluetooth</string>
+    <string name="bluetooth_calls_settings">Pengaturan panggilan Bluetooth</string>
+    <string name="pref_display_caller_title">Tampilkan informasi kontak</string>
+    <string name="pref_display_caller_summary">Tampilkan nomor telepon atau nama untuk panggilan masuk</string>
+    <string name="pref_pair_bluetooth_calls_title">Sandingkan untuk panggilan Bluetooth</string>
+    <string name="pref_pair_bluetooth_calls_summary">Klik di sini untuk memulai proses penyandingan</string>
+    <string name="pref_pair_bluetooth_calls_help_title">Cara menerima panggilan Bluetooth</string>
+    <string name="pref_pair_bluetooth_calls_help_summary">Untuk menerima panggilan Bluetooth, Anda harus menyandingkan ponsel Anda dengan bagian jam tangan yang kedua.</string>
+    <string name="pref_pair_bluetooth_calls_help_1">1. Ketuk tombol di bawah untuk memulai proses penyandingan.</string>
+    <string name="pref_pair_bluetooth_calls_help_2">2. Pergi ke pengaturan Bluetooth ponsel Anda, dan sandingkan dengan perangkat baru yang akan muncul (nama sama dengan jam tangan Anda, tetapi dengan akhiran, mis. \"Amazfit GTR 4 - AFC8\").</string>
+    <string name="pref_pair_bluetooth_calls_help_3">3. Aktifkan pengaturan panggilan Bluetooth di bawah.</string>
+    <string name="pref_pair_bluetooth_calls_help_warning">PERINGATAN: Jika Anda mengaktifkan panggilan Bluetooth tanpa menyandingkan dengan bagian kedua, notifikasi panggilan mungkin tidak bekerja dengan seharusnya.</string>
+    <string name="pref_switch_controls_anc_ambient_off">Pembatalan bising ←→ Ambien ←→ Nonaktif</string>
+    <string name="sony_button_mode_help_title">Mode Tombol - Bantuan</string>
+    <string name="quick_attention">Pengingat Cepat</string>
+    <string name="sony_button_mode_help_summary">Deskripsi dari setiap mode tombol</string>
+    <string name="long_press">Tekan Lama</string>
+    <string name="single_tap">Ketuk Sekali</string>
+    <string name="continue_pressing">Lanjut Menekan</string>
+    <string name="triple_tap">Ketuk Tiga Kali</string>
+    <string name="double_tap">Ketuk Dua Kali</string>
+    <string name="menuitem_cards">Kartu</string>
+    <string name="menuitem_mi_ai">MI AI</string>
+    <string name="prefs_shortcut_cards">Kartu Pintasan</string>
+    <string name="menuitem_forecast">Prakiraan</string>
+    <string name="prefs_shortcut_cards_summary">Kartu pintasan terlihat saat mengusap ke kanan di wajah jam. Ketika sebuah aplikasi sedang berjalan, kartu yang dibuat secara otomatis tidak berpengaruh oleh pengaturan ini.</string>
+    <string name="menuitem_total_workout">Jumlah olahraga</string>
+    <string name="menuitem_recommendation">Saran</string>
+    <string name="menuitem_last_workout">Olahraga terakhir</string>
+    <string name="menuitem_vo2_max">Maks VO</string>
+    <string name="zepp_os_watchface_multiple_data">Beberapa Data</string>
+    <string name="zepp_os_watchface_rush">Cepat</string>
+    <string name="zepp_os_watchface_simplicity_data">Data Kesederhanaan</string>
+    <string name="zepp_os_watchface_vibrant">Cerah</string>
+    <string name="zepp_os_watchface_emerald_moonlight">Sinar Bulan Zamrud</string>
+    <string name="zepp_os_watchface_rotating_earth">Bumi Berputar</string>
+    <string name="zepp_os_watchface_superposition">superposisi</string>
+    <string name="zepp_os_watchface_minimalist">Minimalis</string>
+    <string name="zepp_os_watchface_red_fantasy">Fantasi Merah</string>
+    <string name="zepp_os_watchface_business_style">Gaya Bisnis</string>
+    <string name="menuitem_aqi">Indeks Kualitas Udara</string>
+    <string name="devicetype_sony_wh_1000xm5">Sony WH-1000XM5</string>
+    <string name="fossil_hr_connection_not_confirmed">Koneksi tidak dikonfirmasi di jam tangan, menggunakan mode tidak diautentikasi</string>
+    <string name="fossil_hr_confirm_connection">Harap konfirmasi di jam tangan Anda</string>
+    <string name="fw_upgrade_notice_amazfit_gtr3_pro">Anda akan memasang perangkat tegar %s pada Amazfit GTR 3 Pro Anda.
+\n
+\nGelang Anda akan dinyalakan ulang setelah memasang berkas .zip.
+\n
+\nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="devicetype_amazfit_gtr3_pro">Amazfit GTR 3 Pro</string>
+    <string name="fossil_hr_pairing_successful">Berhasil menyandingkan dengan jam tangan</string>
+    <string name="fossil_hr_pairing_failed">Penyandingan dengan jam tangan gagal</string>
+    <string name="fossil_hr_confirmation_skipped">Melewatkan konfirmasi pada perangkat</string>
+    <string name="fossil_hr_confirmation_timeout">Waktu konfirmasi habis, melanjutkan</string>
+    <string name="gpx_route_upload_failed">Pengunggahan rute GPX gagal</string>
+    <string name="gpx_route_upload_complete">Pengunggahan rute GPX selesai</string>
+    <string name="gpx_route_upload_in_progress">Mengunggah rute GPX</string>
+    <string name="activity_error_share_failed">Pembagian berkas gagal.</string>
+    <string name="kind_gpx_route">Rute GPX</string>
+    <string name="activity_detail_share_gps_label">Bagikan Trek GPS</string>
+    <string name="activity_detail_share_raw_summary">Bagikan Ikhtisar Mentah</string>
+    <string name="activity_detail_share_raw_details">Bagikan Detail Mentah</string>
+    <string name="dev_tools">Alat Pengembang</string>
+    <string name="debug_companion_show_associated">Tampilkan perangkat pendamping terkait</string>
+    <string name="debug_companion_pair_current">Sandingkan perangkat saat ini sebagai pendamping</string>
+    <string name="title_activity_set_contacts">Atur kontak</string>
+    <string name="pref_contacts_title">Kontak</string>
+    <string name="pref_contacts_summary">Atur kontak di jam tangan</string>
+    <string name="contact_no_free_slots_description">Perangkat ini tidak memiliki tempat kosong untuk kontak (jumlah tempat: %1$s)</string>
+    <string name="title_activity_contact_details">Detail kontak</string>
+    <string name="contact_phone_number">Nomor telepon</string>
+    <string name="contact_name">Nama</string>
+    <string name="contact_missing_name">Nama kontak kosong</string>
+    <string name="contact_delete_confirm_title">Hapus kontak</string>
+    <string name="contact_missing_number">Nomor kontak kosong</string>
+    <string name="contact_delete_confirm_description">Apakah Anda yakin ingin menghapus \'%1$s\'\?</string>
+    <string name="pref_header_navigation">Navigasi</string>
+    <string name="pref_summary_navigation_forward">Teruskan petunjuk dari aplikasi navigasi ke jam tangan</string>
+    <string name="pref_title_navigation_forward">Kirim navigasi ke jam tangan</string>
+    <string name="intent_api_allow_debug_commands_summary">Perbolehkan memicu menu perintah pengawakutu melalui API Intent</string>
+    <string name="intent_api_allow_debug_commands_title">Perbolehkan Perintah Pengawakutu</string>
+    <string name="voice_service_package_title">Paket layanan suara</string>
+    <string name="voice_service_package_summary">Aplikasi yang berisi layanan menangani perintah suara</string>
+    <string name="voice_service_class_title">Kelas layanan suara</string>
+    <string name="voice_service">Layanan Suara</string>
+    <string name="voice_service_class_summary">Jalur layanan lengkap penanganan perintah suara</string>
+    <string name="pref_app_logs_summary">Aktifkan catatan dari aplikasi jam tangan</string>
+    <string name="pref_app_logs_title">Catatan aplikasi</string>
+    <string name="pref_app_logs_start_summary">Mulai mencatat dari aplikasi jam tangan</string>
+    <string name="pref_app_logs_stop_summary">Berhenti mencatat dari aplikasi jam tangan</string>
+    <string name="fwapp_install_device_not_supported">Berkas tidak dapat dipasang, perangkat tidak didukung.</string>
+    <string name="charts_legend_stress_average">Rata‐rata stres</string>
+    <string name="stress_moderate">Sedang</string>
+    <string name="share_screenshot">Bagikan tangkapan layar</string>
+    <string name="stress_relaxed">Santai</string>
+    <string name="stress_high">Tinggi</string>
+    <string name="screenshot_taken">Tangkapan layar diambil</string>
+    <string name="stress_mild">Ringan</string>
+    <string name="watchface_widget_type_uv_index">Indeks UV</string>
+    <string name="pref_title_banglejs_phone_gps_network_only">Hanya gunakan jaringan untuk menentukan lokasi</string>
+    <string name="title">Judul</string>
+    <string name="pref_title_banglejs_phone_gps_enbale">Gunakan data GPS ponsel</string>
+    <string name="pref_summary_banglejs_phone_gps_enbale">Gunakan data GPS ponsel untuk menimpa data GPS dari perangkat Bangle</string>
+    <string name="pref_title_banglejs_phone_gps_update_interval">Interval pembaruan data GPS</string>
+    <string name="description">Deskripsi</string>
+    <string name="preview_image">Pratinjau gambar</string>
+    <string name="status_icon">Ikon status</string>
+    <string name="changelog_full_title">Catatan Perubahan</string>
+    <string name="changelog_show_full">Lainnya…</string>
+    <string name="changelog_ok_button">Oke</string>
+    <string name="changelog_title">Apa Yang Baru</string>
+    <string name="pref_summary_banglejs_phone_gps_network_only">Hanya gunakan penyedia jaringan untuk menentukan lokasi. Hal ini akan mengurangi konsumsi daya dengan mengorbankan keakuratan. Diperlukan koneksi ulang.</string>
+    <string name="pref_summary_banglejs_phone_gps_update_interval">Interval seberapa sering posisi gps diperbarui, dalam ms</string>
+    <string name="action_changelog">Catatan Perubahan</string>
+    <string name="pai_chart_per_month">PAI per bulan</string>
+    <string name="pai_day">Pemambahan PAI hari</string>
+    <string name="pai_plus_num">+%d</string>
+    <string name="pai_total">Jumlah PAI</string>
+    <string name="pai_chart_per_week">PAI per minggu</string>
+    <string name="num_min">%d mnt</string>
+    <string name="loyalty_cards_catima_package">Nama paket Catima</string>
+    <string name="loyalty_cards_sync_groups_only">Hanya sinkronkan grup spesifik</string>
+    <string name="loyalty_cards_sync_groups">Grup untuk Disinkronkan</string>
+    <string name="loyalty_cards_sync_archived">Sinkronkan kartu yang terarsip</string>
+    <string name="loyalty_cards_install_catima_fail">Gagal membuka toko aplikasi untuk memasang Catima</string>
+    <string name="loyalty_cards_sync_title">Sinkronkan Kartu Loyalitas</string>
+    <string name="loyalty_cards_sync_summary">Ketuk untuk menyinkronkan kartu ke jam tangan</string>
+    <string name="loyalty_cards_catima_not_installed">Catima dibutuhkan untuk mengelola kartu loyalitas</string>
+    <string name="loyalty_cards_catima_not_compatible">Versi Catima yang terpasang tidak kompatibel dengan Gadgetbridge. Silakan perbarui Catima dan Gadgetbridge ke versi yang terbaru.</string>
+    <string name="loyalty_cards_catima">Catima</string>
+    <string name="loyalty_cards_catima_permissions_summary">Gadgetbridge perlu izin membaca pada kartu Catima untuk disinkronkan. Ketuk tombol ini untuk mengizinkan.</string>
+    <string name="loyalty_cards">Kartu Loyalitas</string>
+    <string name="loyalty_cards_install">Pasang Catima</string>
+    <string name="loyalty_cards_open_catima">Buka Catima</string>
+    <string name="loyalty_cards_sync_starred">Hanya sinkronkan kartu yang dibintangi</string>
+    <string name="loyalty_cards_syncing">Menyinkronkan %d kartu loyalitas ke perangkat</string>
+    <string name="loyalty_cards_sync">Sinkronkan</string>
+    <string name="loyalty_cards_sync_options">Opsi Sinkronisasi</string>
+    <string name="loyalty_cards_catima_permissions_title">Izin dibutuhkan</string>
+    <string name="devicetype_bohemic_smart_bracelet">Bohemic Smart Bracelet</string>
+    <string name="pref_title_mb_intents">Intent Tombol Media Siaran Secara Langsung</string>
+    <string name="pref_summary_mb_intents">Aktifkan jika kontrol media perangkat tidak berfungsi untuk aplikasi tertentu</string>
+    <string name="devicetype_vivomove_hr">Garmin Vivomove HR</string>
+    <string name="devicetype_casiogwb5600">Casio GW-B5600</string>
+    <string name="devicetype_casiogmwb5000">Casio GMW-B5000</string>
+    <string name="busy_task_fetch_sports_summaries">Mendapatkan rangkuman olahraga</string>
+    <string name="busy_task_fetch_sports_details">Mendapatkan detail olahraga</string>
+    <string name="busy_task_fetch_sleep_respiratory_rate_data">Mendapatkan data tingkat pernapasan saat tidur</string>
+    <string name="busy_task_fetch_debug_logs">Mendapatkan catatan pengawakutu</string>
+    <string name="busy_task_fetch_spo2_data">Mendapatkan data SpO2</string>
+    <string name="busy_task_fetch_stress_data">Mendapatkan data stres</string>
+    <string name="busy_task_fetch_hr_data">Mendapatkan data detak jantung</string>
+    <string name="busy_task_fetch_pai_data">Mendapatkan data PAI</string>
+    <string name="activity_prefs_goals">Sasaran</string>
+    <string name="error_no_bluetooth_connect">Akses koneksi Bluetooth harus diberikan dan diaktifkan agar pemindaian dapat bekerja dengan baik</string>
+    <string name="permission_request">%1$s memungkinkan Anda untuk mengirim pesan dan data lain dari Android ke perangkat Anda. Untuk melakukan hal ini, diperlukan izin untuk mengakses data tersebut dan tanpa izin, aplikasi ini tidak akan berfungsi dengan baik.
+\n
+\nSekarang Anda akan dihadapkan pada beberapa dialog Android yang meminta izin tersebut.
+\n
+\nSilakan ketuk \'%2$s\' untuk melanjutkan.</string>
+    <string name="activity_type_windsurfing">Selancar angin</string>
+    <string name="activity_type_football">Sepak bola</string>
+    <string name="activity_type_baseball">Bisbol</string>
+    <string name="activity_type_handball">Bola tangan</string>
+    <string name="activity_type_tennis">Tenis</string>
+    <string name="activity_type_squash">Squash</string>
+    <string name="activity_type_rugby">Rugbi</string>
+    <string name="activity_type_weightlifting">Angkat Berat</string>
+    <string name="activity_type_dancing">Menari</string>
+    <string name="activity_type_skiing">Ski</string>
+    <string name="activity_type_snowboarding">Seluncur salju</string>
+    <string name="activity_type_riding">Menunggang Kuda</string>
+    <string name="activity_type_hockey">Hoki</string>
+    <string name="activity_type_icehockey">Hoki es</string>
+    <string name="activity_type_iceskating">Seluncur Es</string>
+    <string name="activity_type_golf">Golf</string>
+    <string name="activity_type_other">Lainnya</string>
+    <string name="withings_steel_hr">Withings Steel HR</string>
+    <string name="withings_calibration_text_activity_target">Terakhir, sejajarkan jarum penunjuk aktivitas ke 100%. Perlu diketahui bahwa jarum penunjuk ini hanya bergerak searah jarum jam.</string>
+    <string name="withings_bt_calibration_previous">Sebelumnya</string>
+    <string name="withings_bt_calibration_next">Lanjutkan</string>
+    <string name="activity_type_surfing">Berselancar</string>
+    <string name="activity_type_kitesurfing">Berselancar layang-layang</string>
+    <string name="error_no_bluetooth_scan">Akses pemindaian Bluetooth harus diberikan dan diaktifkan agar pemindaian dapat bekerja dengan baik</string>
+    <string name="withings_calibration_text_hours">Silakan gunakan dial di bawah ini untuk menyelaraskan jarum penunjuk jam ke angka 12.</string>
+    <string name="withings_calibration_text_minutes">Sekarang, gunakan dial untuk menyelaraskan jarum penunjuk menit ke angka 12.</string>
+    <string name="pref_theme_dynamic">Warna dinamis</string>
+    <string name="drag_handle">seret pegangan</string>
+    <string name="preferences_miband_1_2_settings" tools:ignore="TypographyFractions">Pengaturan Mi Band 1/2</string>
+    <string name="find_my_phone_found_it">DITEMUKAN</string>
+    <string name="pref_activity_full_sync_trigger_summary">Picu sinkronisasi lengkap semua data aktivitas</string>
+    <string name="pref_activity_full_sync_trigger_title">Sinkronisasi lengkap</string>
+    <string name="pref_activity_full_sync_trigger_warning">Ini akan memicu sinkronisasi penuh semua data aktivitas dari perangkat. Ini mungkin memerlukan beberapa menit untuk selesai.</string>
+    <string name="menuitem_zepp_coach">Zepp Coach</string>
+    <string name="pref_show_changelog">Tampilkan catatan perubahan saat aplikasi dibuka</string>
+    <string name="pref_canned_message">Pesan</string>
+    <string name="preferences_miband_1_2_warning">Peringatan: Preferensi ini hanya berlaku pada Mi Band 1 dan 2.</string>
+    <string name="pref_show_changelog_summary">Tampilkan catatan perubahan sejak versi terakhir setelah Gadgetbridge diperbarui</string>
+    <string name="pref_theme_dynamic_colors_not_available_warning">Warna dinamis tidak tersedia pada perangkat Anda, hanya Android 12+ mendukung fitur ini. Gadgetbridge akan menggunakan warna Materia) 3 bawaan.</string>
+    <string name="pref_theme_dynamic_colors_explanation">Catatan: untuk tema warna dinamis, Anda perlu mengaktifkan Warna Wallpaper atau Palet Warma di pengaturan Android 12+ Anda. Jika tidak, Gadgetbridge akan menggunakan warna Material 3 bawaan.</string>
+    <string name="fw_upgrade_notice_amazfitbip3pro">Anda akan memasang perangkat tegar %s pada Amazfit Bip 3 Pro Anda. 
+\n 
+\nPastikan Anda memasang berkas .fw, dan setelah itu berkas .res. Jam tangan Anda akan dinyalakan ulang setelah memasang berkas .fw. 
+\n 
+\nCatatan: Anda tidak harus memasang .res jika sama persis dengan yang sebelumnya dipasang. 
+\n 
+\nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="devicetype_amazfit_bip3_pro">Amazfit Bip 3 Pro</string>
+    <string name="fw_upgrade_notice_amazfit_cheetah_pro">Anda akan memasang perangkat tegar %s pada Amazfit Cheetah Pro Anda.
+\n
+\nGelang Anda akan dinyalakan ulang setelah memasang berkas .zip.
+\n
+\nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="fw_upgrade_notice_zepp_os">Anda akan memasang perangkat tegar %s pada %s Anda.
+\n
+\nJam tangan Anda akan dinyalakan ulang setelah memasang berkas .zip.
+\n
+\nLANJUTKAN DENGAN RISIKO ANDA SENDIRI!</string>
+    <string name="device_experimental">EKSPERIMENTAL</string>
+    <string name="info_menu_structure_set">JSON struktur menu ditetapkan dalam GB</string>
+    <string name="error_invalid_menu_structure">JSON struktur menu tidak valid</string>
+    <string name="devicetype_amazfit_gtr_mini">Amazfit GTR Mini</string>
+    <string name="error_menu_companion_not_installed">\'HR Menu Companion\' mungkin belum dipasang</string>
+    <string name="devicetype_amazfit_cheetah_square">Amazfit Cheetah (Kotak)</string>
+    <string name="devicetype_amazfit_cheetah_round">Amazfit Cheetah (Bulat)</string>
+    <string name="devicetype_amazfit_trex_ultra">Amazfit T-Rex Ultra</string>
+    <string name="devicetype_amazfit_falcon">Amazfit Falcon</string>
+    <string name="button_open_menu_companion">Buka aplikasi pendamping menu</string>
+    <string name="info_menu_structure_removed">Struktur menu dihapus</string>
+    <string name="info_menu_structure_contents">Struktur menu: %s</string>
+    <string name="button_reset_menu_structure">Atur ulang struktur menu</string>
+    <string name="info_fossil_rebuild_watchface_custom_menu">Silakan bangun ulang wajah jam tangan Anda untuk menu kustom</string>
+    <string name="devicetype_amazfit_cheetah_pro">Amazfit Cheetah Pro</string>
+    <string name="devicetype_amazfit_bip5">Amazfit Bip 5</string>
+    <string name="english_au">Inggris (Australia)</string>
+    <string name="english_ca">Inggris (Kanada)</string>
+    <string name="english_gb">Inggris (Britania Raya)</string>
+    <string name="english_in">Inggris (India)</string>
+    <string name="english_us">Inggris (Amerika Serikat)</string>
+    <string name="spanish_es">Spanyol (Spanyol)</string>
+    <string name="spanish_us">Spanyol (Amerika Serikat)</string>
+    <string name="spanish_mx">Spanyol (Meksiko)</string>
+    <string name="french_ca">Prancis (Kanada)</string>
+    <string name="french_fr">Prancis (Prancis)</string>
+    <string name="updatefirmwareoperation_updateproblem_free_space">Perangkat tidak memiliki ruang penyimpanan kosong yang cukup</string>
 </resources>

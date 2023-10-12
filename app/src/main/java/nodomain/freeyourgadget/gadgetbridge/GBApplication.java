@@ -68,6 +68,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoMaster;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.BluetoothStateChangeReceiver;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.TimeChangeReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.opentracks.OpenTracksContentObserver;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceService;
@@ -91,6 +92,7 @@ import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.GALAXY_BUDS;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.LEFUN;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND2;
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND2_HRX;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.MIBAND3;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.PEBBLE;
 import static nodomain.freeyourgadget.gadgetbridge.model.DeviceType.TLW64;
@@ -100,6 +102,8 @@ import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_CHANNEL_
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.NOTIFICATION_ID_ERROR;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Main Application class that initializes and provides access to certain things like
@@ -116,7 +120,7 @@ public class GBApplication extends Application {
     private static SharedPreferences sharedPrefs;
     private static final String PREFS_VERSION = "shared_preferences_version";
     //if preferences have to be migrated, increment the following and add the migration logic in migratePrefs below; see http://stackoverflow.com/questions/16397848/how-can-i-migrate-android-preferences-with-a-new-version
-    private static final int CURRENT_PREFS_VERSION = 19;
+    private static final int CURRENT_PREFS_VERSION = 22;
 
     private static LimitedQueue mIDSenderLookup = new LimitedQueue(16);
     private static Prefs prefs;
@@ -130,6 +134,7 @@ public class GBApplication extends Application {
     public static final String ACTION_QUIT
             = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.quit";
     public static final String ACTION_LANGUAGE_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.language_change";
+    public static final String ACTION_THEME_CHANGE = "nodomain.freeyourgadget.gadgetbridge.gbapplication.action.theme_change";
     public static final String ACTION_NEW_DATA = "nodomain.freeyourgadget.gadgetbridge.action.new_data";
 
     private static GBApplication app;
@@ -151,7 +156,7 @@ public class GBApplication extends Application {
     private BluetoothStateChangeReceiver bluetoothStateChangeReceiver;
 
     private OpenTracksContentObserver openTracksObserver;
-    
+
     private long lastAutoExportTimestamp = 0;
     private long autoExportScheduledTimestamp = 0;
 
@@ -166,6 +171,18 @@ public class GBApplication extends Application {
     public GBApplication() {
         context = this;
         // don't do anything here, add it to onCreate instead
+
+        //if (BuildConfig.DEBUG) {
+        //    // detect everything
+        //    //StrictMode.enableDefaults();
+        //    // detect closeable objects
+        //    //StrictMode.setVmPolicy(
+        //    //        new StrictMode.VmPolicy.Builder()
+        //    //                .detectLeakedClosableObjects()
+        //    //                .penaltyLog()
+        //    //                .build()
+        //    //);
+        //}
     }
 
     public static Logging getLogging() {
@@ -221,6 +238,7 @@ public class GBApplication extends Application {
         loadAppsPebbleBlackList();
 
         PeriodicExporter.enablePeriodicExport(context);
+        TimeChangeReceiver.scheduleNextDstChange(context);
 
         if (isRunningMarshmallowOrLater()) {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -454,6 +472,10 @@ public class GBApplication extends Application {
     }
 
     public static void setAppsNotifBlackList(Set<String> packageNames) {
+        setAppsNotifBlackList(packageNames, sharedPrefs.edit());
+    }
+
+    public static void setAppsNotifBlackList(Set<String> packageNames, SharedPreferences.Editor editor) {
         if (packageNames == null) {
             GB.log("Set null apps_notification_blacklist", GB.INFO, null);
             apps_notification_blacklist = new HashSet<>();
@@ -461,7 +483,7 @@ public class GBApplication extends Application {
             apps_notification_blacklist = new HashSet<>(packageNames);
         }
         GB.log("New apps_notification_blacklist has " + apps_notification_blacklist.size() + " entries", GB.INFO, null);
-        saveAppsNotifBlackList();
+        saveAppsNotifBlackList(editor);
     }
 
     private static void loadAppsNotifBlackList() {
@@ -474,8 +496,11 @@ public class GBApplication extends Application {
     }
 
     private static void saveAppsNotifBlackList() {
+       saveAppsNotifBlackList(sharedPrefs.edit());
+    }
+
+    private static void saveAppsNotifBlackList(SharedPreferences.Editor editor) {
         GB.log("Saving apps_notification_blacklist with " + apps_notification_blacklist.size() + " entries", GB.INFO, null);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
         if (apps_notification_blacklist.isEmpty()) {
             editor.putStringSet(GBPrefs.PACKAGE_BLACKLIST, null);
         } else {
@@ -506,6 +531,10 @@ public class GBApplication extends Application {
     }
 
     public static void setAppsPebbleBlackList(Set<String> packageNames) {
+        setAppsPebbleBlackList(packageNames, sharedPrefs.edit());
+    }
+
+    public static void setAppsPebbleBlackList(Set<String> packageNames, SharedPreferences.Editor editor) {
         if (packageNames == null) {
             GB.log("Set null apps_pebblemsg_blacklist", GB.INFO, null);
             apps_pebblemsg_blacklist = new HashSet<>();
@@ -513,7 +542,7 @@ public class GBApplication extends Application {
             apps_pebblemsg_blacklist = new HashSet<>(packageNames);
         }
         GB.log("New apps_pebblemsg_blacklist has " + apps_pebblemsg_blacklist.size() + " entries", GB.INFO, null);
-        saveAppsPebbleBlackList();
+        saveAppsPebbleBlackList(editor);
     }
 
     private static void loadAppsPebbleBlackList() {
@@ -526,8 +555,11 @@ public class GBApplication extends Application {
     }
 
     private static void saveAppsPebbleBlackList() {
+       saveAppsPebbleBlackList(sharedPrefs.edit());
+    }
+
+    private static void saveAppsPebbleBlackList(SharedPreferences.Editor editor) {
         GB.log("Saving apps_pebblemsg_blacklist with " + apps_pebblemsg_blacklist.size() + " entries", GB.INFO, null);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
         if (apps_pebblemsg_blacklist.isEmpty()) {
             editor.putStringSet(GBPrefs.PACKAGE_PEBBLEMSG_BLACKLIST, null);
         } else {
@@ -722,7 +754,7 @@ public class GBApplication extends Application {
                             deviceSharedPrefsEdit.putString("disconnect_notification_start", prefs.getString("disconnect_notification_start", "8:00"));
                             deviceSharedPrefsEdit.putString("disconnect_notification_end", prefs.getString("disconnect_notification_end", "22:00"));
                         }
-                        if (deviceType == MIBAND2 || deviceType == MIBAND3) {
+                        if (deviceType == MIBAND2 || deviceType == MIBAND2_HRX || deviceType == MIBAND3) {
                             deviceSharedPrefsEdit.putString("do_not_disturb", prefs.getString("mi2_do_not_disturb", "off"));
                             deviceSharedPrefsEdit.putString("do_not_disturb_start", prefs.getString("mi2_do_not_disturb_start", "1:00"));
                             deviceSharedPrefsEdit.putString("do_not_disturb_end", prefs.getString("mi2_do_not_disturb_end", "6:00"));
@@ -744,6 +776,7 @@ public class GBApplication extends Application {
                                 displayItems = prefs.getStringSet("bip_display_items", null);
                                 break;
                             case MIBAND2:
+                            case MIBAND2_HRX:
                                 displayItems = prefs.getStringSet("mi2_display_items", null);
                                 deviceSharedPrefsEdit.putBoolean("mi2_enable_text_notifications", prefs.getBoolean("mi2_enable_text_notifications", true));
                                 deviceSharedPrefsEdit.putString("mi2_dateformat", prefs.getString("mi2_dateformat", "dateformat_time"));
@@ -835,6 +868,7 @@ public class GBApplication extends Application {
                             case AMAZFITCOR2:
                             case MIBAND:
                             case MIBAND2:
+                            case MIBAND2_HRX:
                             case MIBAND3:
                             case MIBAND4:
                                 newWearside = prefs.getString("mi_wearside", "left");
@@ -1113,7 +1147,7 @@ public class GBApplication extends Application {
 
         if (oldVersion < 16) {
             // If transliteration was enabled for a device, migrate it to the per-language setting
-            final String defaultLanguagesIfEnabled = "extended_ascii,scandinavian,german,russian,hebrew,greek,ukranian,arabic,persian,lithuanian,polish,estonian,icelandic,czech,turkish,bengali,korean";
+            final String defaultLanguagesIfEnabled = "extended_ascii,common_symbols,scandinavian,german,russian,hebrew,greek,ukranian,arabic,persian,latvian,lithuanian,polish,estonian,icelandic,czech,turkish,bengali,korean";
             try (DBHandler db = acquireDB()) {
                 final DaoSession daoSession = db.getDaoSession();
                 final List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
@@ -1183,12 +1217,92 @@ public class GBApplication extends Application {
             } catch (Exception e) {
                 Log.w(TAG, "error acquiring DB lock");
             }
-            if (oldVersion < 19) {
-                //remove old ble scanning prefences, now unsupported
-                editor.remove("disable_new_ble_scanning");
-            }
+        }
 
+        if (oldVersion < 19) {
+            //remove old ble scanning prefences, now unsupported
+            editor.remove("disable_new_ble_scanning");
+        }
+
+        if (oldVersion < 20) {
+            // Add the new stress tab to all devices
+            try (DBHandler db = acquireDB()) {
+                final DaoSession daoSession = db.getDaoSession();
+                final List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
+
+                for (final Device dbDevice : activeDevices) {
+                    final SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+
+                    final String chartsTabsValue = deviceSharedPrefs.getString("charts_tabs", null);
+                    if (chartsTabsValue == null) {
+                        continue;
+                    }
+
+                    final String newPrefValue;
+                    if (!StringUtils.isBlank(chartsTabsValue)) {
+                        newPrefValue = chartsTabsValue + ",stress";
+                    } else {
+                        newPrefValue = "stress";
+                    }
+
+                    final SharedPreferences.Editor deviceSharedPrefsEdit = deviceSharedPrefs.edit();
+                    deviceSharedPrefsEdit.putString("charts_tabs", newPrefValue);
+                    deviceSharedPrefsEdit.apply();
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "error acquiring DB lock");
             }
+        }
+
+        if (oldVersion < 21) {
+            // Add the new PAI tab to all devices
+            try (DBHandler db = acquireDB()) {
+                final DaoSession daoSession = db.getDaoSession();
+                final List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
+
+                for (final Device dbDevice : activeDevices) {
+                    final SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+
+                    final String chartsTabsValue = deviceSharedPrefs.getString("charts_tabs", null);
+                    if (chartsTabsValue == null) {
+                        continue;
+                    }
+
+                    final String newPrefValue;
+                    if (!StringUtils.isBlank(chartsTabsValue)) {
+                        newPrefValue = chartsTabsValue + ",pai";
+                    } else {
+                        newPrefValue = "pai";
+                    }
+
+                    final SharedPreferences.Editor deviceSharedPrefsEdit = deviceSharedPrefs.edit();
+                    deviceSharedPrefsEdit.putString("charts_tabs", newPrefValue);
+                    deviceSharedPrefsEdit.apply();
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "error acquiring DB lock");
+            }
+        }
+
+        if (oldVersion < 22) {
+            try (DBHandler db = acquireDB()) {
+                final DaoSession daoSession = db.getDaoSession();
+                final List<Device> activeDevices = DBHelper.getActiveDevices(daoSession);
+
+                for (Device dbDevice : activeDevices) {
+                    final DeviceType deviceType = fromKey(dbDevice.getType());
+                    if (deviceType == MIBAND2) {
+                        final String name = dbDevice.getName();
+                        if ("Mi Band HRX".equalsIgnoreCase(name) || "Mi Band 2i".equalsIgnoreCase(name)) {
+                            dbDevice.setType(DeviceType.MIBAND2_HRX.getKey());
+                            daoSession.getDeviceDao().update(dbDevice);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "error acquiring DB lock");
+            }
+        }
 
         editor.putString(PREFS_VERSION, Integer.toString(CURRENT_PREFS_VERSION));
         editor.apply();
@@ -1235,7 +1349,7 @@ public class GBApplication extends Application {
         Resources resources = context.getResources();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                selectedTheme.equals(context.getString(R.string.pref_theme_value_system))) {
+                (selectedTheme.equals(context.getString(R.string.pref_theme_value_system)) || selectedTheme.equals(context.getString(R.string.pref_theme_value_dynamic)))) {
             return (resources.getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
         } else {
             return selectedTheme.equals(context.getString(R.string.pref_theme_value_dark));
@@ -1246,11 +1360,21 @@ public class GBApplication extends Application {
         return prefs.getBoolean("pref_key_theme_amoled_black", false);
     }
 
+    public static boolean areDynamicColorsEnabled() {
+        String selectedTheme = prefs.getString("pref_key_theme", context.getString(R.string.pref_theme_value_system));
+        return selectedTheme.equals(context.getString(R.string.pref_theme_value_dynamic));
+    }
+
     public static int getTextColor(Context context) {
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = context.getTheme();
-        theme.resolveAttribute(R.attr.textColorPrimary, typedValue, true);
-        return typedValue.data;
+        if (GBApplication.isDarkThemeEnabled()) {
+            return context.getResources().getColor(R.color.primarytext_dark);
+        } else {
+            return context.getResources().getColor(R.color.primarytext_light);
+        }
+    }
+
+    public static int getSecondaryTextColor(Context context) {
+        return context.getResources().getColor(R.color.secondarytext);
     }
 
     @Override
@@ -1291,6 +1415,10 @@ public class GBApplication extends Application {
 
     public static Locale getLanguage() {
         return language;
+    }
+
+    public static boolean isNightly() {
+        return BuildConfig.APPLICATION_ID.contains("nightly");
     }
 
     public String getVersion() {

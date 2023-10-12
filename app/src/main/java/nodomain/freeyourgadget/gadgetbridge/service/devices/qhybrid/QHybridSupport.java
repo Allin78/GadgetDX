@@ -17,8 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
@@ -27,19 +25,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,7 +44,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
@@ -104,6 +100,8 @@ public class QHybridSupport extends QHybridBaseSupport {
 
     public static final String QHYBRID_COMMAND_DOWNLOAD_FILE = "nodomain.freeyourgadget.gadgetbridge.Q_DOWNLOAD_FILE";
     public static final String QHYBRID_COMMAND_UPLOAD_FILE = "nodomain.freeyourgadget.gadgetbridge.Q_UPLOAD_FILE";
+
+    public static final String QHYBRID_COMMAND_SET_MENU_STRUCTURE = "nodomain.freeyourgadget.gadgetbridge.Q_SET_MENU_STRUCTURE";
 
     public static final String QHYBRID_ACTION_DOWNLOADED_FILE = "nodomain.freeyourgadget.gadgetbridge.Q_DOWNLOADED_FILE";
     public static final String QHYBRID_ACTION_UPLOADED_FILE = "nodomain.freeyourgadget.gadgetbridge.Q_UPLOADED_FILE";
@@ -311,6 +309,7 @@ public class QHybridSupport extends QHybridBaseSupport {
         globalFilter.addAction(QHYBRID_COMMAND_UPLOAD_FILE);
         globalFilter.addAction(QHYBRID_COMMAND_PUSH_CONFIG);
         globalFilter.addAction(QHYBRID_COMMAND_SWITCH_WATCHFACE);
+        globalFilter.addAction(QHYBRID_COMMAND_SET_MENU_STRUCTURE);
         globalCommandReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -386,6 +385,10 @@ public class QHybridSupport extends QHybridBaseSupport {
                         handleSwitchWatchfaceIntent(intent);
                         break;
                     }
+                    case QHYBRID_COMMAND_SET_MENU_STRUCTURE:{
+                        handleSetMenuStructure(intent);
+                        break;
+                    }
                 }
             }
         };
@@ -401,6 +404,30 @@ public class QHybridSupport extends QHybridBaseSupport {
         String watchfaceName = intent.getExtras().getString("WATCHFACE_NAME", "");
         if (watchfaceName != "") {
             ((FossilHRWatchAdapter) watchAdapter).activateWatchface(watchfaceName);
+        }
+    }
+
+    private void handleSetMenuStructure(Intent intent){
+        if(intent == null){
+            logger.error("intent null");
+            return;
+        }
+        String menuStructureJson = intent.getStringExtra("EXTRA_MENU_STRUCTURE_JSON");
+        if(menuStructureJson == null){
+            logger.error("Menu structure json null");
+            return;
+        }
+        if(menuStructureJson.isEmpty()){
+            logger.error("Menu structure json empty");
+            return;
+        }
+        try {
+            JSONObject menuStructure = new JSONObject(menuStructureJson);
+            watchAdapter.handleSetMenuStructure(menuStructure);
+            GB.toast(getContext().getString(R.string.info_menu_structure_set), Toast.LENGTH_SHORT, GB.INFO);
+        } catch (JSONException e) {
+            logger.error("Menu structure json empty");
+            GB.toast(getContext().getString(R.string.error_invalid_menu_structure), Toast.LENGTH_SHORT, GB.ERROR);
         }
     }
 
@@ -560,6 +587,14 @@ public class QHybridSupport extends QHybridBaseSupport {
 
     private void log(String message){
         logger.debug(message);
+    }
+
+    @Override
+    public String customStringFilter(String inputString) {
+        // Remove Unicode code points that can't be displayed by the watch like emoji skin tones and variation selectors
+        // \x{1f3fb}-\x{1f3ff} = Emoji skin tones: https://en.wikipedia.org/wiki/Emoticons_(Unicode_block)
+        // \ufe00-\ufe0f = Variation selectors: https://en.wikipedia.org/wiki/Variation_Selectors_(Unicode_block)
+        return inputString.replaceAll("[\\x{1f3fb}-\\x{1f3ff}|\\ufe00-\\ufe0f]", "");
     }
 
     @Override

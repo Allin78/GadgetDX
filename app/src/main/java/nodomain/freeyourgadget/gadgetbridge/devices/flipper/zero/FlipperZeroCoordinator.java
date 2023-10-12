@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -18,7 +19,8 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.flipper.zero.support.FlipperZeroSupport;
 
 public class FlipperZeroCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
@@ -28,16 +30,11 @@ public class FlipperZeroCoordinator extends AbstractBLEDeviceCoordinator {
 
     @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
+    public boolean supports(GBDeviceCandidate candidate) {
         if(candidate.supportsService(UUID.fromString("00003082-0000-1000-8000-00805f9b34fb"))){
-            return DeviceType.FLIPPER_ZERO; // need to filter for flipper here
+            return true; // need to filter for flipper here
         }
-        return DeviceType.UNKNOWN;
-    }
-
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.FLIPPER_ZERO;
+        return false;
     }
 
     @Nullable
@@ -72,7 +69,7 @@ public class FlipperZeroCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 0;
     }
 
@@ -87,7 +84,7 @@ public class FlipperZeroCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -111,8 +108,31 @@ public class FlipperZeroCoordinator extends AbstractBLEDeviceCoordinator {
         return false;
     }
 
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return FlipperZeroSupport.class;
+    }
+
     @Override
     public int getBondingStyle() {
         return BONDING_STYLE_NONE;
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_flipper_zero;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_flipper;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_flipper_disabled;
     }
 }

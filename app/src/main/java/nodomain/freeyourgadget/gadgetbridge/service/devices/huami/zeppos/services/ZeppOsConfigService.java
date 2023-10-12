@@ -25,6 +25,8 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PR
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_NIGHT_MODE_END;
 import static nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst.PREF_NIGHT_MODE_START;
 
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -52,6 +54,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.activities.SettingsActivity;
@@ -62,6 +66,7 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePref
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLift;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.ActivateDisplayOnLiftSensitivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.AlwaysOnDisplay;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.DoNotDisturb;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandConst;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
@@ -123,6 +128,34 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         }
     }
 
+    @Override
+    public void initialize(TransactionBuilder builder) {
+        requestAllConfigs(builder);
+    }
+
+    @Override
+    public boolean onSendConfiguration(final String prefKey, Prefs prefs) {
+        if (!PREF_TO_CONFIG.containsKey(prefKey)) {
+            return false;
+        }
+
+        final ConfigSetter configSetter = new ConfigSetter();
+        if (setConfig(prefs, prefKey, configSetter)) {
+            try {
+                // If the ConfigSetter was able to set the config, just write it and return
+                final TransactionBuilder builder = new TransactionBuilder("send config " + prefKey);
+                configSetter.write(builder);
+                builder.queue(getSupport().getQueue());
+            } catch (final Exception e) {
+                GB.toast("Error setting configuration", Toast.LENGTH_LONG, GB.ERROR, e);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private boolean sentFitnessGoal = false;
 
     private void handle2021ConfigResponse(final byte[] payload) {
@@ -136,7 +169,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         if (configGroup.getVersion() != version) {
             // Special case for HEALTH, where we actually support version 1 as well
             // TODO: Support multiple versions in a cleaner way...
-            if (!(configGroup == ConfigGroup.HEALTH && configGroup.getVersion() == 1)) {
+            if (!(configGroup == ConfigGroup.HEALTH && version == 1)) {
                 LOG.warn("Unexpected version {} for {}", String.format("0x%02x", version), configGroup);
                 return;
             }
@@ -296,6 +329,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         LIFT_WRIST_SCHEDULED_END(ConfigGroup.DISPLAY, ConfigType.DATETIME_HH_MM, 0x0a, PREF_DISPLAY_ON_LIFT_END),
         LIFT_WRIST_RESPONSE_SENSITIVITY(ConfigGroup.DISPLAY, ConfigType.BYTE, 0x0b, PREF_DISPLAY_ON_LIFT_SENSITIVITY),
         SCREEN_ON_ON_NOTIFICATIONS(ConfigGroup.DISPLAY, ConfigType.BOOL, 0x0c, PREF_SCREEN_ON_ON_NOTIFICATIONS),
+        WORKOUT_KEEP_SCREEN_ON(ConfigGroup.DISPLAY, ConfigType.BOOL, 0x0d, PREF_WORKOUT_KEEP_SCREEN_ON),
         ALWAYS_ON_DISPLAY_FOLLOW_WATCHFACE(ConfigGroup.DISPLAY, ConfigType.BOOL, 0x0e, PREF_ALWAYS_ON_DISPLAY_FOLLOW_WATCHFACE),
         ALWAYS_ON_DISPLAY_STYLE(ConfigGroup.DISPLAY, ConfigType.STRING_LIST, 0x0f, PREF_ALWAYS_ON_DISPLAY_STYLE),
 
@@ -368,16 +402,18 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         DND_MODE(ConfigGroup.SYSTEM, ConfigType.BYTE, 0x0a, PREF_DO_NOT_DISTURB),
         DND_SCHEDULED_START(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x0b, PREF_DO_NOT_DISTURB_START),
         DND_SCHEDULED_END(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x0c, PREF_DO_NOT_DISTURB_END),
+        CALL_DELAY(ConfigGroup.SYSTEM, ConfigType.SHORT, 0x11, PREF_NOTIFICATION_DELAY_CALLS),
         TEMPERATURE_UNIT(ConfigGroup.SYSTEM, ConfigType.BYTE, 0x12, SettingsActivity.PREF_MEASUREMENT_SYSTEM),
         TIME_FORMAT_FOLLOWS_PHONE(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x13, null /* special case, handled below */),
         UPPER_BUTTON_LONG_PRESS(ConfigGroup.SYSTEM, ConfigType.STRING_LIST, 0x15, PREF_UPPER_BUTTON_LONG_PRESS),
         LOWER_BUTTON_PRESS(ConfigGroup.SYSTEM, ConfigType.STRING_LIST, 0x16, PREF_LOWER_BUTTON_SHORT_PRESS),
-        DISPLAY_CALLER(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x18, null), // TODO Handle
+        DISPLAY_CALLER(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x18, PREF_DISPLAY_CALLER),
         NIGHT_MODE_MODE(ConfigGroup.SYSTEM, ConfigType.BYTE, 0x1b, PREF_NIGHT_MODE),
         NIGHT_MODE_SCHEDULED_START(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x1c, PREF_NIGHT_MODE_START),
         NIGHT_MODE_SCHEDULED_END(ConfigGroup.SYSTEM, ConfigType.DATETIME_HH_MM, 0x1d, PREF_NIGHT_MODE_END),
         SLEEP_MODE_SLEEP_SCREEN(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x21, PREF_SLEEP_MODE_SLEEP_SCREEN),
         SLEEP_MODE_SMART_ENABLE(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x22, PREF_SLEEP_MODE_SMART_ENABLE),
+        CAMERA_REMOTE(ConfigGroup.SYSTEM, ConfigType.BOOL, 0x23, PREF_CAMERA_REMOTE),
 
         // Bluetooth
         BLUETOOTH_CONNECTED_ADVERTISING(ConfigGroup.BLUETOOTH, ConfigType.BOOL, 0x02, PREF_BT_CONNECTED_ADVERTISEMENT),
@@ -538,7 +574,21 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         switch (configArg) {
             case UPPER_BUTTON_LONG_PRESS:
             case LOWER_BUTTON_PRESS:
-                return MapUtils.reverse(Huami2021MenuType.displayItemNameLookup).get(value);
+                final String itemHex = MapUtils.reverse(Huami2021MenuType.displayItemNameLookup).get(value);
+                if (itemHex != null) {
+                    return itemHex;
+                }
+
+                // Unknown button press value - attempt to parse it as hex
+                final Matcher matcher = Pattern.compile("^([0-9A-F]{8})$").matcher(value);
+                if (matcher.matches()) {
+                    LOG.debug("Sending unknown button press item {} as hex", value);
+                    return value;
+                }
+
+                LOG.warn("Failed to map button press value {}", value);
+
+                return null;
             case DATE_FORMAT:
                 return value.replace("/", ".");
         }
@@ -612,22 +662,8 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         return String.format(Locale.ROOT, "%s_huami_2021_max", key);
     }
 
-    /**
-     * Returns the preference key where to save the list of possible value for a preference, comma-separated.
-     */
-    public static String getPrefPossibleValuesKey(final String key) {
-        return String.format(Locale.ROOT, "%s_huami_2021_possible_values", key);
-    }
-
-    /**
-     * Returns the preference key where to that a config was reported as supported (boolean).
-     */
-    public static String getPrefKnownConfig(final ConfigArg pref) {
-        return String.format(Locale.ROOT, "huami_2021_known_config_%s", pref.name());
-    }
-
     public static boolean deviceHasConfig(final Prefs devicePrefs, final ZeppOsConfigService.ConfigArg config) {
-        return devicePrefs.getBoolean(getPrefKnownConfig(config), false);
+        return devicePrefs.getBoolean(Huami2021Coordinator.getPrefKnownConfig(config.name()), false);
     }
 
     public ConfigSetter newSetter() {
@@ -937,7 +973,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 }
 
                 if (configArg != null && argPrefs != null && configType == configArg.getConfigType(mGroupVersions)) {
-                    prefs.put(getPrefKnownConfig(configArg), true);
+                    prefs.put(Huami2021Coordinator.getPrefKnownConfig(configArg.name()), true);
 
                     // Special cases for "follow phone" preferences. We need to ensure that "auto"
                     // always has precedence
@@ -1026,7 +1062,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 prefs = singletonMap(configArg.getPrefKey(), decoder.decode(str.getValue()));
                 if (includesConstraints) {
                     prefs.put(
-                            getPrefPossibleValuesKey(configArg.getPrefKey()),
+                            Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()),
                             decodeStringValues(possibleValues, decoder)
                     );
                 }
@@ -1037,8 +1073,14 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
 
         private Map<String, Object> convertShortToPrefs(final ConfigArg configArg, final ConfigShort value) {
             if (configArg.getPrefKey() != null) {
-                // The arg maps to a number pref directly
-                final Map<String, Object> prefs = singletonMap(configArg.getPrefKey(), value.getValue());
+                final Map<String, Object> prefs;
+                if (configArg == ConfigArg.CALL_DELAY) {
+                    // Persist as string, otherwise the EditText crashes
+                    prefs = singletonMap(configArg.getPrefKey(), String.valueOf(value.getValue()));
+                } else {
+                    // The arg maps to a number pref directly
+                    prefs = singletonMap(configArg.getPrefKey(), value.getValue());
+                }
 
                 if (value.isMinMaxKnown()) {
                     prefs.put(getPrefMinKey(configArg.getPrefKey()), value.getMin());
@@ -1105,7 +1147,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 prefs = singletonMap(configArg.getPrefKey(), new HashSet<>(valuesList));
                 if (includesConstraints) {
                     prefs.put(
-                            getPrefPossibleValuesKey(configArg.getPrefKey()),
+                            Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()),
                             String.join(",", decodeByteValues(possibleValues, decoder))
                     );
                 }
@@ -1141,7 +1183,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                                 possibleLanguages.add(languageByteToLocale(possibleValue));
                             }
                             possibleLanguages.removeAll(Collections.singleton(null));
-                            prefs.put(getPrefPossibleValuesKey(configArg.getPrefKey()), String.join(",", possibleLanguages));
+                            prefs.put(Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()), String.join(",", possibleLanguages));
                         }
                     }
                     decoder = null;
@@ -1197,7 +1239,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
                 prefs = singletonMap(configArg.getPrefKey(), decoder.decode(value.getValue()));
                 if (includesConstraints) {
                     prefs.put(
-                            getPrefPossibleValuesKey(configArg.getPrefKey()),
+                            Huami2021Coordinator.getPrefPossibleValuesKey(configArg.getPrefKey()),
                             String.join(",", decodeByteValues(possibleValues, decoder))
                     );
                 }
@@ -1681,6 +1723,7 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
         put((byte) 0x00, ActivateDisplayOnLift.OFF);
         put((byte) 0x01, ActivateDisplayOnLift.SCHEDULED);
         put((byte) 0x02, ActivateDisplayOnLift.ON);
+        put((byte) 0x03, ActivateDisplayOnLift.SMART);
     }};
 
     private static final Map<Byte, Enum<?>> LIFT_WRIST_SENSITIVITY_MAP = new HashMap<Byte, Enum<?>>() {{
@@ -1761,6 +1804,12 @@ public class ZeppOsConfigService extends AbstractZeppOsService {
             if (anEnum.name().toLowerCase(Locale.ROOT).equals(val)) {
                 return reverse.get(anEnum);
             }
+        }
+
+        // Byte doesn't match a known enum value, attempt to parse it as hex
+        final Matcher matcher = Pattern.compile("^0[xX]([0-9a-fA-F]{1,2})$").matcher(val);
+        if (matcher.find()) {
+            return (byte) Integer.parseInt(matcher.group(1), 16);
         }
 
         return null;

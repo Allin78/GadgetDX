@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -50,6 +51,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import nodomain.freeyourgadget.gadgetbridge.util.Optional;
 
 import co.nstant.in.cbor.CborBuilder;
 import co.nstant.in.cbor.CborEncoder;
@@ -87,6 +89,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
@@ -121,6 +124,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
     private final int DAY_SECONDS = (24 * 60 * 60);
     private int quarantinedSteps = 0;
+
+    private final int WEATHER_GRACE_TIME = 10;
 
     /**
      * These are used to keep track when long strings haven't changed,
@@ -257,8 +262,10 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         addSupportedService(GattService.UUID_SERVICE_BATTERY_SERVICE);
         addSupportedService(PineTimeJFConstants.UUID_SERVICE_MUSIC_CONTROL);
         addSupportedService(PineTimeJFConstants.UUID_SERVICE_WEATHER);
+        addSupportedService(PineTimeJFConstants.UUID_SERVICE_NAVIGATION);
         addSupportedService(PineTimeJFConstants.UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT);
         addSupportedService(PineTimeJFConstants.UUID_SERVICE_MOTION);
+        addSupportedService(PineTimeJFConstants.UUID_SERVICE_HEART_RATE);
 
         IntentListener mListener = new IntentListener() {
             @Override
@@ -318,10 +325,77 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     }
 
     @Override
+    public void onSetNavigationInfo(NavigationInfoSpec navigationInfoSpec) {
+        TransactionBuilder builder = new TransactionBuilder("navigation info");
+        if (navigationInfoSpec.instruction == null) {
+            navigationInfoSpec.instruction = "";
+        }
+        if (navigationInfoSpec.distanceToTurn == null) {
+            navigationInfoSpec.distanceToTurn = "";
+        }
+        safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_NARRATIVE, navigationInfoSpec.instruction.getBytes(StandardCharsets.UTF_8));
+        safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_MAN_DISTANCE, navigationInfoSpec.distanceToTurn.getBytes(StandardCharsets.UTF_8));
+        String iconname;
+        switch (navigationInfoSpec.nextAction) {
+            case NavigationInfoSpec.ACTION_CONTINUE:
+                iconname = "continue";
+                break;
+            case NavigationInfoSpec.ACTION_TURN_LEFT:
+                iconname = "turn-left";
+                break;
+            case NavigationInfoSpec.ACTION_TURN_LEFT_SLIGHTLY:
+                iconname = "turn-slight-left";
+                break;
+            case NavigationInfoSpec.ACTION_TURN_LEFT_SHARPLY:
+                iconname = "turn-sharp-left";
+                break;
+            case NavigationInfoSpec.ACTION_TURN_RIGHT:
+                iconname = "turn-right";
+                break;
+            case NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY:
+                iconname = "turn-slight-right";
+                break;
+            case NavigationInfoSpec.ACTION_TURN_RIGHT_SHARPLY:
+                iconname = "turn-sharp-right";
+                break;
+            case NavigationInfoSpec.ACTION_KEEP_LEFT:
+                iconname = "continue-left";
+                break;
+            case NavigationInfoSpec.ACTION_KEEP_RIGHT:
+                iconname = "continue-right";
+                break;
+            case NavigationInfoSpec.ACTION_UTURN_LEFT:
+            case NavigationInfoSpec.ACTION_UTURN_RIGHT:
+                iconname = "uturn";
+                break;
+            case NavigationInfoSpec.ACTION_ROUNDABOUT_RIGHT:
+		iconname = "roundabout-right";
+		break;
+            case NavigationInfoSpec.ACTION_ROUNDABOUT_LEFT:
+                iconname = "roundabout-left";
+                break;
+            case NavigationInfoSpec.ACTION_OFFROUTE:
+                iconname = "close";
+                break;
+            default:
+                iconname = "invalid";
+                break;
+        }
+
+        safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_FLAGS, iconname.getBytes(StandardCharsets.UTF_8));
+        builder.queue(getQueue());
+    }
+
+    @Override
+    public void onDeleteNotification(int id) {
+
+    }
+
+    @Override
     public void onSetTime() {
         // Since this is a standard we should generalize this in Gadgetbridge (properly)
         GregorianCalendar now = BLETypeConversions.createCalendar();
-        byte[] bytesCurrentTime = BLETypeConversions.calendarToCurrentTime(now);
+        byte[] bytesCurrentTime = BLETypeConversions.calendarToCurrentTime(now, 0);
         byte[] bytesLocalTime = BLETypeConversions.calendarToLocalTime(now);
 
         TransactionBuilder builder = new TransactionBuilder("set time");
@@ -334,7 +408,14 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     public void onSetCallState(CallSpec callSpec) {
         if (callSpec.command == CallSpec.CALL_INCOMING) {
             TransactionBuilder builder = new TransactionBuilder("incomingcall");
-            String message = (byte) 0x01 + callSpec.name;
+
+            String message;
+            if (isFirmwareAtLeastVersion0_15() && callSpec.sourceName != null) {
+                message = (byte) 0x01 + callSpec.sourceName + "\0" + callSpec.name;
+            } else {
+                message = (byte) 0x01 + callSpec.name;
+            }
+
             NewAlert alert = new NewAlert(AlertCategory.IncomingCall, 1, message);
             AlertNotificationProfile<?> profile = new AlertNotificationProfile<>(this);
             profile.setMaxLength(MaxNotificationLength);
@@ -355,7 +436,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                         .setKeepBond(true)
                         .setForeground(false)
                         .setUnsafeExperimentalButtonlessServiceInSecureDfuEnabled(false)
-                        .setMtu(517)
+                        .setMtu(23)
                         .setZip(uri);
 
                 controller = starter.start(getContext(), PineTimeDFUService.class);
@@ -404,6 +485,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_STEP_COUNT), true);
             //builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_MOTION_RAW_XYZ_VALUES), false); // issue #2527
         }
+
+        builder.notify(getCharacteristic(PineTimeJFConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT), true);
 
         setInitialized(builder);
         batteryInfoProfile.requestBatteryInfo(builder);
@@ -504,7 +587,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     }
 
     private void sendWorldClocks(List<? extends WorldClock> clocks) {
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(gbDevice);
+        final DeviceCoordinator coordinator = gbDevice.getDeviceCoordinator();
         if (coordinator.getWorldClocksSlotCount() == 0) {
             return;
         }
@@ -611,6 +694,13 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
             onReceiveStepsSample(steps);
             return true;
+        } else if (characteristicUUID.equals(PineTimeJFConstants.UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT)) {
+            int heartrate = Byte.toUnsignedInt(characteristic.getValue()[1]);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("onCharacteristicChanged: HeartRateMeasurement:HeartRate=" + heartrate);
+            }
+            onReceiveHeartRateMeasurement(heartrate);
+            return true;
         }
 
         LOG.info("Unhandled characteristic changed: " + characteristicUUID);
@@ -629,7 +719,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 6) // 6h
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
                             .put("EventType", WeatherData.EventType.Location.value)
                             .put("Location", weatherSpec.location)
                             .put("Altitude", 0)
@@ -662,7 +752,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 6) // 6h this should be the weather provider's interval, really
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h this should be the weather provider's interval, really
                             .put("EventType", WeatherData.EventType.Humidity.value)
                             .put("Humidity", (int) weatherSpec.currentHumidity)
                             .end()
@@ -687,7 +777,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 6) // 6h this should be the weather provider's interval, really
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h this should be the weather provider's interval, really
                             .put("EventType", WeatherData.EventType.Temperature.value)
                             .put("Temperature", (int) ((weatherSpec.currentTemp - 273.15) * 100))
                             .put("DewPoint", (int) (-32768))
@@ -707,6 +797,8 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
 
             // 24h temperature forecast
+            // TODO: This is disabled until WeatherSpec contains how often this data is pushed
+            /*
             if (weatherSpec.todayMinTemp >= -273.15 &&
                     weatherSpec.todayMaxTemp >= -273.15) { // Some sanity checking, should really be nullable
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -732,6 +824,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
 
                 builder.queue(getQueue());
             }
+            */
 
             // Wind speed
             if (weatherSpec.windSpeed != 0.0f) {
@@ -740,7 +833,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 60 * 6) // 6h
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
                             .put("EventType", WeatherData.EventType.Wind.value)
                             .put("SpeedMin", (int) (weatherSpec.windSpeed / 60 / 60 * 1000))
                             .put("SpeedMax", (int) (weatherSpec.windSpeed / 60 / 60 * 1000))
@@ -768,7 +861,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 60 * 6) // 6h
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
                             .put("EventType", WeatherData.EventType.Precipitation.value)
                             .put("Type", (int) mapOpenWeatherConditionToPineTimePrecipitation(weatherSpec.currentConditionCode).value)
                             .put("Amount", (int) 0)
@@ -793,7 +886,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 60 * 6) // 6h
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
                             .put("EventType", WeatherData.EventType.Obscuration.value)
                             .put("Type", (int) mapOpenWeatherConditionToPineTimeObscuration(weatherSpec.currentConditionCode).value)
                             .put("Amount", (int) 65535)
@@ -818,7 +911,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 60 * 6) // 6h
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
                             .put("EventType", WeatherData.EventType.Special.value)
                             .put("Type", mapOpenWeatherConditionToPineTimeSpecial(weatherSpec.currentConditionCode).value)
                             .end()
@@ -842,7 +935,7 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                     new CborEncoder(baos).encode(new CborBuilder()
                             .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
                             .put("Timestamp", System.currentTimeMillis() / 1000L)
-                            .put("Expires", 60 * 60 * 6) // 6h
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
                             .put("EventType", WeatherData.EventType.Clouds.value)
                             .put("Amount", (int) (mapOpenWeatherConditionToCloudCover(weatherSpec.currentConditionCode)))
                             .end()
@@ -971,6 +1064,32 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         }
     }
 
+    private void onReceiveHeartRateMeasurement(int heartrate) {
+        this.onReceiveHeartRateMeasurement((int) (Calendar.getInstance().getTimeInMillis() / 1000l), heartrate);
+    }
+
+    private void onReceiveHeartRateMeasurement(int timeStamp, int heartrate) {
+        PineTimeActivitySample sample = new PineTimeActivitySample();
+
+        logDebug(String.format("onReceiveHeartRateMeasurement: \nheartrate=%d", heartrate));
+
+        if (heartrate > 0) {
+            sample.setHeartRate(heartrate);
+            sample.setTimestamp(timeStamp);
+            // since it's a local timestamp, it should NOT be treated as Activity because it will spoil activity charts
+            sample.setRawKind(ActivityKind.TYPE_UNKNOWN);
+
+            this.addGBActivitySample(sample);
+
+            Intent intent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES)
+                    .putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample)
+                    .putExtra(DeviceService.EXTRA_TIMESTAMP, sample.getTimestamp());
+            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+        } else {
+            logDebug("ignoring heartrate of 0");
+        }
+    }
+
     /**
      * @param timeStamp Time stamp (in seconds)  at some point during the requested day.
      */
@@ -1036,6 +1155,12 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
                 sample.setProvider(provider);
 
                 sample.setRawIntensity(ActivitySample.NOT_MEASURED);
+
+                Optional<PineTimeActivitySample> storedSample = provider.getSampleForTimestamp(sample.getTimestamp());
+                if (storedSample.isPresent()) {
+                    sample.setHeartRate(Math.max(sample.getHeartRate(), storedSample.get().getHeartRate()));
+                    sample.setSteps(Math.max(sample.getSteps(), storedSample.get().getSteps()));
+                }
 
                 provider.addGBActivitySample(sample);
             }

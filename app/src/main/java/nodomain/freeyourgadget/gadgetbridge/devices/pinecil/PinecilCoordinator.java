@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import nodomain.freeyourgadget.gadgetbridge.GBException;
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
@@ -37,14 +38,10 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.pinecil.PinecilDeviceSupport;
 
 public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
-
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.PINECIL;
-    }
 
     @Override
     public String getManufacturer() {
@@ -59,16 +56,22 @@ public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
         return Collections.singletonList(new ScanFilter.Builder().setServiceUuid(bulkDataService).build());
     }
 
-    @NonNull
-    @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        /* Device advertises service, but Gadgetbridge does not seem to recognize this. */
-        if (candidate.supportsService(PinecilConstants.UUID_SERVICE_BULK_DATA)
-                || (candidate.getName() != null && candidate.getName().startsWith("Pinecil-"))) {
-            return DeviceType.PINECIL;
-        }
+//    @NonNull
+//    @Override
+//    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
+//        /* Device advertises service, but Gadgetbridge does not seem to recognize this. */
+//        if (candidate.supportsService(PinecilConstants.UUID_SERVICE_BULK_DATA)
+//                || (candidate.getName() != null && candidate.getName().startsWith("Pinecil-"))) {
+//            return DeviceType.PINECIL;
+//        }
+//
+//        return DeviceType.UNKNOWN;
+//    }
 
-        return DeviceType.UNKNOWN;
+
+    @Override
+    public boolean supports(GBDeviceCandidate candidate) {
+        return candidate.supportsService(PinecilConstants.UUID_SERVICE_BULK_DATA);
     }
 
     @Override
@@ -108,18 +111,13 @@ public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
-        return 0;
-    }
-
-    @Override
     public boolean supportsSmartWakeup(GBDevice device) {
         return false;
     }
 
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(GBDevice device) {
         return false;
     }
 
@@ -151,5 +149,26 @@ public class PinecilCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public int getBatteryCount() {
         return 0;
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return PinecilDeviceSupport.class;
+    }
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_pinecil;
+    }
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_pinecilv2;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_pinecilv2_disabled;
     }
 }

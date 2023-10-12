@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.huami;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 
@@ -23,31 +24,71 @@ import androidx.annotation.NonNull;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
+import de.greenrobot.dao.query.QueryBuilder;
+import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.password.PasswordCapabilityImpl;
-import de.greenrobot.dao.query.QueryBuilder;
-import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.zeppos.ZeppOsAgpsInstallHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.zeppos.ZeppOsGpxRouteInstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.HuamiExtendedActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryParser;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuami2021FWInstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiLanguageType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiVibrationPatternNotificationType;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsAlexaService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsContactsService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsLogsService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsLoyaltyCardService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsPhoneService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsRemindersService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsShortcutCardsService;
+import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public abstract class Huami2021Coordinator extends HuamiCoordinator {
+    public abstract AbstractHuami2021FWInstallHandler createFwInstallHandler(final Uri uri, final Context context);
+
     @Override
-    public abstract InstallHandler findInstallHandler(final Uri uri, final Context context);
+    public InstallHandler findInstallHandler(final Uri uri, final Context context) {
+        if (supportsAgpsUpdates()) {
+            final ZeppOsAgpsInstallHandler agpsInstallHandler = new ZeppOsAgpsInstallHandler(uri, context);
+            if (agpsInstallHandler.isValid()) {
+                return agpsInstallHandler;
+            }
+        }
+
+        if (supportsGpxUploads()) {
+            final ZeppOsGpxRouteInstallHandler gpxRouteInstallHandler = new ZeppOsGpxRouteInstallHandler(uri, context);
+            if (gpxRouteInstallHandler.isValid()) {
+                return gpxRouteInstallHandler;
+            }
+        }
+
+        final AbstractHuami2021FWInstallHandler handler = createFwInstallHandler(uri, context);
+        return handler.isValid() ? handler : null;
+    }
+
+    @Override
+    public boolean supportsScreenshots() {
+        return true;
+    }
 
     @Override
     public boolean supportsHeartRateMeasurement(final GBDevice device) {
@@ -86,6 +127,31 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
     }
 
     @Override
+    public boolean supportsStressMeasurement() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsSpo2() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsHeartRateStats() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPai() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsSleepRespiratoryRate() {
+        return true;
+    }
+
+    @Override
     public boolean supportsMusicInfo() {
         return true;
     }
@@ -103,6 +169,41 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
     @Override
     public boolean supportsDisabledWorldClocks() {
         return true;
+    }
+
+    @Override
+    public boolean supportsAppsManagement(final GBDevice device) {
+        return experimentalFeatures(device);
+    }
+
+    @Override
+    public Class<? extends Activity> getAppsManagementActivity() {
+        return AppManagerActivity.class;
+    }
+
+    @Override
+    public File getAppCacheDir() throws IOException {
+        return new File(FileUtils.getExternalFilesDir(), "zepp-os-app-cache");
+    }
+
+    @Override
+    public String getAppCacheSortFilename() {
+        return "zepp-os-app-cache-order.txt";
+    }
+
+    @Override
+    public String getAppFileExtension() {
+        return ".zip";
+    }
+
+    @Override
+    public boolean supportsAppListFetching() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsAppReordering() {
+        return false;
     }
 
     @Override
@@ -142,7 +243,12 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
 
     @Override
     public int getReminderSlotCount(final GBDevice device) {
-        return getPrefs(device).getInt(Huami2021Service.REMINDERS_PREF_CAPABILITY, 0);
+        return ZeppOsRemindersService.getSlotCount(getPrefs(device));
+    }
+
+    @Override
+    public int getContactsSlotCount(final GBDevice device) {
+        return getPrefs(device).getInt(ZeppOsContactsService.PREF_CONTACTS_SLOT_COUNT, 0);
     }
 
     @Override
@@ -173,6 +279,15 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         final List<Integer> settings = new ArrayList<>();
 
         //
+        // Apps
+        // TODO: These should go somewhere else
+        //
+        settings.add(R.xml.devicesettings_header_apps);
+        if (ZeppOsLoyaltyCardService.isSupported(getPrefs(device))) {
+            settings.add(R.xml.devicesettings_loyalty_cards);
+        }
+
+        //
         // Time
         //
         settings.add(R.xml.devicesettings_header_time);
@@ -191,10 +306,14 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         if (supportsControlCenter()) {
             settings.add(R.xml.devicesettings_huami2021_control_center);
         }
+        if (supportsShortcutCards(device)) {
+            settings.add(R.xml.devicesettings_huami2021_shortcut_cards);
+        }
         settings.add(R.xml.devicesettings_nightmode);
         settings.add(R.xml.devicesettings_sleep_mode);
-        settings.add(R.xml.devicesettings_liftwrist_display_sensitivity);
+        settings.add(R.xml.devicesettings_liftwrist_display_sensitivity_with_smart);
         settings.add(R.xml.devicesettings_password);
+        settings.add(R.xml.devicesettings_huami2021_watchface);
         settings.add(R.xml.devicesettings_always_on_display);
         settings.add(R.xml.devicesettings_screen_timeout);
         if (supportsAutoBrightness(device)) {
@@ -222,12 +341,18 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
             settings.add(R.xml.devicesettings_workout_start_on_phone);
             settings.add(R.xml.devicesettings_workout_send_gps_to_band);
         }
+        settings.add(R.xml.devicesettings_workout_keep_screen_on);
         settings.add(R.xml.devicesettings_workout_detection);
 
         //
         // Notifications
         //
         settings.add(R.xml.devicesettings_header_notifications);
+        if (supportsBluetoothPhoneCalls(device)) {
+            settings.add(R.xml.devicesettings_phone_calls_watch_pair);
+        } else {
+            settings.add(R.xml.devicesettings_display_caller);
+        }
         settings.add(R.xml.devicesettings_sound_and_vibration);
         settings.add(R.xml.devicesettings_vibrationpatterns);
         settings.add(R.xml.devicesettings_donotdisturb_withauto_and_always);
@@ -246,11 +371,16 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         // Other
         //
         settings.add(R.xml.devicesettings_header_other);
+        if (getContactsSlotCount(device) > 0) {
+            settings.add(R.xml.devicesettings_contacts);
+        }
         settings.add(R.xml.devicesettings_offline_voice);
         settings.add(R.xml.devicesettings_device_actions_without_not_wear);
         settings.add(R.xml.devicesettings_buttonactions_upper_long);
         settings.add(R.xml.devicesettings_buttonactions_lower_short);
         settings.add(R.xml.devicesettings_weardirection);
+        settings.add(R.xml.devicesettings_camera_remote);
+        settings.add(R.xml.devicesettings_morning_updates);
 
         //
         // Connection
@@ -264,6 +394,18 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         // Developer
         //
         settings.add(R.xml.devicesettings_header_developer);
+        if (ZeppOsLogsService.isSupported(getPrefs(device))) {
+            settings.add(R.xml.devicesettings_app_logs_start_stop);
+        }
+        if (supportsAlexa(device)) {
+            settings.add(R.xml.devicesettings_huami2021_alexa);
+        }
+        if (supportsWifiHotspot(device)) {
+            settings.add(R.xml.devicesettings_wifi_hotspot);
+        }
+        if (supportsFtpServer(device)) {
+            settings.add(R.xml.devicesettings_ftp_server);
+        }
         settings.add(R.xml.devicesettings_keep_activity_data_on_device);
         settings.add(R.xml.devicesettings_huami2021_fetch_operation_time_unit);
 
@@ -319,6 +461,21 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         return false;
     }
 
+    public boolean supportsAgpsUpdates() {
+        return true;
+    }
+
+    /**
+     * true for Zepp OS 2.0+, false for Zepp OS 1
+     */
+    public boolean sendAgpsAsFileTransfer() {
+        return true;
+    }
+
+    public boolean supportsGpxUploads() {
+        return false;
+    }
+
     public boolean supportsControlCenter() {
         // TODO: Auto-detect control center?
         return false;
@@ -335,6 +492,14 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         return !supportsControlCenter();
     }
 
+    public boolean supportsWifiHotspot(final GBDevice device) {
+        return false;
+    }
+
+    public boolean supportsFtpServer(final GBDevice device) {
+        return false;
+    }
+
     public boolean hasGps(final GBDevice device) {
         return supportsConfig(device, ZeppOsConfigService.ConfigArg.WORKOUT_GPS_PRESET);
     }
@@ -343,7 +508,41 @@ public abstract class Huami2021Coordinator extends HuamiCoordinator {
         return supportsConfig(device, ZeppOsConfigService.ConfigArg.SCREEN_AUTO_BRIGHTNESS);
     }
 
+    public boolean supportsBluetoothPhoneCalls(final GBDevice device) {
+        return ZeppOsPhoneService.isSupported(getPrefs(device));
+    }
+
+    public boolean supportsShortcutCards(final GBDevice device) {
+        return ZeppOsShortcutCardsService.isSupported(getPrefs(device));
+    }
+
+    public boolean supportsAlexa(final GBDevice device) {
+        return experimentalFeatures(device) && ZeppOsAlexaService.isSupported(getPrefs(device));
+    }
+
     private boolean supportsConfig(final GBDevice device, final ZeppOsConfigService.ConfigArg config) {
         return ZeppOsConfigService.deviceHasConfig(getPrefs(device), config);
+    }
+
+    /**
+     * Returns the preference key where to save the list of possible value for a preference, comma-separated.
+     */
+    public static String getPrefPossibleValuesKey(final String key) {
+        return String.format(Locale.ROOT, "%s_huami_2021_possible_values", key);
+    }
+
+    /**
+     * Returns the preference key where to that a config was reported as supported (boolean).
+     */
+    public static String getPrefKnownConfig(final String key) {
+        return String.format(Locale.ROOT, "huami_2021_known_config_%s", key);
+    }
+
+    public static boolean deviceHasConfig(final Prefs devicePrefs, final ZeppOsConfigService.ConfigArg config) {
+        return devicePrefs.getBoolean(Huami2021Coordinator.getPrefKnownConfig(config.name()), false);
+    }
+
+    public static boolean experimentalFeatures(final GBDevice device) {
+        return getPrefs(device).getBoolean("zepp_os_experimental_features", false);
     }
 }

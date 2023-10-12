@@ -17,7 +17,6 @@
 package nodomain.freeyourgadget.gadgetbridge.model;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +31,6 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
-import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 
 public class DailyTotals {
@@ -50,7 +47,7 @@ public class DailyTotals {
             GBApplication gbApp = (GBApplication) context;
             List<? extends GBDevice> devices = gbApp.getDeviceManager().getDevices();
             for (GBDevice device : devices) {
-                DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+                DeviceCoordinator coordinator = device.getDeviceCoordinator();
                 if (!coordinator.supportsActivityDataFetching() && !coordinator.supportsActivityTracking()) {
                     continue;
                 }
@@ -143,7 +140,7 @@ public class DailyTotals {
 
 
     protected SampleProvider<? extends AbstractActivitySample> getProvider(DBHandler db, GBDevice device) {
-        DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+        DeviceCoordinator coordinator = device.getDeviceCoordinator();
         return coordinator.getSampleProvider(device, db.getDaoSession());
     }
 

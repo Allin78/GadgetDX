@@ -31,13 +31,16 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.capabilities.loyaltycards.LoyaltyCard;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.CalendarEventSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.Contact;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
@@ -47,8 +50,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
  * Wraps another device support instance and supports busy-checking and throttling of events.
  */
 public class ServiceDeviceSupport implements DeviceSupport {
-
-    enum Flags {
+    public static enum Flags {
         THROTTLING,
         BUSY_CHECKING,
     }
@@ -62,14 +64,9 @@ public class ServiceDeviceSupport implements DeviceSupport {
     private String lastNotificationKind;
     private final EnumSet<Flags> flags;
 
-    public ServiceDeviceSupport(DeviceSupport delegate, Flags... flags) {
+    public ServiceDeviceSupport(DeviceSupport delegate, EnumSet<Flags> flags) {
         this.delegate = delegate;
-        this.flags = EnumSet.noneOf(Flags.class);
-        this.flags.addAll(Arrays.asList(flags));
-    }
-
-    public ServiceDeviceSupport(DeviceSupport delegate){
-        this(delegate, Flags.BUSY_CHECKING);
+        this.flags = flags;
     }
 
     @Override
@@ -228,6 +225,14 @@ public class ServiceDeviceSupport implements DeviceSupport {
     }
 
     @Override
+    public void onSetNavigationInfo(NavigationInfoSpec navigationInfoSpec) {
+        if (checkBusy("set navigation info")) {
+            return;
+        }
+        delegate.onSetNavigationInfo(navigationInfoSpec);
+    }
+
+    @Override
     public void onInstallApp(Uri uri) {
         if (checkBusy("install app")) {
             return;
@@ -353,6 +358,21 @@ public class ServiceDeviceSupport implements DeviceSupport {
             return;
         }
         delegate.onSetReminders(reminders);
+    }
+
+    @Override
+    public void onSetContacts(ArrayList<? extends Contact> contacts) {
+        if (checkBusy("set contacts")) {
+            return;
+        }
+        delegate.onSetContacts(contacts);
+    }
+
+    public void onSetLoyaltyCards(final ArrayList<LoyaltyCard> cards) {
+        if (checkBusy("set loyalty cards")) {
+            return;
+        }
+        delegate.onSetLoyaltyCards(cards);
     }
 
     @Override

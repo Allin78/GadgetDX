@@ -54,6 +54,8 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
     public static final byte COMMAND_COMPLETE_TRANSFER = (byte) 0xd5;
     public static final byte COMMAND_FINALIZE_UPDATE = (byte) 0xd6;
 
+    public static final byte REPLY_ERROR_FREE_SPACE = (byte) 0x47;
+
     protected int mChunkLength = -1;
 
     @Override
@@ -72,11 +74,6 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
 
     @Override
     protected void handleNotificationNotif(byte[] value) {
-        if (value.length != 3 && value.length != 6 && value.length != 7 && value.length != 11) {
-            LOG.error("Notifications should be 3, 6, 7 or 11 bytes long.");
-            getSupport().logMessageContent(value);
-            return;
-        }
         boolean success = (value[2] == HuamiService.SUCCESS) || ((value[1] == REPLY_UPDATE_PROGRESS) && value.length >= 6); // ugly
 
         if (value[0] == HuamiService.RESPONSE && success) {
@@ -138,7 +135,13 @@ public class UpdateFirmwareOperation2020 extends UpdateFirmwareOperation {
             LOG.error("Unexpected notification during firmware update: ");
             operationFailed();
             getSupport().logMessageContent(value);
-            displayMessage(getContext(), getContext().getString(R.string.updatefirmwareoperation_metadata_updateproblem), Toast.LENGTH_LONG, GB.ERROR);
+            int errorMessage = R.string.updatefirmwareoperation_metadata_updateproblem;
+            // Display a more specific error message for known errors
+            if (value[0] == HuamiService.RESPONSE && value[1] == COMMAND_START_TRANSFER && value[2] == REPLY_ERROR_FREE_SPACE) {
+                // Not enough free space on the device
+                errorMessage = R.string.updatefirmwareoperation_updateproblem_free_space;
+            }
+            displayMessage(getContext(), getContext().getString(errorMessage), Toast.LENGTH_LONG, GB.ERROR);
             done();
         }
     }

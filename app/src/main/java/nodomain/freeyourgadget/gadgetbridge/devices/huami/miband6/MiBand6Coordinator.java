@@ -1,47 +1,33 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.huami.miband6;
 
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
-import org.slf4j.LoggerFactory;
-
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.password.PasswordCapabilityImpl;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
-import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.miband6.MiBand6Support;
+
 public class MiBand6Coordinator extends HuamiCoordinator {
     private static final Logger LOG = LoggerFactory.getLogger(MiBand6Coordinator.class);
-    @NonNull
-    @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        try {
-            BluetoothDevice device = candidate.getDevice();
-            String name = device.getName();
-            if (name != null && name.equalsIgnoreCase(HuamiConst.MI_BAND6_NAME)) {
-                return DeviceType.MIBAND6;
-            }
-        } catch (Exception ex) {
-            LOG.error("unable to check device support", ex);
-        }
-        return DeviceType.UNKNOWN;
-    }
 
     @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.MIBAND6;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile(HuamiConst.MI_BAND6_NAME, Pattern.CASE_INSENSITIVE);
     }
 
     @Override
@@ -72,6 +58,16 @@ public class MiBand6Coordinator extends HuamiCoordinator {
 
     @Override
     public boolean supportsMusicInfo() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsPai() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsStressMeasurement() {
         return true;
     }
 
@@ -108,6 +104,7 @@ public class MiBand6Coordinator extends HuamiCoordinator {
                 R.xml.devicesettings_sync_calendar,
                 R.xml.devicesettings_reserve_reminders_calendar,
                 R.xml.devicesettings_expose_hr_thirdparty,
+                R.xml.devicesettings_bt_connected_advertisement,
                 R.xml.devicesettings_high_mtu,
                 R.xml.devicesettings_overwrite_settings_on_connection,
                 R.xml.devicesettings_huami2021_fetch_operation_time_unit,
@@ -162,5 +159,28 @@ public class MiBand6Coordinator extends HuamiCoordinator {
                 HeartRateCapability.MeasurementInterval.MINUTES_10,
                 HeartRateCapability.MeasurementInterval.MINUTES_30
         );
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return MiBand6Support.class;
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_miband6;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_miband6;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_miband6_disabled;
     }
 }

@@ -17,12 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.btle;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
-import androidx.annotation.Nullable;
 
 /**
  * Groups a bunch of {@link BtLEServerAction actions} together, making sure
@@ -57,7 +57,7 @@ public class ServerTransaction extends AbstractTransaction {
         return String.format(Locale.US, "%s: Transaction task: %s with %d actions", getCreationTime(), getTaskName(), mActions.size());
     }
 
-    public void setGattCallback(@Nullable GattServerCallback callback) {
+    public void setCallback(@Nullable GattServerCallback callback) {
         gattCallback = callback;
     }
 

@@ -30,6 +30,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.Equali
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.PauseWhenTakenOff;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.QuickAccess;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SoundPosition;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SpeakToChatConfig;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SpeakToChatEnabled;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SurroundMode;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.TouchSensor;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.VoiceNotifications;
@@ -51,12 +53,20 @@ public abstract class AbstractSonyProtocolImpl {
     }
 
     protected SonyHeadphonesCoordinator getCoordinator() {
-        return (SonyHeadphonesCoordinator) DeviceHelper.getInstance().getCoordinator(getDevice());
+        return (SonyHeadphonesCoordinator) getDevice().getDeviceCoordinator();
     }
 
     public abstract Request getAmbientSoundControl();
 
     public abstract Request setAmbientSoundControl(final AmbientSoundControl config);
+
+    public abstract Request setSpeakToChatEnabled(final SpeakToChatEnabled config);
+
+    public abstract Request getSpeakToChatEnabled();
+
+    public abstract Request setSpeakToChatConfig(final SpeakToChatConfig config);
+
+    public abstract Request getSpeakToChatConfig();
 
     public abstract Request getNoiseCancellingOptimizerState();
 
@@ -115,6 +125,10 @@ public abstract class AbstractSonyProtocolImpl {
     public abstract Request startNoiseCancellingOptimizer(final boolean start);
 
     public abstract Request powerOff();
+
+    public abstract Request getVolume();
+
+    public abstract Request setVolume(final int volume);
 
     public abstract List<? extends GBDeviceEvent> handlePayload(final MessageType messageType, final byte[] payload);
 }

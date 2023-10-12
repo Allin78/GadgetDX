@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -34,6 +33,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.slf4j.Logger;
@@ -51,7 +51,6 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 public class ReminderDetails extends AbstractGBActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener {
@@ -89,7 +88,7 @@ public class ReminderDetails extends AbstractGBActivity implements TimePickerDia
         reminderText = findViewById(R.id.reminder_message);
 
         device = getIntent().getParcelableExtra(GBDevice.EXTRA_DEVICE);
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
 
         final String[] repeatStrings = getResources().getStringArray(R.array.reminder_repeat);
         repeatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, repeatStrings);
@@ -98,7 +97,7 @@ public class ReminderDetails extends AbstractGBActivity implements TimePickerDia
         cardRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(ReminderDetails.this).setAdapter(repeatAdapter, new DialogInterface.OnClickListener() {
+                new MaterialAlertDialogBuilder(ReminderDetails.this).setAdapter(repeatAdapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         reminder.setRepetition(i);

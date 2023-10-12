@@ -17,18 +17,12 @@
 package nodomain.freeyourgadget.gadgetbridge.externalevents.gps;
 
 import android.content.Context;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
-import android.os.Looper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +32,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 /**
  * A static location manager, which keeps track of what providers are currently running. A notification is kept
- * while there is at least one provider runnin.
+ * while there is at least one provider running.
  */
 public class GBLocationManager {
     private static final Logger LOG = LoggerFactory.getLogger(GBLocationManager.class);
@@ -53,7 +47,7 @@ public class GBLocationManager {
     }
 
     public static void start(final Context context, final EventHandler eventHandler, final LocationProviderType providerType, Integer updateInterval) {
-        System.out.println("Starting");
+        LOG.info("Starting");
         if (providers.containsKey(eventHandler) && providers.get(eventHandler).containsKey(providerType)) {
             LOG.warn("EventHandler already registered");
             return;
@@ -105,7 +99,9 @@ public class GBLocationManager {
                 stopProvider(context, providerMap.get(providerType));
                 toBeRemoved.add(providerType);
             }
-            toBeRemoved.forEach(c->{providerMap.remove(c);});
+            for (final LocationProviderType providerType : toBeRemoved) {
+                providerMap.remove(providerType);
+            }
         } else {
             stopProvider(context, providerMap.get(gpsType));
             providerMap.remove(gpsType);

@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.devicesettings;
 
 public class DeviceSettingsPreferenceConst {
+    public static final String PREF_HEADER_APPS = "pref_header_apps";
     public static final String PREF_HEADER_TIME = "pref_header_time";
     public static final String PREF_HEADER_DISPLAY = "pref_header_display";
     public static final String PREF_HEADER_HEALTH = "pref_header_health";
@@ -24,6 +25,10 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HEADER_WORKOUT_DETECTION = "pref_header_workout_detection";
     public static final String PREF_HEADER_GPS = "pref_header_gps";
     public static final String PREF_HEADER_AGPS = "pref_header_agps";
+    public static final String PREF_HEADER_WIFI_HOTSPOT_CONFIGURATION = "pref_header_wifi_hotspot_configuration";
+    public static final String PREF_HEADER_WIFI_HOTSPOT_STATUS = "pref_header_wifi_hotspot_status";
+    public static final String PREF_HEADER_FTP_SERVER_STATUS = "pref_header_ftp_server_status";
+    public static final String PREF_HEADER_FTP_SERVER_CONFIGURATION = "pref_header_ftp_server_configuration";
 
     public static final String PREF_SCREEN_NIGHT_MODE = "pref_screen_night_mode";
     public static final String PREF_SCREEN_SLEEP_MODE = "pref_screen_sleep_mode";
@@ -35,9 +40,13 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SCREEN_SOUND_AND_VIBRATION = "pref_screen_sound_and_vibration";
     public static final String PREF_SCREEN_DO_NOT_DISTURB = "pref_screen_do_not_disturb";
     public static final String PREF_SCREEN_OFFLINE_VOICE = "pref_screen_offline_voice";
+    public static final String PREF_SCREEN_WIFI_HOTSPOT = "pref_screen_wifi_hotspot";
+    public static final String PREF_SCREEN_FTP_SERVER = "pref_screen_ftp_server";
+    public static final String PREF_SCREEN_MORNING_UPDATES = "pref_morning_updates";
 
     public static final String PREF_LANGUAGE = "language";
     public static final String PREF_LANGUAGE_AUTO = "auto";
+    public static final String PREF_DEVICE_REGION = "device_region";
     public static final String PREF_DATEFORMAT = "dateformat";
     public static final String PREF_TIMEFORMAT = "timeformat";
     public static final String PREF_TIMEFORMAT_24H = "24h";
@@ -72,6 +81,7 @@ public class DeviceSettingsPreferenceConst {
 
     public static final String PREF_DEVICE_GPS_UPDATE = "banglejs_gps_update";
     public static final String PREF_DEVICE_GPS_UPDATE_INTERVAL = "banglejs_gps_update_interval";
+    public static final String PREF_DEVICE_GPS_USE_NETWORK_ONLY = "banglejs_gps_use_network_only";
 
     public static final String PREF_DEVICE_INTERNET_ACCESS = "device_internet_access";
     public static final String PREF_DEVICE_INTENTS = "device_intents";
@@ -186,6 +196,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_DO_NOT_DISTURB_AUTOMATIC = "automatic";
     public static final String PREF_DO_NOT_DISTURB_ALWAYS = "always";
     public static final String PREF_DO_NOT_DISTURB_SCHEDULED = "scheduled";
+    public static final String PREF_CAMERA_REMOTE = "camera_remote";
 
     public static final String PREF_WORKOUT_START_ON_PHONE = "workout_start_on_phone";
     public static final String PREF_WORKOUT_SEND_GPS_TO_BAND = "workout_send_gps_to_band";
@@ -208,11 +219,13 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_AUTOREMOVE_MESSAGE = "autoremove_message";
     public static final String PREF_AUTOREMOVE_NOTIFICATIONS = "autoremove_notifications";
     public static final String PREF_SCREEN_ON_ON_NOTIFICATIONS = "screen_on_on_notifications";
+    public static final String PREF_WORKOUT_KEEP_SCREEN_ON = "workout_keep_screen_on";
     public static final String PREF_OPERATING_SOUNDS = "operating_sounds";
     public static final String PREF_KEY_VIBRATION = "key_vibration";
     public static final String PREF_FAKE_RING_DURATION = "fake_ring_duration";
 
     public static final String PREF_WORLD_CLOCKS = "pref_world_clocks";
+    public static final String PREF_CONTACTS = "pref_contacts";
 
     public static final String PREF_ANTILOST_ENABLED = "pref_antilost_enabled";
     public static final String PREF_HYDRATION_SWITCH = "pref_hydration_switch";
@@ -225,6 +238,34 @@ public class DeviceSettingsPreferenceConst {
 
     public static final String PREF_BT_CONNECTED_ADVERTISEMENT = "bt_connected_advertisement";
     public static final String PREF_TRANSLITERATION_LANGUAGES = "pref_transliteration_languages";
+
+    public static final String PREF_BLUETOOTH_CALLS_PAIR = "bluetooth_calls_pair";
+    public static final String PREF_BLUETOOTH_CALLS_ENABLED = "bluetooth_calls_enabled";
+    public static final String PREF_DISPLAY_CALLER = "display_caller";
+    public static final String PREF_NOTIFICATION_DELAY_CALLS = "notification_delay_calls";
+
+    public static final String WIFI_HOTSPOT_SSID = "wifi_hotspot_ssid";
+    public static final String WIFI_HOTSPOT_PASSWORD = "wifi_hotspot_password";
+    public static final String WIFI_HOTSPOT_START = "wifi_hotspot_start";
+    public static final String WIFI_HOTSPOT_STOP = "wifi_hotspot_stop";
+    public static final String WIFI_HOTSPOT_STATUS = "wifi_hotspot_status";
+
+    public static final String PREF_APP_LOGS_START = "pref_app_logs_start";
+    public static final String PREF_APP_LOGS_STOP = "pref_app_logs_stop";
+
+    public static final String MORNING_UPDATES_ENABLED = "morning_updates_enabled";
+    public static final String MORNING_UPDATES_CATEGORIES_SORTABLE = "morning_updates_categories";
+
+    public static final String SHORTCUT_CARDS_SORTABLE = "shortcut_cards_sortable";
+
+    public static final String PREF_WATCHFACE = "watchface";
+
+    public static final String FTP_SERVER_ROOT_DIR = "ftp_server_root_dir";
+    public static final String FTP_SERVER_ADDRESS = "ftp_server_address";
+    public static final String FTP_SERVER_USERNAME = "ftp_server_username";
+    public static final String FTP_SERVER_START = "ftp_server_start";
+    public static final String FTP_SERVER_STOP = "ftp_server_stop";
+    public static final String FTP_SERVER_STATUS = "ftp_server_status";
 
     public static final String PREF_NOTHING_EAR1_INEAR = "pref_nothing_inear_detection";
     public static final String PREF_NOTHING_EAR1_AUDIOMODE = "pref_nothing_audiomode";
@@ -301,6 +342,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREFS_ACTIVITY_IN_DEVICE_CARD_SLEEP = "prefs_activity_in_device_card_sleep";
     public static final String PREFS_ACTIVITY_IN_DEVICE_CARD_DISTANCE = "prefs_activity_in_device_card_distance";
     public static final String PREFS_DEVICE_CHARTS_TABS = "charts_tabs";
+    public static final String PREFS_PER_APP_NOTIFICATION_SETTINGS = "pref_per_app_notification_settings";
 
     public static final String PREF_UM25_SHOW_THRESHOLD_NOTIFICATION = "um25_current_threshold_notify";
     public static final String PREF_UM25_SHOW_THRESHOLD = "um25_current_threshold";
@@ -316,4 +358,8 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_HOURLY_CHIME_ENABLE = "hourly_chime_enable";
     public static final String PREF_HOURLY_CHIME_START = "hourly_chime_start";
     public static final String PREF_HOURLY_CHIME_END = "hourly_chime_end";
+
+    public static final String PREF_VOICE_SERVICE_LANGUAGE = "voice_service_language";
+
+    public static final String PREF_TEMPERATURE_SCALE_CF = "temperature_scale_cf";
 }

@@ -18,6 +18,8 @@ package nodomain.freeyourgadget.gadgetbridge.devices.pinetime;
 
 import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
+
 public class PineTimeJFConstants {
     public static final UUID UUID_SERVICE_MUSIC_CONTROL = UUID.fromString("00000000-78fc-48fe-8e23-433b3a1942d0");
 
@@ -36,6 +38,11 @@ public class PineTimeJFConstants {
 
     public static final UUID UUID_SERVICE_NAVIGATION = UUID.fromString("00010000-78fc-48fe-8e23-433b3a1942d0");
 
+    public static final UUID UUID_CHARACTERISTICS_NAVIGATION_FLAGS = UUID.fromString("00010001-78fc-48fe-8e23-433b3a1942d0");
+    public static final UUID UUID_CHARACTERISTICS_NAVIGATION_NARRATIVE = UUID.fromString("00010002-78fc-48fe-8e23-433b3a1942d0");
+    public static final UUID UUID_CHARACTERISTICS_NAVIGATION_MAN_DISTANCE = UUID.fromString("00010003-78fc-48fe-8e23-433b3a1942d0");
+    public static final UUID UUID_CHARACTERISTICS_NAVIGATION_PROGRESS = UUID.fromString("00010004-78fc-48fe-8e23-433b3a1942d0");
+
     public static final UUID UUID_CHARACTERISTIC_ALERT_NOTIFICATION_EVENT = UUID.fromString("00020001-78fc-48fe-8e23-433b3a1942d0");
 
     public static final UUID UUID_SERVICE_WEATHER = UUID.fromString("00040000-78fc-48fe-8e23-433b3a1942d0");
@@ -49,5 +56,8 @@ public class PineTimeJFConstants {
 
     // since https://github.com/InfiniTimeOrg/InfiniTime/pull/1454
     public static final UUID UUID_CHARACTERISTIC_WORLD_TIME = UUID.fromString("00050001-78fc-48fe-8e23-433b3a1942d0");
+
+    public static final UUID UUID_SERVICE_HEART_RATE = GattService.UUID_SERVICE_HEART_RATE;
+    public static final UUID UUID_CHARACTERISTIC_HEART_RATE_MEASUREMENT = UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb");
 
 }

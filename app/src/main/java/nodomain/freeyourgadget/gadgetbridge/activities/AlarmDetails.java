@@ -32,7 +32,6 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
 public class AlarmDetails extends AbstractGBActivity {
 
@@ -150,7 +149,7 @@ public class AlarmDetails extends AbstractGBActivity {
 
     private boolean supportsSmartWakeup() {
         if (device != null) {
-            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+            DeviceCoordinator coordinator = device.getDeviceCoordinator();
             return coordinator.supportsSmartWakeup(device);
         }
         return false;
@@ -158,7 +157,7 @@ public class AlarmDetails extends AbstractGBActivity {
 
     private boolean supportsDescription() {
         if (device != null) {
-            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+            DeviceCoordinator coordinator = device.getDeviceCoordinator();
             return coordinator.supportsAlarmDescription(device);
         }
         return false;
@@ -166,7 +165,7 @@ public class AlarmDetails extends AbstractGBActivity {
 
     private boolean supportsSnoozing() {
         if (device != null) {
-            DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+            DeviceCoordinator coordinator = device.getDeviceCoordinator();
             return coordinator.supportsAlarmSnoozing();
         }
         return false;

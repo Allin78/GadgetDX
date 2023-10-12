@@ -1,5 +1,5 @@
-/*  Copyright (C) 2016-2021 Andreas Böhler, Andreas Shimokawa, Carsten
-    Pfeiffer, Daniele Gobbetti, José Rebelo
+/*  Copyright (C) 2016-2023 Andreas Böhler, Andreas Shimokawa, Carsten
+    Pfeiffer, Daniele Gobbetti, José Rebelo, Johannes Krude
 
     based on code from BlueWatcher, https://github.com/masterjc/bluewatcher
 
@@ -23,38 +23,31 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import androidx.annotation.NonNull;
+import java.util.regex.Pattern;
+
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioConstants;
+import nodomain.freeyourgadget.gadgetbridge.devices.casio.CasioDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.casio.gb6900.CasioGB6900DeviceSupport;
 
-public class CasioGB6900DeviceCoordinator extends AbstractBLEDeviceCoordinator {
+public class CasioGB6900DeviceCoordinator extends CasioDeviceCoordinator {
     protected static final Logger LOG = LoggerFactory.getLogger(CasioGB6900DeviceCoordinator.class);
 
-    @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        String name = candidate.getDevice().getName();
-        if (name != null) {
-            if (name.startsWith("CASIO") && (name.contains("6900B") || name.contains("5600B") ||
-                    name.contains("STB-1000"))) {
-                return DeviceType.CASIOGB6900;
-            }
-        }
-
-        return DeviceType.UNKNOWN;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile("CASIO.*(6900B|5600B|STB-1000).*");
     }
 
     @Override
@@ -80,11 +73,6 @@ public class CasioGB6900DeviceCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public boolean supportsFindDevice() {
         return true;
-    }
-
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.CASIOGB6900;
     }
 
     @Override
@@ -118,7 +106,7 @@ public class CasioGB6900DeviceCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 5; // 4 regular and one snooze
     }
 
@@ -133,12 +121,7 @@ public class CasioGB6900DeviceCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public String getManufacturer() {
-        return "Casio";
-    }
-
-    @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -158,5 +141,16 @@ public class CasioGB6900DeviceCoordinator extends AbstractBLEDeviceCoordinator {
                 R.xml.devicesettings_disconnectnotification_noshed,
                 R.xml.devicesettings_transliteration
         };
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return CasioGB6900DeviceSupport.class;
+    }
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_casiogb6900;
     }
 }

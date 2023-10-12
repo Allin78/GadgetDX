@@ -17,11 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
 
 import android.app.Activity;
 import android.content.Context;
@@ -34,8 +30,12 @@ import androidx.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.regex.Pattern;
+
 import de.greenrobot.dao.query.QueryBuilder;
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
@@ -46,13 +46,11 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.MakibesHR3ActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.makibeshr3.MakibesHR3DeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-
-import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
 
 
 public class MakibesHR3Coordinator extends AbstractBLEDeviceCoordinator {
@@ -148,23 +146,9 @@ public class MakibesHR3Coordinator extends AbstractBLEDeviceCoordinator {
         }
     }
 
-    @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        String name = candidate.getDevice().getName();
-
-        List<String> deviceNames = new ArrayList<String>(){{
-            add("Y808"); // Chinese version
-            add("MAKIBES HR3"); // English version
-        }};
-
-        if (name != null) {
-            if (deviceNames.contains(name)) {
-                return DeviceType.MAKIBESHR3;
-            }
-        }
-
-        return DeviceType.UNKNOWN;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile("Y808|MAKIBES HR3");
     }
 
     @Override
@@ -199,11 +183,6 @@ public class MakibesHR3Coordinator extends AbstractBLEDeviceCoordinator {
         return true;
     }
 
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.MAKIBESHR3;
-    }
-
     @Nullable
     @Override
     public Class<? extends Activity> getPairingActivity() {
@@ -236,7 +215,7 @@ public class MakibesHR3Coordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 8;
     }
 
@@ -256,7 +235,7 @@ public class MakibesHR3Coordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -275,5 +254,16 @@ public class MakibesHR3Coordinator extends AbstractBLEDeviceCoordinator {
                 R.xml.devicesettings_find_phone,
                 R.xml.devicesettings_transliteration
         };
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return MakibesHR3DeviceSupport.class;
+    }
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_makibes_hr3;
     }
 }

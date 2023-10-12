@@ -17,11 +17,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.btle;
 
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import androidx.annotation.Nullable;
 
 /**
  * Groups a bunch of {@link BtLEAction actions} together, making sure
@@ -54,7 +54,7 @@ public class Transaction extends AbstractTransaction {
         return mActions.isEmpty();
     }
 
-    public void setGattCallback(@Nullable GattCallback callback) {
+    public void setCallback(@Nullable GattCallback callback) {
         gattCallback = callback;
         modifyGattCallback = true;
     }

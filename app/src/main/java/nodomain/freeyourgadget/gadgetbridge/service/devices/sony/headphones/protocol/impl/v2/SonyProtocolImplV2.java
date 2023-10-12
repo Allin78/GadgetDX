@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +27,6 @@ import java.util.Locale;
 
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.AmbientSoundControl;
@@ -41,11 +39,12 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.Equali
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.PauseWhenTakenOff;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.QuickAccess;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SoundPosition;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SpeakToChatConfig;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SpeakToChatEnabled;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.SurroundMode;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.TouchSensor;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.prefs.VoiceNotifications;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.MessageType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.Request;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.sony.headphones.protocol.impl.v1.PayloadTypeV1;
@@ -102,6 +101,30 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
         buf.put((byte) (ambientSoundControl.getAmbientSound()));
 
         return new Request(PayloadTypeV1.AMBIENT_SOUND_CONTROL_SET.getMessageType(), buf.array());
+    }
+
+    @Override
+    public Request setSpeakToChatEnabled(SpeakToChatEnabled config) {
+        LOG.warn("Speak-to-chat not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request getSpeakToChatEnabled() {
+        LOG.warn("Speak-to-chat not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request setSpeakToChatConfig(SpeakToChatConfig config) {
+        LOG.warn("Speak-to-chat not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request getSpeakToChatConfig() {
+        LOG.warn("Speak-to-chat not implemented for V2");
+        return null;
     }
 
     @Override
@@ -342,7 +365,25 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
 
     @Override
     public Request powerOff() {
-        LOG.warn("Power off not implemented for V2");
+        return new Request(
+                PayloadTypeV2.POWER_SET.getMessageType(),
+                new byte[]{
+                        PayloadTypeV2.POWER_SET.getCode(),
+                        (byte) 0x03,
+                        (byte) 0x01
+                }
+        );
+    }
+
+    @Override
+    public Request getVolume() {
+        LOG.warn("Volume not implemented for V2");
+        return null;
+    }
+
+    @Override
+    public Request setVolume(final int volume) {
+        LOG.warn("Volume not implemented for V2");
         return null;
     }
 
@@ -419,7 +460,7 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
 
         final AmbientSoundControl ambientSoundControl = new AmbientSoundControl(mode, focusOnVoice, ambientSound);
 
-        LOG.warn("Ambient sound control: {}", ambientSoundControl);
+        LOG.debug("Ambient sound control: {}", ambientSoundControl);
 
         final GBDeviceEventUpdatePreferences eventUpdatePreferences = new GBDeviceEventUpdatePreferences()
                 .withPreferences(ambientSoundControl.toPreferences());
@@ -638,6 +679,8 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
     @Override
     protected BatteryType decodeBatteryType(final byte b) {
         switch (b) {
+            case 0x00:
+                return BatteryType.SINGLE;
             case 0x09:
                 return BatteryType.DUAL;
             case 0x0a:
@@ -650,10 +693,11 @@ public class SonyProtocolImplV2 extends SonyProtocolImplV1 {
     @Override
     protected byte encodeBatteryType(final BatteryType batteryType) {
         switch (batteryType) {
+            case SINGLE:
+                return 0x00;
             case DUAL:
                 return 0x09;
             case CASE:
-            case SINGLE: // TODO: This is not the code for single, but we need to encode something
                 return 0x0a;
         }
 

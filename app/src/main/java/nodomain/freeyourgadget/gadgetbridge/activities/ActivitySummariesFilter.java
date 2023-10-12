@@ -63,7 +63,6 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 
 
 public class ActivitySummariesFilter extends AbstractGBActivity {
@@ -391,9 +390,9 @@ public class ActivitySummariesFilter extends AbstractGBActivity {
         try (DBHandler handler = GBApplication.acquireDB()) {
             daoSession = handler.getDaoSession();
             for (GBDevice device : devices) {
-                DeviceCoordinator coordinator = DeviceHelper.getInstance().getCoordinator(device);
+                DeviceCoordinator coordinator = device.getType().getDeviceCoordinator();
                 Device dbDevice = DBHelper.findDevice(device, daoSession);
-                int icon = device.isInitialized() ? device.getType().getIcon() : device.getType().getDisabledIcon();
+                int icon = device.getEnabledDisabledIconResource();
                 if (dbDevice != null && coordinator != null
                         && coordinator.supportsActivityTracks()
                         && !newMap.containsKey(device.getAliasOrName())) {

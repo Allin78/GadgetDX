@@ -16,32 +16,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators;
 
-import androidx.annotation.NonNull;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCapabilities;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryConfig;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 
 public class SonyWFSP800NCoordinator extends SonyHeadphonesCoordinator {
-    @NonNull
     @Override
-    public DeviceType getSupportedType(final GBDeviceCandidate candidate) {
-        if (candidate.getName().contains("WF-SP800N")) {
-            return DeviceType.SONY_WF_SP800N;
-        }
-
-        return DeviceType.UNKNOWN;
-    }
-
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.SONY_WF_SP800N;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile(".*WF-SP800N.*");
     }
 
     @Override
@@ -64,7 +51,25 @@ public class SonyWFSP800NCoordinator extends SonyHeadphonesCoordinator {
                 SonyHeadphonesCapabilities.ButtonModesLeftRight,
                 SonyHeadphonesCapabilities.PauseWhenTakenOff,
                 SonyHeadphonesCapabilities.AutomaticPowerOffWhenTakenOff,
-                SonyHeadphonesCapabilities.VoiceNotifications
+                SonyHeadphonesCapabilities.VoiceNotifications,
+                SonyHeadphonesCapabilities.Volume
         );
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_sony_wf_sp800n;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_sony_wf_800n;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_sony_wf_800n_disabled;
     }
 }

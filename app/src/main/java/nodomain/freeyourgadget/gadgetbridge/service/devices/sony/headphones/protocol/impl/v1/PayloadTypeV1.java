@@ -53,6 +53,11 @@ public enum PayloadTypeV1 {
     AMBIENT_SOUND_CONTROL_SET(MessageType.COMMAND_1, 0x68),
     AMBIENT_SOUND_CONTROL_NOTIFY(MessageType.COMMAND_1, 0x69),
 
+    VOLUME_GET(MessageType.COMMAND_1, 0xa6),
+    VOLUME_RET(MessageType.COMMAND_1, 0xa7),
+    VOLUME_SET(MessageType.COMMAND_1, 0xa8),
+    VOLUME_NOTIFY(MessageType.COMMAND_1, 0xa9),
+
     NOISE_CANCELLING_OPTIMIZER_START(MessageType.COMMAND_1, 0x84),
     NOISE_CANCELLING_OPTIMIZER_STATUS(MessageType.COMMAND_1, 0x85),
 
@@ -74,6 +79,11 @@ public enum PayloadTypeV1 {
     AUTOMATIC_POWER_OFF_BUTTON_MODE_RET(MessageType.COMMAND_1, 0xf7),
     AUTOMATIC_POWER_OFF_BUTTON_MODE_SET(MessageType.COMMAND_1, 0xf8),
     AUTOMATIC_POWER_OFF_BUTTON_MODE_NOTIFY(MessageType.COMMAND_1, 0xf9),
+
+    SPEAK_TO_CHAT_CONFIG_GET(MessageType.COMMAND_1, 0xfa),
+    SPEAK_TO_CHAT_CONFIG_RET(MessageType.COMMAND_1, 0xfb),
+    SPEAK_TO_CHAT_CONFIG_SET(MessageType.COMMAND_1, 0xfc),
+    SPEAK_TO_CHAT_CONFIG_NOTIFY(MessageType.COMMAND_1, 0xfd),
 
     // TODO: The headphones spit out a lot of json, analyze it
     JSON_GET(MessageType.COMMAND_1, 0xc4),

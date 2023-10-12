@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.lenovo.watchxplus;
 
-import android.annotation.TargetApi;
+import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
+
 import android.app.Activity;
 import android.bluetooth.le.ScanFilter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.ParcelUuid;
 
 import androidx.annotation.NonNull;
@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -52,11 +53,10 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.ServiceDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.lenovo.watchxplus.WatchXPlusDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-
-import static nodomain.freeyourgadget.gadgetbridge.GBApplication.getContext;
 
 
 public class WatchXPlusDeviceCoordinator extends AbstractBLEDeviceCoordinator {
@@ -87,26 +87,21 @@ public class WatchXPlusDeviceCoordinator extends AbstractBLEDeviceCoordinator {
 
     @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
+    public boolean supports(GBDeviceCandidate candidate) {
         String macAddress = candidate.getMacAddress().toUpperCase();
         String deviceName = candidate.getName().toUpperCase();
         if (candidate.supportsService(WatchXPlusConstants.UUID_SERVICE_WATCHXPLUS)) {
-            return DeviceType.WATCHXPLUS;
+            return true;
         } else if (macAddress.startsWith("DC:41:E5")) {
-            return DeviceType.WATCHXPLUS;
+            return true;
         } else if (deviceName.equalsIgnoreCase("WATCH XPLUS")) {
-            return DeviceType.WATCHXPLUS;
+            return true;
             // add initial support for Watch X non-plus (forces Watch X to be recognized as Watch XPlus)
             // Watch X non-plus have same MAC address as Watch 9 (starts with "1C:87:79")
         } else if (deviceName.equalsIgnoreCase("WATCH X")) {
-            return DeviceType.WATCHXPLUS;
+            return true;
         }
-        return DeviceType.UNKNOWN;
-    }
-
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.WATCHXPLUS;
+        return false;
     }
 
     @Nullable
@@ -141,7 +136,7 @@ public class WatchXPlusDeviceCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 3;
     }
 
@@ -161,7 +156,7 @@ public class WatchXPlusDeviceCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -198,6 +193,17 @@ public class WatchXPlusDeviceCoordinator extends AbstractBLEDeviceCoordinator {
                 R.xml.devicesettings_watchxplus,
                 R.xml.devicesettings_transliteration
         };
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return WatchXPlusDeviceSupport.class;
+    }
+
+    @Override
+    public EnumSet<ServiceDeviceSupport.Flags> getInitialFlags() {
+        return EnumSet.of(ServiceDeviceSupport.Flags.THROTTLING, ServiceDeviceSupport.Flags.BUSY_CHECKING);
     }
 
 // find phone settings
@@ -297,5 +303,22 @@ public class WatchXPlusDeviceCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public Class<? extends Activity> getCalibrationActivity() {
         return LenovoWatchCalibrationActivity.class;
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_watchxplus;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_watchxplus;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_watchxplus_disabled;
     }
 }

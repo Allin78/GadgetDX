@@ -49,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.util.PendingIntentUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
@@ -107,7 +108,7 @@ public class LineageOsWeatherReceiver extends BroadcastReceiver implements Linea
         if (enable) {
             Intent intent = new Intent("GB_UPDATE_WEATHER");
             intent.setPackage(BuildConfig.APPLICATION_ID);
-            mPendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+            mPendingIntent = PendingIntentUtils.getBroadcast(mContext, 0, intent, 0, false);
             am.setInexactRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + 10000, AlarmManager.INTERVAL_HOUR, mPendingIntent);
         } else {
             am.cancel(mPendingIntent);
@@ -188,7 +189,7 @@ public class LineageOsWeatherReceiver extends BroadcastReceiver implements Linea
             List<WeatherInfo.DayForecast> forecasts = weatherInfo.getForecasts();
             for (int i = 1; i < forecasts.size(); i++) {
                 WeatherInfo.DayForecast cmForecast = forecasts.get(i);
-                WeatherSpec.Forecast gbForecast = new WeatherSpec.Forecast();
+                WeatherSpec.Daily gbForecast = new WeatherSpec.Daily();
                 if (weatherInfo.getTemperatureUnit() == FAHRENHEIT) {
                     gbForecast.maxTemp = (int) WeatherUtils.fahrenheitToCelsius(cmForecast.getHigh()) + 273;
                     gbForecast.minTemp = (int) WeatherUtils.fahrenheitToCelsius(cmForecast.getLow()) + 273;

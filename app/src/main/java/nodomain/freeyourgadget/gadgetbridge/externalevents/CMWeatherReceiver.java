@@ -16,6 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.externalevents;
 
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.TempUnit.FAHRENHEIT;
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.ISOLATED_THUNDERSHOWERS;
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.NOT_AVAILABLE;
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.SCATTERED_SNOW_SHOWERS;
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.SCATTERED_THUNDERSTORMS;
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.SHOWERS;
+import static cyanogenmod.providers.WeatherContract.WeatherColumns.WindSpeedUnit.MPH;
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -38,15 +46,8 @@ import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.util.PendingIntentUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
-
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.TempUnit.FAHRENHEIT;
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.ISOLATED_THUNDERSHOWERS;
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.NOT_AVAILABLE;
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.SCATTERED_SNOW_SHOWERS;
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.SCATTERED_THUNDERSTORMS;
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.WeatherCode.SHOWERS;
-import static cyanogenmod.providers.WeatherContract.WeatherColumns.WindSpeedUnit.MPH;
 
 public class CMWeatherReceiver extends BroadcastReceiver implements CMWeatherManager.WeatherUpdateRequestListener, CMWeatherManager.LookupCityRequestListener {
 
@@ -103,7 +104,7 @@ public class CMWeatherReceiver extends BroadcastReceiver implements CMWeatherMan
         if (enable) {
             Intent intent = new Intent("GB_UPDATE_WEATHER");
             intent.setPackage(BuildConfig.APPLICATION_ID);
-            mPendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+            mPendingIntent = PendingIntentUtils.getBroadcast(mContext, 0, intent, 0, false);
             am.setInexactRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + 10000, AlarmManager.INTERVAL_HOUR, mPendingIntent);
         } else {
             am.cancel(mPendingIntent);
@@ -164,7 +165,7 @@ public class CMWeatherReceiver extends BroadcastReceiver implements CMWeatherMan
             List<WeatherInfo.DayForecast> forecasts = weatherInfo.getForecasts();
             for (int i = 1; i < forecasts.size(); i++) {
                 WeatherInfo.DayForecast cmForecast = forecasts.get(i);
-                WeatherSpec.Forecast gbForecast = new WeatherSpec.Forecast();
+                WeatherSpec.Daily gbForecast = new WeatherSpec.Daily();
                 if (weatherInfo.getTemperatureUnit() == FAHRENHEIT) {
                     gbForecast.maxTemp = (int) WeatherUtils.fahrenheitToCelsius(cmForecast.getHigh()) + 273;
                     gbForecast.minTemp = (int) WeatherUtils.fahrenheitToCelsius(cmForecast.getLow()) + 273;

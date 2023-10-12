@@ -17,44 +17,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.banglejs;
 
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_GPS_UPDATE;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_DEVICE_INTENTS;
-
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.le.ScanFilter;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.os.ParcelUuid;
 
 import androidx.annotation.NonNull;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Vector;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
-import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLEDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
-import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.banglejs.BangleJSDeviceSupport;
 
 public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
-
-    @Override
-    public DeviceType getDeviceType() {
-        return DeviceType.BANGLEJS;
-    }
 
     @Override
     public String getManufacturer() {
@@ -71,21 +63,9 @@ public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
         return Collections.singletonList(filter);
     }
 
-    @NonNull
     @Override
-    public DeviceType getSupportedType(GBDeviceCandidate candidate) {
-        String name = candidate.getDevice().getName();
-        /* Filter by Espruino devices to avoid getting
-        the device chooser full of spam devices. */
-        if (name != null && (
-              name.startsWith("Bangle.js") ||
-              name.startsWith("Pixl.js") ||
-              name.startsWith("Puck.js") ||
-              name.startsWith("MDBT42Q") ||
-              name.startsWith("Espruino"))) 
-            return DeviceType.BANGLEJS;
-
-        return DeviceType.UNKNOWN;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile("Bangle\\.js.*|Pixl\\.js.*|Puck\\.js.*|MDBT42Q.*|Espruino.*");
     }
 
     @Override
@@ -116,7 +96,7 @@ public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsActivityDataFetching() {
-        return false;
+        return true;
     }
 
     @Override
@@ -151,12 +131,14 @@ public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 10;
     }
 
     @Override
-    public boolean supportsAppsManagement() { return BuildConfig.INTERNET_ACCESS; }
+    public boolean supportsAppsManagement(final GBDevice device) {
+        return BuildConfig.INTERNET_ACCESS;
+    }
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {
@@ -191,18 +173,66 @@ public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
         return true;
     }
 
-    public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
-        Vector<Integer> settings = new Vector<Integer>();
-        settings.add(R.xml.devicesettings_banglejs);
+    @Override
+    public int[] getSupportedDeviceSpecificSettings(final GBDevice device) {
+        final List<Integer> settings = new ArrayList<>();
+
+        settings.add(R.xml.devicesettings_banglejs_location);
+
+        settings.add(R.xml.devicesettings_header_notifications);
+        settings.add(R.xml.devicesettings_text_bitmaps);
         settings.add(R.xml.devicesettings_transliteration);
+
+        settings.add(R.xml.devicesettings_header_calendar);
+        settings.add(R.xml.devicesettings_sync_calendar);
+
+        settings.add(R.xml.devicesettings_header_connection);
         settings.add(R.xml.devicesettings_high_mtu);
         if (BuildConfig.INTERNET_ACCESS)
             settings.add(R.xml.devicesettings_device_internet_access);
+
+        settings.add(R.xml.devicesettings_banglejs_activity);
+
+        settings.add(R.xml.devicesettings_header_apps);
+        settings.add(R.xml.devicesettings_loyalty_cards);
+
+        settings.add(R.xml.devicesettings_header_developer);
+        settings.add(R.xml.devicesettings_banglejs_apploader);
         settings.add(R.xml.devicesettings_device_intents);
-        settings.add(R.xml.devicesettings_sync_calendar);
-        // must be a better way of doing this?
-        int[] settingsInt = new int[settings.size()];
-        for (int i=0; i<settings.size(); i++) settingsInt[i] = settings.get(i);
-        return settingsInt;
+
+        return ArrayUtils.toPrimitive(settings.toArray(new Integer[0]));
+    }
+
+    @Override
+    public DeviceSpecificSettingsCustomizer getDeviceSpecificSettingsCustomizer(final GBDevice device) {
+        return new BangleJSSettingsCustomizer(device);
+    }
+
+    @Override
+    public boolean supportsNavigation() {
+        return true;
+    }
+
+    @NonNull
+    @Override
+    public Class<? extends DeviceSupport> getDeviceSupportClass() {
+        return BangleJSDeviceSupport.class;
+    }
+
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_banglejs;
+    }
+
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_banglejs;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_banglejs_disabled;
     }
 }

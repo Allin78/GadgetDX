@@ -28,14 +28,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.HuamiService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.AbstractHuamiFirmwareInfo;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Support;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiFirmwareType;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.HuamiSupport;
 import nodomain.freeyourgadget.gadgetbridge.util.ArrayUtils;
 
 public class UpdateFirmwareOperation2021 extends UpdateFirmwareOperation2020 {
     private static final Logger LOG = LoggerFactory.getLogger(UpdateFirmwareOperation2021.class);
 
-    public UpdateFirmwareOperation2021(final Uri uri, final HuamiSupport support) {
+    public UpdateFirmwareOperation2021(final Uri uri, final Huami2021Support support) {
         super(uri, support);
     }
 
@@ -62,6 +62,11 @@ public class UpdateFirmwareOperation2021 extends UpdateFirmwareOperation2020 {
     }
 
     @Override
+    public Huami2021Support getSupport() {
+        return (Huami2021Support) super.getSupport();
+    }
+
+    @Override
     protected void handleNotificationNotif(byte[] value) {
         super.handleNotificationNotif(value);
 
@@ -69,11 +74,22 @@ public class UpdateFirmwareOperation2021 extends UpdateFirmwareOperation2020 {
             if (getFirmwareInfo().getFirmwareType() == HuamiFirmwareType.APP) {
                 // After an app is installed, request the display items from the band (new app will be at the end)
                 try {
-                    TransactionBuilder builder = performInitialized("request display items");
+                    TransactionBuilder builder = performInitialized("request display items and apps");
                     getSupport().requestDisplayItems(builder);
+                    getSupport().requestApps(builder);
                     builder.queue(getQueue());
                 } catch (final IOException e) {
                     LOG.error("Failed to request display items after app install", e);
+                }
+            } else if (getFirmwareInfo().getFirmwareType() == HuamiFirmwareType.WATCHFACE) {
+                // After a watchface is installed, request the watchfaces from the band (new watchface will be at the end)
+                try {
+                    TransactionBuilder builder = performInitialized("request watchfaces and apps");
+                    getSupport().requestWatchfaces(builder);
+                    getSupport().requestApps(builder);
+                    builder.queue(getQueue());
+                } catch (final IOException e) {
+                    LOG.error("Failed to request watchfaces after watchface install", e);
                 }
             }
         }

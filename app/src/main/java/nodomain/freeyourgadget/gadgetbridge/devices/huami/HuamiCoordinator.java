@@ -91,7 +91,7 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsAppsManagement() {
+    public boolean supportsAppsManagement(final GBDevice device) {
         return false;
     }
 
@@ -116,7 +116,7 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public int getAlarmSlotCount() {
+    public int getAlarmSlotCount(GBDevice device) {
         return 10;
     }
 
@@ -138,6 +138,41 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public SampleProvider<? extends AbstractActivitySample> getSampleProvider(GBDevice device, DaoSession session) {
         return new MiBand2SampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiStressSampleProvider getStressSampleProvider(final GBDevice device, final  DaoSession session) {
+        return new HuamiStressSampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiSpo2SampleProvider getSpo2SampleProvider(final GBDevice device, final  DaoSession session) {
+        return new HuamiSpo2SampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiHeartRateMaxSampleProvider getHeartRateMaxSampleProvider(final GBDevice device, final DaoSession session) {
+        return new HuamiHeartRateMaxSampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiHeartRateRestingSampleProvider getHeartRateRestingSampleProvider(final GBDevice device, final DaoSession session) {
+        return new HuamiHeartRateRestingSampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiHeartRateManualSampleProvider getHeartRateManualSampleProvider(final GBDevice device, final DaoSession session) {
+        return new HuamiHeartRateManualSampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiPaiSampleProvider getPaiSampleProvider(GBDevice device, DaoSession session) {
+        return new HuamiPaiSampleProvider(device, session);
+    }
+
+    @Override
+    public HuamiSleepRespiratoryRateSampleProvider getSleepRespiratoryRateSampleProvider(GBDevice device, DaoSession session) {
+        return new HuamiSleepRespiratoryRateSampleProvider(device, session);
     }
 
     @Override
@@ -515,6 +550,10 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
         return 22; // At least, Mi Fit still allows more
     }
 
+    public boolean supportsDebugLogs() {
+        return true;
+    }
+
     public List<HuamiVibrationPatternNotificationType> getVibrationPatternNotificationTypes(final GBDevice device) {
         return Arrays.asList(
                 HuamiVibrationPatternNotificationType.APP_ALERTS,
@@ -544,5 +583,15 @@ public abstract class HuamiCoordinator extends AbstractBLEDeviceCoordinator {
 
     public static Date getHourlyChimeEnd(String deviceAddress) {
         return getTimePreference(DeviceSettingsPreferenceConst.PREF_HOURLY_CHIME_END, "22:00", deviceAddress);
+    }
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_zetime;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_zetime_disabled;
     }
 }
