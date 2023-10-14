@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <SwitchPreferenceCompat
-        android:defaultValue="false"
-        android:icon="@drawable/ic_wifi_tethering"
-        android:key="intents_drip"
-        android:summary="@string/pref_summary_intents_drip"
-        android:title="@string/pref_title_intents_drip" />
-</androidx.preference.PreferenceScreen>

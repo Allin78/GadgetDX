@@ -547,7 +547,6 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_VOICE_SERVICE_LANGUAGE);
 
         addPreferenceHandlerFor(PREF_TEMPERATURE_SCALE_CF);
-        addPreferenceHandlerFor(PREF_INTENTS_DRIP);
 
         addPreferenceHandlerFor("lock");
 
