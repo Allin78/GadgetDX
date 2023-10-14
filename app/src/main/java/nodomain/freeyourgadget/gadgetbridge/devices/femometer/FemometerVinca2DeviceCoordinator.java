@@ -103,9 +103,11 @@ public class FemometerVinca2DeviceCoordinator extends AbstractDeviceCoordinator 
     @Override
     public int[] getSupportedDeviceSpecificSettings(GBDevice device) {
         return new int[]{
-                R.xml.devicesettings_volume,
-                R.xml.devicesettings_femometer,
-                R.xml.devicesettings_temperature_scale_cf,
+            R.xml.devicesettings_volume,
+            R.xml.devicesettings_femometer,
+            R.xml.devicesettings_temperature_scale_cf,
+            R.xml.devicesettings_header_system,
+            R.xml.devicesettings_intents_drip
         };
     }
 

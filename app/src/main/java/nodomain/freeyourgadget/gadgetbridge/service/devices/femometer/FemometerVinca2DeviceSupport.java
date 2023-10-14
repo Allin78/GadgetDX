@@ -37,6 +37,7 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInf
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.femometer.FemometerVinca2SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.FemometerVinca2TemperatureSample;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.DripMeasurementBroadcaster;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
@@ -295,6 +296,9 @@ public class FemometerVinca2DeviceSupport extends AbstractBTLEDeviceSupport {
             sampleProvider.addSample(temperatureSample);
         } catch (Exception e) {
             LOG.error("Error acquiring database", e);
+        }
+        if (GBApplication.getDeviceSpecificSharedPrefs(this.getDevice().getAddress()).getBoolean(DeviceSettingsPreferenceConst.PREF_INTENTS_DRIP, false)) {
+            DripMeasurementBroadcaster.sendMeasurement(info);
         }
     }
 }
