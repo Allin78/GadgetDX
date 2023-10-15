@@ -1,4 +1,4 @@
-/*  Copyright (C) 2023 José Rebelo
+/*  Copyright (C) 2023 Alicia Hormann
 
     This file is part of Gadgetbridge.
 
@@ -53,21 +53,17 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 public class TemperatureChartFragment extends AbstractChartFragment<TemperatureChartFragment.TemperatureChartsData> {
     protected static final Logger LOG = LoggerFactory.getLogger(ActivitySleepChartFragment.class);
 
-    private LineChart mStressChart;
+    private LineChart mTemperatureChart;
     private int BACKGROUND_COLOR;
     private int DESCRIPTION_COLOR;
     private int CHART_TEXT_COLOR;
-//    private int LEGEND_TEXT_COLOR;
 
     private final Prefs prefs = GBApplication.getPrefs();
-
-    private final boolean CHARTS_SLEEP_RANGE_24H = prefs.getBoolean("chart_sleep_range_24h", false);
-    private final boolean SHOW_CHARTS_AVERAGE = prefs.getBoolean("charts_show_average", true);
 
     @Override
     protected void init() {
         BACKGROUND_COLOR = GBApplication.getBackgroundColor(requireContext());
-//        LEGEND_TEXT_COLOR = DESCRIPTION_COLOR = GBApplication.getTextColor(requireContext());
+        DESCRIPTION_COLOR = GBApplication.getTextColor(requireContext());
         CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
 
     }
@@ -86,16 +82,16 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
 
     @Override
     protected void updateChartsnUIThread(final TemperatureChartsData temperatureData) {
-        mStressChart.setData(null); // workaround for https://github.com/PhilJay/MPAndroidChart/issues/2317
-        mStressChart.getXAxis().setValueFormatter(temperatureData.getXValueFormatter());
-        mStressChart.setData(temperatureData.getData());
-        mStressChart.getAxisRight().removeAllLimitLines();
+        mTemperatureChart.setData(null); // workaround for https://github.com/PhilJay/MPAndroidChart/issues/2317
+        mTemperatureChart.getXAxis().setValueFormatter(temperatureData.getXValueFormatter());
+        mTemperatureChart.setData(temperatureData.getData());
+        mTemperatureChart.getAxisRight().removeAllLimitLines();
 
 //        if (temperatureData.getAverage() > 0) {
 //            final LimitLine averageLine = new LimitLine(temperatureData.getAverage());
 //            averageLine.setLineColor(Color.RED);
 //            averageLine.setLineWidth(0.1f);
-//            mStressChart.getAxisRight().addLimitLine(averageLine);
+//            mTemperatureChart.getAxisRight().addLimitLine(averageLine);
 //        }
     }
 
@@ -110,7 +106,7 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
                              final Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_stresschart, container, false);
 
-        mStressChart = rootView.findViewById(R.id.stress_line_chart);
+        mTemperatureChart = rootView.findViewById(R.id.stress_line_chart);
 
         setupLineChart();
 
@@ -121,18 +117,18 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
     }
 
     private void setupLineChart() {
-        mStressChart.setBackgroundColor(BACKGROUND_COLOR);
-        mStressChart.getDescription().setTextColor(DESCRIPTION_COLOR);
-        configureBarLineChartDefaults(mStressChart);
+        mTemperatureChart.setBackgroundColor(BACKGROUND_COLOR);
+        mTemperatureChart.getDescription().setTextColor(DESCRIPTION_COLOR);
+        configureBarLineChartDefaults(mTemperatureChart);
 
-        final XAxis x = mStressChart.getXAxis();
+        final XAxis x = mTemperatureChart.getXAxis();
         x.setDrawLabels(true);
         x.setDrawGridLines(false);
         x.setEnabled(true);
         x.setTextColor(CHART_TEXT_COLOR);
         x.setDrawLimitLinesBehindData(true);
 
-        final YAxis yAxisLeft = mStressChart.getAxisLeft();
+        final YAxis yAxisLeft = mTemperatureChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
         yAxisLeft.setAxisMaximum(100f);
         yAxisLeft.setAxisMinimum(0);
@@ -140,7 +136,7 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
         yAxisLeft.setTextColor(CHART_TEXT_COLOR);
         yAxisLeft.setEnabled(true);
 
-        final YAxis yAxisRight = mStressChart.getAxisRight();
+        final YAxis yAxisRight = mTemperatureChart.getAxisRight();
         yAxisRight.setDrawGridLines(false);
         yAxisRight.setEnabled(true);
         yAxisRight.setDrawLabels(false);
@@ -156,7 +152,7 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
 
     @Override
     protected void renderCharts() {
-        mStressChart.animateX(ANIM_TIME, Easing.EaseInOutQuart);
+        mTemperatureChart.animateX(ANIM_TIME, Easing.EaseInOutQuart);
     }
 
     private List<? extends TemperatureSample> getSamples(final DBHandler db, final GBDevice device) {
@@ -211,91 +207,11 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
     }
 
     protected class TemperatureChartsDataBuilder {
-        private static final int UNKNOWN_VAL = 2;
-
         private final List<? extends TemperatureSample> samples;
-
-        private final TimestampTranslation tsTranslation = new TimestampTranslation();
-
-        int previousTs;
-        int currentTypeStartTs;
-        long averageSum;
-        long averageNumSamples;
 
         public TemperatureChartsDataBuilder(final List<? extends TemperatureSample> samples) {
             this.samples = samples;
         }
-//
-//        private void reset() {
-//            tsTranslation.reset();
-//            lineEntriesPerLevel.clear();
-//            accumulator.clear();
-//            previousTs = 0;
-//            currentTypeStartTs = 0;
-//        }
-
-//        private void processSamples() {
-//            reset();
-//
-//            for (final TemperatureSample sample : samples) {
-//                processSample(sample);
-//            }
-//
-//            // Add the last block, if any
-//            if (currentTypeStartTs != previousTs) {
-//                set(previousTs, previousStressType, samples.get(samples.size() - 1).getStress());
-//            }
-//        }
-//
-//        private void processSample(final StressSample sample) {
-//            //LOG.debug("Processing sample {} {}", sdf.format(new Date(sample.getTimestamp())), sample.getStress());
-//
-//            final StressType stressType = StressType.fromStress(sample.getStress());
-//            final int ts = tsTranslation.shorten((int) (sample.getTimestamp() / 1000L));
-//
-//            if (ts == 0) {
-//                // First sample
-//                previousTs = ts;
-//                currentTypeStartTs = ts;
-//                previousStressType = stressType;
-//                set(ts, stressType, sample.getStress());
-//                return;
-//            }
-//
-//            if (ts - previousTs > 60 * 10) {
-//                // More than 15 minutes since last sample
-//                // Set to unknown right after the last sample we got until the current time
-//                int lastEndTs = Math.min(previousTs + 60 * 5, ts - 1);
-//                set(lastEndTs, StressType.UNKNOWN, UNKNOWN_VAL);
-//                set(ts - 1, StressType.UNKNOWN, UNKNOWN_VAL);
-//            }
-//
-//            if (!stressType.equals(previousStressType)) {
-//                currentTypeStartTs = ts;
-//            }
-//
-//            set(ts, stressType, sample.getStress());
-//
-//            accumulator.put(stressType, accumulator.get(stressType) + 60);
-//
-//            if (stressType != StressType.UNKNOWN) {
-//                averageSum += sample.getStress();
-//                averageNumSamples++;
-//            }
-//
-//            previousStressType = stressType;
-//            previousTs = ts;
-//        }
-//
-//        private void set(final int ts, final StressType stressType, final int stress) {
-//            for (final Map.Entry<StressType, List<Entry>> stressTypeListEntry : lineEntriesPerLevel.entrySet()) {
-//                if (stressTypeListEntry.getKey() == stressType) {
-//                    stressTypeListEntry.getValue().add(new Entry(ts, stress));
-//                } else {
-//                    stressTypeListEntry.getValue().add(new Entry(ts, 0));
-//                }
-//            }
-//        }
 
         public TemperatureChartsData build() {
             TimestampTranslation tsTranslation = new TimestampTranslation();
