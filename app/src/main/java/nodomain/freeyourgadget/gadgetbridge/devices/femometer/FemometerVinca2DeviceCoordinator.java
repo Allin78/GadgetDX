@@ -110,7 +110,6 @@ public class FemometerVinca2DeviceCoordinator extends AbstractDeviceCoordinator 
         return true;
     }
 
-
     @Override
     public boolean supportsSleepMeasurement() {
         return false;

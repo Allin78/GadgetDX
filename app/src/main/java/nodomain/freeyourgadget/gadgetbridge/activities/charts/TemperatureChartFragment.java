@@ -34,6 +34,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,7 +59,7 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
     private int DESCRIPTION_COLOR;
     private int CHART_TEXT_COLOR;
 
-    private final Prefs prefs = GBApplication.getPrefs();
+    protected final int TOTAL_DAYS = getRangeDays();
 
     @Override
     protected void init() {
@@ -67,15 +68,19 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
         CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
 
     }
+    private int getRangeDays() {
+        if (GBApplication.getPrefs().getBoolean("charts_range", true)) {
+            return 30;
+        } else {
+            return 7;
+        }
+    }
 
     @Override
     protected TemperatureChartsData refreshInBackground(final ChartsHost chartsHost, final DBHandler db, final GBDevice device) {
         final List<? extends TemperatureSample> samples = getSamples(db, device);
 
         LOG.info("Got {} temperature samples", samples.size());
-
-        ensureStartAndEndSamples((List<TemperatureSample>) samples);
-
         return new TemperatureChartsDataBuilder(samples).build();
     }
 
@@ -84,15 +89,11 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
     protected void updateChartsnUIThread(final TemperatureChartsData temperatureData) {
         mTemperatureChart.setData(null); // workaround for https://github.com/PhilJay/MPAndroidChart/issues/2317
         mTemperatureChart.getXAxis().setValueFormatter(temperatureData.getXValueFormatter());
+        mTemperatureChart.getXAxis().setAvoidFirstLastClipping(true);
+        mTemperatureChart.getAxisLeft().setAxisMinimum(30f);
+        mTemperatureChart.getAxisLeft().setAxisMaximum(45f);
         mTemperatureChart.setData(temperatureData.getData());
         mTemperatureChart.getAxisRight().removeAllLimitLines();
-
-//        if (temperatureData.getAverage() > 0) {
-//            final LimitLine averageLine = new LimitLine(temperatureData.getAverage());
-//            averageLine.setLineColor(Color.RED);
-//            averageLine.setLineWidth(0.1f);
-//            mTemperatureChart.getAxisRight().addLimitLine(averageLine);
-//        }
     }
 
     @Override
@@ -104,9 +105,9 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
     public View onCreateView(final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_stresschart, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_temperaturechart, container, false);
 
-        mTemperatureChart = rootView.findViewById(R.id.stress_line_chart);
+        mTemperatureChart = rootView.findViewById(R.id.temperature_line_chart);
 
         setupLineChart();
 
@@ -155,55 +156,17 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
         mTemperatureChart.animateX(ANIM_TIME, Easing.EaseInOutQuart);
     }
 
+    @Override
+    protected int getTSStart() {
+        return getTSEnd() - TOTAL_DAYS*24*60*60;
+    }
+
     private List<? extends TemperatureSample> getSamples(final DBHandler db, final GBDevice device) {
         final int tsStart = getTSStart();
         final int tsEnd = getTSEnd();
         final DeviceCoordinator coordinator = device.getDeviceCoordinator();
         final TimeSampleProvider<? extends TemperatureSample> sampleProvider = coordinator.getTemperatureSampleProvider(device, db.getDaoSession());
         return sampleProvider.getAllSamples(tsStart * 1000L, tsEnd * 1000L);
-    }
-
-    protected void ensureStartAndEndSamples(final List<TemperatureSample> samples) {
-        if (samples == null || samples.isEmpty()) {
-            return;
-        }
-
-        final long tsEndMillis = getTSEnd() * 1000L;
-        final long tsStartMillis = getTSStart() * 1000L;
-
-        final TemperatureSample lastSample = samples.get(samples.size() - 1);
-        if (lastSample.getTimestamp() < tsEndMillis) {
-            samples.add(new EmptyTemperatureSample(tsEndMillis));
-        }
-
-        final TemperatureSample firstSample = samples.get(0);
-        if (firstSample.getTimestamp() > tsStartMillis) {
-            samples.add(0, new EmptyTemperatureSample(tsStartMillis));
-        }
-    }
-
-    protected static final class EmptyTemperatureSample implements TemperatureSample {
-        private final long ts;
-
-        public EmptyTemperatureSample(final long ts) {
-            this.ts = ts;
-        }
-
-
-        @Override
-        public long getTimestamp() {
-            return ts;
-        }
-
-        @Override
-        public float getTemperature() {
-            return 0;
-        }
-
-        @Override
-        public int getTemperatureType() {
-            return 0;
-        }
     }
 
     protected class TemperatureChartsDataBuilder {
@@ -230,12 +193,14 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
             dataSet.setLineWidth(2.2f);
             dataSet.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
             dataSet.setCubicIntensity(0.1f);
-            dataSet.setDrawCircles(false);
-            dataSet.setCircleRadius(2f);
+            dataSet.setDrawCircles(true);
+            dataSet.setCircleRadius(5f);
+            dataSet.setDrawCircleHole(false);
             dataSet.setDrawValues(true);
+            dataSet.setValueTextSize(10f);
             dataSet.setValueTextColor(CHART_TEXT_COLOR);
             dataSet.setHighlightEnabled(true);
-            dataSet.setHighlightEnabled(true);
+            dataSet.setValueFormatter(new MyValueFormatter());
             LineData lineData = new LineData(dataSet);
 
             return new TemperatureChartsData(lineData, tsTranslation);
@@ -244,17 +209,17 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
 
     protected static class TemperatureChartsData extends DefaultChartsData<LineData> {
         public TemperatureChartsData(LineData lineData, TimestampTranslation tsTranslation) {
-            super(lineData, new customFormatter(tsTranslation));
+            super(lineData, new dateFormatter(tsTranslation));
         }
     }
 
 
-    protected static class customFormatter extends ValueFormatter {
+    protected static class dateFormatter extends ValueFormatter {
         private final TimestampTranslation tsTranslation;
         SimpleDateFormat annotationDateFormat = new SimpleDateFormat("dd.MM.");
         Calendar cal = GregorianCalendar.getInstance();
 
-        public customFormatter(TimestampTranslation tsTranslation) {
+        public dateFormatter(TimestampTranslation tsTranslation) {
             this.tsTranslation = tsTranslation;
         }
 
@@ -265,6 +230,15 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
             cal.setTimeInMillis(tsTranslation.toOriginalValue(ts) * 1000L);
             Date date = cal.getTime();
             return annotationDateFormat.format(date);
+        }
+    }
+
+    protected static class MyValueFormatter extends ValueFormatter {
+        private final DecimalFormat format = new DecimalFormat("0.00");
+
+        @Override
+        public String getPointLabel(Entry entry) {
+            return format.format(entry.getY());
         }
     }
 
