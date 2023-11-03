@@ -39,11 +39,11 @@ public class WeatherData {
             case 202:  // Thunderstorm with heavy rain
             case 210:  // Light thunderstorm
             case 211:  // Thunderstorm
+            case 212:  // Heavy thunderstorm
+            case 221:  // Ragged thunderstorm
             case 230:  // Thunderstorm with light drizzle
             case 231:  // Thunderstorm with drizzle
             case 232:  // Thunderstorm with heavy drizzle
-            case 212:  // Heavy thunderstorm
-            case 221:  // Ragged thunderstorm
                 return PrecipitationType.Rain;
             // Group 3xx: Drizzle
             case 300:  // Light intensity drizzle
@@ -106,6 +106,7 @@ public class WeatherData {
             case 802:  // Scattered clouds
             case 803:  // Broken clouds
             case 804:  // Overcast clouds
+                return PrecipitationType.Length;
                 // Group 90x: Extreme
             case 901:  // Tropical storm
             case 903:  // Cold
@@ -274,11 +275,12 @@ public class WeatherData {
             case 202:  // Thunderstorm with heavy rain
             case 210:  // Light thunderstorm
             case 211:  // Thunderstorm
+            case 212:  // Heavy thunderstorm
+            case 221:  // Ragged thunderstorm
             case 230:  // Thunderstorm with light drizzle
             case 231:  // Thunderstorm with drizzle
             case 232:  // Thunderstorm with heavy drizzle
-            case 212:  // Heavy thunderstorm
-            case 221:  // Ragged thunderstorm
+                return SpecialType.Thunder;
                 // Group 3xx: Drizzle
             case 300:  // Light intensity drizzle
             case 301:  // Drizzle
