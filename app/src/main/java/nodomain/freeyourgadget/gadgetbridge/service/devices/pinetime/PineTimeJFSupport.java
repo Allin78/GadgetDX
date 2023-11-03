@@ -18,6 +18,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.pinetime;
 
 import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToCloudCover;
+import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeCondition;
 import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeObscuration;
 import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimePrecipitation;
 import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeSpecial;
@@ -879,6 +880,31 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
             }
 
             // Current weather condition
+            if (mapOpenWeatherConditionToPineTimeCondition(weatherSpec.currentConditionCode) != WeatherData.ConditionType.Length) {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try {
+                    new CborEncoder(baos).encode(new CborBuilder()
+                            .startMap() // This map is not fixed-size, which is not great, but it might come in a library update
+                            .put("Timestamp", System.currentTimeMillis() / 1000L)
+                            .put("Expires", 60 * 60 * 1 + WEATHER_GRACE_TIME) // 1h
+                            .put("EventType", WeatherData.EventType.Condition.value)
+                            .put("Type", (int) mapOpenWeatherConditionToPineTimeCondition(weatherSpec.currentConditionCode).value)
+                            .put("Code", (int) weatherSpec.currentConditionCode)
+                            .end()
+                            .build()
+                    );
+                } catch (Exception e) {
+                    LOG.warn(String.valueOf(e));
+                }
+                byte[] encodedBytes = baos.toByteArray();
+                TransactionBuilder builder = createTransactionBuilder("WeatherData");
+                safeWriteToCharacteristic(builder,
+                        PineTimeJFConstants.UUID_CHARACTERISTIC_WEATHER_DATA,
+                        encodedBytes);
+
+                builder.queue(getQueue());
+            }
+
             if (mapOpenWeatherConditionToPineTimePrecipitation(weatherSpec.currentConditionCode) != WeatherData.PrecipitationType.Length) {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
