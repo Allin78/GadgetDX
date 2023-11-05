@@ -61,6 +61,7 @@ public class MijiaLywsd02Support extends AbstractBTLEDeviceSupport {
     private static final UUID UUID_BATTERY = UUID.fromString("ebe0ccc4-7a0a-4b0c-8a1a-6ff2997da3a6");
     private static final UUID UUID_SCALE = UUID.fromString("ebe0ccbe-7a0a-4b0c-8a1a-6ff2997da3a6");
     private static final UUID UUID_CONN_INTERVAL = UUID.fromString("ebe0ccd8-7a0a-4b0c-8a1a-6ff2997da3a6");
+    private static final UUID UUID_POWER_INTERVAL = UUID.fromString("ebe0cca3-7a0a-4b0c-8a1a-6ff2997da3a6");
     private final DeviceInfoProfile<MijiaLywsd02Support> deviceInfoProfile;
     private final GBDeviceEventVersionInfo versionCmd = new GBDeviceEventVersionInfo();
     private final GBDeviceEventBatteryInfo batteryCmd = new GBDeviceEventBatteryInfo();
@@ -95,6 +96,7 @@ public class MijiaLywsd02Support extends AbstractBTLEDeviceSupport {
         }
 
         getBatteryInfo(builder);
+        getPowerInterval(builder);
         setConnectionInterval(builder);
         setInitialized(builder);
         return builder;
@@ -123,6 +125,11 @@ public class MijiaLywsd02Support extends AbstractBTLEDeviceSupport {
         builder.read(batteryCharacteristc);
     }
 
+    private void getPowerInterval(TransactionBuilder builder) {
+        BluetoothGattCharacteristic powerIntervalCharacteristc = getCharacteristic(MijiaLywsd02Support.UUID_POWER_INTERVAL);
+        builder.read(powerIntervalCharacteristc);
+    }
+
     private void setTemperatureScale(TransactionBuilder builder, String scale) {
         BluetoothGattCharacteristic scaleCharacteristc = getCharacteristic(MijiaLywsd02Support.UUID_SCALE);
         builder.write(scaleCharacteristc, new byte[]{ (byte) ("f".equals(scale) ? 0x01 : 0xff) });
@@ -132,6 +139,23 @@ public class MijiaLywsd02Support extends AbstractBTLEDeviceSupport {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             batteryCmd.level = ((short) value[0]);
             handleGBDeviceEvent(batteryCmd);
+        }
+    }
+
+    private void handlePowerInterval(byte[] value, int status) {
+        if (status == BluetoothGatt.GATT_SUCCESS && value[0] != 1) {
+            // if "debug power intervel" can be read and is not 1, set it to 1
+            TransactionBuilder builder;
+            try {
+                LOG.info("Setting power interval on LYWSD02 from {} to 1", (int) value[0]);
+                builder = performInitialized("Set power interval");
+                BluetoothGattCharacteristic powerIntervalCharacteristc = getCharacteristic(MijiaLywsd02Support.UUID_POWER_INTERVAL);
+                builder.write(powerIntervalCharacteristc, new byte[]{ (byte) 0x01 });
+                builder.queue(getQueue());
+            } catch (IOException e) {
+                LOG.error("Error setting power interval on LYWSD02", e);
+            }
+
         }
     }
 
@@ -193,6 +217,11 @@ public class MijiaLywsd02Support extends AbstractBTLEDeviceSupport {
             handleBatteryInfo(characteristic.getValue(), status);
             return true;
         }
+        if(MijiaLywsd02Support.UUID_POWER_INTERVAL.equals(characteristicUUID)) {
+            handlePowerInterval(characteristic.getValue(), status);
+            return true;
+        }
+
         LOG.info("Unhandled characteristic read: " + characteristicUUID);
         return false;
     }
