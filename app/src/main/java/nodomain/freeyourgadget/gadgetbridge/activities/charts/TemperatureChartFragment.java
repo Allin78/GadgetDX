@@ -49,7 +49,6 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.TemperatureSample;
-import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class TemperatureChartFragment extends AbstractChartFragment<TemperatureChartFragment.TemperatureChartsData> {
     protected static final Logger LOG = LoggerFactory.getLogger(ActivitySleepChartFragment.class);
@@ -90,10 +89,12 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
         mTemperatureChart.setData(null); // workaround for https://github.com/PhilJay/MPAndroidChart/issues/2317
         mTemperatureChart.getXAxis().setValueFormatter(temperatureData.getXValueFormatter());
         mTemperatureChart.getXAxis().setAvoidFirstLastClipping(true);
+
+        // Using approximately the range of survivable body-temperatures (in celsius), rounded to multiples of 5
         mTemperatureChart.getAxisLeft().setAxisMinimum(30f);
         mTemperatureChart.getAxisLeft().setAxisMaximum(45f);
+
         mTemperatureChart.setData(temperatureData.getData());
-        mTemperatureChart.getAxisRight().removeAllLimitLines();
     }
 
     @Override
@@ -131,20 +132,13 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
 
         final YAxis yAxisLeft = mTemperatureChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
-        yAxisLeft.setAxisMaximum(100f);
-        yAxisLeft.setAxisMinimum(0);
         yAxisLeft.setDrawTopYLabelEntry(false);
         yAxisLeft.setTextColor(CHART_TEXT_COLOR);
         yAxisLeft.setEnabled(true);
 
         final YAxis yAxisRight = mTemperatureChart.getAxisRight();
         yAxisRight.setDrawGridLines(false);
-        yAxisRight.setEnabled(true);
         yAxisRight.setDrawLabels(false);
-        yAxisRight.setDrawTopYLabelEntry(true);
-        yAxisRight.setTextColor(CHART_TEXT_COLOR);
-        yAxisRight.setAxisMaximum(100f);
-        yAxisRight.setAxisMinimum(0);
     }
 
     @Override
@@ -234,11 +228,11 @@ public class TemperatureChartFragment extends AbstractChartFragment<TemperatureC
     }
 
     protected static class MyValueFormatter extends ValueFormatter {
-        private final DecimalFormat format = new DecimalFormat("0.00");
+        private final DecimalFormat formatter = new DecimalFormat("0.00");
 
         @Override
         public String getPointLabel(Entry entry) {
-            return format.format(entry.getY());
+            return formatter.format(entry.getY());
         }
     }
 
