@@ -68,6 +68,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilter;
 import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilterDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilterEntry;
 import nodomain.freeyourgadget.gadgetbridge.entities.NotificationFilterEntryDao;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.AlarmNotificationHandler;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.GoogleMapsNotificationHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.AppNotificationType;
@@ -128,9 +129,9 @@ public class NotificationListener extends NotificationListenerService {
     private Runnable mSetMusicStateRunnable = null;
 
     private GoogleMapsNotificationHandler googleMapsNotificationHandler = new GoogleMapsNotificationHandler();
+    private AlarmNotificationHandler alarmNotificationHandler = new AlarmNotificationHandler();
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -287,6 +288,9 @@ public class NotificationListener extends NotificationListenerService {
 
         /* Check for navigation notifications and ignore if we're handling them */
         if (googleMapsNotificationHandler.handle(getApplicationContext(), sbn)) return;
+
+        /* Process notifications for Google's version of com.android.deskclock for alarm and timer events */
+        if (alarmNotificationHandler.handle(getApplicationContext(), sbn)) return;
 
         // If media notifications do NOT ignore app list, check them after
         if (!mediaIgnoresAppList && handleMediaSessionNotification(sbn)) return;
@@ -739,6 +743,7 @@ public class NotificationListener extends NotificationListenerService {
         if (shouldIgnoreSource(sbn)) return;
 
         googleMapsNotificationHandler.handleRemove(sbn);
+        alarmNotificationHandler.handleRemove(getApplicationContext(), sbn);
 
         // If media notifications do NOT ignore app list, check them after
         if (!mediaIgnoresAppList && handleMediaSessionNotification(sbn)) return;

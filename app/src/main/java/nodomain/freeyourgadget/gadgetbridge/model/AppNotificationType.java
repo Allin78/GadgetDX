@@ -53,6 +53,10 @@ public class AppNotificationType extends HashMap<String, NotificationType> {
         put("com.android.calendar", NotificationType.GENERIC_CALENDAR);
         put("mikado.bizcalpro", NotificationType.BUSINESS_CALENDAR);
 
+        // Generic Alarm clock
+        put("com.google.android.deskclock", NotificationType.GENERIC_ALARM_CLOCK);
+        put("com.sec.android.app.clockpackage", NotificationType.GENERIC_ALARM_CLOCK);
+
         // Google
         put("com.google.android.gm", NotificationType.GMAIL);
         put("com.google.android.apps.inbox", NotificationType.GOOGLE_INBOX);
