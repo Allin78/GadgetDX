@@ -77,6 +77,7 @@ public interface DeviceService extends EventHandler {
     String ACTION_SET_GPS_LOCATION = PREFIX + ".action.set_gps_location";
     String ACTION_SET_LED_COLOR = PREFIX + ".action.set_led_color";
     String ACTION_POWER_OFF = PREFIX + ".action.power_off";
+    String ACTION_PHONE_ALARM = PREFIX + ".action.phone_alarm";
     String EXTRA_NOTIFICATION_BODY = "notification_body";
     String EXTRA_NOTIFICATION_FLAGS = "notification_flags";
     String EXTRA_NOTIFICATION_ID = "notification_id";
@@ -138,6 +139,10 @@ public interface DeviceService extends EventHandler {
     String EXTRA_LED_COLOR = "led_color";
     String EXTRA_GPS_LOCATION = "gps_location";
     String EXTRA_RESET_FLAGS = "reset_flags";
+    String EXTRA_PHONE_ALARM_ID = "phone_alarm_id";
+    String EXTRA_PHONE_ALARM_NAME = "phone_alarm_name";
+    String EXTRA_PHONE_ALARM_TIMESTAMP = "phone_alarm_timestamp";
+    String EXTRA_PHONE_ALARM_ACTION = "phone_alarm_action";
 
     /**
      * Use EXTRA_REALTIME_SAMPLE instead

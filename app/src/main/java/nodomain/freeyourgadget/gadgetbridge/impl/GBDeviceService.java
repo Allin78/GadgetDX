@@ -44,6 +44,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.PhoneAlarmSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
@@ -543,6 +544,16 @@ public class GBDeviceService implements DeviceService {
     public void onSetGpsLocation(Location location) {
         Intent intent = createIntent().setAction(ACTION_SET_GPS_LOCATION);
         intent.putExtra(EXTRA_GPS_LOCATION, location);
+        invokeService(intent);
+    }
+
+    @Override
+    public void onPhoneAlarm(PhoneAlarmSpec alarm) {
+        Intent intent = createIntent().setAction(ACTION_PHONE_ALARM);
+        intent.putExtra(EXTRA_PHONE_ALARM_ID, alarm.id);
+        intent.putExtra(EXTRA_PHONE_ALARM_ACTION, alarm.action);
+        intent.putExtra(EXTRA_PHONE_ALARM_NAME, alarm.name);
+        intent.putExtra(EXTRA_PHONE_ALARM_TIMESTAMP, alarm.timestamp);
         invokeService(intent);
     }
 }

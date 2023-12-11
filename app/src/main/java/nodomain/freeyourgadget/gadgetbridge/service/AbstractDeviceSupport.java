@@ -63,6 +63,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBAccess;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventAlarmControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventAppInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
@@ -94,6 +95,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.Contact;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.PhoneAlarmSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.SleepState;
 import nodomain.freeyourgadget.gadgetbridge.model.WearingState;
@@ -218,6 +220,8 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
             handleGBDeviceEvent((GBDeviceEventWearState) deviceEvent);
         } else if (deviceEvent instanceof GBDeviceEventSleepStateDetection) {
             handleGBDeviceEvent((GBDeviceEventSleepStateDetection) deviceEvent);
+        } else if (deviceEvent instanceof GBDeviceEventAlarmControl) {
+            handleGBDeviceEvent((GBDeviceEventAlarmControl) deviceEvent);
         }
     }
 
@@ -685,6 +689,11 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
         handleDeviceAction(actionOnUnwear, broadcastMessage);
     }
 
+    private void handleGBDeviceEvent(GBDeviceEventAlarmControl event) {
+        LOG.debug("Got ALARM_CONTROL event: {}", event);
+        // TODO now what
+    }
+
     private StoreDataTask createStoreTask(String task, Context context, GBDeviceEventBatteryInfo deviceEvent) {
         return new StoreDataTask(task, context, deviceEvent);
     }
@@ -1146,6 +1155,16 @@ public abstract class AbstractDeviceSupport implements DeviceSupport {
 
     @Override
     public void onSetNavigationInfo(NavigationInfoSpec navigationInfoSpec) {
+
+    }
+
+    /**
+     * This method can be overridden if the device supports receiving
+     * commands related to the state of alarms on the phone.
+     * @param alarm Information about an ongoing or dismissed alarm
+     */
+    @Override
+    public void onPhoneAlarm(PhoneAlarmSpec alarm) {
 
     }
 }

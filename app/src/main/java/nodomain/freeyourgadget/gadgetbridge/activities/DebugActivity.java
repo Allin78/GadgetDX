@@ -117,11 +117,11 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
+import nodomain.freeyourgadget.gadgetbridge.model.PhoneAlarmSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.service.serial.GBDeviceProtocol;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.PendingIntentUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
@@ -451,6 +451,16 @@ public class DebugActivity extends AbstractGBActivity {
                 testPebbleKitNotification();
             }
         });
+
+        Button alertPhoneAlarmBeginButton = findViewById(R.id.alertPhoneAlarmBegin);
+        alertPhoneAlarmBeginButton.setOnClickListener((v) -> testAlertPhoneAlarmBegin());
+
+        Button alertPhoneAlarmDismissButton = findViewById(R.id.alertPhoneAlarmDismiss);
+        alertPhoneAlarmDismissButton.setOnClickListener((v) -> testAlertPhoneAlarmDismiss());
+
+        Button alertPhoneAlarmSnoozeButton = findViewById(R.id.alertPhoneAlarmSnooze);
+        alertPhoneAlarmSnoozeButton.setOnClickListener((v) -> testAlertPhoneAlarmSnooze());
+
 
         Button fetchDebugLogsButton = findViewById(R.id.fetchDebugLogsButton);
         fetchDebugLogsButton.setOnClickListener(new View.OnClickListener() {
@@ -977,6 +987,33 @@ public class DebugActivity extends AbstractGBActivity {
         pebbleKitIntent.putExtra("messageType", "PEBBLE_ALERT");
         pebbleKitIntent.putExtra("notificationData", "[{\"title\":\"PebbleKitTest\",\"body\":\"sent from Gadgetbridge\"}]");
         getApplicationContext().sendBroadcast(pebbleKitIntent);
+    }
+
+    private void testAlertPhoneAlarmBegin() {
+        PhoneAlarmSpec alarm = new PhoneAlarmSpec();
+        alarm.action = PhoneAlarmSpec.Action.ALERT;
+        alarm.id = 13371337;
+        alarm.name = editContent.getText().toString();
+        alarm.timestamp = (int) (System.currentTimeMillis() / 1000);
+        GBApplication.deviceService().onPhoneAlarm(alarm);
+    }
+
+    private void testAlertPhoneAlarmDismiss() {
+        PhoneAlarmSpec alarm = new PhoneAlarmSpec();
+        alarm.action = PhoneAlarmSpec.Action.DISMISS;
+        alarm.id = 13371337;
+        alarm.name = editContent.getText().toString();
+        alarm.timestamp = (int) (System.currentTimeMillis() / 1000);
+        GBApplication.deviceService().onPhoneAlarm(alarm);
+    }
+
+    private void testAlertPhoneAlarmSnooze() {
+        PhoneAlarmSpec alarm = new PhoneAlarmSpec();
+        alarm.action = PhoneAlarmSpec.Action.SNOOZE;
+        alarm.id = 13371337;
+        alarm.name = editContent.getText().toString();
+        alarm.timestamp = (int) (System.currentTimeMillis() / 1000);
+        GBApplication.deviceService().onPhoneAlarm(alarm);
     }
 
     @Override

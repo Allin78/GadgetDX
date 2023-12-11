@@ -87,6 +87,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
+import nodomain.freeyourgadget.gadgetbridge.model.PhoneAlarmSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
@@ -916,6 +917,14 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             case ACTION_SET_GPS_LOCATION:
                 final Location location = intent.getParcelableExtra(EXTRA_GPS_LOCATION);
                 deviceSupport.onSetGpsLocation(location);
+                break;
+            case ACTION_PHONE_ALARM:
+                final PhoneAlarmSpec alarm = new PhoneAlarmSpec();
+                alarm.id = intent.getIntExtra(EXTRA_PHONE_ALARM_ID, -1);
+                alarm.name = intent.getStringExtra(EXTRA_PHONE_ALARM_NAME);
+                alarm.timestamp = intent.getIntExtra(EXTRA_PHONE_ALARM_TIMESTAMP, 0);
+                alarm.action = (PhoneAlarmSpec.Action) intent.getSerializableExtra(EXTRA_PHONE_ALARM_ACTION);
+                deviceSupport.onPhoneAlarm(alarm);
                 break;
         }
     }

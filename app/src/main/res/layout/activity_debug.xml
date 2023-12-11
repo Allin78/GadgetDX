@@ -169,6 +169,33 @@
                 grid:layout_columnSpan="2"
                 grid:layout_gravity="fill_horizontal"
                 android:text="create PebbleKit test notification" />
+
+            <androidx.gridlayout.widget.GridLayout
+                grid:layout_columnSpan="2"
+                grid:layout_gravity="fill_horizontal">
+                <Button
+                    android:id="@+id/alertPhoneAlarmBegin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    grid:layout_columnSpan="2"
+                    grid:layout_gravity="fill_horizontal"
+                    android:text="Start Alarm" />
+                <Button
+                    android:id="@+id/alertPhoneAlarmDismiss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    grid:layout_columnSpan="2"
+                    grid:layout_gravity="fill_horizontal"
+                    android:text="Dismiss Alarm" />
+                <Button
+                    android:id="@+id/alertPhoneAlarmSnooze"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    grid:layout_columnSpan="2"
+                    grid:layout_gravity="fill_horizontal"
+                    android:text="Snooze Alarm" />
+            </androidx.gridlayout.widget.GridLayout>
+
             <Button
                 android:id="@+id/fetchDebugLogsButton"
                 android:layout_width="wrap_content"
