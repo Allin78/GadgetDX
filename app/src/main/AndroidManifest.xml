@@ -490,6 +490,17 @@
             </intent-filter>
         </receiver>
         <receiver
+            android:name=".externalevents.AlarmClockReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.android.deskclock.ALARM_SNOOZE" />
+                <action android:name="com.android.deskclock.ALARM_DISMISS" />
+                <action android:name="com.android.deskclock.ALARM_ALERT" />
+                <action android:name="com.android.deskclock.ALARM_DONE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
             android:name=".service.receivers.GBCallControlReceiver"
             android:exported="false">
             <intent-filter>
