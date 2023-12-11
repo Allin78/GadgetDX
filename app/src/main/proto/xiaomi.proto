@@ -853,6 +853,9 @@ message Schedule {
   // 17, 17
   optional Reminder editReminder = 15;
 
+  // 17, 16
+  optional PhoneAlarm phoneAlarm = 16;
+
   // 17, 18
   optional ReminderDelete deleteReminder = 17;
 }
@@ -912,6 +915,17 @@ message ReminderDetails {
 
 message ReminderDelete {
   repeated uint32 id = 1;
+}
+
+message PhoneAlarmData {
+  required uint32 id = 1;
+  optional uint32 timestamp = 2; // Timestamp of the alarm, in seconds
+  optional string title = 3; // Title of the alarm
+}
+
+message PhoneAlarm {
+  required uint32 action = 1;
+  optional PhoneAlarmData alarm_data = 2;
 }
 
 message WorldClocks {

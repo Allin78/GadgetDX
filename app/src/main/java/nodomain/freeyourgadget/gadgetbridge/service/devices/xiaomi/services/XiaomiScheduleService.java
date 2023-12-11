@@ -17,6 +17,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.xiaomi.services;
 
 import android.content.Intent;
+import android.os.Handler;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -30,6 +31,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -45,6 +47,9 @@ import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.User;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
+import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
+import nodomain.freeyourgadget.gadgetbridge.model.PhoneAlarmSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.Reminder;
 import nodomain.freeyourgadget.gadgetbridge.model.WorldClock;
 import nodomain.freeyourgadget.gadgetbridge.proto.xiaomi.XiaomiProto;
@@ -67,6 +72,7 @@ public class XiaomiScheduleService extends AbstractXiaomiService {
     private static final int CMD_WORLD_CLOCKS_SET = 11;
     private static final int CMD_REMINDERS_GET = 14;
     private static final int CMD_REMINDERS_CREATE = 15;
+    private static final int CMD_PHONE_ALARM = 16;
     private static final int CMD_REMINDERS_EDIT = 17;
     private static final int CMD_REMINDERS_DELETE = 18;
 
@@ -133,6 +139,9 @@ public class XiaomiScheduleService extends AbstractXiaomiService {
                     LOG.debug("Requesting reminders after all acks");
                     requestReminders();
                 }
+                return;
+            case CMD_PHONE_ALARM:
+                handlePhoneAlarmResponse(cmd.getSchedule().getPhoneAlarm());
                 return;
         }
 
@@ -362,6 +371,70 @@ public class XiaomiScheduleService extends AbstractXiaomiService {
                             .setSchedule(schedule)
                             .build()
             );
+        }
+    }
+
+    public void onPhoneAlarmEvent(NotificationSpec notification) {
+        PhoneAlarmSpec alarm = new PhoneAlarmSpec();
+        alarm.action = PhoneAlarmSpec.Action.ALERT;
+        alarm.timestamp = (int) (System.currentTimeMillis() / 1000);
+        alarm.name = notification.title;
+        alarm.id = 12345678;
+
+        onPhoneAlarmEvent(alarm);
+    }
+
+    public void onPhoneAlarmEvent(PhoneAlarmSpec alarm) {
+        int convertedType;
+
+        LOG.debug("onPhoneAlarmEvent alarm={}", alarm);
+
+        switch (alarm.action) {
+            case ALERT:
+                convertedType = 0;
+                break;
+            case DISMISS:
+                convertedType = 1;
+                break;
+            case SNOOZE:
+                convertedType = 2;
+                break;
+            default:
+                LOG.warn("Unconvertable alarm type {}", alarm.action);
+                return;
+        }
+
+        getSupport().sendCommand(
+                String.format(Locale.ROOT, "send phone alarm %s %s", alarm.name, alarm.action),
+                XiaomiProto.Command.newBuilder()
+                        .setType(COMMAND_TYPE)
+                        .setSubtype(CMD_PHONE_ALARM)
+                        .setSchedule(XiaomiProto.Schedule.newBuilder()
+                                .setPhoneAlarm(XiaomiProto.PhoneAlarm.newBuilder()
+                                        .setAction(convertedType)
+                                        .setAlarmData(XiaomiProto.PhoneAlarmData.newBuilder()
+                                                .setTitle(alarm.name)
+                                                .setId(alarm.id)
+                                                .setTimestamp(alarm.timestamp))))
+                        .build());
+    }
+
+    public void handlePhoneAlarmResponse(XiaomiProto.PhoneAlarm alarm) {
+        int action = alarm.getAction();
+        LOG.debug("Received PHONE_ALARM message, action: {}", action);
+
+        switch (action) {
+            case 1:
+                // alarm dismissed by cancel button
+                LOG.debug("Alarm was cancelled on device");
+                break;
+            case 2:
+                // alarm dismissed by snooze button
+                LOG.debug("Alarm was snoozed on device");
+                break;
+            default:
+                LOG.warn("Unknown PHONE_ALARM action {} received", action);
+                return;
         }
     }
 
