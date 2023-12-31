@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,8 +34,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NavUtils;
+import androidx.documentfile.provider.DocumentFile;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -43,6 +49,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -65,6 +72,8 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 public class DataManagementActivity extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(DataManagementActivity.class);
     private static SharedPreferences sharedPrefs;
+    ActivityResultLauncher<Intent> selectResult;
+    Uri rootUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +97,35 @@ public class DataManagementActivity extends AbstractGBActivity {
                 importDB();
             }
         });
+
+        Button selectContentDataButton = findViewById(R.id.selectContentDataButton);
+        selectContentDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectExternalDir();
+            }
+        });
+
+        selectResult = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            // There are no request codes
+                            Intent data = result.getData();
+                            if (data != null) {
+                                Uri uri = data.getData();
+                                if (uri != null) {
+                                    rootUri = uri;
+                                    TextView dbPath = findViewById(R.id.activity_data_management_path);
+                                    dbPath.setText(uri.toString());
+                                }
+
+                            }
+                        }
+                    }
+                });
 
         Button showContentDataButton = findViewById(R.id.showContentDataButton);
         showContentDataButton.setOnClickListener(v -> {
@@ -141,7 +179,7 @@ public class DataManagementActivity extends AbstractGBActivity {
 
         TextView autoExportLocation_path = findViewById(R.id.autoExportLocation_path);
         autoExportLocation_path.setVisibility(testExportVisibility);
-        autoExportLocation_path.setText(getAutoExportLocationUserString() + " (" + getAutoExportLocationPreferenceString() + ")" );
+        autoExportLocation_path.setText(getAutoExportLocationUserString() + " (" + getAutoExportLocationPreferenceString() + ")");
 
         TextView autoExportEnabled_label = findViewById(R.id.autoExportEnabled);
         if (isExportEnabled) {
@@ -186,6 +224,11 @@ public class DataManagementActivity extends AbstractGBActivity {
         });
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+    }
+
+    private void selectExternalDir() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        selectResult.launch(intent);
     }
 
     private String getAutoExportLocationPreferenceString() {
@@ -244,11 +287,15 @@ public class DataManagementActivity extends AbstractGBActivity {
         return getString(R.string.dbmanagementactivvity_cannot_access_export_path);
     }
 
-    private void exportShared() {
+    private void exportShared(DocumentFile root) {
         try {
-            File myPath = FileUtils.getExternalFilesDir();
-            File myFile = new File(myPath, "Export_preference");
-            ImportExportSharedPreferences.exportToFile(sharedPrefs, myFile, null);
+            DocumentFile file = root.createFile("application/xml", "Export_preference");
+            OutputStream out = getContentResolver().openOutputStream(file.getUri());
+            try {
+                ImportExportSharedPreferences.exportToFile(sharedPrefs, out, null);
+            } finally {
+                out.close();
+            }
         } catch (IOException ex) {
             GB.toast(this, getString(R.string.dbmanagementactivity_error_exporting_shared, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
         }
@@ -257,12 +304,15 @@ public class DataManagementActivity extends AbstractGBActivity {
             for (Device dbDevice : activeDevices) {
                 SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
                 if (sharedPrefs != null) {
-                    File myPath = FileUtils.getExternalFilesDir();
-                    File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
+                    String name = "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier());
+                    DocumentFile file = root.createFile("application/xml", name);
+                    OutputStream out = getContentResolver().openOutputStream(file.getUri());
                     try {
-                        ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, myFile, null);
+                        ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, out, null);
                     } catch (Exception ignore) {
                         // some devices no not have device specific preferences
+                    } finally {
+                        out.close();
                     }
                 }
             }
@@ -291,7 +341,7 @@ public class DataManagementActivity extends AbstractGBActivity {
                     if (!myFile.exists()) { //first try to use file in new format de_ad_be_af, if doesn't exist use old format de:at:be:af
                         myFile = new File(myPath, "Export_preference_" + dbDevice.getIdentifier());
                         LOG.info("Trying to import with older filename");
-                    }else{
+                    } else {
                         LOG.info("Trying to import with new filename");
                     }
 
@@ -317,7 +367,8 @@ public class DataManagementActivity extends AbstractGBActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            exportShared();
+                            DocumentFile root = DocumentFile.fromTreeUri(getApplicationContext(), rootUri);
+                            exportShared(root);
                             DBHelper helper = new DBHelper(DataManagementActivity.this);
                             File dir = FileUtils.getExternalFilesDir();
                             File destFile = helper.exportDB(dbHandler, dir);
@@ -397,15 +448,15 @@ public class DataManagementActivity extends AbstractGBActivity {
                 .setIcon(R.drawable.ic_warning)
                 .setMessage(R.string.dbmanagementactivity_delete_old_activitydb_confirmation)
                 .setPositiveButton(R.string.Delete, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (GBApplication.deleteOldActivityDatabase(DataManagementActivity.this)) {
-                    GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_old_activity_db_successfully_deleted), Toast.LENGTH_SHORT, GB.INFO);
-                } else {
-                    GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_old_activity_db_deletion_failed), Toast.LENGTH_SHORT, GB.INFO);
-                }
-            }
-        });
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (GBApplication.deleteOldActivityDatabase(DataManagementActivity.this)) {
+                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_old_activity_db_successfully_deleted), Toast.LENGTH_SHORT, GB.INFO);
+                        } else {
+                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_old_activity_db_deletion_failed), Toast.LENGTH_SHORT, GB.INFO);
+                        }
+                    }
+                });
         new MaterialAlertDialogBuilder(this).setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

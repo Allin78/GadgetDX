@@ -71,6 +71,13 @@
                 android:layout_weight="1"
                 android:text="@string/activity_DB_ShowContentButton" />
 
+            <Button
+                android:id="@+id/selectContentDataButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/activity_DB_SelectContentButton" />
+
             <TextView
                 android:id="@+id/cleanExportDirectory_label"
                 android:layout_width="match_parent"

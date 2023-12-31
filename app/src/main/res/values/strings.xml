@@ -1233,6 +1233,7 @@
     <string name="activity_db_management_autoexport_location">Location could not be understood. Likely an issue of newer Android permission system. Most likely, autoexport is not working now.</string>
     <string name="activity_DB_ExportButton">Export Data</string>
     <string name="activity_DB_import_button">Import Data</string>
+    <string name="activity_DB_SelectContentButton">Select Export/Import directory</string>
     <string name="activity_DB_test_export_button">Run AutoExport Now</string>
     <string name="activity_DB_test_export_message">Exporting database…</string>
     <string name="activity_DB_delete_legacy_button">Delete old DB</string>

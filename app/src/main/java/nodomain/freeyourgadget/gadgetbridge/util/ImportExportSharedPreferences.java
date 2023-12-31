@@ -21,6 +21,8 @@ package nodomain.freeyourgadget.gadgetbridge.util;
 import android.content.SharedPreferences;
 import android.util.Xml;
 
+import androidx.documentfile.provider.DocumentFile;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlSerializer;
 
@@ -28,8 +30,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -48,11 +53,10 @@ public class ImportExportSharedPreferences {
     private static final String NAME = "name";
     private static final String PREFERENCES = "preferences";
 
-    public static void exportToFile(SharedPreferences sharedPreferences, File outFile,
+    public static void exportToFile(SharedPreferences sharedPreferences, OutputStream outFile,
                                     Set<String> doNotExport) throws IOException {
-        try (FileWriter outputWriter = new FileWriter(outFile)) {
-            export(sharedPreferences, outputWriter, doNotExport);
-        }
+        Writer writer = new OutputStreamWriter(outFile, StandardCharsets.UTF_8);
+        export(sharedPreferences, writer, doNotExport);
     }
 
     private static void export(SharedPreferences sharedPreferences, Writer writer,
