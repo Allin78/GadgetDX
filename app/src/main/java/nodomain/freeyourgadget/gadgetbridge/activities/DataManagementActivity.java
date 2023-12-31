@@ -149,12 +149,6 @@ public class DataManagementActivity extends AbstractGBActivity {
 
         int testExportVisibility = (autoExportInterval > 0 && autoExportEnabled) ? View.VISIBLE : View.GONE;
         boolean isExportEnabled = autoExportInterval > 0 && autoExportEnabled;
-        TextView autoExportLocation_label = findViewById(R.id.autoExportLocation_label);
-        autoExportLocation_label.setVisibility(testExportVisibility);
-
-        TextView autoExportLocation_path = findViewById(R.id.autoExportLocation_path);
-        autoExportLocation_path.setVisibility(testExportVisibility);
-        autoExportLocation_path.setText(getAutoExportLocationUserString() + " (" + getAutoExportLocationPreferenceString() + ")");
 
         TextView autoExportEnabled_label = findViewById(R.id.autoExportEnabled);
         if (isExportEnabled) {
@@ -205,49 +199,6 @@ public class DataManagementActivity extends AbstractGBActivity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         selectResult.launch(intent);
-    }
-
-    private String getAutoExportLocationPreferenceString() {
-        String autoExportLocation = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
-        if (autoExportLocation == null) {
-            return "";
-        }
-        return autoExportLocation;
-    }
-
-    private String getAutoExportLocationUri() {
-        String autoExportLocation = getAutoExportLocationPreferenceString();
-        if (autoExportLocation == null) {
-            return "";
-        }
-        Uri uri = Uri.parse(autoExportLocation);
-        try {
-
-            return AndroidUtils.getFilePath(getApplicationContext(), uri);
-        } catch (IllegalArgumentException e) {
-            LOG.error("getFilePath did not work, trying to resolve content provider path");
-            try {
-                Cursor cursor = getContentResolver().query(
-                        uri,
-                        new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME},
-                        null, null, null, null
-                );
-                if (cursor != null && cursor.moveToFirst()) {
-                    return cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
-                }
-            } catch (Exception exception) {
-                LOG.error("Error getting export path", exception);
-            }
-        }
-        return "";
-    }
-
-    private String getAutoExportLocationUserString() {
-        String location = getAutoExportLocationUri();
-        if (location == "") {
-            return getString(R.string.activity_db_management_autoexport_location);
-        }
-        return location;
     }
 
     private String getExternalPath() {

@@ -109,20 +109,6 @@
                 android:text="@string/autoExport_lastTime_label"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <TextView
-                android:id="@+id/autoExportLocation_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/activity_db_management_autoexport_explanation"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <TextView
-                android:id="@+id/autoExportLocation_path"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textStyle="bold" />
-
             <Button
                 android:id="@+id/testExportDBButton"
                 android:layout_width="match_parent"

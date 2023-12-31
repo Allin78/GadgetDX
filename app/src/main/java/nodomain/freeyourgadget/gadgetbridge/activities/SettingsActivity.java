@@ -292,20 +292,6 @@ public class SettingsActivity extends AbstractSettingsActivityV2 {
             }
 
 
-            pref = findPreference(GBPrefs.AUTO_EXPORT_LOCATION);
-            if (pref != null) {
-                pref.setOnPreferenceClickListener(preference -> {
-                    Intent i = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-                    i.setType("application/x-sqlite3");
-                    i.addCategory(Intent.CATEGORY_OPENABLE);
-                    i.putExtra(Intent.EXTRA_TITLE, "Gadgetbridge.db");
-                    i.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    String title = requireContext().getApplicationContext().getString(R.string.choose_auto_export_location);
-                    startActivityForResult(Intent.createChooser(i, title), EXPORT_LOCATION_FILE_REQUEST_CODE);
-                    return true;
-                });
-                pref.setSummary(getAutoExportLocationSummary());
-            }
 
             pref = findPreference(GBPrefs.AUTO_EXPORT_INTERVAL);
             if (pref != null) {
@@ -519,53 +505,6 @@ public class SettingsActivity extends AbstractSettingsActivityV2 {
             public void onNothingSelected(AdapterView<?> arg0) {
                 // TODO Auto-generated method stub
             }
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-            if (requestCode == EXPORT_LOCATION_FILE_REQUEST_CODE && intent != null) {
-                Uri uri = intent.getData();
-                requireContext().getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                GBApplication.getPrefs().getPreferences()
-                        .edit()
-                        .putString(GBPrefs.AUTO_EXPORT_LOCATION, uri.toString())
-                        .apply();
-                String summary = getAutoExportLocationSummary();
-                findPreference(GBPrefs.AUTO_EXPORT_LOCATION).setSummary(summary);
-                boolean autoExportEnabled = GBApplication
-                        .getPrefs().getBoolean(GBPrefs.AUTO_EXPORT_ENABLED, false);
-                int autoExportPeriod = GBApplication
-                        .getPrefs().getInt(GBPrefs.AUTO_EXPORT_INTERVAL, 0);
-                PeriodicExporter.scheduleAlarm(requireContext().getApplicationContext(), autoExportPeriod, autoExportEnabled);
-            }
-        }
-
-        /*
-        Either returns the file path of the selected document, or the display name, or an empty string
-         */
-        public String getAutoExportLocationSummary() {
-            String autoExportLocation = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
-            if (autoExportLocation == null) {
-                return "";
-            }
-            Uri uri = Uri.parse(autoExportLocation);
-            try {
-                return AndroidUtils.getFilePath(requireContext().getApplicationContext(), uri);
-            } catch (IllegalArgumentException e) {
-                try {
-                    Cursor cursor = requireContext().getContentResolver().query(
-                            uri,
-                            new String[]{DocumentsContract.Document.COLUMN_DISPLAY_NAME},
-                            null, null, null, null
-                    );
-                    if (cursor != null && cursor.moveToFirst()) {
-                        return cursor.getString(cursor.getColumnIndex(DocumentsContract.Document.COLUMN_DISPLAY_NAME));
-                    }
-                } catch (Exception fdfsdfds) {
-                    LOG.warn("fuck");
-                }
-            }
-            return "";
         }
 
         /*

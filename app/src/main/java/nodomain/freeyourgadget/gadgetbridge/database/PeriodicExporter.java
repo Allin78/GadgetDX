@@ -107,7 +107,7 @@ public class PeriodicExporter extends BroadcastReceiver {
             LOG.info("Exporting DB in a background thread");
             try (DBHandler dbHandler = GBApplication.acquireDB()) {
                 DBHelper helper = new DBHelper(localContext);
-                String dst = GBApplication.getPrefs().getString(GBPrefs.AUTO_EXPORT_LOCATION, null);
+                String dst = GBApplication.getPrefs().getString(GBPrefs.EXPORT_LOCATION, null);
                 if (dst == null) {
                     LOG.warn("Unable to export DB, export location not set");
                     broadcastSuccess(false);
