@@ -50,6 +50,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -117,7 +120,11 @@ public class DataManagementActivity extends AbstractGBActivity {
                             if (data != null) {
                                 Uri uri = data.getData();
                                 if (uri != null) {
-                                    rootUri = uri;
+                                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                    GBApplication.getPrefs().getPreferences()
+                                            .edit()
+                                            .putString(GBPrefs.EXPORT_LOCATION, uri.toString())
+                                            .apply();
                                     TextView dbPath = findViewById(R.id.activity_data_management_path);
                                     dbPath.setText(uri.toString());
                                 }
@@ -228,6 +235,7 @@ public class DataManagementActivity extends AbstractGBActivity {
 
     private void selectExternalDir() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         selectResult.launch(intent);
     }
 
@@ -279,22 +287,21 @@ public class DataManagementActivity extends AbstractGBActivity {
     }
 
     private String getExternalPath() {
-        try {
-            return FileUtils.getExternalFilesDir().getAbsolutePath();
-        } catch (Exception ex) {
-            LOG.warn("Unable to get external files dir", ex);
+        String exportLocation = GBApplication.getPrefs().getString(GBPrefs.EXPORT_LOCATION, null);
+        if (exportLocation == null) {
+            return "";
         }
-        return getString(R.string.dbmanagementactivvity_cannot_access_export_path);
+        return exportLocation;
     }
 
     private void exportShared(DocumentFile root) {
         try {
-            DocumentFile file = root.createFile("application/xml", "Export_preference");
-            OutputStream out = getContentResolver().openOutputStream(file.getUri());
-            try {
+            DocumentFile file = root.findFile("Export_preference.xml");
+            if (file == null) {
+                file = root.createFile("application/xml", "Export_preference");
+            }
+            try (OutputStream out = getContentResolver().openOutputStream(file.getUri())) {
                 ImportExportSharedPreferences.exportToFile(sharedPrefs, out, null);
-            } finally {
-                out.close();
             }
         } catch (IOException ex) {
             GB.toast(this, getString(R.string.dbmanagementactivity_error_exporting_shared, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
@@ -305,19 +312,31 @@ public class DataManagementActivity extends AbstractGBActivity {
                 SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
                 if (sharedPrefs != null) {
                     String name = "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier());
-                    DocumentFile file = root.createFile("application/xml", name);
-                    OutputStream out = getContentResolver().openOutputStream(file.getUri());
-                    try {
+
+                    DocumentFile file =  root.findFile(name + ".xml");
+                    if (file == null) {
+                        root.createFile("application/xml", name);
+                    }
+                    try (OutputStream out = getContentResolver().openOutputStream(file.getUri())) {
                         ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, out, null);
                     } catch (Exception ignore) {
                         // some devices no not have device specific preferences
-                    } finally {
-                        out.close();
                     }
                 }
             }
         } catch (Exception e) {
             GB.toast("Error exporting device specific preferences", Toast.LENGTH_SHORT, GB.ERROR, e);
+        }
+    }
+
+    private void exportDBFile(DocumentFile root, DBHandler dbHandler) throws IOException {
+        DBHelper helper = new DBHelper(DataManagementActivity.this);
+        DocumentFile file = root.findFile(dbHandler.getHelper().getDatabaseName());
+        if (file == null) {
+            root.createFile("application/x-sqlite3", dbHandler.getHelper().getDatabaseName());
+        }
+        try (OutputStream out = getContentResolver().openOutputStream(file.getUri())) {
+            helper.exportDB(dbHandler, out);
         }
     }
 
@@ -367,12 +386,16 @@ public class DataManagementActivity extends AbstractGBActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         try (DBHandler dbHandler = GBApplication.acquireDB()) {
+                            String exportLocation = getExternalPath();
+                            if (exportLocation.equals("")) {
+                                GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_exporting_db, getString(R.string.dbmanagementactivity_export_location_not_set)), Toast.LENGTH_LONG, GB.ERROR);
+                                return;
+                            }
+                            Uri rootUri = Uri.parse(exportLocation);
                             DocumentFile root = DocumentFile.fromTreeUri(getApplicationContext(), rootUri);
                             exportShared(root);
-                            DBHelper helper = new DBHelper(DataManagementActivity.this);
-                            File dir = FileUtils.getExternalFilesDir();
-                            File destFile = helper.exportDB(dbHandler, dir);
-                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_exported_to, destFile.getAbsolutePath()), Toast.LENGTH_LONG, GB.INFO);
+                            exportDBFile(root, dbHandler);
+                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_exported_to, getExternalPath()), Toast.LENGTH_LONG, GB.INFO);
                         } catch (Exception ex) {
                             GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_exporting_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
                         }

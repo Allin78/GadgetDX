@@ -1205,6 +1205,7 @@
     <string name="dbmanagementactivvity_cannot_access_export_path">Cannot access export path. Please contact the developers.</string>
     <string name="dbmanagementactivity_exported_to">Exported to: %1$s</string>
     <string name="dbmanagementactivity_error_exporting_db">"Error exporting DB: %1$s"</string>
+    <string name="dbmanagementactivity_export_location_not_set">Export location not set</string>
     <string name="dbmanagementactivity_error_cleaning_export_directory">"Error erasing files from export directory %1$s"</string>
     <string name="dbmanagementactivity_error_exporting_shared">"Error exporting preference: %1$s"</string>
     <string name="dbmanagementactivity_import_data_title">Import Data?</string>

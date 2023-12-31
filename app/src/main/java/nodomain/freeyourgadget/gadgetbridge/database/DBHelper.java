@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -109,27 +111,6 @@ public class DBHelper {
             throw new IllegalStateException("Database must be closed");
         }
         return path;
-    }
-
-    public File exportDB(DBHandler dbHandler, File toDir) throws IllegalStateException, IOException {
-        String dbPath = getClosedDBPath(dbHandler);
-        try {
-            File sourceFile = new File(dbPath);
-            File destFile = new File(toDir, sourceFile.getName());
-            if (destFile.exists()) {
-                File backup = new File(toDir, destFile.getName() + "_" + getDate());
-                destFile.renameTo(backup);
-            } else if (!toDir.exists()) {
-                if (!toDir.mkdirs()) {
-                    throw new IOException("Unable to create directory: " + toDir.getAbsolutePath());
-                }
-            }
-
-            FileUtils.copyFile(sourceFile, destFile);
-            return destFile;
-        } finally {
-            dbHandler.openDb();
-        }
     }
 
     public void exportDB(DBHandler dbHandler, OutputStream dest) throws IOException {

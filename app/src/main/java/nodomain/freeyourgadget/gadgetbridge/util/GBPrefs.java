@@ -48,6 +48,7 @@ public class GBPrefs extends Prefs {
     public static final String CALENDAR_BLACKLIST = "calendar_blacklist";
     public static final String DEVICE_AUTO_RECONNECT = "prefs_key_device_auto_reconnect";
     public static final String DEVICE_CONNECT_BACK = "prefs_key_device_reconnect_on_acl";
+    public static final String EXPORT_LOCATION = "export_location";
     private static final String AUTO_START = "general_autostartonboot";
     public static final String AUTO_EXPORT_ENABLED = "auto_export_enabled";
     public static final String AUTO_EXPORT_LOCATION = "auto_export_location";
