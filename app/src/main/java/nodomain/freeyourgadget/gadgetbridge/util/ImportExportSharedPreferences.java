@@ -85,12 +85,7 @@ public class ImportExportSharedPreferences {
         serializer.endDocument();
     }
 
-    public static boolean importFromFile(SharedPreferences sharedPreferences, File inFile)
-            throws Exception {
-        return importFromReader(sharedPreferences, new FileReader(inFile));
-    }
-
-    private static boolean importFromReader(SharedPreferences sharedPreferences, Reader in)
+    public static boolean importFromReader(SharedPreferences sharedPreferences, Reader in)
             throws Exception {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();

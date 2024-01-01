@@ -20,13 +20,16 @@ package nodomain.freeyourgadget.gadgetbridge.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.BufferedInputStream;
@@ -43,6 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -409,6 +413,94 @@ public class FileUtils {
         }
         return exportLocation;
     }
+
+    private static void importShared(Context context, DocumentFile root) {
+        try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            DocumentFile file = root.findFile("Export_preference.xml");
+            try (InputStream in = context.getContentResolver().openInputStream(file.getUri())) {
+                Reader reader = new InputStreamReader(in);
+                ImportExportSharedPreferences.importFromReader(sharedPrefs, reader);
+            }
+        } catch (Exception ex) {
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_error_importing_shared, ex.getMessage()),
+                    Toast.LENGTH_LONG, GB.ERROR, ex);
+        }
+
+        try (DBHandler lockHandler = GBApplication.acquireDB()) {
+            List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
+            for (Device dbDevice : activeDevices) {
+                SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+                if (deviceSharedPrefs == null) {
+                    continue;
+                }
+
+                String name = "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()) + ".xml";
+
+                DocumentFile file = root.findFile(name);
+                try (InputStream in = context.getContentResolver().openInputStream(file.getUri())) {
+                    Reader reader = new InputStreamReader(in);
+                    ImportExportSharedPreferences.importFromReader(deviceSharedPrefs, reader);
+                } catch (Exception ignore) {
+                    // some devices no not have device specific preferences
+                }
+            }
+        } catch (Exception e) {
+            GB.toast("Error importing device specific preferences", Toast.LENGTH_SHORT, GB.ERROR);
+        }
+    }
+
+
+    private static void importDBFile(Context context, DocumentFile root, DBHandler dbHandler) throws IOException {
+        DBHelper helper = new DBHelper(context);
+        SQLiteOpenHelper sqLiteOpenHelper = dbHandler.getHelper();
+
+        DocumentFile file = root.findFile(sqLiteOpenHelper.getDatabaseName());
+        if (file == null) {
+            throw new FileNotFoundException("Database file not found");
+        }
+        try (InputStream in = context.getContentResolver().openInputStream(file.getUri())) {
+            helper.importDB(dbHandler, in);
+        }
+        helper.validateDB(sqLiteOpenHelper);
+
+    }
+
+    public static void importAll(Context context) {
+        if (FileUtils.getExportLocation().equals("")) {
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_error_importing_db,
+                            context.getString(R.string.dbmanagementactivity_export_location_not_set)),
+                    Toast.LENGTH_LONG, GB.ERROR);
+            return;
+        }
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+            String exportLocation = getExportLocation();
+            Uri rootUri = Uri.parse(exportLocation);
+            DocumentFile root = DocumentFile.fromTreeUri(context, rootUri);
+            if (root == null) {
+                GB.toast(context,
+                        context.getString(R.string.dbmanagementactivity_error_importing_db,
+                                context.getString(R.string.dbmanagementactivity_export_location_not_set)),
+                        Toast.LENGTH_LONG, GB.ERROR);
+                return;
+            }
+            importDBFile(context, root, dbHandler);
+            importShared(context, root);
+
+            context.getContentResolver().takePersistableUriPermission(rootUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_import_successful),
+                    Toast.LENGTH_LONG, GB.INFO);
+        } catch (Exception ex) {
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_error_importing_db, ex.getMessage()),
+                    Toast.LENGTH_LONG, GB.ERROR, ex);
+        }
+    }
+
 
 
     private static void exportShared(Context context, DocumentFile root) {

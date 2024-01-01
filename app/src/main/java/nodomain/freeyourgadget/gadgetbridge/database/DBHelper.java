@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -127,11 +128,11 @@ public class DBHelper {
         return new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date());
     }
 
-    public void importDB(DBHandler dbHandler, File fromFile) throws IllegalStateException, IOException {
+    public void importDB(DBHandler dbHandler, InputStream in) throws IllegalStateException, IOException {
         String dbPath = getClosedDBPath(dbHandler);
         try {
             File toFile = new File(dbPath);
-            FileUtils.copyFile(fromFile, toFile);
+            FileUtils.copyStreamToFile(in, toFile);
         } finally {
             dbHandler.openDb();
         }

@@ -74,9 +74,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class DataManagementActivity extends AbstractGBActivity {
     private static final Logger LOG = LoggerFactory.getLogger(DataManagementActivity.class);
-    private static SharedPreferences sharedPrefs;
     ActivityResultLauncher<Intent> selectResult;
-    Uri rootUri = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,52 +190,12 @@ public class DataManagementActivity extends AbstractGBActivity {
             }
         });
 
-        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     }
 
     private void selectExternalDir() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         selectResult.launch(intent);
-    }
-
-
-
-
-    private void importShared() {
-        try {
-            File myPath = FileUtils.getExternalFilesDir();
-            File myFile = new File(myPath, "Export_preference");
-            ImportExportSharedPreferences.importFromFile(sharedPrefs, myFile);
-        } catch (Exception ex) {
-            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_importing_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
-        }
-
-        try (DBHandler lockHandler = GBApplication.acquireDB()) {
-            List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
-            for (Device dbDevice : activeDevices) {
-                SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
-                if (sharedPrefs != null) {
-                    File myPath = FileUtils.getExternalFilesDir();
-                    File myFile = new File(myPath, "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier()));
-
-                    if (!myFile.exists()) { //first try to use file in new format de_ad_be_af, if doesn't exist use old format de:at:be:af
-                        myFile = new File(myPath, "Export_preference_" + dbDevice.getIdentifier());
-                        LOG.info("Trying to import with older filename");
-                    } else {
-                        LOG.info("Trying to import with new filename");
-                    }
-
-                    try {
-                        ImportExportSharedPreferences.importFromFile(deviceSharedPrefs, myFile);
-                    } catch (Exception ignore) {
-                        // some devices no not have device specific preferences
-                    }
-                }
-            }
-        } catch (Exception e) {
-            GB.toast("Error importing device specific preferences", Toast.LENGTH_SHORT, GB.ERROR);
-        }
     }
 
     private void exportDB() {
@@ -269,18 +227,7 @@ public class DataManagementActivity extends AbstractGBActivity {
                 .setPositiveButton(R.string.dbmanagementactivity_overwrite, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            DBHelper helper = new DBHelper(DataManagementActivity.this);
-                            File dir = FileUtils.getExternalFilesDir();
-                            SQLiteOpenHelper sqLiteOpenHelper = dbHandler.getHelper();
-                            File sourceFile = new File(dir, sqLiteOpenHelper.getDatabaseName());
-                            helper.importDB(dbHandler, sourceFile);
-                            helper.validateDB(sqLiteOpenHelper);
-                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_import_successful), Toast.LENGTH_LONG, GB.INFO);
-                        } catch (Exception ex) {
-                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_importing_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
-                        }
-                        importShared();
+                        FileUtils.importAll(DataManagementActivity.this);
                     }
                 })
                 .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {
