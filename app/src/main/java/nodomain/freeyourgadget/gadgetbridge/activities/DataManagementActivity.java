@@ -84,7 +84,7 @@ public class DataManagementActivity extends AbstractGBActivity {
         setContentView(R.layout.activity_data_management);
 
         TextView dbPath = findViewById(R.id.activity_data_management_path);
-        dbPath.setText(getExternalPath());
+        dbPath.setText(FileUtils.getExportLocation());
 
         Button exportDBButton = findViewById(R.id.exportDataButton);
         exportDBButton.setOnClickListener(new View.OnClickListener() {
@@ -201,59 +201,8 @@ public class DataManagementActivity extends AbstractGBActivity {
         selectResult.launch(intent);
     }
 
-    private String getExternalPath() {
-        String exportLocation = GBApplication.getPrefs().getString(GBPrefs.EXPORT_LOCATION, null);
-        if (exportLocation == null) {
-            return "";
-        }
-        return exportLocation;
-    }
 
-    private void exportShared(DocumentFile root) {
-        try {
-            DocumentFile file = root.findFile("Export_preference.xml");
-            if (file == null) {
-                file = root.createFile("application/xml", "Export_preference");
-            }
-            try (OutputStream out = getContentResolver().openOutputStream(file.getUri())) {
-                ImportExportSharedPreferences.exportToFile(sharedPrefs, out, null);
-            }
-        } catch (IOException ex) {
-            GB.toast(this, getString(R.string.dbmanagementactivity_error_exporting_shared, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
-        }
-        try (DBHandler lockHandler = GBApplication.acquireDB()) {
-            List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
-            for (Device dbDevice : activeDevices) {
-                SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
-                if (sharedPrefs != null) {
-                    String name = "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier());
 
-                    DocumentFile file =  root.findFile(name + ".xml");
-                    if (file == null) {
-                        root.createFile("application/xml", name);
-                    }
-                    try (OutputStream out = getContentResolver().openOutputStream(file.getUri())) {
-                        ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, out, null);
-                    } catch (Exception ignore) {
-                        // some devices no not have device specific preferences
-                    }
-                }
-            }
-        } catch (Exception e) {
-            GB.toast("Error exporting device specific preferences", Toast.LENGTH_SHORT, GB.ERROR, e);
-        }
-    }
-
-    private void exportDBFile(DocumentFile root, DBHandler dbHandler) throws IOException {
-        DBHelper helper = new DBHelper(DataManagementActivity.this);
-        DocumentFile file = root.findFile(dbHandler.getHelper().getDatabaseName());
-        if (file == null) {
-            root.createFile("application/x-sqlite3", dbHandler.getHelper().getDatabaseName());
-        }
-        try (OutputStream out = getContentResolver().openOutputStream(file.getUri())) {
-            helper.exportDB(dbHandler, out);
-        }
-    }
 
     private void importShared() {
         try {
@@ -300,20 +249,7 @@ public class DataManagementActivity extends AbstractGBActivity {
                 .setPositiveButton(R.string.activity_DB_ExportButton, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        try (DBHandler dbHandler = GBApplication.acquireDB()) {
-                            String exportLocation = getExternalPath();
-                            if (exportLocation.equals("")) {
-                                GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_exporting_db, getString(R.string.dbmanagementactivity_export_location_not_set)), Toast.LENGTH_LONG, GB.ERROR);
-                                return;
-                            }
-                            Uri rootUri = Uri.parse(exportLocation);
-                            DocumentFile root = DocumentFile.fromTreeUri(getApplicationContext(), rootUri);
-                            exportShared(root);
-                            exportDBFile(root, dbHandler);
-                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_exported_to, getExternalPath()), Toast.LENGTH_LONG, GB.INFO);
-                        } catch (Exception ex) {
-                            GB.toast(DataManagementActivity.this, getString(R.string.dbmanagementactivity_error_exporting_db, ex.getMessage()), Toast.LENGTH_LONG, GB.ERROR, ex);
-                        }
+                        FileUtils.exportAll(DataManagementActivity.this);
                     }
                 })
                 .setNegativeButton(R.string.Cancel, new DialogInterface.OnClickListener() {

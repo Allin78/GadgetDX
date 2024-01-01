@@ -20,11 +20,14 @@ package nodomain.freeyourgadget.gadgetbridge.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.documentfile.provider.DocumentFile;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -48,6 +51,11 @@ import java.util.Objects;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBEnvironment;
+import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.DataManagementActivity;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
+import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 
 public class FileUtils {
     // Don't use slf4j here -- would be a bootstrapping problem
@@ -392,4 +400,96 @@ public class FileUtils {
         fos.close();
         return Uri.fromFile(tempFile);
     }
+
+
+    public static String getExportLocation() {
+        String exportLocation = GBApplication.getPrefs().getString(GBPrefs.EXPORT_LOCATION, null);
+        if (exportLocation == null) {
+            return "";
+        }
+        return exportLocation;
+    }
+
+
+    private static void exportShared(Context context, DocumentFile root) {
+        try {
+            SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            DocumentFile file = root.findFile("Export_preference.xml");
+            if (file == null) {
+                file = root.createFile("application/xml", "Export_preference");
+            }
+            try (OutputStream out = context.getContentResolver().openOutputStream(file.getUri())) {
+                ImportExportSharedPreferences.exportToFile(sharedPrefs, out, null);
+            }
+        } catch (IOException ex) {
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_error_exporting_shared, ex.getMessage()),
+                    Toast.LENGTH_LONG, GB.ERROR, ex);
+        }
+        try (DBHandler lockHandler = GBApplication.acquireDB()) {
+            List<Device> activeDevices = DBHelper.getActiveDevices(lockHandler.getDaoSession());
+            for (Device dbDevice : activeDevices) {
+                SharedPreferences deviceSharedPrefs = GBApplication.getDeviceSpecificSharedPrefs(dbDevice.getIdentifier());
+                if (deviceSharedPrefs == null) {
+                    continue;
+                }
+                String name = "Export_preference_" + FileUtils.makeValidFileName(dbDevice.getIdentifier());
+
+                DocumentFile file =  root.findFile(name + ".xml");
+                if (file == null) {
+                    root.createFile("application/xml", name);
+                }
+                try (OutputStream out = context.getContentResolver().openOutputStream(file.getUri())) {
+                    ImportExportSharedPreferences.exportToFile(deviceSharedPrefs, out, null);
+                } catch (Exception ignore) {
+                    // some devices no not have device specific preferences
+                }
+            }
+        } catch (Exception e) {
+            GB.toast("Error exporting device specific preferences", Toast.LENGTH_SHORT, GB.ERROR, e);
+        }
+    }
+
+    private static void exportDBFile(Context context, DocumentFile root, DBHandler dbHandler) throws IOException {
+        DBHelper helper = new DBHelper(context);
+        DocumentFile file = root.findFile(dbHandler.getHelper().getDatabaseName());
+        if (file == null) {
+            file = root.createFile("application/x-sqlite3", dbHandler.getHelper().getDatabaseName());
+        }
+        try (OutputStream out = context.getContentResolver().openOutputStream(file.getUri())) {
+            helper.exportDB(dbHandler, out);
+        }
+    }
+
+    public static void exportAll(Context context) {
+        if (FileUtils.getExportLocation().equals("")) {
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_error_exporting_db,
+                            context.getString(R.string.dbmanagementactivity_export_location_not_set)),
+                    Toast.LENGTH_LONG, GB.ERROR);
+            return;
+        }
+        try (DBHandler dbHandler = GBApplication.acquireDB()) {
+            String exportLocation = getExportLocation();
+            Uri rootUri = Uri.parse(exportLocation);
+            DocumentFile root = DocumentFile.fromTreeUri(context, rootUri);
+            if (root == null) {
+                GB.toast(context,
+                        context.getString(R.string.dbmanagementactivity_error_exporting_db,
+                                context.getString(R.string.dbmanagementactivity_export_location_not_set)),
+                        Toast.LENGTH_LONG, GB.ERROR);
+                return;
+            }
+            exportShared(context, root);
+            exportDBFile(context, root, dbHandler);
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_exported_to, getExportLocation()),
+                    Toast.LENGTH_LONG, GB.INFO);
+        } catch (Exception ex) {
+            GB.toast(context,
+                    context.getString(R.string.dbmanagementactivity_error_exporting_db, ex.getMessage()),
+                    Toast.LENGTH_LONG, GB.ERROR, ex);
+        }
+    }
+
 }
