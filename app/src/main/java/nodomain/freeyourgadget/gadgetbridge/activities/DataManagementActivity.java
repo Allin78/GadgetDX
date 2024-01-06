@@ -190,6 +190,10 @@ public class DataManagementActivity extends AbstractGBActivity {
     private void selectExternalDir() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        String prevPath = FileUtils.getExportLocation();
+        if (prevPath.length() > 0) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, prevPath);
+        }
         selectResult.launch(intent);
     }
 
