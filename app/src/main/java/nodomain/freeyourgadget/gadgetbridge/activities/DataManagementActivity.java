@@ -132,11 +132,6 @@ public class DataManagementActivity extends AbstractGBActivity {
                     }
                 });
 
-        Button showContentDataButton = findViewById(R.id.showContentDataButton);
-        showContentDataButton.setOnClickListener(v -> {
-            final Intent fileManagerIntent = new Intent(DataManagementActivity.this, FileManagerActivity.class);
-            startActivity(fileManagerIntent);
-        });
 
         GBApplication gbApp = GBApplication.app();
         Prefs prefs = GBApplication.getPrefs();
