@@ -1,5 +1,8 @@
 ### Changelog
 
+#### Ongoing
+* Initial support for Sony WI-SP600N
+
 #### 0.78.0
 * Initial support for Honor Band 3,4,5,6
 * Initial support for Huawei Band 4, 4 Pro, 6, 7, 3e, 4e
