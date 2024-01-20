@@ -3,7 +3,7 @@
 #### Next Version (WIP)
 
 * Initial support for Mijia MHO-C303
-* Initial support for sony WI-SP600N
+* Initial support for Sony WI-SP600N
 * Experimental support for Xiaomi Smart Band 8 Pro
 * Experimental support for Xiaomi Watch S1 Pro
 * Experimental support for Xiaomi Watch S1
