@@ -106,7 +106,6 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
 
         if (protocolImpl == null) {
             // Check if we got an init response, which should indicate the protocol version
-            // TODO Check answer for WI-SP600N
             if (MessageType.COMMAND_1.equals(messageType) && message.getPayload()[0] == 0x01) {
                 // Init reply, set the protocol version
 
@@ -121,6 +120,7 @@ public class SonyHeadphonesProtocol extends GBDeviceProtocol {
                     if (message.getPayload().length == 4) {
                         // WH-1000XM3:      01:00:40:10
                         // WF-SP800N 1.0.1: 01:00:70:00
+                        // Wi-SP600N:       01:00:40:10
                         protocolVersion = "v1";
                     } else if (message.getPayload().length == 8) {
                         switch (message.getPayload()[2]) {
