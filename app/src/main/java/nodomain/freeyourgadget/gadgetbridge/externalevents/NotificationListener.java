@@ -36,7 +36,6 @@ import android.graphics.drawable.Drawable;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.UserHandle;
@@ -75,14 +74,11 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.notifications.GoogleM
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.AppNotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
-import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
-import nodomain.freeyourgadget.gadgetbridge.util.MediaManager;
 import nodomain.freeyourgadget.gadgetbridge.util.NotificationUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.PebbleUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
@@ -126,9 +122,7 @@ public class NotificationListener extends NotificationListenerService {
     private long activeCallPostTime;
     private int mLastCallCommand = CallSpec.CALL_UNDEFINED;
 
-    private final Handler mHandler = new Handler();
-    private Runnable mSetMusicInfoRunnable = null;
-    private Runnable mSetMusicStateRunnable = null;
+    private MediaStateReceiver mMediaStateReceiver = null;
 
     private GoogleMapsNotificationHandler googleMapsNotificationHandler = new GoogleMapsNotificationHandler();
 
@@ -245,6 +239,11 @@ public class NotificationListener extends NotificationListenerService {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         notificationStack.clear();
         notificationsActive.clear();
+
+        if (mMediaStateReceiver != null) {
+            mMediaStateReceiver.stopReceiving();
+        }
+
         super.onDestroy();
     }
 
@@ -669,7 +668,7 @@ public class NotificationListener extends NotificationListenerService {
 
     private boolean handleMediaSessionNotification(final StatusBarNotification sbn) {
         final MediaSession.Token token = sbn.getNotification().extras.getParcelable(Notification.EXTRA_MEDIA_SESSION);
-        return token != null && handleMediaSessionNotification(token);
+        return handleMediaSessionNotification(token);
     }
 
     /**
@@ -680,38 +679,29 @@ public class NotificationListener extends NotificationListenerService {
      */
     public boolean handleMediaSessionNotification(MediaSession.Token mediaSession) {
         try {
-            final MediaController c = new MediaController(getApplicationContext(), mediaSession);
-            if (c.getMetadata() == null) {
+            if (mediaSession == null)
+            {
+                if (mMediaStateReceiver != null) {
+                    mMediaStateReceiver.stopReceiving();
+                    mMediaStateReceiver = null;
+                }
+
                 return false;
             }
 
-            final MusicStateSpec stateSpec = MediaManager.extractMusicStateSpec(c.getPlaybackState());
-            final MusicSpec musicSpec = MediaManager.extractMusicSpec(c.getMetadata());
+            MediaController mediaController = new MediaController(getApplicationContext(), mediaSession);
+            MediaStateReceiver mediaStateReceiver = new MediaStateReceiver(mediaController);
 
-            // finally, tell the device about it
-            if (mSetMusicInfoRunnable != null) {
-                mHandler.removeCallbacks(mSetMusicInfoRunnable);
+            if (mMediaStateReceiver != null && mediaStateReceiver.isPlaybackActive())
+            {
+                mMediaStateReceiver.stopReceiving();
+                mMediaStateReceiver = null;
             }
-            mSetMusicInfoRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    GBApplication.deviceService().onSetMusicInfo(musicSpec);
-                }
-            };
-            mHandler.postDelayed(mSetMusicInfoRunnable, 100);
 
-            if (stateSpec != null) {
-                if (mSetMusicStateRunnable != null) {
-                    mHandler.removeCallbacks(mSetMusicStateRunnable);
-                }
-                mSetMusicStateRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        GBApplication.deviceService().onSetMusicState(stateSpec);
-                    }
-                };
+            if (mMediaStateReceiver == null) {
+                mMediaStateReceiver = mediaStateReceiver;
+                mMediaStateReceiver.startReceiving();
             }
-            mHandler.postDelayed(mSetMusicStateRunnable, 100);
 
             return true;
         } catch (final NullPointerException | SecurityException e) {
