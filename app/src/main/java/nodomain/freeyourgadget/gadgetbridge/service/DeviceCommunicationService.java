@@ -1,8 +1,10 @@
-/*  Copyright (C) 2015-2021 Andreas Böhler, Andreas Shimokawa, Avamander,
-    Carsten Pfeiffer, Daniel Dakhno, Daniele Gobbetti, Daniel Hauck, Dikay900,
-    Frank Slezak, ivanovlev, João Paulo Barraca, José Rebelo, Julien Pivotto,
-    Kasha, keeshii, mamucho, Martin, Matthieu Baerts, Nephiel, Sebastian Kranz,
-    Sergey Trofimov, Steffen Liebergeld, Taavi Eomäe, Uwe Hermann
+/*  Copyright (C) 2015-2024 Andreas Böhler, Andreas Shimokawa, Arjan
+    Schrijver, Avamander, Carsten Pfeiffer, Daniel Dakhno, Daniele Gobbetti,
+    Daniel Hauck, Davis Mosenkovs, Dikay900, Dmitriy Bogdanov, Frank Slezak,
+    Gabriele Monaco, Gordon Williams, ivanovlev, João Paulo Barraca, José
+    Rebelo, Julien Pivotto, Kasha, keeshii, Martin, Matthieu Baerts, mvn23,
+    NekoBox, Nephiel, Petr Vaněk, Sebastian Kranz, Sergey Trofimov, Steffen
+    Liebergeld, Taavi Eomäe, TylerWilliamson, Uwe Hermann, Yoran Vulker
 
     This file is part of Gadgetbridge.
 
@@ -17,8 +19,10 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service;
+
+import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.*;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -31,6 +35,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,8 +50,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -71,6 +79,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.OsmandEventReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.PebbleReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.PhoneCallReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.SMSReceiver;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.SilentModeReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.TimeChangeReceiver;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.TinyWeatherForecastGermanyReceiver;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -97,123 +106,6 @@ import nodomain.freeyourgadget.gadgetbridge.util.GBPrefs;
 import nodomain.freeyourgadget.gadgetbridge.util.language.LanguageUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.language.Transliterator;
-
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_ADD_CALENDAREVENT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_APP_CONFIGURE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_APP_REORDER;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_CALLSTATE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_CONNECT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_DELETEAPP;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_DELETE_CALENDAREVENT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_DELETE_NOTIFICATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_DISCONNECT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_ENABLE_HEARTRATE_SLEEP_SUPPORT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_ENABLE_REALTIME_HEARTRATE_MEASUREMENT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_ENABLE_REALTIME_STEPS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_FETCH_RECORDED_DATA;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_FIND_DEVICE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_HEARTRATE_TEST;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_INSTALL;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_NOTIFICATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_PHONE_FOUND;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_POWER_OFF;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_READ_CONFIGURATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_REQUEST_APPINFO;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_REQUEST_DEVICEINFO;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_REQUEST_SCREENSHOT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_RESET;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SEND_CONFIGURATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SEND_WEATHER;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SETCANNEDMESSAGES;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SETMUSICINFO;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SETMUSICSTATE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SETNAVIGATIONINFO;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SETTIME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_ALARMS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_CONSTANT_VIBRATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_CONTACTS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_FM_FREQUENCY;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_HEARTRATE_MEASUREMENT_INTERVAL;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_GPS_LOCATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_LED_COLOR;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_LOYALTY_CARDS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_PHONE_VOLUME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_REMINDERS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_SET_WORLD_CLOCKS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_START;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_STARTAPP;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_DOWNLOADAPP;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.ACTION_TEST_NEW_FUNCTION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_ALARMS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_APP_CONFIG;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_APP_CONFIG_ID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_APP_START;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_APP_UUID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_BOOLEAN_ENABLE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_DESCRIPTION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_DURATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_ID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_LOCATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_TIMESTAMP;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_ALLDAY;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_TITLE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_TYPE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_CALNAME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALENDAREVENT_COLOR;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALL_COMMAND;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALL_DISPLAYNAME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALL_SOURCENAME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALL_SOURCEAPPID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALL_DNDSUPPRESSED;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CALL_PHONENUMBER;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CANNEDMESSAGES;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CANNEDMESSAGES_TYPE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CONFIG;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CONNECT_FIRST_TIME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_CONTACTS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_FIND_START;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_FM_FREQUENCY;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_GPS_LOCATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_INTERVAL_SECONDS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_LED_COLOR;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_LOYALTY_CARDS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_ALBUM;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_ARTIST;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_DURATION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_POSITION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_RATE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_REPEAT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_SHUFFLE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_STATE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_TRACK;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_TRACKCOUNT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_MUSIC_TRACKNR;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NAVIGATION_DISTANCE_TO_TURN;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NAVIGATION_INSTRUCTION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NAVIGATION_NEXT_ACTION;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NAVIGATION_ETA;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ACTIONS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_BODY;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_DNDSUPPRESSED;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_FLAGS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ICONID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_ID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_PEBBLE_COLOR;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_PHONENUMBER;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_SENDER;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_SOURCEAPPID;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_SOURCENAME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_SUBJECT;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_TITLE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_NOTIFICATION_TYPE;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_PHONE_VOLUME;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_RECORDED_DATA_TYPES;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_REMINDERS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_RESET_FLAGS;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_URI;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_VIBRATION_INTENSITY;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_WEATHER;
-import static nodomain.freeyourgadget.gadgetbridge.model.DeviceService.EXTRA_WORLD_CLOCKS;
 
 public class DeviceCommunicationService extends Service implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static class DeviceStruct{
@@ -348,6 +240,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
     private BluetoothConnectReceiver mBlueToothConnectReceiver = null;
     private BluetoothPairingRequestReceiver mBlueToothPairingRequestReceiver = null;
     private AlarmClockReceiver mAlarmClockReceiver = null;
+    private SilentModeReceiver mSilentModeReceiver = null;
     private GBAutoFetchReceiver mGBAutoFetchReceiver = null;
     private AutoConnectIntervalReceiver mAutoConnectInvervalReceiver = null;
 
@@ -588,66 +481,92 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 break;
             case ACTION_CONNECT:
                 start(); // ensure started
-                GBDevice gbDevice = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
-                String btDeviceAddress = null;
-                if (gbDevice == null) {
-                    if (prefs != null) { // may be null in test cases
-                        btDeviceAddress = prefs.getString("last_device_address", null);
-                        if (btDeviceAddress != null) {
-                            gbDevice = DeviceHelper.getInstance().findAvailableDevice(btDeviceAddress, this);
+                List<GBDevice> gbDevs = null;
+                boolean fromExtra = false;
+
+                GBDevice extraDevice = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
+                if (extraDevice != null) {
+                    gbDevs = new ArrayList<>();
+                    gbDevs.add(extraDevice);
+                    fromExtra = true;
+                } else if (prefs.getBoolean(GBPrefs.RECONNECT_ONLY_TO_CONNECTED, true)) {
+                    List<GBDevice> gbAllDevs = GBApplication.app().getDeviceManager().getDevices();
+                    Set<String> lastDeviceAddresses = prefs.getStringSet(GBPrefs.LAST_DEVICE_ADDRESSES, Collections.emptySet());
+                    if (gbAllDevs != null && !gbAllDevs.isEmpty() && !lastDeviceAddresses.isEmpty()) {
+                        gbDevs = new ArrayList<>();
+                        for(GBDevice gbDev : gbAllDevs) {
+                            if (lastDeviceAddresses.contains(gbDev.getAddress())) {
+                                gbDevs.add(gbDev);
+                            }
                         }
                     }
                 } else {
-                    btDeviceAddress = gbDevice.getAddress();
+                    gbDevs = GBApplication.app().getDeviceManager().getDevices();
                 }
 
-                if(gbDevice == null){
+                if(gbDevs == null || gbDevs.size() == 0) {
                     return START_NOT_STICKY;
                 }
 
-                boolean autoReconnect = GBPrefs.AUTO_RECONNECT_DEFAULT;
-                if (prefs != null && prefs.getPreferences() != null) {
-                    prefs.getPreferences().edit().putString("last_device_address", btDeviceAddress).apply();
-                    autoReconnect = getGBPrefs().getAutoReconnect(gbDevice);
-                }
+                for(GBDevice gbDevice : gbDevs) {
+                    String btDeviceAddress = gbDevice.getAddress();
 
-                DeviceStruct registeredStruct = getDeviceStructOrNull(gbDevice);
-                if(registeredStruct != null){
-                    boolean deviceAlreadyConnected = isDeviceConnecting(registeredStruct.getDevice()) || isDeviceConnected(registeredStruct.getDevice());
-                    if(deviceAlreadyConnected){
-                        break;
-                    }
-                    try {
-                        removeDeviceSupport(gbDevice);
-                    } catch (DeviceNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    registeredStruct = new DeviceStruct();
-                    registeredStruct.setDevice(gbDevice);
-                    registeredStruct.setCoordinator(gbDevice.getDeviceCoordinator());
-                    deviceStructs.add(registeredStruct);
-                }
-
-                try {
-                    DeviceSupport deviceSupport = mFactory.createDeviceSupport(gbDevice);
-                    if (deviceSupport != null) {
-                        setDeviceSupport(gbDevice, deviceSupport);
-                        if (firstTime) {
-                            deviceSupport.connectFirstTime();
-                        } else {
-                            deviceSupport.setAutoReconnect(autoReconnect);
-                            deviceSupport.connect();
+                    boolean autoReconnect = GBPrefs.AUTO_RECONNECT_DEFAULT;
+                    if (prefs != null && prefs.getPreferences() != null) {
+                        autoReconnect = getGBPrefs().getAutoReconnect(gbDevice);
+                        if(!fromExtra && !autoReconnect) {
+                            continue;
                         }
-                    } else {
-                        GB.toast(this, getString(R.string.cannot_connect, "Can't create device support"), Toast.LENGTH_SHORT, GB.ERROR);
+                        Set<String> lastDeviceAddresses = prefs.getStringSet(GBPrefs.LAST_DEVICE_ADDRESSES, Collections.emptySet());
+                        if (!lastDeviceAddresses.contains(btDeviceAddress)) {
+                            lastDeviceAddresses = new HashSet<String>(lastDeviceAddresses);
+                            lastDeviceAddresses.add(btDeviceAddress);
+                            prefs.getPreferences().edit().putStringSet(GBPrefs.LAST_DEVICE_ADDRESSES, lastDeviceAddresses).apply();
+                        }
                     }
-                } catch (Exception e) {
-                    GB.toast(this, getString(R.string.cannot_connect, e.getMessage()), Toast.LENGTH_SHORT, GB.ERROR, e);
-                }
 
-                for(DeviceStruct struct2 : deviceStructs){
-                    struct2.getDevice().sendDeviceUpdateIntent(this);
+                    if(!fromExtra && !autoReconnect) {
+                        continue;
+                    }
+
+                    DeviceStruct registeredStruct = getDeviceStructOrNull(gbDevice);
+                    if(registeredStruct != null){
+                        boolean deviceAlreadyConnected = isDeviceConnecting(registeredStruct.getDevice()) || isDeviceConnected(registeredStruct.getDevice());
+                        if(deviceAlreadyConnected){
+                            break;
+                        }
+                        try {
+                            removeDeviceSupport(gbDevice);
+                        } catch (DeviceNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        registeredStruct = new DeviceStruct();
+                        registeredStruct.setDevice(gbDevice);
+                        registeredStruct.setCoordinator(gbDevice.getDeviceCoordinator());
+                        deviceStructs.add(registeredStruct);
+                    }
+
+                    try {
+                        DeviceSupport deviceSupport = mFactory.createDeviceSupport(gbDevice);
+                        if (deviceSupport != null) {
+                            setDeviceSupport(gbDevice, deviceSupport);
+                            if (firstTime) {
+                                deviceSupport.connectFirstTime();
+                            } else {
+                                deviceSupport.setAutoReconnect(autoReconnect);
+                                deviceSupport.connect();
+                            }
+                        } else {
+                            GB.toast(this, getString(R.string.cannot_connect, "Can't create device support"), Toast.LENGTH_SHORT, GB.ERROR);
+                        }
+                    } catch (Exception e) {
+                        GB.toast(this, getString(R.string.cannot_connect, e.getMessage()), Toast.LENGTH_SHORT, GB.ERROR, e);
+                    }
+
+                    for(DeviceStruct struct2 : deviceStructs){
+                        struct2.getDevice().sendDeviceUpdateIntent(this);
+                    }
                 }
                 break;
             default:
@@ -681,6 +600,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                                 }
                                 notifCache.removeAll(toRemove);
                             }
+                        } else if (action.equals(ACTION_DISCONNECT) && device.getState() != GBDevice.State.NOT_CONNECTED) {
+                            targetedDevices.add(device);
                         }
                     }
                 }
@@ -689,6 +610,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                         handleAction(intent, action, device1);
                     } catch (DeviceNotFoundException e) {
                         e.printStackTrace();
+                    } catch (Exception e) {
+                        LOG.error("An exception was raised while handling the action {} for the device {}: ", action, device1, e);
                     }
                 }
                 break;
@@ -755,6 +678,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 notificationSpec.sender = intent.getStringExtra(EXTRA_NOTIFICATION_SENDER);
                 notificationSpec.subject = intent.getStringExtra(EXTRA_NOTIFICATION_SUBJECT);
                 notificationSpec.title = intent.getStringExtra(EXTRA_NOTIFICATION_TITLE);
+                notificationSpec.key = intent.getStringExtra(EXTRA_NOTIFICATION_KEY);
                 notificationSpec.body = intent.getStringExtra(EXTRA_NOTIFICATION_BODY);
                 notificationSpec.sourceName = intent.getStringExtra(EXTRA_NOTIFICATION_SOURCENAME);
                 notificationSpec.type = (NotificationType) intent.getSerializableExtra(EXTRA_NOTIFICATION_TYPE);
@@ -887,6 +811,10 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             case ACTION_SET_PHONE_VOLUME:
                 float phoneVolume = intent.getFloatExtra(EXTRA_PHONE_VOLUME, 0);
                 deviceSupport.onSetPhoneVolume(phoneVolume);
+                break;
+            case ACTION_SET_PHONE_SILENT_MODE:
+                final int ringerMode = intent.getIntExtra(EXTRA_PHONE_RINGER_MODE, -1);
+                deviceSupport.onChangePhoneSilentMode(ringerMode);
                 break;
             case ACTION_SETMUSICSTATE:
                 MusicStateSpec stateSpec = new MusicStateSpec();
@@ -1268,6 +1196,13 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 registerReceiver(mAlarmClockReceiver, filter);
             }
 
+            if (mSilentModeReceiver == null) {
+                mSilentModeReceiver = new SilentModeReceiver();
+                IntentFilter filter = new IntentFilter();
+                filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+                registerReceiver(mSilentModeReceiver, filter);
+            }
+
             if (mOsmandAidlHelper == null && features.supportsNavigation()) {
                 mOsmandAidlHelper = new OsmandEventReceiver(this.getApplication());
             }
@@ -1337,6 +1272,10 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             if (mAlarmClockReceiver != null) {
                 unregisterReceiver(mAlarmClockReceiver);
                 mAlarmClockReceiver = null;
+            }
+            if (mSilentModeReceiver != null) {
+                unregisterReceiver(mSilentModeReceiver);
+                mSilentModeReceiver = null;
             }
             if (mCMWeatherReceiver != null) {
                 unregisterReceiver(mCMWeatherReceiver);

@@ -1,6 +1,4 @@
-/*  Copyright (C) 2015-2023 Andreas Shimokawa, boun, Carsten Pfeiffer, Daniel
-    Dakhno, Daniele Gobbetti, JohnnySun, jonnsoft, José Rebelo, Lem Dulfo, Taavi
-    Eomäe, Uwe Hermann
+/*  Copyright (C) 2023-2024 Andreas Böhler, Daniel Dakhno, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -15,7 +13,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities.discovery;
 
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.toast;
@@ -587,7 +585,9 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
             return;
         }
 
-        if (!deviceCandidate.getDeviceType().isSupported()) {
+        DeviceType deviceType = DeviceHelper.getInstance().resolveDeviceType(deviceCandidate);
+
+        if (!deviceType.isSupported()) {
             LOG.warn("Unsupported device candidate {}", deviceCandidate);
             copyDetailsToClipboard(deviceCandidate);
             return;
@@ -595,7 +595,7 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
 
         stopDiscovery();
 
-        final DeviceCoordinator coordinator = DeviceHelper.getInstance().resolveCoordinator(deviceCandidate);
+        final DeviceCoordinator coordinator = deviceType.getDeviceCoordinator();
         LOG.info("Using device candidate {} with coordinator {}", deviceCandidate, coordinator.getClass());
 
         if (coordinator.getBondingStyle() == DeviceCoordinator.BONDING_STYLE_REQUIRE_KEY) {
@@ -605,7 +605,7 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
             if (authKey == null || authKey.isEmpty()) {
                 toast(DiscoveryActivityV2.this, getString(R.string.discovery_need_to_enter_authkey), Toast.LENGTH_LONG, GB.WARN);
                 return;
-            } else if (authKey.getBytes().length < 34 || !authKey.startsWith("0x")) {
+            } else if (!coordinator.validateAuthKey(authKey)) {
                 toast(DiscoveryActivityV2.this, getString(R.string.discovery_entered_invalid_authkey), Toast.LENGTH_LONG, GB.WARN);
                 return;
             }
@@ -661,12 +661,14 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
             return true;
         }
 
-        if (!deviceCandidate.getDeviceType().isSupported()) {
+        DeviceType deviceType = DeviceHelper.getInstance().resolveDeviceType(deviceCandidate);
+
+        if (!deviceType.isSupported()) {
             showUnsupportedDeviceDialog(deviceCandidate);
             return true;
         }
 
-        final DeviceCoordinator coordinator = deviceCandidate.getDeviceType().getDeviceCoordinator();
+        final DeviceCoordinator coordinator = deviceType.getDeviceCoordinator();
         final GBDevice device = DeviceHelper.getInstance().toSupportedDevice(deviceCandidate);
         if (coordinator.getSupportedDeviceSpecificSettings(device) == null) {
             return true;
@@ -746,6 +748,16 @@ public class DiscoveryActivityV2 extends AbstractGBActivity implements AdapterVi
     @Override
     public GBDeviceCandidate getCurrentTarget() {
         return this.deviceTarget;
+    }
+
+    @Override
+    public String getMacAddress() {
+        return deviceTarget.getDevice().getAddress();
+    }
+
+    @Override
+    public boolean getAttemptToConnect() {
+        return true;
     }
 
     @Override

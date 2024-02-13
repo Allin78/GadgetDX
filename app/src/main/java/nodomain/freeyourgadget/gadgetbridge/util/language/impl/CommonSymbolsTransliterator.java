@@ -1,7 +1,4 @@
-/*  Copyright (C) 2017-2023 Andreas Shimokawa, Aniruddha Adhikary, Daniele
-    Gobbetti, ivanovlev, kalaee, lazarosfs, McSym28, M. Hadi, Roi Greenberg,
-    Taavi Eomäe, Ted Stein, Thomas, Yaron Shahrabani, José Rebelo, Davis
-    Mosenkovs
+/*  Copyright (C) 2023-2024 Daniel Dakhno, Davis Mosenkovs
 
     This file is part of Gadgetbridge.
 
@@ -16,7 +13,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.util.language.impl;
 
 import java.util.HashMap;
@@ -30,7 +27,7 @@ public class CommonSymbolsTransliterator extends SimpleTransliterator {
             put('©', "(c)"); put('®', "(r)"); put('™', "(tm)"); put('°', "*"); put('€', "EUR");
             put('–', "-"); put('⸺', "-"); put('˗', "-"); put('ᐨ', "-"); put('‐', "-"); put('‑', "-"); put('‒', "-"); put('—', "-"); put('―', "-"); put('−', "-");
             put('⎯', "-"); put('⏤', "-"); put('─', "-"); put('➖', "-"); put('⸻', "-"); put('ㅡ', "-"); put('ᅳ', "-"); put('ー', "-"); put('一', "-"); put('﹘', "-");
-            put('﹣', "-"); put('－', "-"); put('𑁋', "-"); put('𑁒', "-"); put('˜', "~"); put('⁓', "~"); put('∼', "~"); put('〜', "~"); put('〰', "~~"); put('～', "~");
+            put('﹣', "-"); put('－', "-"); put('\udc4b', "-"); put('\udc52', "-"); put('˜', "~"); put('⁓', "~"); put('∼', "~"); put('〜', "~"); put('〰', "~~"); put('～', "~");
             put('⁰', "0"); put('¹', "1"); put('²', "2"); put('³', "3"); put('⁴', "4"); put('⁵', "5"); put('⁶', "6"); put('⁷', "7"); put('⁸', "8"); put('⁹', "9");
             put('₀', "0"); put('₁', "1"); put('₂', "2"); put('₃', "3"); put('₄', "4"); put('₅', "5"); put('₆', "6"); put('₇', "7"); put('₈', "8"); put('₉', "9");
         }});

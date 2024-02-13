@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2018-2024 Andreas Shimokawa, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -13,7 +13,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 package nodomain.freeyourgadget.gadgetbridge.model;
 
@@ -28,6 +28,7 @@ public class RecordedDataTypes {
     public static final int TYPE_HEART_RATE   = 0x00000080;
     public static final int TYPE_PAI          = 0x00000100;
     public static final int TYPE_SLEEP_RESPIRATORY_RATE = 0x00000200;
+    public static final int TYPE_HUAMI_STATISTICS = 0x00000400;
 
     public static final int TYPE_ALL          = (int)0xffffffff;
 

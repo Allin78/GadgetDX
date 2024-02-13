@@ -1,5 +1,6 @@
-/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel
-    Dakhno, Daniele Gobbetti, José Rebelo
+/*  Copyright (C) 2019-2024 Andreas Shimokawa, Arjan Schrijver, Carsten
+    Pfeiffer, Damien Gaignon, Daniel Dakhno, Hasan Ammar, José Rebelo, Morten
+    Rieger Hannemose, Petr Vaněk
 
     This file is part of Gadgetbridge.
 
@@ -14,7 +15,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.qhybrid;
 
 import android.app.Activity;
@@ -147,6 +148,20 @@ public class QHybridCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public int getCannedRepliesSlotCount(final GBDevice device) {
+        if (isHybridHR()) {
+            return 16;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public boolean supportsAlarmTitle(GBDevice device) {
+        return isHybridHR();
+    }
+
+    @Override
     public boolean supportsAlarmDescription(GBDevice device) {
         return isHybridHR();
     }
@@ -242,20 +257,22 @@ public class QHybridCoordinator extends AbstractBLEDeviceCoordinator {
         }
         //Settings applicable to all firmware versions
         int[] supportedSettings = new int[]{
-                R.xml.devicesettings_fossilhybridhr,
                 R.xml.devicesettings_inactivity,
+                R.xml.devicesettings_fossilhybridhr_all_fw,
                 R.xml.devicesettings_autoremove_notifications,
                 R.xml.devicesettings_canned_dismisscall_16,
-                R.xml.devicesettings_transliteration
+                R.xml.devicesettings_reject_call_method,
+                R.xml.devicesettings_transliteration,
+                R.xml.devicesettings_fossilhybridhr_dev
         };
-        //Firmware specific settings
+        // Firmware version specific settings
         if (getFirmwareVersion() != null && getFirmwareVersion().smallerThan(new Version("3.0"))) {
-            supportedSettings = ArrayUtils.insert(0, supportedSettings, R.xml.devicesettings_fossilhybridhr_buttonconfiguration_pre_fw30);
+            supportedSettings = ArrayUtils.insert(0, supportedSettings, R.xml.devicesettings_fossilhybridhr_pre_fw300);
         } else {
-            supportedSettings = ArrayUtils.insert(0, supportedSettings, R.xml.devicesettings_fossilhybridhr_buttonconfiguration);
+            supportedSettings = ArrayUtils.insert(0, supportedSettings, R.xml.devicesettings_fossilhybridhr_post_fw300);
         }
         if (getFirmwareVersion() != null && getFirmwareVersion().smallerThan(new Version("2.20"))) {
-            supportedSettings = ArrayUtils.insert(1, supportedSettings, R.xml.devicesettings_fossilhybridhr_pre_fw20);
+            supportedSettings = ArrayUtils.insert(1, supportedSettings, R.xml.devicesettings_fossilhybridhr_pre_fw220);
         }
         return supportedSettings;
     }
@@ -310,12 +327,10 @@ public class QHybridCoordinator extends AbstractBLEDeviceCoordinator {
         return device.getType() == DeviceType.FOSSILQHYBRID;
     }
 
-
     @Override
     public int getDeviceNameResource() {
         return R.string.devicetype_qhybrid;
     }
-
 
     @Override
     public int getDefaultIconResource() {
@@ -325,5 +340,10 @@ public class QHybridCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     public int getDisabledIconResource() {
         return R.drawable.ic_device_zetime_disabled;
+    }
+
+    @Override
+    public boolean supportsNavigation() {
+        return isHybridHR();
     }
 }

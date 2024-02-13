@@ -1,5 +1,4 @@
-/*  Copyright (C) 2016-2021 Andreas Shimokawa, Carsten Pfeiffer, JohnnySun,
-    José Rebelo, Uwe Hermann
+/*  Copyright (C) 2018-2024 Andreas Shimokawa, gsbhat, José Rebelo, NekoBox
 
     This file is part of Gadgetbridge.
 
@@ -14,7 +13,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.huami;
 
 import java.util.HashMap;
@@ -229,6 +228,8 @@ public class HuamiService {
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_STRESS_AUTOMATIC = 0x13;
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_SPO2_NORMAL = 0x25;
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_SPO2_SLEEP = 0x26;
+    public static final byte COMMAND_ACTIVITY_DATA_TYPE_STATISTICS = 0x2c;
+    public static final byte COMMAND_ACTIVITY_DATA_TYPE_TEMPERATURE = 0x2e;
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_SLEEP_RESPIRATORY_RATE = 0x38;
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_RESTING_HEART_RATE = 0x3a;
     public static final byte COMMAND_ACTIVITY_DATA_TYPE_MAX_HEART_RATE = 0x3d;

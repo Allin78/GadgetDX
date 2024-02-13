@@ -1,4 +1,5 @@
-/*  Copyright (C) 2020 Andreas Shimokawa
+/*  Copyright (C) 2022-2024 Daniele Gobbetti, Enrico Brambilla, José Rebelo,
+    TylerWilliamson
 
     This file is part of Gadgetbridge.
 
@@ -13,7 +14,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 
 package nodomain.freeyourgadget.gadgetbridge.externalevents;
 
@@ -96,8 +97,8 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
                             forecast.minTemp = safelyGet(forecastJson, Integer.class, "minTemp", 0);
                             forecast.windSpeed = safelyGet(forecastJson, Number.class, "windSpeed", 0).floatValue();
                             forecast.windDirection = safelyGet(forecastJson, Integer.class, "windDirection", 0);
-                            forecast.uvIndex = safelyGet(weatherJson, Number.class, "uvIndex", 0d).floatValue();
-                            forecast.precipProbability = safelyGet(weatherJson, Integer.class, "precipProbability", 0);
+                            forecast.uvIndex = safelyGet(forecastJson, Number.class, "uvIndex", 0d).floatValue();
+                            forecast.precipProbability = safelyGet(forecastJson, Integer.class, "precipProbability", 0);
                             forecast.sunRise = safelyGet(forecastJson, Integer.class, "sunRise", 0);
                             forecast.sunSet = safelyGet(forecastJson, Integer.class, "sunSet", 0);
                             forecast.moonRise = safelyGet(forecastJson, Integer.class, "moonRise", 0);
@@ -127,8 +128,8 @@ public class GenericWeatherReceiver extends BroadcastReceiver {
                             forecast.humidity = safelyGet(forecastJson, Integer.class, "humidity", 0);
                             forecast.windSpeed = safelyGet(forecastJson, Number.class, "windSpeed", 0).floatValue();
                             forecast.windDirection = safelyGet(forecastJson, Integer.class, "windDirection", 0);
-                            forecast.uvIndex = safelyGet(weatherJson, Number.class, "uvIndex", 0d).floatValue();
-                            forecast.precipProbability = safelyGet(weatherJson, Integer.class, "precipProbability", 0);
+                            forecast.uvIndex = safelyGet(forecastJson, Number.class, "uvIndex", 0d).floatValue();
+                            forecast.precipProbability = safelyGet(forecastJson, Integer.class, "precipProbability", 0);
 
                             weatherSpec.hourly.add(forecast);
                         }

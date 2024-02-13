@@ -1,9 +1,15 @@
-/*  Copyright (C) 2015-2023 Andreas Böhler, Andreas Shimokawa, Carsten
-    Pfeiffer, Cre3per, Daniel Dakhno, Daniele Gobbetti, Gordon Williams,
-    Jean-François Greffier, João Paulo Barraca, José Rebelo, Kranz, ladbsoft,
-    Manuel Ruß, maxirnilian, Pavel, Pavel Elagin, protomors, Quallenauge,
-    Sami Alaoui, Sebastian Kranz, Sophanimus, tiparega, Vadim Kaushan,
-    Johannes Krude
+/*  Copyright (C) 2015-2024 115ek, akasaka / Genjitsu Labs, Alicia Hormann,
+    Andreas Böhler, Andreas Shimokawa, Andrew Watkins, angelpup, Carsten Pfeiffer,
+    Cre3per, Damien Gaignon, DanialHanif, Daniel Dakhno, Daniele Gobbetti, Daniel
+    Thompson, Da Pa, Dmytro Bielik, Frank Ertl, Gabriele Monaco, GeekosaurusR3x,
+    Gordon Williams, Jean-François Greffier, jfgreffier, jhey, João Paulo
+    Barraca, Jochen S, Johannes Krude, José Rebelo, ksiwczynski, ladbsoft,
+    Lesur Frederic, Maciej Kuśnierz, mamucho, Manuel Ruß, Maxime Reyrolle,
+    maxirnilian, Michael, narektor, Noodlez, odavo32nof, opavlov, pangwalla,
+    Pavel Elagin, Petr Kadlec, Petr Vaněk, protomors, Quallenauge, Quang Ngô,
+    Raghd Hamzeh, Sami Alaoui, Sebastian Kranz, sedy89, Sophanimus, Stefan Bora,
+    Taavi Eomäe, thermatk, tiparega, Vadim Kaushan, x29a, xaos, Yoran Vulker,
+    Yukai Li
 
     This file is part of Gadgetbridge.
 
@@ -18,13 +24,9 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.model;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
-
-import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.UnknownDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.asteroidos.AsteroidOSDeviceCoordinator;
@@ -34,9 +36,13 @@ import nodomain.freeyourgadget.gadgetbridge.devices.casio.gb6900.CasioGB6900Devi
 import nodomain.freeyourgadget.gadgetbridge.devices.casio.gbx100.CasioGBX100DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.casio.gwb5600.CasioGMWB5000DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.casio.gwb5600.CasioGWB5600DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.cmfwatchpro.CmfWatchProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.divoom.PixooCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.domyos.DomyosT540Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.femometer.FemometerVinca2DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.FitProDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.colacao.ColaCao21Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.colacao.ColaCao23Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.flipper.zero.FlipperZeroCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBuds2DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBuds2ProDeviceCoordinator;
@@ -48,6 +54,8 @@ import nodomain.freeyourgadget.gadgetbridge.devices.hplus.HPlusCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.MakibesF68Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.Q8Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.hplus.SG2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitactive.AmazfitActiveCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitactiveedge.AmazfitActiveEdgeCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitbalance.AmazfitBalanceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitband5.AmazfitBand5Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.amazfitband7.AmazfitBand7Coordinator;
@@ -97,6 +105,22 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband5.MiBand5Coordin
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband6.MiBand6Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.miband7.MiBand7Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huami.zeppe.ZeppECoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.honorband3.HonorBand3Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.honorband4.HonorBand4Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.honorband5.HonorBand5Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.honorband6.HonorBand6Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.honorband7.HonorBand7Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.honormagicwatch2.HonorMagicWatch2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiband4pro.HuaweiBand4ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiband6.HuaweiBand6Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiband7.HuaweiBand7Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiband8.HuaweiBand8Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweibandaw70.HuaweiBandAw70Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweitalkbandb6.HuaweiTalkBandB6Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt.HuaweiWatchGTCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt2.HuaweiWatchGT2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt2e.HuaweiWatchGT2eCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.huaweiwatchgt3.HuaweiWatchGT3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.id115.ID115Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.itag.ITagCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.jyou.BFH16DeviceCoordinator;
@@ -108,10 +132,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.lenovo.watchxplus.WatchXPlus
 import nodomain.freeyourgadget.gadgetbridge.devices.liveview.LiveviewCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.makibeshr3.MakibesHR3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miband.MiBandCoordinator;
-import nodomain.freeyourgadget.gadgetbridge.devices.mijia_lywsd02.MijiaLywsd02Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.mijia_lywsd.MijiaMhoC303Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.mijia_lywsd.MijiaLywsd02Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.mijia_lywsd.MijiaLywsd03Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.miscale2.MiScale2DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.no1f1.No1F1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nothing.Ear1Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.nothing.Ear2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.nothing.EarStickCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nut.NutCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.pebble.PebbleCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.pinetime.PineTimeJFCoordinator;
@@ -126,6 +154,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWF1000XM4Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWF1000XM5Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWFSP800NCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWISP600NCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWH1000XM2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWH1000XM3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.coordinators.SonyWH1000XM4Coordinator;
@@ -142,158 +171,212 @@ import nodomain.freeyourgadget.gadgetbridge.devices.vivomovehr.VivomoveHrCoordin
 import nodomain.freeyourgadget.gadgetbridge.devices.waspos.WaspOSCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.watch9.Watch9DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.withingssteelhr.WithingsSteelHRDeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miband7pro.MiBand7ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miband8.MiBand8Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miband8pro.MiBand8ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miwatchcolorsport.MiWatchColorSportCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmismartband2.RedmiSmartBand2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmismartbandpro.RedmiSmartBandProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmiwatch2.RedmiWatch2Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmiwatch2lite.RedmiWatch2LiteCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watchs1.XiaomiWatchS1Coordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watchs1active.XiaomiWatchS1ActiveCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watchs1pro.XiaomiWatchS1ProCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.watchs3.XiaomiWatchS3Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.xwatch.XWatchCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.zetime.ZeTimeCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.miwatch.MiWatchLiteCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmiwatch3active.RedmiWatch3ActiveCoordinator;
 
 /**
  * For every supported device, a device type constant must exist.
- *
- * Note: they key of every constant is stored in the DB, so it is fixed forever,
+ * <p>
+ * Note: they name of the enum is stored in the DB, so it is fixed forever,
  * and may not be changed.
+ * <p>
+ * Migration note: As of <a href="https://codeberg.org/Freeyourgadget/Gadgetbridge/pulls/3347">#3347</a>,
+ * the numeric device id is not used anymore. If your database has development devices that still used
+ * the numeric ID, you need to update assets/migrations/devicetype.json before installing Gadgetbridge
+ * after rebasing, in order for your device to be migrated correctly. If you failed to do this and the
+ * device is now not being displayed, please update the file and uncomment the call to migrateDeviceTypes
+ * in GBApplication.
  */
 public enum DeviceType {
-    UNKNOWN(-1, UnknownDeviceCoordinator.class),
-    PEBBLE(1, PebbleCoordinator.class),
-    MIBAND(10, MiBandCoordinator.class),
-    MIBAND2(11, MiBand2Coordinator.class),
-    MIBAND2_HRX(1001, MiBand2HRXCoordinator.class),
-    AMAZFITBIP(12, AmazfitBipCoordinator.class),
-    AMAZFITCOR(13, AmazfitCorCoordinator.class),
-    MIBAND3(14, MiBand3Coordinator.class),
-    AMAZFITCOR2(15, AmazfitCor2Coordinator.class),
-    MIBAND4(16, MiBand4Coordinator.class),
-    AMAZFITBIP_LITE(17, AmazfitBipLiteCoordinator.class),
-    AMAZFITGTR(18, AmazfitGTRCoordinator.class),
-    AMAZFITGTS(19, AmazfitGTSCoordinator.class),
-    AMAZFITBIPS(20, AmazfitBipSCoordinator.class),
-    AMAZFITGTR_LITE(21, AmazfitGTRLiteCoordinator.class),
-    AMAZFITTREX(22, AmazfitTRexCoordinator.class),
-    MIBAND5(23, MiBand5Coordinator.class),
-    AMAZFITBAND5(24, AmazfitBand5Coordinator.class),
-    AMAZFITBIPS_LITE(25, AmazfitBipSLiteCoordinator.class),
-    AMAZFITGTR2(26, AmazfitGTR2Coordinator.class),
-    AMAZFITGTS2(27, AmazfitGTS2Coordinator.class),
-    AMAZFITBIPU(28, AmazfitBipUCoordinator.class),
-    AMAZFITVERGEL(29, AmazfitVergeLCoordinator.class),
-    AMAZFITBIPUPRO(30, AmazfitBipUProCoordinator.class),
-    AMAZFITNEO(31, AmazfitNeoCoordinator.class),
-    AMAZFITGTS2_MINI(32, AmazfitGTS2MiniCoordinator.class),
-    ZEPP_E(33, ZeppECoordinator.class),
-    AMAZFITGTR2E(34, AmazfitGTR2eCoordinator.class),
-    AMAZFITGTS2E(35, AmazfitGTS2eCoordinator.class),
-    AMAZFITX(36, AmazfitXCoordinator.class),
-    MIBAND6(37, MiBand6Coordinator.class),
-    AMAZFITTREXPRO(38, AmazfitTRexProCoordinator.class),
-    AMAZFITPOP(39, AmazfitPopCoordinator.class),
-    AMAZFITPOPPRO(10040, AmazfitPopProCoordinator.class),
-    MIBAND7(10041, MiBand7Coordinator.class),
-    AMAZFITGTS3(10042, AmazfitGTS3Coordinator.class),
-    AMAZFITGTR3(10043, AmazfitGTR3Coordinator.class),
-    AMAZFITGTR4(10044, AmazfitGTR4Coordinator.class),
-    AMAZFITBAND7(10045, AmazfitBand7Coordinator.class),
-    AMAZFITGTS4(10046, AmazfitGTS4Coordinator.class),
-    AMAZFITGTS4MINI(10047, AmazfitGTS4MiniCoordinator.class),
-    AMAZFITTREX2(10048, AmazfitTRex2Coordinator.class),
-    AMAZFITGTR3PRO(10049, AmazfitGTR3ProCoordinator.class),
-    AMAZFITBIP3PRO(10051, AmazfitBip3ProCoordinator.class),
-    AMAZFITCHEETAHPRO(10050, AmazfitCheetahProCoordinator.class),
-    AMAZFITCHEETAHSQUARE(10052, AmazfitCheetahSquareCoordinator.class),
-    AMAZFITCHEETAHROUND(10053, AmazfitCheetahRoundCoordinator.class),
-    AMAZFITBIP5(10054, AmazfitBip5Coordinator.class),
-    AMAZFITTREXULTRA(10055, AmazfitTRexUltraCoordinator.class),
-    AMAZFITGTRMINI(10056, AmazfitGTRMiniCoordinator.class),
-    AMAZFITFALCON(10057, AmazfitFalconCoordinator.class),
-    AMAZFITBALANCE(10058, AmazfitBalanceCoordinator.class),
-    HPLUS(40, HPlusCoordinator.class),
-    MAKIBESF68(41, MakibesF68Coordinator.class),
-    EXRIZUK8(42, EXRIZUK8Coordinator.class),
-    Q8(43, Q8Coordinator.class),
-    SG2(44, SG2Coordinator.class),
-    NO1F1(50, No1F1Coordinator.class),
-    TECLASTH30(60, TeclastH30Coordinator.class),
-    Y5(61, Y5Coordinator.class),
-    XWATCH(70, XWatchCoordinator.class),
-    ZETIME(80, ZeTimeCoordinator.class),
-    ID115(90, ID115Coordinator.class),
-    WATCH9(100, Watch9DeviceCoordinator.class),
-    WATCHXPLUS(102, WatchXPlusDeviceCoordinator.class),
-    ROIDMI(110, Roidmi1Coordinator.class),
-    ROIDMI3(112, Roidmi3Coordinator.class),
-    CASIOGB6900(120, CasioGB6900DeviceCoordinator.class),
-    CASIOGBX100(121, CasioGBX100DeviceCoordinator.class),
-    CASIOGWB5600(122, CasioGWB5600DeviceCoordinator.class),
-    CASIOGMWB5000(123, CasioGMWB5000DeviceCoordinator.class),
-    MISCALE2(131, MiScale2DeviceCoordinator.class),
-    BFH16(140, BFH16DeviceCoordinator.class),
-    MAKIBESHR3(150, MakibesHR3Coordinator.class),
-    BANGLEJS(160, BangleJSCoordinator.class),
-    FOSSILQHYBRID(170, QHybridCoordinator.class),
-    TLW64(180, TLW64Coordinator.class),
-    PINETIME_JF(190, PineTimeJFCoordinator.class),
-    MIJIA_LYWSD02(200, MijiaLywsd02Coordinator.class),
-    LEFUN(210, LefunDeviceCoordinator.class),
-    BOHEMIC_SMART_BRACELET(211, BohemicSmartBraceletDeviceCoordinator.class),
-    SMAQ2OSS(220, SMAQ2OSSCoordinator.class),
-    FITPRO(230, FitProDeviceCoordinator.class),
-    ITAG(250, ITagCoordinator.class),
-    NUTMINI(251, NutCoordinator.class),
-    VIVOMOVE_HR(260, VivomoveHrCoordinator.class),
-    VIBRATISSIMO(300, VibratissimoCoordinator.class),
-    SONY_SWR12(310, SonySWR12DeviceCoordinator.class),
-    LIVEVIEW(320, LiveviewCoordinator.class),
-    WASPOS(330, WaspOSCoordinator.class),
-    UM25(350, UM25Coordinator.class),
-    DOMYOS_T540(400, DomyosT540Coordinator.class),
-    NOTHING_EAR1(410, Ear1Coordinator.class),
-    GALAXY_BUDS_PRO(418, GalaxyBudsProDeviceCoordinator.class),
-    GALAXY_BUDS_LIVE(419, GalaxyBudsLiveDeviceCoordinator.class),
-    GALAXY_BUDS(420, GalaxyBudsDeviceCoordinator.class),
-    GALAXY_BUDS2(421, GalaxyBuds2DeviceCoordinator.class),
-    GALAXY_BUDS2_PRO(422, GalaxyBuds2ProDeviceCoordinator.class),
-    SONY_WH_1000XM3(430, SonyWH1000XM3Coordinator.class),
-    SONY_WF_SP800N(431, SonyWFSP800NCoordinator.class),
-    SONY_WH_1000XM4(432, SonyWH1000XM4Coordinator.class),
-    SONY_WF_1000XM3(433, SonyWF1000XM3Coordinator.class),
-    SONY_WH_1000XM2(434, SonyWH1000XM2Coordinator.class),
-    SONY_WF_1000XM4(435, SonyWF1000XM4Coordinator.class),
-    SONY_LINKBUDS_S(436, SonyLinkBudsSCoordinator.class),
-    SONY_WH_1000XM5(437, SonyWH1000XM5Coordinator.class),
-    SONY_WF_1000XM5(438, SonyWF1000XM5Coordinator.class),
-    BOSE_QC35(440, QC35Coordinator.class),
-    VESC(500, VescCoordinator.class),
-    BINARY_SENSOR(510, BinarySensorCoordinator.class),
-    FLIPPER_ZERO(520, FlipperZeroCoordinator.class),
-    SUPER_CARS(530, SuperCarsCoordinator.class),
-    ASTEROIDOS(540, AsteroidOSDeviceCoordinator.class),
-    SOFLOW_SO6(550, SoFlowCoordinator.class),
-    WITHINGS_STEEL_HR(560, WithingsSteelHRDeviceCoordinator.class),
-    SONY_WENA_3(570, SonyWena3Coordinator.class),
-
-    FEMOMETER_VINCA2(580, FemometerVinca2DeviceCoordinator.class),
-    TEST(1000, TestDeviceCoordinator.class);
-
-    private final int key;
+    UNKNOWN(UnknownDeviceCoordinator.class),
+    PEBBLE(PebbleCoordinator.class),
+    MIBAND(MiBandCoordinator.class),
+    MIBAND2(MiBand2Coordinator.class),
+    MIBAND2_HRX(MiBand2HRXCoordinator.class),
+    AMAZFITBIP(AmazfitBipCoordinator.class),
+    AMAZFITCOR(AmazfitCorCoordinator.class),
+    MIBAND3(MiBand3Coordinator.class),
+    AMAZFITCOR2(AmazfitCor2Coordinator.class),
+    MIBAND4(MiBand4Coordinator.class),
+    AMAZFITBIP_LITE(AmazfitBipLiteCoordinator.class),
+    AMAZFITGTR(AmazfitGTRCoordinator.class),
+    AMAZFITGTS(AmazfitGTSCoordinator.class),
+    AMAZFITBIPS(AmazfitBipSCoordinator.class),
+    AMAZFITGTR_LITE(AmazfitGTRLiteCoordinator.class),
+    AMAZFITTREX(AmazfitTRexCoordinator.class),
+    MIBAND5(MiBand5Coordinator.class),
+    AMAZFITBAND5(AmazfitBand5Coordinator.class),
+    AMAZFITBIPS_LITE(AmazfitBipSLiteCoordinator.class),
+    AMAZFITGTR2(AmazfitGTR2Coordinator.class),
+    AMAZFITGTS2(AmazfitGTS2Coordinator.class),
+    AMAZFITBIPU(AmazfitBipUCoordinator.class),
+    AMAZFITVERGEL(AmazfitVergeLCoordinator.class),
+    AMAZFITBIPUPRO(AmazfitBipUProCoordinator.class),
+    AMAZFITNEO(AmazfitNeoCoordinator.class),
+    AMAZFITGTS2_MINI(AmazfitGTS2MiniCoordinator.class),
+    ZEPP_E(ZeppECoordinator.class),
+    AMAZFITGTR2E(AmazfitGTR2eCoordinator.class),
+    AMAZFITGTS2E(AmazfitGTS2eCoordinator.class),
+    AMAZFITX(AmazfitXCoordinator.class),
+    MIBAND6(MiBand6Coordinator.class),
+    AMAZFITTREXPRO(AmazfitTRexProCoordinator.class),
+    AMAZFITPOP(AmazfitPopCoordinator.class),
+    AMAZFITPOPPRO(AmazfitPopProCoordinator.class),
+    MIBAND7(MiBand7Coordinator.class),
+    MIBAND7PRO(MiBand7ProCoordinator.class),
+    MIBAND8(MiBand8Coordinator.class),
+    MIBAND8PRO(MiBand8ProCoordinator.class),
+    MIWATCHLITE(MiWatchLiteCoordinator.class),
+    MIWATCHCOLORSPORT(MiWatchColorSportCoordinator.class),
+    REDMIWATCH3ACTIVE(RedmiWatch3ActiveCoordinator.class),
+    REDMISMARTBAND2(RedmiSmartBand2Coordinator.class),
+    REDMIWATCH2(RedmiWatch2Coordinator.class),
+    REDMIWATCH2LITE(RedmiWatch2LiteCoordinator.class),
+    REDMISMARTBANDPRO(RedmiSmartBandProCoordinator.class),
+    XIAOMI_WATCH_S1_ACTIVE(XiaomiWatchS1ActiveCoordinator.class),
+    XIAOMI_WATCH_S1_PRO(XiaomiWatchS1ProCoordinator.class),
+    XIAOMI_WATCH_S1(XiaomiWatchS1Coordinator.class),
+    XIAOMI_WATCH_S3(XiaomiWatchS3Coordinator.class),
+    AMAZFITGTS3(AmazfitGTS3Coordinator.class),
+    AMAZFITGTR3(AmazfitGTR3Coordinator.class),
+    AMAZFITGTR4(AmazfitGTR4Coordinator.class),
+    AMAZFITBAND7(AmazfitBand7Coordinator.class),
+    AMAZFITGTS4(AmazfitGTS4Coordinator.class),
+    AMAZFITGTS4MINI(AmazfitGTS4MiniCoordinator.class),
+    AMAZFITTREX2(AmazfitTRex2Coordinator.class),
+    AMAZFITGTR3PRO(AmazfitGTR3ProCoordinator.class),
+    AMAZFITBIP3PRO(AmazfitBip3ProCoordinator.class),
+    AMAZFITCHEETAHPRO(AmazfitCheetahProCoordinator.class),
+    AMAZFITCHEETAHSQUARE(AmazfitCheetahSquareCoordinator.class),
+    AMAZFITCHEETAHROUND(AmazfitCheetahRoundCoordinator.class),
+    AMAZFITBIP5(AmazfitBip5Coordinator.class),
+    AMAZFITTREXULTRA(AmazfitTRexUltraCoordinator.class),
+    AMAZFITGTRMINI(AmazfitGTRMiniCoordinator.class),
+    AMAZFITFALCON(AmazfitFalconCoordinator.class),
+    AMAZFITBALANCE(AmazfitBalanceCoordinator.class),
+    AMAZFITACTIVE(AmazfitActiveCoordinator.class),
+    AMAZFITACTIVEEDGE(AmazfitActiveEdgeCoordinator.class),
+    HPLUS(HPlusCoordinator.class),
+    MAKIBESF68(MakibesF68Coordinator.class),
+    EXRIZUK8(EXRIZUK8Coordinator.class),
+    Q8(Q8Coordinator.class),
+    SG2(SG2Coordinator.class),
+    NO1F1(No1F1Coordinator.class),
+    TECLASTH30(TeclastH30Coordinator.class),
+    Y5(Y5Coordinator.class),
+    XWATCH(XWatchCoordinator.class),
+    ZETIME(ZeTimeCoordinator.class),
+    ID115(ID115Coordinator.class),
+    WATCH9(Watch9DeviceCoordinator.class),
+    WATCHXPLUS(WatchXPlusDeviceCoordinator.class),
+    ROIDMI(Roidmi1Coordinator.class),
+    ROIDMI3(Roidmi3Coordinator.class),
+    CASIOGB6900(CasioGB6900DeviceCoordinator.class),
+    CASIOGBX100(CasioGBX100DeviceCoordinator.class),
+    CASIOGWB5600(CasioGWB5600DeviceCoordinator.class),
+    CASIOGMWB5000(CasioGMWB5000DeviceCoordinator.class),
+    MISCALE2(MiScale2DeviceCoordinator.class),
+    BFH16(BFH16DeviceCoordinator.class),
+    MAKIBESHR3(MakibesHR3Coordinator.class),
+    BANGLEJS(BangleJSCoordinator.class),
+    FOSSILQHYBRID(QHybridCoordinator.class),
+    TLW64(TLW64Coordinator.class),
+    PINETIME_JF(PineTimeJFCoordinator.class),
+    MIJIA_LYWSD02(MijiaLywsd02Coordinator.class),
+    MIJIA_LYWSD03(MijiaLywsd03Coordinator.class),
+    MIJIA_MHO_C303(MijiaMhoC303Coordinator.class),
+    LEFUN(LefunDeviceCoordinator.class),
+    BOHEMIC_SMART_BRACELET(BohemicSmartBraceletDeviceCoordinator.class),
+    SMAQ2OSS(SMAQ2OSSCoordinator.class),
+    FITPRO(FitProDeviceCoordinator.class),
+    COLACAO21(ColaCao21Coordinator.class),
+    COLACAO23(ColaCao23Coordinator.class),
+    ITAG(ITagCoordinator.class),
+    NUTMINI(NutCoordinator.class),
+    VIVOMOVE_HR(VivomoveHrCoordinator.class),
+    VIBRATISSIMO(VibratissimoCoordinator.class),
+    SONY_SWR12(SonySWR12DeviceCoordinator.class),
+    LIVEVIEW(LiveviewCoordinator.class),
+    WASPOS(WaspOSCoordinator.class),
+    UM25(UM25Coordinator.class),
+    DOMYOS_T540(DomyosT540Coordinator.class),
+    NOTHING_EAR1(Ear1Coordinator.class),
+    NOTHING_EAR2(Ear2Coordinator.class),
+    NOTHING_EAR_STICK(EarStickCoordinator.class),
+    NOTHING_CMF_WATCH_PRO(CmfWatchProCoordinator.class),
+    GALAXY_BUDS_PRO(GalaxyBudsProDeviceCoordinator.class),
+    GALAXY_BUDS_LIVE(GalaxyBudsLiveDeviceCoordinator.class),
+    GALAXY_BUDS(GalaxyBudsDeviceCoordinator.class),
+    GALAXY_BUDS2(GalaxyBuds2DeviceCoordinator.class),
+    GALAXY_BUDS2_PRO(GalaxyBuds2ProDeviceCoordinator.class),
+    SONY_WH_1000XM3(SonyWH1000XM3Coordinator.class),
+    SONY_WF_SP800N(SonyWFSP800NCoordinator.class),
+    SONY_WI_SP600N(SonyWISP600NCoordinator.class),
+    SONY_WH_1000XM4(SonyWH1000XM4Coordinator.class),
+    SONY_WF_1000XM3(SonyWF1000XM3Coordinator.class),
+    SONY_WH_1000XM2(SonyWH1000XM2Coordinator.class),
+    SONY_WF_1000XM4(SonyWF1000XM4Coordinator.class),
+    SONY_LINKBUDS_S(SonyLinkBudsSCoordinator.class),
+    SONY_WH_1000XM5(SonyWH1000XM5Coordinator.class),
+    SONY_WF_1000XM5(SonyWF1000XM5Coordinator.class),
+    BOSE_QC35(QC35Coordinator.class),
+    HONORBAND3(HonorBand3Coordinator.class),
+    HONORBAND4(HonorBand4Coordinator.class),
+    HONORBAND5(HonorBand5Coordinator.class),
+    HUAWEIBANDAW70(HuaweiBandAw70Coordinator.class),
+    HUAWEIBAND6(HuaweiBand6Coordinator.class),
+    HUAWEIWATCHGT(HuaweiWatchGTCoordinator.class),
+    HUAWEIBAND4PRO(HuaweiBand4ProCoordinator.class),
+    HUAWEIWATCHGT2(HuaweiWatchGT2Coordinator.class),
+    HUAWEIWATCHGT2E(HuaweiWatchGT2eCoordinator.class),
+    HUAWEITALKBANDB6(HuaweiTalkBandB6Coordinator.class),
+    HUAWEIBAND7(HuaweiBand7Coordinator.class),
+    HONORBAND6(HonorBand6Coordinator.class),
+    HONORBAND7(HonorBand7Coordinator.class),
+    HONORMAGICWATCH2(HonorMagicWatch2Coordinator.class),
+    HUAWEIWATCHGT3(HuaweiWatchGT3Coordinator.class),
+    HUAWEIBAND8(HuaweiBand8Coordinator.class),
+    VESC(VescCoordinator.class),
+    BINARY_SENSOR(BinarySensorCoordinator.class),
+    FLIPPER_ZERO(FlipperZeroCoordinator.class),
+    SUPER_CARS(SuperCarsCoordinator.class),
+    ASTEROIDOS(AsteroidOSDeviceCoordinator.class),
+    SOFLOW_SO6(SoFlowCoordinator.class),
+    WITHINGS_STEEL_HR(WithingsSteelHRDeviceCoordinator.class),
+    SONY_WENA_3(SonyWena3Coordinator.class),
+    FEMOMETER_VINCA2(FemometerVinca2DeviceCoordinator.class),
+    PIXOO(PixooCoordinator.class),
+    TEST(TestDeviceCoordinator.class);
 
     private DeviceCoordinator coordinator;
 
     private Class<? extends DeviceCoordinator> coordinatorClass;
 
-    DeviceType(int key, Class<? extends DeviceCoordinator> coordinatorClass) {
-        this.key = key;
+    DeviceType(Class<? extends DeviceCoordinator> coordinatorClass) {
         this.coordinatorClass = coordinatorClass;
-    }
-
-    public int getKey() {
-        return key;
     }
 
     public boolean isSupported() {
         return this != UNKNOWN;
     }
 
-    public static DeviceType fromKey(int key) {
+    public static DeviceType fromName(String name) {
         for (DeviceType type : values()) {
-            if (type.key == key) {
+            if (type.name().equals(name)) {
                 return type;
             }
         }

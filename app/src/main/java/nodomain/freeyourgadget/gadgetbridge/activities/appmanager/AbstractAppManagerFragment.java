@@ -1,5 +1,6 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, Konrad Iturbe, Lem Dulfo
+/*  Copyright (C) 2016-2024 Andreas Shimokawa, Arjan Schrijver, Carsten
+    Pfeiffer, Daniel Dakhno, Daniele Gobbetti, José Rebelo, Konrad Iturbe,
+    TylerWilliamson
 
     This file is part of Gadgetbridge.
 
@@ -14,7 +15,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities.appmanager;
 
 import static nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid.QHybridSupport.QHYBRID_ACTION_DOWNLOADED_FILE;
@@ -74,7 +75,6 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceService;
 import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.pebble.PebbleProtocol;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GridAutoFitLayoutManager;
@@ -278,6 +278,11 @@ public abstract class AbstractAppManagerFragment extends Fragment {
         } catch (IOException e) {
             LOG.warn("could not get external dir while reading app cache.");
             return cachedAppList;
+        }
+
+        if (cachePath == null) {
+            LOG.warn("Cached apps path is null");
+            return Collections.emptyList();
         }
 
         File[] files;
@@ -543,6 +548,9 @@ public abstract class AbstractAppManagerFragment extends Fragment {
         }
         if ((mGBDevice.getType() != DeviceType.FOSSILQHYBRID) || (!selectedApp.isOnDevice()) || ((selectedApp.getType() != GBDeviceApp.Type.WATCHFACE) && (selectedApp.getType() != GBDeviceApp.Type.APP_GENERIC))) {
             menu.removeItem(R.id.appmanager_app_download);
+        }
+        if (mGBDevice.getType() == DeviceType.FOSSILQHYBRID && selectedApp.getName().equals("workoutApp")) {
+            menu.removeItem(R.id.appmanager_app_delete);
         }
 
         if (mGBDevice.getType() == DeviceType.PEBBLE) {

@@ -1,4 +1,5 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer
+/*  Copyright (C) 2015-2024 Andreas Shimokawa, Carsten Pfeiffer, Daniel
+    Dakhno, José Rebelo, Petr Vaněk, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -13,7 +14,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.adapter;
 
 import android.bluetooth.BluetoothDevice;
@@ -34,6 +35,7 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceCandidate;
+import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
@@ -62,7 +64,9 @@ public class DeviceCandidateAdapter extends ArrayAdapter<GBDeviceCandidate> {
         TextView deviceAddressLabel = view.findViewById(R.id.item_details);
         TextView deviceStatus = view.findViewById(R.id.item_status);
 
-        DeviceCoordinator coordinator = device.getDeviceType().getDeviceCoordinator();
+        DeviceType deviceType = DeviceHelper.getInstance().resolveDeviceType(device);
+
+        DeviceCoordinator coordinator = deviceType.getDeviceCoordinator();
 
         String name = formatDeviceCandidate(device);
         deviceNameLabel.setText(name);
@@ -77,7 +81,7 @@ public class DeviceCandidateAdapter extends ArrayAdapter<GBDeviceCandidate> {
             }
         }
 
-        if (!device.getDeviceType().isSupported()) {
+        if (!deviceType.isSupported()) {
             statusLines.add(getContext().getString(R.string.device_unsupported));
         }
 

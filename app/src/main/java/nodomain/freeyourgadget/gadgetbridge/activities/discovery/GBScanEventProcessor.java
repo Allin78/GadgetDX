@@ -1,6 +1,4 @@
-/*  Copyright (C) 2015-2023 Andreas Shimokawa, boun, Carsten Pfeiffer, Daniel
-    Dakhno, Daniele Gobbetti, JohnnySun, jonnsoft, José Rebelo, Lem Dulfo, Taavi
-    Eomäe, Uwe Hermann
+/*  Copyright (C) 2023-2024 Daniel Dakhno, José Rebelo
 
     This file is part of Gadgetbridge.
 
@@ -15,7 +13,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities.discovery;
 
 import android.os.ParcelUuid;
@@ -184,10 +182,9 @@ public final class GBScanEventProcessor implements Runnable {
             }
         }
 
-        final DeviceType deviceType = DeviceHelper.getInstance().resolveDeviceType(candidate);
+        final DeviceType deviceType = DeviceHelper.getInstance().resolveDeviceType(candidate, false);
 
         if (deviceType.isSupported() || discoverUnsupported) {
-            candidate.setDeviceType(deviceType);
             synchronized (candidatesByAddress) {
                 candidatesByAddress.put(candidate.getMacAddress(), candidate);
             }
@@ -263,7 +260,7 @@ public final class GBScanEventProcessor implements Runnable {
                     "Device {} ({}) is supported as '{}' without scanning services",
                     candidate.getDevice(),
                     candidate.getName(),
-                    candidate.getDeviceType()
+                    DeviceHelper.getInstance().resolveDeviceType(candidate, false)
             );
             return true;
         }

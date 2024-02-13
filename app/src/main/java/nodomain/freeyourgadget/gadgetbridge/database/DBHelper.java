@@ -1,5 +1,6 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, Felix Konstantin Maurer, JohnnySun
+/*  Copyright (C) 2015-2024 Andreas Shimokawa, Carsten Pfeiffer, Damien
+    Gaignon, Daniel Dakhno, Daniele Gobbetti, Felix Konstantin Maurer, JohnnySun,
+    José Rebelo, Petr Vaněk
 
     This file is part of Gadgetbridge.
 
@@ -14,7 +15,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.database;
 
 import android.content.Context;
@@ -437,7 +438,7 @@ public class DBHelper {
             device.setAlias(gbDevice.getAlias());
             DeviceCoordinator coordinator = gbDevice.getDeviceCoordinator();
             device.setManufacturer(coordinator.getManufacturer());
-            device.setType(gbDevice.getType().getKey());
+            device.setTypeName(gbDevice.getType().name());
             device.setModel(gbDevice.getModel());
 
             if (device.getId() == null) {
@@ -462,7 +463,7 @@ public class DBHelper {
         if (!Objects.equals(device.getManufacturer(), coordinator.getManufacturer())) {
             return false;
         }
-        if (device.getType() != gbDevice.getType().getKey()) {
+        if(!gbDevice.getType().name().equals(device.getTypeName())){
             return false;
         }
         if (!Objects.equals(device.getModel(), gbDevice.getModel())) {

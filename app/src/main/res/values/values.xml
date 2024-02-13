@@ -105,6 +105,7 @@
     <item name="p_pai" type="string">pai</item>
     <item name="p_speed_zones" type="string">speedzones</item>
     <item name="p_live_stats" type="string">livestats</item>
+    <item name="p_spo2" type="string">spo2</item>
     <item name="p_temperature" type="string">temperature</item>
 
     <item name="p_message_privacy_mode_off" type="string">off</item>
@@ -125,6 +126,10 @@
     <item name="pref_device_action_fitness_app_control_start_value" translatable="false" type="string">FITNESS_CONTROL_START</item>
     <item name="pref_device_action_fitness_app_control_stop_value" translatable="false" type="string">FITNESS_CONTROL_STOP</item>
     <item name="pref_device_action_fitness_app_control_toggle_value" translatable="false" type="string">FITNESS_CONTROL_TOGGLE</item>
+    <item name="pref_device_action_dnd_off_value" translatable="false" type="string">DO_NOT_DISTURB_OFF</item>
+    <item name="pref_device_action_dnd_priority_value" translatable="false" type="string">DO_NOT_DISTURB_PRIORITY</item>
+    <item name="pref_device_action_dnd_alarms_value" translatable="false" type="string">DO_NOT_DISTURB_ALARMS</item>
+    <item name="pref_device_action_dnd_on_value" translatable="false" type="string">DO_NOT_DISTURB_ON</item>
 
     <item name="pref_theme_value_system" translatable="false" type="string">system</item>
     <item name="pref_theme_value_light" translatable="false" type="string">light</item>

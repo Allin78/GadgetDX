@@ -1,5 +1,4 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, vanous, Vebryn
+/*  Copyright (C) 2023-2024 Daniel Dakhno, José Rebelo, Martin.JM
 
     This file is part of Gadgetbridge.
 
@@ -14,7 +13,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities.charts;
 
 import android.content.Context;
@@ -33,13 +32,13 @@ import nodomain.freeyourgadget.gadgetbridge.activities.AbstractFragmentPagerAdap
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityAmounts;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
-import nodomain.freeyourgadget.gadgetbridge.util.DeviceHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class ActivityChartsActivity extends AbstractChartsActivity {
-    LimitedQueue mActivityAmountCache = new LimitedQueue(60);
+    LimitedQueue<Integer, ActivityAmounts> mActivityAmountCache = new LimitedQueue<>(60);
 
     @Override
     protected AbstractFragmentPagerAdapter createFragmentPagerAdapter(final FragmentManager fragmentManager) {
@@ -94,6 +93,9 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
         if (!coordinator.supportsPai()) {
             tabList.remove("pai");
         }
+        if (!coordinator.supportsSpo2()) {
+            tabList.remove("spo2");
+        }
         if (!coordinator.supportsStepCounter()) {
             tabList.remove("stepsweek");
         }
@@ -145,6 +147,8 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                     return new SpeedZonesFragment();
                 case "livestats":
                     return new LiveActivityFragment();
+                case "spo2":
+                    return new Spo2ChartFragment();
                 case "temperature":
                     return new TemperatureChartFragment();
             }
@@ -186,13 +190,15 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                 case "stress":
                     return getString(R.string.menuitem_stress);
                 case "pai":
-                    return getString(R.string.menuitem_pai);
+                    return getString(getDevice().getDeviceCoordinator().getPaiName());
                 case "stepsweek":
                     return getStepsTitle();
                 case "speedzones":
                     return getString(R.string.stats_title);
                 case "livestats":
                     return getString(R.string.liveactivity_live_activity);
+                case "spo2":
+                    return getString(R.string.pref_header_spo2);
                 case "temperature":
                     return getString(R.string.temperature);
             }

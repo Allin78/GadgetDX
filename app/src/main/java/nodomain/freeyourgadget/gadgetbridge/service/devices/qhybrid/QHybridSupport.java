@@ -1,5 +1,5 @@
-/*  Copyright (C) 2019-2021 Andreas Shimokawa, Carsten Pfeiffer, Daniel
-    Dakhno, Taavi Eomäe
+/*  Copyright (C) 2019-2024 Andreas Shimokawa, Arjan Schrijver, Carsten
+    Pfeiffer, Daniel Dakhno, Dmitriy Bogdanov, Taavi Eomäe
 
     This file is part of Gadgetbridge.
 
@@ -14,7 +14,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.qhybrid;
 
 import android.bluetooth.BluetoothGatt;
@@ -59,6 +59,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
@@ -839,5 +840,10 @@ public class QHybridSupport extends QHybridBaseSupport {
                 watchAdapter.uninstallApp(appName);
             }
         }
+    }
+
+    @Override
+    public void onSetNavigationInfo(NavigationInfoSpec navigationInfoSpec) {
+        ((FossilHRWatchAdapter) watchAdapter).onSetNavigationInfo(navigationInfoSpec);
     }
 }

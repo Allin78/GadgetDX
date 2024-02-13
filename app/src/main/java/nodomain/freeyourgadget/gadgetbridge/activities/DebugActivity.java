@@ -1,6 +1,7 @@
-/*  Copyright (C) 2015-2020 Andreas Shimokawa, Carsten Pfeiffer, Daniele
-    Gobbetti, Frank Slezak, ivanovlev, Kasha, Lem Dulfo, Pavel Elagin, Steffen
-    Liebergeld, vanous
+/*  Copyright (C) 2015-2024 Andreas Shimokawa, Arjan Schrijver, Carsten
+    Pfeiffer, Daniel Dakhno, Daniele Gobbetti, Dmitriy Bogdanov, Frank Slezak,
+    Ganblejs, ivanovlev, José Rebelo, Kamalei Zestri, Kasha, Lem Dulfo, Pavel
+    Elagin, Petr Vaněk, Steffen Liebergeld, Tim
 
     This file is part of Gadgetbridge.
 
@@ -15,7 +16,7 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.activities;
 
 import static android.content.Intent.EXTRA_SUBJECT;
@@ -63,6 +64,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -157,7 +159,7 @@ public class DebugActivity extends AbstractGBActivity {
     };
     private Spinner sendTypeSpinner;
     private EditText editContent;
-    public static final long SELECT_DEVICE = 999L;
+    public static final long SELECT_DEVICE = -1;
     private long selectedTestDeviceKey = SELECT_DEVICE;
     private String selectedTestDeviceMAC;
 
@@ -778,7 +780,7 @@ public class DebugActivity extends AbstractGBActivity {
 
         final GBDevice device = devices.get(0);
 
-        final CompanionDeviceManager manager = (CompanionDeviceManager) GBApplication.getContext().getSystemService(Context.COMPANION_DEVICE_SERVICE);
+        final CompanionDeviceManager manager = (CompanionDeviceManager) getSystemService(Context.COMPANION_DEVICE_SERVICE);
 
         if (manager.getAssociations().contains(device.getAddress())) {
             GB.toast(device.getAliasOrName() + " already paired as companion", Toast.LENGTH_LONG, GB.INFO);
@@ -801,7 +803,7 @@ public class DebugActivity extends AbstractGBActivity {
             }
 
             @Override
-            public void onDeviceFound(final IntentSender chooserLauncher) {
+            public void onDeviceFound(@NonNull final IntentSender chooserLauncher) {
                 GB.toast("Found device", Toast.LENGTH_SHORT, GB.INFO);
 
                 try {
@@ -1003,7 +1005,7 @@ public class DebugActivity extends AbstractGBActivity {
         if (deviceKey == SELECT_DEVICE) {
             return;
         }
-        DeviceType deviceType = DeviceType.fromKey((int) deviceKey);
+        DeviceType deviceType = DeviceType.values()[(int) deviceKey];
         try (
             DBHandler db = GBApplication.acquireDB()) {
             DaoSession daoSession = db.getDaoSession();
@@ -1153,7 +1155,7 @@ public class DebugActivity extends AbstractGBActivity {
             DeviceCoordinator coordinator = deviceType.getDeviceCoordinator();
             int icon = coordinator.getDefaultIconResource();
             String name = app.getString(coordinator.getDeviceNameResource()) + " (" + coordinator.getManufacturer() + ")";
-            long deviceId = deviceType.getKey();
+            long deviceId = deviceType.ordinal();
             newMap.put(name, new Pair(deviceId, icon));
         }
         TreeMap <String, Pair<Long, Integer>> sortedMap = new TreeMap<>(newMap);

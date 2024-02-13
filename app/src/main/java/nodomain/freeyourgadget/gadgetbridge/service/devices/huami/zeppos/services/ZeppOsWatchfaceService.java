@@ -1,4 +1,4 @@
-/*  Copyright (C) 2023 José Rebelo
+/*  Copyright (C) 2023-2024 Andreas Shimokawa, José Rebelo, Maxime Reyrolle
 
     This file is part of Gadgetbridge.
 
@@ -13,12 +13,13 @@
     GNU Affero General Public License for more details.
 
     You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_WATCHFACE;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +35,12 @@ import java.util.regex.Pattern;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsUtils;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
-import nodomain.freeyourgadget.gadgetbridge.devices.huami.Huami2021Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.Huami2021Support;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.ZeppOsSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.AbstractZeppOsService;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
@@ -68,6 +69,16 @@ public class ZeppOsWatchfaceService extends AbstractZeppOsService {
         EMERALD_MOONLIGHT(0x00002D0A, R.string.zepp_os_watchface_emerald_moonlight),
         ROTATING_EARTH(0x00002D0F, R.string.zepp_os_watchface_rotating_earth),
         SUPERPOSITION(0x00002D0C, R.string.zepp_os_watchface_superposition),
+
+        // Codes are from Balance, not sure if they match on other watches
+        VAST_SKY(0x00002DB6, R.string.zepp_os_watchface_vast_sky),
+        LIGHTNING_FLASH(0x00002DB7, R.string.zepp_os_watchface_lightning_flash),
+        FREE_COMBINATION(0x00002DB9, R.string.zepp_os_watchface_free_combination),
+        PURE_WHITE(0x00002DBA, R.string.zepp_os_watchface_pure_white),
+        GUIDER(0x00002DBB, R.string.zepp_os_watchface_guider),
+        CITY_OF_SPEED(0x00002DBC, R.string.zepp_os_watchface_city_of_speed),
+        STARRY_SKY(0x00002DBD, R.string.zepp_os_watchface_starry_sky),
+        THE_ULTIMA(0x00002DBE, R.string.zepp_os_watchface_the_ultima),
         ;
 
         private final int code;
@@ -99,18 +110,13 @@ public class ZeppOsWatchfaceService extends AbstractZeppOsService {
 
     final List<GBDeviceApp> watchfaces = new ArrayList<>();
 
-    public ZeppOsWatchfaceService(final Huami2021Support support) {
-        super(support);
+    public ZeppOsWatchfaceService(final ZeppOsSupport support) {
+        super(support, true);
     }
 
     @Override
     public short getEndpoint() {
         return ENDPOINT;
-    }
-
-    @Override
-    public boolean isEncrypted() {
-        return true;
     }
 
     @Override
@@ -218,7 +224,7 @@ public class ZeppOsWatchfaceService extends AbstractZeppOsService {
 
         // TODO broadcast something to update app manager
         final GBDeviceEventUpdatePreferences evt = new GBDeviceEventUpdatePreferences()
-                .withPreference(Huami2021Coordinator.getPrefPossibleValuesKey(PREF_WATCHFACE), String.join(",", watchfacePrefValues));
+                .withPreference(DeviceSettingsUtils.getPrefPossibleValuesKey(PREF_WATCHFACE), TextUtils.join(",", watchfacePrefValues));
         getSupport().evaluateGBDeviceEvent(evt);
     }
 
