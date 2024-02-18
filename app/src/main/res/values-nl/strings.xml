@@ -2555,6 +2555,7 @@
     <string name="pref_summary_casio_alert_sms">Tril/piep voor SMS-meldingen</string>
     <string name="pref_title_preview_message_in_title">Toon een preview van het bericht in de titel</string>
     <string name="devicetype_redmiwatch3active">Redmi Watch 3 Active</string>
+    <string name="devicetype_redmiwatch3">Redmi Watch 3</string>
     <string name="pref_summary_casio_alert_calendar">Tril/piep voor kalendermeldingen</string>
     <string name="serial_number">Serienummer</string>
     <string name="danish">Deens</string>

@@ -2565,6 +2565,7 @@
     <string name="pref_summary_casio_alert_sms">Alert (wibracja/beep) dla powiadomień SMS (wiadomości tekstowych)</string>
     <string name="pref_title_preview_message_in_title">Pokaż podgląd wiadomości w tytule</string>
     <string name="devicetype_redmiwatch3active">Redmi Watch 3 Active</string>
+    <string name="devicetype_redmiwatch3">Redmi Watch 3</string>
     <string name="pref_summary_casio_alert_calendar">Alert (wibracja/beep) dla powiadomień z kalendarza</string>
     <string name="serial_number">Numer seryjny</string>
     <string name="danish">Duński</string>

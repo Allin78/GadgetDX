@@ -2561,6 +2561,7 @@ Temps de sommeil préféré en heures</string>
     <string name="pref_navigation_app_gmaps">Google Maps</string>
     <string name="pref_summary_prefix_notification_with_app">Ajouter un préfixe au titre de la notification avec le nom de l\'application source</string>
     <string name="devicetype_redmiwatch3active">Redmi Watch 3 Active</string>
+    <string name="devicetype_redmiwatch3">Redmi Watch 3</string>
     <string name="serial_number">Numéro de série</string>
     <string name="danish">Danois</string>
     <string name="pref_summary_osmand_packagename">Utilisé pour sélectionner la version d\'OsmAnd à laquelle se connecter</string>
