@@ -2557,7 +2557,6 @@
     <string name="pref_summary_casio_alert_sms">Alerta (vibración/pitido) para notificaciones SMS (mensajes de texto)</string>
     <string name="pref_title_preview_message_in_title">Mostrar una vista previa del mensaje en el título</string>
     <string name="devicetype_redmiwatch3active">Redmi Watch 3 Active</string>
-    <string name="devicetype_redmiwatch3">Redmi Watch 3</string>
     <string name="pref_summary_casio_alert_calendar">Alerta (vibración/pitido) para las notificaciones de la agenda</string>
     <string name="serial_number">Número de serie</string>
     <string name="danish">Danés</string>

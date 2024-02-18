@@ -2548,7 +2548,6 @@
     <string name="pref_summary_casio_alert_sms">Оповещать о полученных SMS (текстовых) сообщениях вибрацией/пищанием</string>
     <string name="pref_title_preview_message_in_title">Показывать сообщение в заголовке</string>
     <string name="devicetype_redmiwatch3active">Redmi Watch 3 Active</string>
-    <string name="devicetype_redmiwatch3">Redmi Watch 3</string>
     <string name="pref_summary_casio_alert_calendar">Оповещать о событиях календаря вибрацией/пищанием</string>
     <string name="serial_number">Серийный номер</string>
     <string name="danish">Датский</string>
