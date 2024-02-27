@@ -563,6 +563,12 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SONY_CONNECT_TWO_DEVICES);
         addPreferenceHandlerFor(PREF_SONY_ADAPTIVE_VOLUME_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_WIDE_AREA_TAP);
+
+        addPreferenceHandlerFor(PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL);
+        addPreferenceHandlerFor(PREF_SOUNDCORE_WIND_NOISE_REDUCTION);
+        addPreferenceHandlerFor(PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE);
+        addPreferenceHandlerFor(PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING);
+
         addPreferenceHandlerFor(PREF_FEMOMETER_MEASUREMENT_MODE);
 
         addPreferenceHandlerFor(PREF_QC35_NOISE_CANCELLING_LEVEL);

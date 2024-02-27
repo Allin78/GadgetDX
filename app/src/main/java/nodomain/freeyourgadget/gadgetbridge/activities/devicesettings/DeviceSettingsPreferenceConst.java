@@ -343,6 +343,10 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_SONY_PROTOCOL_VERSION = "pref_protocol_version";
     public static final String PREF_SONY_ACTUAL_PROTOCOL_VERSION = "pref_actual_protocol_version";
     public static final String PREF_SONY_AMBIENT_SOUND_CONTROL = "pref_sony_ambient_sound_control";
+    public static final String PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL = "pref_soundcore_ambient_sound_control";
+    public static final String PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING = "pref_adaptive_noise_cancelling";
+    public static final String PREF_SOUNDCORE_WIND_NOISE_REDUCTION= "pref_soundcore_wind_noise_reduction";
+    public static final String PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE= "pref_soundcore_transparency_vocal_mode";
     public static final String PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE = "pref_sony_ambient_sound_control_button_mode";
     public static final String PREF_SONY_FOCUS_VOICE = "pref_sony_focus_voice";
     public static final String PREF_SONY_AMBIENT_SOUND_LEVEL = "pref_sony_ambient_sound_level";
