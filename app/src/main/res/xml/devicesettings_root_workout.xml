@@ -5,8 +5,5 @@
         android:key="pref_screen_workout"
         android:persistent="false"
         android:title="@string/menuitem_workout">
-        <Preference>
-            <!-- dummy preference, otherwise the screen does not open -->
-        </Preference>
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

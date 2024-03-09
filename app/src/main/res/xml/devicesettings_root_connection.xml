@@ -5,8 +5,5 @@
         android:key="pref_screen_connection"
         android:persistent="false"
         android:title="@string/pref_header_connection">
-        <Preference>
-            <!-- dummy preference, otherwise the screen does not open -->
-        </Preference>
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

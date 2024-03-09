@@ -28,7 +28,7 @@ public enum DeviceSpecificScreen {
     DEVELOPER("pref_screen_developer", R.xml.devicesettings_root_developer),
     DISPLAY("pref_screen_display", R.xml.devicesettings_root_display),
     NOTIFICATIONS("pref_screen_notifications", R.xml.devicesettings_root_notifications),
-    TIME("pref_screen_time", R.xml.devicesettings_root_time),
+    DATE_TIME("pref_screen_date_time", R.xml.devicesettings_root_date_time),
     WORKOUT("pref_screen_workout", R.xml.devicesettings_root_workout),
     ;
 

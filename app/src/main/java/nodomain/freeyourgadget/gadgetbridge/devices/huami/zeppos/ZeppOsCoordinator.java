@@ -364,17 +364,17 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Time
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.TIME.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DATE_TIME);
         //deviceSpecificSettings.addSubScreen(TIME.DISPLAY, R.xml.devicesettings_timeformat);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.TIME, R.xml.devicesettings_dateformat_2);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DATE_TIME, R.xml.devicesettings_dateformat_2);
         if (getWorldClocksSlotCount() > 0) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.TIME, R.xml.devicesettings_world_clocks);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DATE_TIME, R.xml.devicesettings_world_clocks);
         }
 
         //
         // Display
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DISPLAY.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DISPLAY);
         deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_displayitems);
         deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_shortcuts);
         if (supportsControlCenter()) {
@@ -406,7 +406,7 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Workout
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.WORKOUT.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.WORKOUT);
         if (hasGps(device)) {
             deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_gps_agps);
         } else {
@@ -420,7 +420,7 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Notifications
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.NOTIFICATIONS.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.NOTIFICATIONS);
         if (supportsBluetoothPhoneCalls(device)) {
             deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_phone_calls_watch_pair);
         } else {
@@ -438,7 +438,7 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Calendar
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CALENDAR.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CALENDAR);
         deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CALENDAR, R.xml.devicesettings_sync_calendar);
 
         //
@@ -459,7 +459,7 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Connection
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CONNECTION.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CONNECTION);
         deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, R.xml.devicesettings_expose_hr_thirdparty);
         deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, R.xml.devicesettings_bt_connected_advertisement);
         deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, R.xml.devicesettings_high_mtu);
@@ -467,7 +467,7 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Developer
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DEVELOPER.getXml());
+        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DEVELOPER);
         if (ZeppOsLogsService.isSupported(getPrefs(device))) {
             deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_app_logs_start_stop);
         }

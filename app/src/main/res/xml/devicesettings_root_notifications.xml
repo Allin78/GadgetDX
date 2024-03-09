@@ -5,8 +5,5 @@
         android:key="pref_screen_notifications"
         android:persistent="false"
         android:title="@string/pref_header_notifications">
-        <Preference>
-            <!-- dummy preference, otherwise the screen does not open -->
-        </Preference>
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

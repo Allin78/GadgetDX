@@ -28,6 +28,7 @@ import android.text.InputType;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.PreferenceScreen;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -148,12 +149,13 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
             }
         } else {
             // First attempt to find a known screen for this key
-            final List<Integer> screen = deviceSpecificSettings.getScreen(rootKey);
-            if (screen != null) {
+            final List<Integer> screenSettings = deviceSpecificSettings.getScreen(rootKey);
+            if (screenSettings != null) {
                 boolean first = true;
-                for (int setting : screen) {
+                for (int setting : screenSettings) {
                     if (first) {
-                        setPreferencesFromResource(setting, null);
+                        // Use the root key here to set the root screen, so that the actionbar title gets updated
+                        setPreferencesFromResource(setting, rootKey);
                         first = false;
                     } else {
                         addPreferencesFromResource(setting);
@@ -172,6 +174,19 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
                 }
             }
         }
+
+        // Since all root preference screens are empty, clicking them will not do anything
+        // add on-click listeners
+        for (final DeviceSpecificScreen value : DeviceSpecificScreen.values()) {
+            final PreferenceScreen prefScreen = findPreference(value.getKey());
+            if (prefScreen != null) {
+                prefScreen.setOnPreferenceClickListener(p -> {
+                    onNavigateToScreen(prefScreen);
+                    return true;
+                });
+            }
+        }
+
         setChangeListener();
     }
 
@@ -1060,15 +1075,15 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
             }
             final int[] supportedAuthSettings = coordinator.getSupportedDeviceSpecificAuthenticationSettings();
             if (supportedAuthSettings != null && supportedAuthSettings.length > 0) {
-                deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.AUTHENTICATION.getXml());
+                deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.AUTHENTICATION);
                 deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.AUTHENTICATION, supportedAuthSettings);
             }
 
-            deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CONNECTION.getXml());
+            deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CONNECTION);
             deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, coordinator.getSupportedDeviceSpecificConnectionSettings());
 
             if (coordinator.supportsActivityTracking()) {
-                deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.ACTIVITY_INFO.getXml());
+                deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.ACTIVITY_INFO);
                 deviceSpecificSettings.addSubScreen(
                         DeviceSpecificScreen.ACTIVITY_INFO,
                         R.xml.devicesettings_chartstabs,
@@ -1076,7 +1091,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
                 );
             }
 
-            deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DEVELOPER.getXml());
+            deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DEVELOPER);
             deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_settings_third_party_apps);
         }
 

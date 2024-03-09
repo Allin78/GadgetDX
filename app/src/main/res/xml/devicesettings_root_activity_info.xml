@@ -5,8 +5,5 @@
         android:key="pref_screen_activity_info"
         android:persistent="false"
         android:title="@string/activity_info">
-        <Preference>
-            <!-- dummy preference, otherwise the screen does not open -->
-        </Preference>
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

@@ -2,11 +2,8 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen
         android:icon="@drawable/ic_timer"
-        android:key="pref_screen_time"
+        android:key="pref_screen_date_time"
         android:persistent="false"
-        android:title="@string/pref_header_time">
-        <Preference>
-            <!-- dummy preference, otherwise the screen does not open -->
-        </Preference>
+        android:title="@string/dateformat_date_time">
     </PreferenceScreen>
 </androidx.preference.PreferenceScreen>

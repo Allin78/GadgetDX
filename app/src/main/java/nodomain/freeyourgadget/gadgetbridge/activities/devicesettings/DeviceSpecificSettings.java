@@ -48,6 +48,14 @@ public class DeviceSpecificSettings implements Parcelable {
         }
     }
 
+    public void addRootScreen(final DeviceSpecificScreen screen) {
+        if (!rootScreens.contains(screen.getXml())) {
+            rootScreens.add(screen.getXml());
+        }
+
+        addSubScreen(screen, screen.getXml());
+    }
+
     public void addRootScreen(final int index, @XmlRes final int screen) {
         rootScreens.add(index, screen);
     }
