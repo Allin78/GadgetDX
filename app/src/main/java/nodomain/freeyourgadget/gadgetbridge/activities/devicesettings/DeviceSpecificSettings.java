@@ -48,30 +48,42 @@ public class DeviceSpecificSettings implements Parcelable {
         }
     }
 
-    public void addRootScreen(final DeviceSpecificSettingsScreen screen) {
+    public List<Integer> addRootScreen(final DeviceSpecificSettingsScreen screen) {
         if (!rootScreens.contains(screen.getXml())) {
             rootScreens.add(screen.getXml());
         }
 
-        addSubScreen(screen, screen.getXml());
+        return addSubScreen(screen, screen.getXml());
+    }
+
+    public List<Integer> addRootScreen(final DeviceSpecificSettingsScreen screen, final int... subScreens) {
+        final List<Integer> subScreenScreens = addRootScreen(screen);
+        for (final int subScreen : subScreens) {
+            subScreenScreens.add(subScreen);
+        }
+        return subScreenScreens;
     }
 
     public void addRootScreen(final int index, @XmlRes final int screen) {
         rootScreens.add(index, screen);
     }
 
-    public void addSubScreen(final DeviceSpecificSettingsScreen rootScreen, final int... screens) {
-        addSubScreen(rootScreen.getKey(), screens);
+    public List<Integer> addSubScreen(final DeviceSpecificSettingsScreen rootScreen, final int... screens) {
+        return addSubScreen(rootScreen.getKey(), screens);
     }
 
-    private void addSubScreen(final String key, final int... screens) {
+    private List<Integer> addSubScreen(final String key, final int... screens) {
         if (!subScreens.containsKey(key)) {
             subScreens.put(key, new ArrayList<>());
         }
 
+        final List<Integer> subscreenPages = Objects.requireNonNull(subScreens.get(key));
+
         for (final int screen : screens) {
-            Objects.requireNonNull(subScreens.get(key)).add(screen);
+            subscreenPages.add(screen);
         }
+
+        return subscreenPages;
     }
 
     public void mergeFrom(final DeviceSpecificSettings deviceSpecificSettings) {

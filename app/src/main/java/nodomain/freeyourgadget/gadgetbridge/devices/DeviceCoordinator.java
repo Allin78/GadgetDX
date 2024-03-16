@@ -570,6 +570,8 @@ public interface DeviceCoordinator {
 
     /**
      * Indicates which device specific settings the device supports (not per device type or family, but unique per device).
+     *
+     * @deprecated use getDeviceSpecificSettings
      */
     @Deprecated
     int[] getSupportedDeviceSpecificSettings(GBDevice device);

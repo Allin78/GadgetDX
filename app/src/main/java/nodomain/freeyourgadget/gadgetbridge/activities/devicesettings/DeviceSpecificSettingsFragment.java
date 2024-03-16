@@ -1075,24 +1075,29 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
             }
             final int[] supportedAuthSettings = coordinator.getSupportedDeviceSpecificAuthenticationSettings();
             if (supportedAuthSettings != null && supportedAuthSettings.length > 0) {
-                deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.AUTHENTICATION);
-                deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.AUTHENTICATION, supportedAuthSettings);
+                deviceSpecificSettings.addRootScreen(
+                        DeviceSpecificSettingsScreen.AUTHENTICATION,
+                        supportedAuthSettings
+                );
             }
 
-            deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.CONNECTION);
-            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CONNECTION, coordinator.getSupportedDeviceSpecificConnectionSettings());
+            deviceSpecificSettings.addRootScreen(
+                    DeviceSpecificSettingsScreen.CONNECTION,
+                    coordinator.getSupportedDeviceSpecificConnectionSettings()
+            );
 
             if (coordinator.supportsActivityTracking()) {
-                deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.ACTIVITY_INFO);
-                deviceSpecificSettings.addSubScreen(
+                deviceSpecificSettings.addRootScreen(
                         DeviceSpecificSettingsScreen.ACTIVITY_INFO,
                         R.xml.devicesettings_chartstabs,
                         R.xml.devicesettings_device_card_activity_card_preferences
                 );
             }
 
-            deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DEVELOPER);
-            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_settings_third_party_apps);
+            deviceSpecificSettings.addRootScreen(
+                    DeviceSpecificSettingsScreen.DEVELOPER,
+                    R.xml.devicesettings_settings_third_party_apps
+            );
         }
 
         final DeviceSpecificSettingsCustomizer deviceSpecificSettingsCustomizer = coordinator.getDeviceSpecificSettingsCustomizer(device);
