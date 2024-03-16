@@ -163,6 +163,8 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
                 }
             } else {
                 // Now, this is ugly: search all the xml files for the rootKey
+                // This means that this device is using the deprecated getSupportedDeviceSpecificSettings,
+                // or that we're on a sub-screen
                 final List<Integer> allScreens = deviceSpecificSettings.getAllScreens();
                 for (int setting : allScreens) {
                     try {
