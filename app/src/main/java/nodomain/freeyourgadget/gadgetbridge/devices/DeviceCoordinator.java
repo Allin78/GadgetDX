@@ -576,6 +576,10 @@ public interface DeviceCoordinator {
     @Deprecated
     int[] getSupportedDeviceSpecificSettings(GBDevice device);
 
+    /**
+     * Returns the device-specific settings supported by this specific device. See
+     * {@link DeviceSpecificSettings} for more information
+     */
     @Nullable
     DeviceSpecificSettings getDeviceSpecificSettings(GBDevice device);
 

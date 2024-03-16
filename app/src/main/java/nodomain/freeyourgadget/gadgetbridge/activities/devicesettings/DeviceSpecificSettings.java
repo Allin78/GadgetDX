@@ -29,6 +29,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A class that contains the device-specific settings screens for a device. All the integers in this
+ * class correspond to xml resources for preferences.
+ * <p>
+ * This class contains 2 types of screens:
+ * - Root screens - the ones that are displayed in the first page of the device settings activity. These can be
+ * normal preference screens / preferences, or dummy root screens (see {@link DeviceSpecificSettingsScreen}.
+ * - Sub-screens - a screen that is opened when one of the {@link DeviceSpecificSettingsScreen} is clicked.
+ * <p>
+ * There can be an arbitrary number of nested sub-screens, as long as they are all mapped by key in the
+ * subScreens map.
+ * <p>
+ * See the XiaomiCoordinator and ZeppOsCoordinator for example usages.
+ */
 public class DeviceSpecificSettings implements Parcelable {
     private final List<Integer> rootScreens = new ArrayList<>();
     private final Map<String, List<Integer>> subScreens = new LinkedHashMap<>();
