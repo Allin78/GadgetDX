@@ -38,7 +38,7 @@ import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
-import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificScreen;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsScreen;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettings;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
@@ -384,24 +384,24 @@ public abstract class XiaomiCoordinator extends AbstractBLEDeviceCoordinator {
         //
         // Time
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DATE_TIME);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DATE_TIME, R.xml.devicesettings_timeformat);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DATE_TIME);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DATE_TIME, R.xml.devicesettings_timeformat);
         if (getWorldClocksSlotCount() > 0) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DATE_TIME, R.xml.devicesettings_world_clocks);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DATE_TIME, R.xml.devicesettings_world_clocks);
         }
 
         //
         // Display
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DISPLAY);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DISPLAY);
         if (supports(device, FEAT_DISPLAY_ITEMS)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_xiaomi_displayitems);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_xiaomi_displayitems);
         }
         if (this.supportsWidgets(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_widgets);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_widgets);
         }
         if (supports(device, FEAT_PASSWORD)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_password);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_password);
         }
 
         //
@@ -433,32 +433,32 @@ public abstract class XiaomiCoordinator extends AbstractBLEDeviceCoordinator {
         //
         // Workout
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.WORKOUT);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_workout_start_on_phone);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_workout_send_gps_to_band);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.WORKOUT);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_workout_start_on_phone);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_workout_send_gps_to_band);
 
         //
         // Notifications
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.NOTIFICATIONS);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS);
         // TODO not implemented settings.add(R.xml.devicesettings_vibrationpatterns);
         // TODO not implemented settings.add(R.xml.devicesettings_donotdisturb_withauto_and_always);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_send_app_notifications);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_send_app_notifications);
         if (supports(device, FEAT_SCREEN_ON_ON_NOTIFICATIONS)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_screen_on_on_notifications);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_screen_on_on_notifications);
         }
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_autoremove_notifications);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_autoremove_notifications);
         if (getCannedRepliesSlotCount(device) > 0) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_canned_dismisscall_16);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_canned_dismisscall_16);
         }
 
         //
         // Calendar
         //
         if (supportsCalendarEvents()) {
-            deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CALENDAR);
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CALENDAR, R.xml.devicesettings_header_calendar);
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CALENDAR, R.xml.devicesettings_sync_calendar);
+            deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.CALENDAR);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CALENDAR, R.xml.devicesettings_header_calendar);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CALENDAR, R.xml.devicesettings_sync_calendar);
         }
 
         //
@@ -478,8 +478,8 @@ public abstract class XiaomiCoordinator extends AbstractBLEDeviceCoordinator {
         //
         // Developer
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DEVELOPER);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_keep_activity_data_on_device);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DEVELOPER);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_keep_activity_data_on_device);
 
         return deviceSpecificSettings;
     }

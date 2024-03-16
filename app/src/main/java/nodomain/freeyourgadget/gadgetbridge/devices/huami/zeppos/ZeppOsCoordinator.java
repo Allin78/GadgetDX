@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsUtils;
-import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificScreen;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsScreen;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettings;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.capabilities.HeartRateCapability;
@@ -364,36 +364,36 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Time
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DATE_TIME);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DATE_TIME);
         //deviceSpecificSettings.addSubScreen(TIME.DISPLAY, R.xml.devicesettings_timeformat);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DATE_TIME, R.xml.devicesettings_dateformat_2);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DATE_TIME, R.xml.devicesettings_dateformat_2);
         if (getWorldClocksSlotCount() > 0) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DATE_TIME, R.xml.devicesettings_world_clocks);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DATE_TIME, R.xml.devicesettings_world_clocks);
         }
 
         //
         // Display
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DISPLAY);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_displayitems);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_shortcuts);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DISPLAY);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_huami2021_displayitems);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_huami2021_shortcuts);
         if (supportsControlCenter()) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_control_center);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_huami2021_control_center);
         }
         if (supportsShortcutCards(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_shortcut_cards);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_huami2021_shortcut_cards);
         }
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_nightmode);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_sleep_mode);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_liftwrist_display_sensitivity_with_smart);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_password);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_huami2021_watchface);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_always_on_display);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_screen_timeout);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_nightmode);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_sleep_mode);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_liftwrist_display_sensitivity_with_smart);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_password);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_huami2021_watchface);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_always_on_display);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_screen_timeout);
         if (supportsAutoBrightness(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_screen_brightness_withauto);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_screen_brightness_withauto);
         } else {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DISPLAY, R.xml.devicesettings_screen_brightness);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DISPLAY, R.xml.devicesettings_screen_brightness);
         }
 
         //
@@ -406,40 +406,40 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Workout
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.WORKOUT);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.WORKOUT);
         if (hasGps(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_gps_agps);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_gps_agps);
         } else {
             // If the device has GPS, it doesn't report workout start/end to the phone
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_workout_start_on_phone);
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_workout_send_gps_to_band);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_workout_start_on_phone);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_workout_send_gps_to_band);
         }
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_workout_keep_screen_on);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.WORKOUT, R.xml.devicesettings_workout_detection);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_workout_keep_screen_on);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.WORKOUT, R.xml.devicesettings_workout_detection);
 
         //
         // Notifications
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.NOTIFICATIONS);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS);
         if (supportsBluetoothPhoneCalls(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_phone_calls_watch_pair);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_phone_calls_watch_pair);
         } else {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_display_caller);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_display_caller);
         }
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_sound_and_vibration);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_vibrationpatterns);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_donotdisturb_withauto_and_always);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_send_app_notifications);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_screen_on_on_notifications);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_autoremove_notifications);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_canned_reply_16);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.NOTIFICATIONS, R.xml.devicesettings_transliteration);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_sound_and_vibration);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_vibrationpatterns);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_donotdisturb_withauto_and_always);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_send_app_notifications);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_screen_on_on_notifications);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_autoremove_notifications);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_canned_reply_16);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.NOTIFICATIONS, R.xml.devicesettings_transliteration);
 
         //
         // Calendar
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CALENDAR);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CALENDAR, R.xml.devicesettings_sync_calendar);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.CALENDAR);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CALENDAR, R.xml.devicesettings_sync_calendar);
 
         //
         // Other
@@ -459,29 +459,29 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
         //
         // Connection
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.CONNECTION);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, R.xml.devicesettings_expose_hr_thirdparty);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, R.xml.devicesettings_bt_connected_advertisement);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.CONNECTION, R.xml.devicesettings_high_mtu);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.CONNECTION);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CONNECTION, R.xml.devicesettings_expose_hr_thirdparty);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CONNECTION, R.xml.devicesettings_bt_connected_advertisement);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.CONNECTION, R.xml.devicesettings_high_mtu);
 
         //
         // Developer
         //
-        deviceSpecificSettings.addRootScreen(DeviceSpecificScreen.DEVELOPER);
+        deviceSpecificSettings.addRootScreen(DeviceSpecificSettingsScreen.DEVELOPER);
         if (ZeppOsLogsService.isSupported(getPrefs(device))) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_app_logs_start_stop);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_app_logs_start_stop);
         }
         if (supportsAlexa(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_huami2021_alexa);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_huami2021_alexa);
         }
         if (supportsWifiHotspot(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_wifi_hotspot);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_wifi_hotspot);
         }
         if (supportsFtpServer(device)) {
-            deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_ftp_server);
+            deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_ftp_server);
         }
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_keep_activity_data_on_device);
-        deviceSpecificSettings.addSubScreen(DeviceSpecificScreen.DEVELOPER, R.xml.devicesettings_huami2021_fetch_operation_time_unit);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_keep_activity_data_on_device);
+        deviceSpecificSettings.addSubScreen(DeviceSpecificSettingsScreen.DEVELOPER, R.xml.devicesettings_huami2021_fetch_operation_time_unit);
 
         return deviceSpecificSettings;
     }

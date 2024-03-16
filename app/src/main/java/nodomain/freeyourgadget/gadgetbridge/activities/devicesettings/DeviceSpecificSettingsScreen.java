@@ -20,7 +20,7 @@ import androidx.annotation.XmlRes;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 
-public enum DeviceSpecificScreen {
+public enum DeviceSpecificSettingsScreen {
     ACTIVITY_INFO("pref_screen_activity_info", R.xml.devicesettings_root_activity_info),
     AUTHENTICATION("pref_screen_authentication", R.xml.devicesettings_root_authentication),
     CALENDAR("pref_screen_calendar", R.xml.devicesettings_root_calendar),
@@ -36,7 +36,7 @@ public enum DeviceSpecificScreen {
     @XmlRes
     private final int xml;
 
-    DeviceSpecificScreen(final String key, final int xml) {
+    DeviceSpecificSettingsScreen(final String key, final int xml) {
         this.key = key;
         this.xml = xml;
     }
