@@ -94,7 +94,9 @@ public class DeviceSpecificSettings implements Parcelable {
         final List<Integer> subscreenPages = Objects.requireNonNull(subScreens.get(key));
 
         for (final int screen : screens) {
-            subscreenPages.add(screen);
+            if (!subscreenPages.contains(screen)) {
+                subscreenPages.add(screen);
+            }
         }
 
         return subscreenPages;
