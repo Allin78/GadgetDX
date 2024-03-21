@@ -62,7 +62,7 @@ public class AuthenticationHandler extends AbstractResponseHandler {
         } else if (messageType == WithingsMessageType.CHALLENGE) {
             handleChallenge(response);
         } else {
-            logger.warn("Received unkown message: " + messageType + ", will ignore this.");
+            logger.warn("Received unknown message: " + messageType + ", will ignore this.");
         }
     }
 
