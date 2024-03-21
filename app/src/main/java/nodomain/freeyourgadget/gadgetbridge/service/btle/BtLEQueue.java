@@ -250,7 +250,7 @@ public final class BtLEQueue {
     public boolean connect() {
         mPauseTransaction = false;
         if (isConnected()) {
-            LOG.warn("Ingoring connect() because already connected.");
+            LOG.warn("Ignoring connect() because already connected.");
             return false;
         }
         synchronized (mGattMonitor) {
