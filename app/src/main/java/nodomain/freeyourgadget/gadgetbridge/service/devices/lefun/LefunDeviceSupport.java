@@ -50,6 +50,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSett
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.lefun.LefunConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.lefun.commands.FeaturesCommand;
 import nodomain.freeyourgadget.gadgetbridge.devices.lefun.commands.FindPhoneCommand;
@@ -754,6 +755,8 @@ public class LefunDeviceSupport extends AbstractBTLEDeviceSupport {
                 return handleAntiLoss(data);
             case LefunConstants.CMD_STEPS_DATA:
                 return handleAsynchronousActivity(data);
+            case LefunConstants.CMD_MUSIC_CONTROL:
+                return handleMusicControl(data);
         }
         return false;
     }
@@ -774,6 +777,28 @@ public class LefunDeviceSupport extends AbstractBTLEDeviceSupport {
             LOG.error("Failed to handle live activity update", e);
             return false;
         }
+    }
+
+    private boolean handleMusicControl(byte[] data) {
+        if (data != null && data.length > 4)
+        {
+            GBDeviceEventMusicControl deviceEventMusicControl = new GBDeviceEventMusicControl();
+            byte cmd = data[3];
+            if (cmd == LefunConstants.RX_MUSIC_PLAY_PAUSE) {
+                deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.PLAYPAUSE;
+                evaluateGBDeviceEvent(deviceEventMusicControl);
+            }
+            if (cmd == LefunConstants.RX_MUSIC_NEXT) {
+                deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.NEXT;
+                evaluateGBDeviceEvent(deviceEventMusicControl);
+            }
+            if (cmd == LefunConstants.RX_MUSIC_BACK) {
+                deviceEventMusicControl.event = GBDeviceEventMusicControl.Event.PREVIOUS;
+                evaluateGBDeviceEvent(deviceEventMusicControl);
+            }
+            return true;
+        }
+        return false;
     }
 
     // Adapted from nodomain.freeyourgadget.gadgetbridge.service.devices.makibeshr3.MakibesHR3DeviceSupport.broadcastSample

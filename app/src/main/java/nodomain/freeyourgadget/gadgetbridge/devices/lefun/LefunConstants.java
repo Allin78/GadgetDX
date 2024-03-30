@@ -66,6 +66,10 @@ public class LefunConstants {
     public static final byte CMD_UNKNOWN_25 = 0x25;
     public static final byte CMD_UNKNOWN_80 = (byte) 0x80;
     public static final byte CMD_WEATHER = 0x2A;
+    public static final byte CMD_MUSIC_CONTROL = 0x27;
+    public static final byte RX_MUSIC_PLAY_PAUSE = 0x1;
+    public static final byte RX_MUSIC_NEXT = 0x2;
+    public static final byte RX_MUSIC_BACK = 0x3;
     public static final int PPG_TYPE_INVALID = -1;
     public static final int PPG_TYPE_HEART_RATE = 0;
     public static final int PPG_TYPE_BLOOD_PRESSURE = 1;
