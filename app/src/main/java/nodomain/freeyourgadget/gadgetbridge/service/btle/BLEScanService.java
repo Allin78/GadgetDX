@@ -329,8 +329,7 @@ public class BLEScanService extends Service {
     private void restartScan(boolean applyFilters) {
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
             // this should never happen
-            LOG.error("No BLUETOOTH_SCAN permission");
-            return;
+            LOG.error("No BLUETOOTH_SCAN permission, trying anyways");
         }
 
         if (scanner == null) {
