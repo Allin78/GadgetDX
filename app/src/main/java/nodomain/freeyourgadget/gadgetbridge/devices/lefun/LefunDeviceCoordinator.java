@@ -140,7 +140,7 @@ public class LefunDeviceCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsWeather() {
-        return false;
+        return true;
     }
 
     @Override

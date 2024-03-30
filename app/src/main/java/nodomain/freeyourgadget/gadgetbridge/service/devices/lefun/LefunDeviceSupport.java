@@ -21,6 +21,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.Uri;
 import android.text.format.DateFormat;
 import android.widget.Toast;
@@ -31,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -73,6 +76,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.model.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.GattService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
@@ -98,6 +102,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.requests.SetLa
 import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.requests.SetProfileRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.requests.SetSedentaryReminderIntervalRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.requests.SetTimeRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.requests.SetWeatherRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.lefun.requests.StartPpgRequest;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
@@ -285,6 +290,36 @@ public class LefunDeviceSupport extends AbstractBTLEDeviceSupport {
                 GB.toast(getContext(), "Failed to initiate find device", Toast.LENGTH_SHORT,
                         GB.ERROR, e);
             }
+        }
+    }
+
+    @Override
+    public void onSendWeather(ArrayList<WeatherSpec> weatherSpecs) {
+        try {
+            TransactionBuilder builder = performInitialized(SetWeatherRequest.class.getSimpleName());
+            SetWeatherRequest request = new SetWeatherRequest(this, builder);
+            request.setWeather(Weather.mapToLefunCondition(weatherSpecs.get(0).currentConditionCode));
+            request.setTemp((byte) (weatherSpecs.get(0).currentTemp - 273));
+            request.setMaxTemp((byte) (weatherSpecs.get(0).todayMaxTemp - 273));
+            request.setMinTemp((byte) (weatherSpecs.get(0).todayMinTemp - 273));
+            request.setAirPressure((byte) weatherSpecs.get(0).pressure);
+
+            Location location = weatherSpecs.get(0).getLocation();
+            double altitude = 0;
+            if (location != null) {
+                altitude = location.getAltitude();
+            }
+
+            request.setAltitude((byte) altitude);
+            request.setSpeed((byte) weatherSpecs.get(0).windSpeed);
+            request.setUnknown((byte) 0); // No idea what is this, since my device does not display it. If someone figures it out please modify it with the correct value.
+            request.setHumidity((byte) weatherSpecs.get(0).currentHumidity);
+            request.perform();
+            inProgressRequests.add(request);
+            performConnected(builder.getTransaction());
+        } catch (IOException e) {
+            GB.toast(getContext(), "Failed to set weather", Toast.LENGTH_SHORT,
+                    GB.ERROR, e);
         }
     }
 
