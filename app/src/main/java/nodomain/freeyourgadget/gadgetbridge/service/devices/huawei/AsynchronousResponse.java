@@ -53,6 +53,9 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.Request;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetPhoneInfoRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendMenstrualModifyTimeRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceAck;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceChunk;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceHash;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWeatherDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SetMusicStatusRequest;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -102,6 +105,7 @@ public class AsynchronousResponse {
             handleWeatherCheck(response);
             handleGpsRequest(response);
             handleWatchfaceHash(response);
+            handleWatchfaceAck(response);
         } catch (Request.ResponseParseException e) {
             LOG.error("Response parse exception", e);
         }
@@ -388,8 +392,43 @@ public class AsynchronousResponse {
 
     private void handleWatchfaceHash(HuaweiPacket response) {
         if (response.serviceId == WatchfaceUpload.id && response.commandId == WatchfaceUpload.WatchfaceSendHash.id) {
-
+            try {
+                SendWatchfaceHash sendWatchfaceHash = new SendWatchfaceHash(this.support, this.support.huaweiWatchfaceManager);
+                sendWatchfaceHash.doPerform();
+            } catch (IOException e) {
+                LOG.error("Could not send watchface hash request", e);
+            }
         }
+    }
+
+    private void handleWatchfaceAck(HuaweiPacket response) {
+        if (response.serviceId == WatchfaceUpload.id && response.commandId == WatchfaceUpload.WatchfaceSendConsultAck.id) {
+            try {
+                SendWatchfaceAck sendWatchfaceAck = new SendWatchfaceAck(this.support);
+                sendWatchfaceAck.doPerform();
+            } catch (IOException e) {
+                LOG.error("Could not send watchface ack request", e);
+            }
+        }
+    }
+
+    //FIXME: implement sliced raw serialization and add  handeWatchfaceNextChunk to handleResponse list
+    private void handeWatchfaceNextChunk(HuaweiPacket response) throws Request.ResponseParseException  {
+        if (response.serviceId == WatchfaceUpload.id && response.commandId == WatchfaceUpload.WatchfaceNextChunkParams.id) {
+            if (!(response instanceof WatchfaceUpload.WatchfaceNextChunkParams))
+                throw new Request.ResponseTypeMismatchException(response, WatchfaceUpload.WatchfaceNextChunkParams.class);
+            WatchfaceUpload.WatchfaceNextChunkParams resp = (WatchfaceUpload.WatchfaceNextChunkParams) response;
+            support.huaweiWatchfaceManager.setUploadChunkSize(resp.nextchunkSize);
+            support.huaweiWatchfaceManager.setCurrentUploadPosition(resp.bytesUploaded);
+
+            try {
+                SendWatchfaceChunk sendWatchfaceChunk = new SendWatchfaceChunk(this.support, this.support.huaweiWatchfaceManager);
+                sendWatchfaceChunk.doPerform();
+            } catch (IOException e) {
+                LOG.error("Could not send watchface next chunk request", e);
+            }
+        }
+
     }
 
     private void handleWeatherCheck(HuaweiPacket response) {
