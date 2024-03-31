@@ -5,24 +5,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
-import com.google.gson.Gson;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.InstallActivity;
 import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.DeviceType;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
-import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBZipFile;
 import nodomain.freeyourgadget.gadgetbridge.util.UriHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.ZipFileException;
@@ -40,14 +35,11 @@ public class HuaweiInstallHandler implements InstallHandler {
 
         UriHelper uriHelper;
 
-
-
         try {
             uriHelper = UriHelper.get(uri, this.context);
 
             GBZipFile watchfacePackage = new GBZipFile(uriHelper.openInputStream());
             String watchfaceDescription = new String(watchfacePackage.getFileFromZip("description.xml"));
-            watchfaceBin = watchfacePackage.getFileFromZip("com.huawei.watchface");
             final byte[] preview = watchfacePackage.getFileFromZip("preview/cover.jpg");
             previewbMap = BitmapFactory.decodeByteArray(preview, 0, preview.length);
 
@@ -65,17 +57,6 @@ public class HuaweiInstallHandler implements InstallHandler {
             return;
         }
 
-
-        try {
-            MessageDigest m = MessageDigest.getInstance("SHA256");
-            m.update(watchfaceBin, 0, watchfaceBin.length);
-            watchfaceSHA256 =  m.digest();
-        } catch (NoSuchAlgorithmException e) {
-            LOG.error("Digest alghoritm not found.", e);
-            return;
-        }
-
-        LOG.info("watchface loaded, SHA256: "+ GB.hexdump(watchfaceSHA256));
     }
 
     @Override
@@ -97,7 +78,7 @@ public class HuaweiInstallHandler implements InstallHandler {
             return;
         }
 
-        if (device.getType() != DeviceType.HUAWEIBAND7 || !device.isConnected()) { //FIXME: Add all tested huawei devices?
+        if ( !device.isConnected()) { //FIXME: Add all tested huawei devices?
             LOG.error("Firmware cannot be installed (not connected or wrong device)");
             installActivity.setInfoText("Firmware cannot be installed (not connected or wrong device)");
             installActivity.setInstallEnabled(false);

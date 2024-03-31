@@ -213,7 +213,6 @@ public abstract class HuaweiLECoordinator extends AbstractBLEDeviceCoordinator i
     public InstallHandler findInstallHandler(Uri uri, Context context) {
         HuaweiInstallHandler handler = new HuaweiInstallHandler(uri, context);
         return handler.isValid() ? handler : null;
-
     }
 
     @Override

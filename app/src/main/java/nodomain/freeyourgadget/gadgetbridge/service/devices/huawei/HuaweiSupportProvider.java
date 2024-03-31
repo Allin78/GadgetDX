@@ -20,6 +20,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.net.Uri;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -87,6 +88,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetS
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendExtendedAccountRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsAndTimeToDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsDataRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWeatherCurrentRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendNotifyHeartRateCapabilityRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendNotifyRestHeartRateCapabilityRequest;
@@ -178,6 +180,7 @@ public class HuaweiSupportProvider {
     private final HuaweiPacket.ParamsProvider paramsProvider = new HuaweiPacket.ParamsProvider();
 
     protected ResponseManager responseManager = new ResponseManager(this);
+    protected HuaweiWatchfaceManager huaweiWatchfaceManager = new HuaweiWatchfaceManager(this);
 
     public HuaweiCoordinatorSupplier getCoordinator() {
         return ((HuaweiCoordinatorSupplier) this.gbDevice.getDeviceCoordinator());
@@ -1822,4 +1825,23 @@ public class HuaweiSupportProvider {
             LOG.error("Failed to send GPS data", e);
         }
     }
+
+    public void onInstallApp(Uri uri) {
+        LOG.info("enter onAppInstall uri: "+uri);
+        huaweiWatchfaceManager.setWatchfaceUri(uri);
+
+        SendWatchfaceInfo sendWatchfaceInfo = new SendWatchfaceInfo(this, huaweiWatchfaceManager);
+
+
+        try {
+            sendWatchfaceInfo.doPerform();
+        } catch (IOException e) {
+            GB.toast(context, "Failed to send watchface info", Toast.LENGTH_SHORT, GB.ERROR, e);
+            LOG.error("Failed to send watchface info", e);
+        }
+
+
+    }
+
+
 }

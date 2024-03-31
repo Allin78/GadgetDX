@@ -19,6 +19,8 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.huawei;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.location.Location;
+import android.net.Uri;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,5 +138,10 @@ public class HuaweiLESupport extends AbstractBTLEDeviceSupport {
     @Override
     public void onSetGpsLocation(Location location) {
         supportProvider.onSetGpsLocation(location);
+    }
+
+    @Override
+    public void onInstallApp(Uri uri) {
+        supportProvider.onInstallApp(uri);
     }
 }
