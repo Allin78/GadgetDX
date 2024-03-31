@@ -73,6 +73,8 @@ public class WatchfaceUpload {
         public static class Request extends HuaweiPacket {
             public Request(ParamsProvider paramsProvider) {
                 super(paramsProvider);
+                this.serviceId = WatchfaceUpload.id;
+                this.commandId = id;
                 this.tlv = new HuaweiTLV()
                         .put(0x7f, 0x000186A0) //ok
                         .put(0x01, (byte) 0x01)
@@ -97,7 +99,7 @@ public class WatchfaceUpload {
                 super(paramsProvider);
                 this.serviceId = WatchfaceUpload.id;
                 this.commandId = id;
-
+                this.complete = true;
         }
         @Override
         public void parseTlv() throws HuaweiPacket.ParseException {
@@ -116,6 +118,7 @@ public class WatchfaceUpload {
             super(paramsProvider);
             this.serviceId = WatchfaceUpload.id;
             this.commandId = id;
+            this.complete = true;
 
         }
     }

@@ -23,7 +23,7 @@ public class HuaweiWatchfaceManager {
     int fileSize = 0;
 
     int currentUploadPosition = 0;
-    int uploudChunkSize =0;
+    int uploadChunkSize =0;
 
     String watchfaceName = "413493857"; //FIXME generate random name
     String watchfaceVersion = "1.0.0"; //FIXME generate random version
@@ -69,7 +69,7 @@ public class HuaweiWatchfaceManager {
         }
 
         currentUploadPosition = 0;
-        uploudChunkSize = 0;
+        uploadChunkSize = 0;
         //TODO: generate random watchfaceName and watchfaceVersion
         LOG.info("watchface loaded, SHA256: "+ GB.hexdump(watchfaceSHA256) + " watchfaceName: " + watchfaceName + " watchfaceVersion: "+watchfaceVersion);
 
@@ -92,10 +92,16 @@ public class HuaweiWatchfaceManager {
     }
 
     public void setUploadChunkSize(int chunkSize) {
-        uploudChunkSize = chunkSize;
+        uploadChunkSize = chunkSize;
     }
 
     public void setCurrentUploadPosition (int pos) {
         currentUploadPosition = pos;
+    }
+
+    public byte[] getCurrentChunk() {
+        byte[] ret = new byte[uploadChunkSize];
+        System.arraycopy(watchfaceBin, currentUploadPosition, ret, 0, uploadChunkSize);
+        return ret;
     }
 }

@@ -40,6 +40,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FitnessData;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.MusicControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.WatchfaceUpload;
 import nodomain.freeyourgadget.gadgetbridge.util.CheckSums;
 
 public class HuaweiPacket {
@@ -539,6 +540,14 @@ public class HuaweiPacket {
                         this.isEncrypted = this.attemptDecrypt(); // Helps with debugging
                         return this;
                 }
+            case WatchfaceUpload.id:
+                switch(this.commandId) {
+                    case WatchfaceUpload.WatchfaceNextChunkParams.id:
+                        return new WatchfaceUpload.WatchfaceNextChunkParams(paramsProvider).fromPacket(this);
+                    default:
+                        this.isEncrypted = this.attemptDecrypt(); // Helps with debugging
+                        return this;
+                }
             default:
                 this.isEncrypted = this.attemptDecrypt(); // Helps with debugging
                 return this;
@@ -659,6 +668,19 @@ public class HuaweiPacket {
         finalBuffer.put(buffer.array());
         finalBuffer.putShort((short)crc16);
         retv.add(finalBuffer.array());
+        return retv;
+    }
+
+    public List<byte[]> serializeFileChunk(byte[] fileChunk) {
+        List<byte[]> retv = new ArrayList<>();
+        int headerLength = 4; // Magic + (short)(bodyLength + 1) + 0x00
+        int bodyHeaderLength = 2; // sID + cID
+        int footerLength = 2; //CRC16
+        int maxBodySize = paramsProvider.getSliceSize() - headerLength - footerLength;
+        int packetCount = (int) Math.ceil(((double) fileChunk.length + (double) bodyHeaderLength) / (double) maxBodySize);
+        for (int i = 0; i < packetCount; i++) {
+
+        }
         return retv;
     }
 

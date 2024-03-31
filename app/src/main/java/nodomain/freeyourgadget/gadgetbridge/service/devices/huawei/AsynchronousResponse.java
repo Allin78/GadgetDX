@@ -106,6 +106,7 @@ public class AsynchronousResponse {
             handleGpsRequest(response);
             handleWatchfaceHash(response);
             handleWatchfaceAck(response);
+            handeWatchfaceNextChunk(response);
         } catch (Request.ResponseParseException e) {
             LOG.error("Response parse exception", e);
         }
