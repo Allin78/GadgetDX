@@ -52,6 +52,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.Request;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetPhoneInfoRequest;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadComplete;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendMenstrualModifyTimeRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadAck;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadChunk;
@@ -104,9 +105,7 @@ public class AsynchronousResponse {
             handleMenstrualModifyTime(response);
             handleWeatherCheck(response);
             handleGpsRequest(response);
-            handleWatchfaceHash(response);
-            handleWatchfaceAck(response);
-            handeWatchfaceNextChunk(response);
+            handleFileUpload(response);
         } catch (Request.ResponseParseException e) {
             LOG.error("Response parse exception", e);
         }
@@ -391,45 +390,44 @@ public class AsynchronousResponse {
         }
     }
 
-    private void handleWatchfaceHash(HuaweiPacket response) {
-        if (response.serviceId == FileUpload.id && response.commandId == FileUpload.FileHashSend.id) {
-            try {
-                SendFileUploadHash sendFileUploadHash = new SendFileUploadHash(this.support, this.support.huaweiUploadManager);
-                sendFileUploadHash.doPerform();
-            } catch (IOException e) {
-                LOG.error("Could not send watchface hash request", e);
-            }
+    private void handleFileUpload(HuaweiPacket response) throws Request.ResponseParseException  {
+        if (response.serviceId == FileUpload.id) {
+             if (response.commandId == FileUpload.FileHashSend.id) {
+                 try {
+                     SendFileUploadHash sendFileUploadHash = new SendFileUploadHash(this.support, this.support.huaweiUploadManager);
+                     sendFileUploadHash.doPerform();
+                 } catch (IOException e) {
+                     LOG.error("Could not send fileupload hash request", e);
+                 }
+             } else if (response.commandId == FileUpload.FileUploadConsultAck.id) {
+                 try {
+                     SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support);
+                     sendFileUploadAck.doPerform();
+                 } catch (IOException e) {
+                     LOG.error("Could not send fileupload ack request", e);
+                 }
+             } else if (response.commandId == FileUpload.FileNextChunkParams.id) {
+                 if (!(response instanceof FileUpload.FileNextChunkParams))
+                     throw new Request.ResponseTypeMismatchException(response, FileUpload.FileNextChunkParams.class);
+                 FileUpload.FileNextChunkParams resp = (FileUpload.FileNextChunkParams) response;
+                 support.huaweiUploadManager.setUploadChunkSize(resp.nextchunkSize);
+                 support.huaweiUploadManager.setCurrentUploadPosition(resp.bytesUploaded);
+
+                 try {
+                     SendFileUploadChunk sendFileUploadChunk = new SendFileUploadChunk(this.support, this.support.huaweiUploadManager);
+                     sendFileUploadChunk.doPerform();
+                 } catch (IOException e) {
+                     LOG.error("Could not send fileupload next chunk request", e);
+                 }
+             } else if (response.commandId == FileUpload.FileUploadResult.id) {
+                 try {
+                     SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support);
+                     sendFileUploadComplete.doPerform();
+                 } catch (IOException e) {
+                     LOG.error("Could not send fileupload result request", e);
+                 }
+             }
         }
-    }
-
-    private void handleWatchfaceAck(HuaweiPacket response) {
-        if (response.serviceId == FileUpload.id && response.commandId == FileUpload.FileuploadConsultAck.id) {
-            try {
-                SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support);
-                sendFileUploadAck.doPerform();
-            } catch (IOException e) {
-                LOG.error("Could not send watchface ack request", e);
-            }
-        }
-    }
-
-    //FIXME: implement sliced raw serialization and add  handeWatchfaceNextChunk to handleResponse list
-    private void handeWatchfaceNextChunk(HuaweiPacket response) throws Request.ResponseParseException  {
-        if (response.serviceId == FileUpload.id && response.commandId == FileUpload.FileNextChunkParams.id) {
-            if (!(response instanceof FileUpload.FileNextChunkParams))
-                throw new Request.ResponseTypeMismatchException(response, FileUpload.FileNextChunkParams.class);
-            FileUpload.FileNextChunkParams resp = (FileUpload.FileNextChunkParams) response;
-            support.huaweiUploadManager.setUploadChunkSize(resp.nextchunkSize);
-            support.huaweiUploadManager.setCurrentUploadPosition(resp.bytesUploaded);
-
-            try {
-                SendFileUploadChunk sendFileUploadChunk = new SendFileUploadChunk(this.support, this.support.huaweiUploadManager);
-                sendFileUploadChunk.doPerform();
-            } catch (IOException e) {
-                LOG.error("Could not send watchface next chunk request", e);
-            }
-        }
-
     }
 
     private void handleWeatherCheck(HuaweiPacket response) {

@@ -6,19 +6,23 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiPacket;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiSupportProvider;
 
-public class SendFileUploadAck extends Request {
-    public SendFileUploadAck(HuaweiSupportProvider support) {
+public class SendFileUploadComplete extends Request {
+
+    public SendFileUploadComplete(HuaweiSupportProvider support) {
         super(support);
+
         this.serviceId = FileUpload.id;
-        this.commandId = FileUpload.FileUploadConsultAck.id;
+        this.commandId = FileUpload.FileUploadResult.id;
     }
+
 
     @Override
     protected List<byte[]> createRequest() throws RequestCreationException {
         try {
-            return new FileUpload.FileUploadConsultAck.Request(this.paramsProvider ).serialize();
+            return new FileUpload.FileUploadResult.Request(this.paramsProvider).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);
         }
     }
+
 }

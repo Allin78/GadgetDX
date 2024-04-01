@@ -68,7 +68,7 @@ public class FileUpload {
 
     }
 
-    public static class FileuploadConsultAck {
+    public static class FileUploadConsultAck {
         public static final byte id = 0x04;
         public static class Request extends HuaweiPacket {
             public Request(ParamsProvider paramsProvider) {
@@ -121,5 +121,39 @@ public class FileUpload {
             this.complete = true;
         }
     }
+
+    public static class FileUploadResult {
+        public static final byte id = 0x07;
+
+        public static class Request extends HuaweiPacket {
+            public Request(ParamsProvider paramsProvider) {
+                super(paramsProvider);
+                this.serviceId = FileUpload.id;
+                this.commandId = id;
+                this.tlv = new HuaweiTLV()
+                        .put(0x7f, 0x000186A0) //ok
+                        .put(0x01, (byte) 0x01); // filetype 1 - watchface, 2 -music
+
+                this.complete = true;
+            }
+        }
+
+        public static class Response extends HuaweiPacket {
+
+            byte status = 0;
+            public Response (ParamsProvider paramsProvider) {
+                super(paramsProvider);
+            }
+
+            @Override
+            public void parseTlv() throws HuaweiPacket.ParseException {
+                if (this.tlv.contains(0x02) && this.tlv.getBytes(0x02).length == 1)
+                    this.status = this.tlv.getByte(0x02);
+            }
+
+        }
+
+    }
+
 
 }
