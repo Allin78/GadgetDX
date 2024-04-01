@@ -48,14 +48,14 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.GpsAndTime;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Menstrual;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.MusicControl;
-import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.WatchfaceUpload;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Weather;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.Request;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetPhoneInfoRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendMenstrualModifyTimeRequest;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceAck;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceChunk;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceHash;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadAck;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadChunk;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadHash;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWeatherDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SetMusicStatusRequest;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -392,10 +392,10 @@ public class AsynchronousResponse {
     }
 
     private void handleWatchfaceHash(HuaweiPacket response) {
-        if (response.serviceId == WatchfaceUpload.id && response.commandId == WatchfaceUpload.WatchfaceSendHash.id) {
+        if (response.serviceId == FileUpload.id && response.commandId == FileUpload.FileHashSend.id) {
             try {
-                SendWatchfaceHash sendWatchfaceHash = new SendWatchfaceHash(this.support, this.support.huaweiWatchfaceManager);
-                sendWatchfaceHash.doPerform();
+                SendFileUploadHash sendFileUploadHash = new SendFileUploadHash(this.support, this.support.huaweiUploadManager);
+                sendFileUploadHash.doPerform();
             } catch (IOException e) {
                 LOG.error("Could not send watchface hash request", e);
             }
@@ -403,10 +403,10 @@ public class AsynchronousResponse {
     }
 
     private void handleWatchfaceAck(HuaweiPacket response) {
-        if (response.serviceId == WatchfaceUpload.id && response.commandId == WatchfaceUpload.WatchfaceSendConsultAck.id) {
+        if (response.serviceId == FileUpload.id && response.commandId == FileUpload.FileuploadConsultAck.id) {
             try {
-                SendWatchfaceAck sendWatchfaceAck = new SendWatchfaceAck(this.support);
-                sendWatchfaceAck.doPerform();
+                SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support);
+                sendFileUploadAck.doPerform();
             } catch (IOException e) {
                 LOG.error("Could not send watchface ack request", e);
             }
@@ -415,16 +415,16 @@ public class AsynchronousResponse {
 
     //FIXME: implement sliced raw serialization and add  handeWatchfaceNextChunk to handleResponse list
     private void handeWatchfaceNextChunk(HuaweiPacket response) throws Request.ResponseParseException  {
-        if (response.serviceId == WatchfaceUpload.id && response.commandId == WatchfaceUpload.WatchfaceNextChunkParams.id) {
-            if (!(response instanceof WatchfaceUpload.WatchfaceNextChunkParams))
-                throw new Request.ResponseTypeMismatchException(response, WatchfaceUpload.WatchfaceNextChunkParams.class);
-            WatchfaceUpload.WatchfaceNextChunkParams resp = (WatchfaceUpload.WatchfaceNextChunkParams) response;
-            support.huaweiWatchfaceManager.setUploadChunkSize(resp.nextchunkSize);
-            support.huaweiWatchfaceManager.setCurrentUploadPosition(resp.bytesUploaded);
+        if (response.serviceId == FileUpload.id && response.commandId == FileUpload.FileNextChunkParams.id) {
+            if (!(response instanceof FileUpload.FileNextChunkParams))
+                throw new Request.ResponseTypeMismatchException(response, FileUpload.FileNextChunkParams.class);
+            FileUpload.FileNextChunkParams resp = (FileUpload.FileNextChunkParams) response;
+            support.huaweiUploadManager.setUploadChunkSize(resp.nextchunkSize);
+            support.huaweiUploadManager.setCurrentUploadPosition(resp.bytesUploaded);
 
             try {
-                SendWatchfaceChunk sendWatchfaceChunk = new SendWatchfaceChunk(this.support, this.support.huaweiWatchfaceManager);
-                sendWatchfaceChunk.doPerform();
+                SendFileUploadChunk sendFileUploadChunk = new SendFileUploadChunk(this.support, this.support.huaweiUploadManager);
+                sendFileUploadChunk.doPerform();
             } catch (IOException e) {
                 LOG.error("Could not send watchface next chunk request", e);
             }

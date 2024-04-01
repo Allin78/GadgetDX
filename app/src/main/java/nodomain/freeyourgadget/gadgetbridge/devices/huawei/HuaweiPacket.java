@@ -40,7 +40,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FindPhone;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FitnessData;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.MusicControl;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications;
-import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.WatchfaceUpload;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload;
 import nodomain.freeyourgadget.gadgetbridge.util.CheckSums;
 
 public class HuaweiPacket {
@@ -540,10 +540,10 @@ public class HuaweiPacket {
                         this.isEncrypted = this.attemptDecrypt(); // Helps with debugging
                         return this;
                 }
-            case WatchfaceUpload.id:
+            case FileUpload.id:
                 switch(this.commandId) {
-                    case WatchfaceUpload.WatchfaceNextChunkParams.id:
-                        return new WatchfaceUpload.WatchfaceNextChunkParams(paramsProvider).fromPacket(this);
+                    case FileUpload.FileNextChunkParams.id:
+                        return new FileUpload.FileNextChunkParams(paramsProvider).fromPacket(this);
                     default:
                         this.isEncrypted = this.attemptDecrypt(); // Helps with debugging
                         return this;

@@ -3,21 +3,20 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests;
 import java.util.List;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiPacket;
-import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.WatchfaceUpload;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiSupportProvider;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiWatchfaceManager;
 
-public class SendWatchfaceAck extends Request {
-    public SendWatchfaceAck(HuaweiSupportProvider support) {
+public class SendFileUploadAck extends Request {
+    public SendFileUploadAck(HuaweiSupportProvider support) {
         super(support);
-        this.serviceId = WatchfaceUpload.id;
-        this.commandId = WatchfaceUpload.WatchfaceSendConsultAck.id;
+        this.serviceId = FileUpload.id;
+        this.commandId = FileUpload.FileuploadConsultAck.id;
     }
 
     @Override
     protected List<byte[]> createRequest() throws RequestCreationException {
         try {
-            return new WatchfaceUpload.WatchfaceSendConsultAck.Request(this.paramsProvider ).serialize();
+            return new FileUpload.FileuploadConsultAck.Request(this.paramsProvider ).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);
         }

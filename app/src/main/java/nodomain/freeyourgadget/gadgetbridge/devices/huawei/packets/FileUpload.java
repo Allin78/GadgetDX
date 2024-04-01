@@ -3,9 +3,9 @@ package nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiPacket;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiTLV;
 
-public class WatchfaceUpload {
+public class FileUpload {
     public static final byte id = 0x28;
-    public static class WatchfaceStartSend {
+    public static class FileInfoSend {
         public static final byte id = 0x02;
         public static class Request extends HuaweiPacket {
 
@@ -14,14 +14,14 @@ public class WatchfaceUpload {
                             String watchfaceName,
                             String watchfaceVersion) {
                 super(paramsProvider);
-                this.serviceId = WatchfaceUpload.id;
+                this.serviceId = FileUpload.id;
                 this.commandId = id;
                 String filename = watchfaceName + "_" + watchfaceVersion;
 
                 this.tlv = new HuaweiTLV()
                         .put(0x01, filename)
                         .put(0x02, fileSize)
-                        .put(0x03, (byte) 0x1) // ???
+                        .put(0x03, (byte) 0x1) // file type 1 - watchface, 2 - music
                         .put(0x05, watchfaceName)
                         .put(0x06, watchfaceVersion);
 
@@ -39,7 +39,7 @@ public class WatchfaceUpload {
 
     }
 
-    public static class WatchfaceSendHash {
+    public static class FileHashSend {
         public static final byte id = 0x03;
 
         public static class Request extends HuaweiPacket {
@@ -47,11 +47,11 @@ public class WatchfaceUpload {
             public Request(ParamsProvider paramsProvider,
                             byte[] hash) {
                 super(paramsProvider);
-                this.serviceId = WatchfaceUpload.id;
+                this.serviceId = FileUpload.id;
                 this.commandId = id;
 
                 this.tlv = new HuaweiTLV()
-                        .put(0x01, (byte) 1) //???
+                        .put(0x01, (byte) 1) // filetype 1 - watchface, 2 - music
                         .put(0x03, hash);
 
                 this.complete = true;
@@ -68,17 +68,17 @@ public class WatchfaceUpload {
 
     }
 
-    public static class WatchfaceSendConsultAck {
+    public static class FileuploadConsultAck {
         public static final byte id = 0x04;
         public static class Request extends HuaweiPacket {
             public Request(ParamsProvider paramsProvider) {
                 super(paramsProvider);
-                this.serviceId = WatchfaceUpload.id;
+                this.serviceId = FileUpload.id;
                 this.commandId = id;
                 this.tlv = new HuaweiTLV()
                         .put(0x7f, 0x000186A0) //ok
-                        .put(0x01, (byte) 0x01)
-                        .put(0x09, (byte) 0x01);
+                        .put(0x01, (byte) 0x01) // filetype 1 - watchface, 2 -music
+                        .put(0x09, (byte) 0x01); //??? present in watchface only
                 this.complete = true;
             }
         }
@@ -90,14 +90,14 @@ public class WatchfaceUpload {
         }
     }
 
-    public static class WatchfaceNextChunkParams extends HuaweiPacket {
+    public static class FileNextChunkParams extends HuaweiPacket {
         public static final byte id = 0x05;
 
         public int bytesUploaded = 0;
         public int nextchunkSize = 0;
-        public WatchfaceNextChunkParams(ParamsProvider paramsProvider) {
+        public FileNextChunkParams(ParamsProvider paramsProvider) {
                 super(paramsProvider);
-                this.serviceId = WatchfaceUpload.id;
+                this.serviceId = FileUpload.id;
                 this.commandId = id;
                 this.complete = true;
         }
@@ -111,15 +111,14 @@ public class WatchfaceUpload {
 
     }
 
-    public static class WatchfaceSendNextChunk extends HuaweiPacket {
+    public static class FileNextChunkSend extends HuaweiPacket {
         public static final byte id = 0x06;
 
-        public WatchfaceSendNextChunk(ParamsProvider paramsProvider) {
+        public FileNextChunkSend(ParamsProvider paramsProvider) {
             super(paramsProvider);
-            this.serviceId = WatchfaceUpload.id;
+            this.serviceId = FileUpload.id;
             this.commandId = id;
             this.complete = true;
-
         }
     }
 

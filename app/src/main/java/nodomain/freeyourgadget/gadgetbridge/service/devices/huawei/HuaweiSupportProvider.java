@@ -88,7 +88,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetS
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendExtendedAccountRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsAndTimeToDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsDataRequest;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceInfo;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadInfo;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWeatherCurrentRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendNotifyHeartRateCapabilityRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendNotifyRestHeartRateCapabilityRequest;
@@ -180,7 +180,7 @@ public class HuaweiSupportProvider {
     private final HuaweiPacket.ParamsProvider paramsProvider = new HuaweiPacket.ParamsProvider();
 
     protected ResponseManager responseManager = new ResponseManager(this);
-    protected HuaweiWatchfaceManager huaweiWatchfaceManager = new HuaweiWatchfaceManager(this);
+    protected HuaweiUploadManager huaweiUploadManager = new HuaweiUploadManager(this);
 
     public HuaweiCoordinatorSupplier getCoordinator() {
         return ((HuaweiCoordinatorSupplier) this.gbDevice.getDeviceCoordinator());
@@ -1828,13 +1828,13 @@ public class HuaweiSupportProvider {
 
     public void onInstallApp(Uri uri) {
         LOG.info("enter onAppInstall uri: "+uri);
-        huaweiWatchfaceManager.setWatchfaceUri(uri);
+        huaweiUploadManager.setWatchfaceUri(uri);
 
-        SendWatchfaceInfo sendWatchfaceInfo = new SendWatchfaceInfo(this, huaweiWatchfaceManager);
+        SendFileUploadInfo sendFileUploadInfo = new SendFileUploadInfo(this, huaweiUploadManager);
 
 
         try {
-            sendWatchfaceInfo.doPerform();
+            sendFileUploadInfo.doPerform();
         } catch (IOException e) {
             GB.toast(context, "Failed to send watchface info", Toast.LENGTH_SHORT, GB.ERROR, e);
             LOG.error("Failed to send watchface info", e);

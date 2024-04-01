@@ -15,8 +15,8 @@ import nodomain.freeyourgadget.gadgetbridge.util.GBZipFile;
 import nodomain.freeyourgadget.gadgetbridge.util.UriHelper;
 import nodomain.freeyourgadget.gadgetbridge.util.ZipFileException;
 
-public class HuaweiWatchfaceManager {
-    private static final Logger LOG = LoggerFactory.getLogger(HuaweiWatchfaceManager.class);
+public class HuaweiUploadManager {
+    private static final Logger LOG = LoggerFactory.getLogger(HuaweiUploadManager.class);
     private final HuaweiSupportProvider support;
     byte[] watchfaceBin;
     byte[] watchfaceSHA256;
@@ -27,7 +27,7 @@ public class HuaweiWatchfaceManager {
 
     String watchfaceName = "413493857"; //FIXME generate random name
     String watchfaceVersion = "1.0.0"; //FIXME generate random version
-    public HuaweiWatchfaceManager(HuaweiSupportProvider support) {
+    public HuaweiUploadManager(HuaweiSupportProvider support) {
         this.support=support;
     }
 
