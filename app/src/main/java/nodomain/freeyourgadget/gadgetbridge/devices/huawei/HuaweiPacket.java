@@ -671,15 +671,57 @@ public class HuaweiPacket {
         return retv;
     }
 
-    public List<byte[]> serializeFileChunk(byte[] fileChunk) {
+    public List<byte[]> serializeFileChunk(byte[] fileChunk, int uploadPosition) {
         List<byte[]> retv = new ArrayList<>();
-        int headerLength = 4; // Magic + (short)(bodyLength + 1) + 0x00
+        int headerLength = 5; // Magic + (short)(bodyLength + 1) + 0x00
+        int sliceHeaderLenght =7;
         int bodyHeaderLength = 2; // sID + cID
         int footerLength = 2; //CRC16
-        int maxBodySize = paramsProvider.getSliceSize() - headerLength - footerLength;
-        int packetCount = (int) Math.ceil(((double) fileChunk.length + (double) bodyHeaderLength) / (double) maxBodySize);
+        int maxBodySize = paramsProvider.getSliceSize() - headerLength - sliceHeaderLenght - footerLength;
+        int packetCount = (int) Math.ceil(((double) fileChunk.length ) / (double) maxBodySize);
+
+        ByteBuffer buffer = ByteBuffer.wrap(fileChunk);
+
+        byte fileType = 0x01; //TODO: 1 - watchface, 2 - music
+        int sliceStart = uploadPosition;
+
         for (int i = 0; i < packetCount; i++) {
 
+            short packetSize = (short) Math.min(paramsProvider.getSliceSize(), buffer.remaining() + headerLength + sliceHeaderLenght + footerLength);
+            ByteBuffer packet = ByteBuffer.allocate(packetSize);
+            short contentSize = (short) (packetSize - headerLength - sliceHeaderLenght - footerLength);
+            int start = packet.position();
+            packet.put((byte) 0x5a);                                // Magic byte
+            packet.putShort((short) (packetSize - headerLength));   // Length
+
+            packet.put((byte) 0x00);
+            packet.put(this.serviceId);
+            packet.put(this.commandId);
+
+            packet.put(fileType);                                      // Slice
+            packet.put((byte)i);                                       // Flag
+            packet.putInt(sliceStart);
+
+            byte[] packetContent = new byte[contentSize];
+            buffer.get(packetContent);
+            packet.put(packetContent);                              // Packet databyte[] packetContent = new byte[contentSize];
+
+            int length = packet.position() - start;
+            if (length != packetSize - footerLength) {
+                // TODO: exception?
+                LOG.error(String.format(GBApplication.getLanguage(), "Packet lengths don't match! %d != %d", length, packetSize + headerLength));
+            }
+
+            byte[] complete = new byte[length];
+            packet.position(start);
+            packet.get(complete, 0, length);
+            int crc16 = CheckSums.getCRC16(complete, 0x0000);
+
+            packet.putShort((short) crc16);                         // CRC16
+
+            sliceStart += contentSize;
+
+            retv.add(packet.array());
         }
         return retv;
     }

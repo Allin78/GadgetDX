@@ -20,7 +20,10 @@ public class SendWatchfaceChunk extends Request {
     @Override
     protected List<byte[]> createRequest() throws RequestCreationException {
             //FIXME need new package type with raw data chunks ?
-        return new WatchfaceUpload.WatchfaceSendNextChunk(this.paramsProvider).serializeFileChunk(huaweiWatchfaceManager.getCurrentChunk());
+        return new WatchfaceUpload.WatchfaceSendNextChunk(this.paramsProvider).serializeFileChunk(
+                huaweiWatchfaceManager.getCurrentChunk(),
+                huaweiWatchfaceManager.getCurrentUploadPosition()
+        );
 
     }
 

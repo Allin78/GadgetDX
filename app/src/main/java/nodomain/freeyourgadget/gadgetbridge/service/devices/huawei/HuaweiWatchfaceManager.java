@@ -99,6 +99,10 @@ public class HuaweiWatchfaceManager {
         currentUploadPosition = pos;
     }
 
+    public int getCurrentUploadPosition() {
+        return currentUploadPosition;
+    }
+
     public byte[] getCurrentChunk() {
         byte[] ret = new byte[uploadChunkSize];
         System.arraycopy(watchfaceBin, currentUploadPosition, ret, 0, uploadChunkSize);
