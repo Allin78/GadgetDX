@@ -400,8 +400,11 @@ public class AsynchronousResponse {
                      LOG.error("Could not send fileupload hash request", e);
                  }
              } else if (response.commandId == FileUpload.FileUploadConsultAck.id) {
+                 if (!(response instanceof FileUpload.FileUploadConsultAck.Response))
+                 throw new Request.ResponseTypeMismatchException(response, FileUpload.FileUploadConsultAck.Response.class);
+                 FileUpload.FileUploadConsultAck.Response resp = (FileUpload.FileUploadConsultAck.Response) response;
                  try {
-                     SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support);
+                     SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support, resp.no_encrypt);
                      sendFileUploadAck.doPerform();
                  } catch (IOException e) {
                      LOG.error("Could not send fileupload ack request", e);

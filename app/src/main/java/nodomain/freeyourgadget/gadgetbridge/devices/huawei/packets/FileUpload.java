@@ -71,21 +71,57 @@ public class FileUpload {
     public static class FileUploadConsultAck {
         public static final byte id = 0x04;
         public static class Request extends HuaweiPacket {
-            public Request(ParamsProvider paramsProvider) {
+            public Request(ParamsProvider paramsProvider, byte noEncryption) {
                 super(paramsProvider);
                 this.serviceId = FileUpload.id;
                 this.commandId = id;
                 this.tlv = new HuaweiTLV()
                         .put(0x7f, 0x000186A0) //ok
-                        .put(0x01, (byte) 0x01) // filetype 1 - watchface, 2 -music
-                        .put(0x09, (byte) 0x01); //??? present in watchface only
+                        .put(0x01, (byte) 0x01); // filetype 1 - watchface, 2 -music
+                if (noEncryption == 1)
+                    this.tlv.put(0x09, (byte)0x01); // need on devices which generally encrypted, but files
                 this.complete = true;
             }
         }
 
         public static class Response extends HuaweiPacket {
+
+            public byte file_id = 0;
+            public String protocolVersion = "";
+            public short app_wait_time = 0;
+
+            public byte bitmap_enable = 0;
+            public short unit_size = 0;
+            public int max_apply_data_size = 0;
+            public short interval =0;
+            public int received_file_size =0;
+
+            public byte no_encrypt = 0;
             public Response (ParamsProvider paramsProvider) {
                 super(paramsProvider);
+            }
+
+            @Override
+            public void parseTlv() throws HuaweiPacket.ParseException {
+                if (this.tlv.contains(0x01) && this.tlv.getBytes(0x01).length == 1)
+                    this.file_id = this.tlv.getByte(0x01);
+                if (this.tlv.contains(0x02))
+                    this.protocolVersion = this.tlv.getString(0x02);
+                if (this.tlv.contains(0x03) && this.tlv.getBytes(0x03).length == 2)
+                    this.app_wait_time = this.tlv.getShort(0x03);
+                if (this.tlv.contains(0x04))
+                    this.bitmap_enable = this.tlv.getByte(0x04);
+                if (this.tlv.contains(0x05) && this.tlv.getBytes(0x05).length == 2)
+                    this.unit_size = this.tlv.getShort(0x05);
+                if (this.tlv.contains(0x06) && this.tlv.getBytes(0x06).length == 4)
+                    this.max_apply_data_size = this.tlv.getInteger(0x06);
+                if (this.tlv.contains(0x07) && this.tlv.getBytes(0x07).length == 2)
+                    this.interval = this.tlv.getShort(0x07);
+                if (this.tlv.contains(0x08) && this.tlv.getBytes(0x08).length == 4)
+                    this.received_file_size = this.tlv.getInteger(0x08);
+                if (this.tlv.contains(0x09))
+                    this.no_encrypt = this.tlv.getByte(0x09);
+
             }
         }
     }

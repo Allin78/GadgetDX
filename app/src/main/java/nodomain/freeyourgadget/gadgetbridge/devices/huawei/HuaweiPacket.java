@@ -544,6 +544,8 @@ public class HuaweiPacket {
                 switch(this.commandId) {
                     case FileUpload.FileNextChunkParams.id:
                         return new FileUpload.FileNextChunkParams(paramsProvider).fromPacket(this);
+                    case FileUpload.FileUploadConsultAck.id:
+                        return new FileUpload.FileUploadConsultAck.Response(paramsProvider).fromPacket(this);
                     default:
                         this.isEncrypted = this.attemptDecrypt(); // Helps with debugging
                         return this;

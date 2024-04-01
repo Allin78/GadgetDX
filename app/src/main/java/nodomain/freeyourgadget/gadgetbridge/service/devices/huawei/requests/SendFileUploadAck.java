@@ -7,16 +7,18 @@ import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiSupportProvider;
 
 public class SendFileUploadAck extends Request {
-    public SendFileUploadAck(HuaweiSupportProvider support) {
+    byte noEncryption = 0;
+    public SendFileUploadAck(HuaweiSupportProvider support, byte noEncryption) {
         super(support);
         this.serviceId = FileUpload.id;
         this.commandId = FileUpload.FileUploadConsultAck.id;
+        this.noEncryption = noEncryption;
     }
 
     @Override
     protected List<byte[]> createRequest() throws RequestCreationException {
         try {
-            return new FileUpload.FileUploadConsultAck.Request(this.paramsProvider ).serialize();
+            return new FileUpload.FileUploadConsultAck.Request(this.paramsProvider, this.noEncryption ).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);
         }
