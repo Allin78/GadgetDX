@@ -1568,6 +1568,7 @@
     <string name="devicetype_sg2">Lemfo SG2</string>
     <string name="devicetype_lefun">Lefun</string>
     <string name="devicetype_bohemic_smart_bracelet">Bohemic Smart Bracelet</string>
+    <string name="devicetype_jabra">Jabra</string>
     <!-- Menus on the smart device -->
     <string name="menuitem_nothing">Nothing</string>
     <string name="menuitem_status">Status</string>
