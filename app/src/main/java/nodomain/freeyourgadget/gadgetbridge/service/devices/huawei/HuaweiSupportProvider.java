@@ -85,6 +85,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetE
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetGpsParameterRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetNotificationConstraintsRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetSmartAlarmList;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfaceParams;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendExtendedAccountRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsAndTimeToDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsDataRequest;
@@ -727,6 +728,11 @@ public class HuaweiSupportProvider {
             if (getHuaweiCoordinator().supportsNotificationAlert() && getProtocolVersion() == 2) {
                 GetNotificationConstraintsRequest getNotificationConstraintsReq = new GetNotificationConstraintsRequest(this);
                 getNotificationConstraintsReq.doPerform();
+            }
+
+            if (getHuaweiCoordinator().supportsWatchfaceParams()) {
+                GetWatchfaceParams getWatchfaceParams = new GetWatchfaceParams(this);
+                getWatchfaceParams.doPerform();
             }
         } catch (IOException e) {
             GB.toast(getContext(), "Initialize dynamic services of Huawei device failed", Toast.LENGTH_SHORT, GB.ERROR,

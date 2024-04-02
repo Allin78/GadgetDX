@@ -380,6 +380,8 @@ public class HuaweiCoordinator {
         return supportsCommandForService(0x0c, 0x01);
     }
 
+    public boolean supportsWatchfaceParams(){ return supportsCommandForService(0x27, 0x01);}
+
     public boolean supportsWeather() {
         return supportsCommandForService(0x0f, 0x01);
     }
