@@ -401,8 +401,19 @@ public class AsynchronousResponse {
                  }
              } else if (response.commandId == FileUpload.FileUploadConsultAck.id) {
                  if (!(response instanceof FileUpload.FileUploadConsultAck.Response))
-                 throw new Request.ResponseTypeMismatchException(response, FileUpload.FileUploadConsultAck.Response.class);
+                    throw new Request.ResponseTypeMismatchException(response, FileUpload.FileUploadConsultAck.Response.class);
                  FileUpload.FileUploadConsultAck.Response resp = (FileUpload.FileUploadConsultAck.Response) response;
+
+                 support.huaweiUploadManager.setFileId(resp.file_id);
+                 support.huaweiUploadManager.setProtocolVersion(resp.protocolVersion);
+                 support.huaweiUploadManager.setAppWaitTime(resp.app_wait_time);
+                 support.huaweiUploadManager.setBitmapEnable(resp.bitmap_enable);
+                 support.huaweiUploadManager.setUnitSize(resp.unit_size);
+                 support.huaweiUploadManager.setMaxApplyDataSize(resp.max_apply_data_size);
+                 support.huaweiUploadManager.setInterval(resp.interval);
+                 support.huaweiUploadManager.setReceivedFileSize(resp.received_file_size);
+                 support.huaweiUploadManager.setNoEncrypt(resp.no_encrypt);
+
                  try {
                      SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support, resp.no_encrypt);
                      sendFileUploadAck.doPerform();

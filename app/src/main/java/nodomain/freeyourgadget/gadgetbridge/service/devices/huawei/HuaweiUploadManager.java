@@ -27,6 +27,21 @@ public class HuaweiUploadManager {
 
     String watchfaceName = "413493857"; //FIXME generate random name
     String watchfaceVersion = "1.0.0"; //FIXME generate random version
+
+    //ack values set from 28 4 response
+    byte fileId = 0;
+    String protocolVersion = "";
+    short appWaitTime = 0;
+
+    byte bitmapEnable = 0;
+    short unitSize = 0;
+    int maxApplyDataSize = 0;
+    short interval =0;
+    int receivedFileSize =0;
+
+    byte noEncrypt = 0;
+
+
     public HuaweiUploadManager(HuaweiSupportProvider support) {
         this.support=support;
     }
@@ -107,5 +122,45 @@ public class HuaweiUploadManager {
         byte[] ret = new byte[uploadChunkSize];
         System.arraycopy(watchfaceBin, currentUploadPosition, ret, 0, uploadChunkSize);
         return ret;
+    }
+
+    public void setFileId(byte fileId) {
+        this.fileId = fileId;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public void setInterval(short interval) {
+        this.interval = interval;
+    }
+
+    public void setMaxApplyDataSize(int maxApplyDataSize) {
+        this.maxApplyDataSize = maxApplyDataSize;
+    }
+
+    public void setAppWaitTime(short appWaitTime) {
+        this.appWaitTime = appWaitTime;
+    }
+
+    public void setBitmapEnable(byte bitmapEnable) {
+        this.bitmapEnable = bitmapEnable;
+    }
+
+    public void setUnitSize(short unitSize) {
+        this.unitSize = unitSize;
+    }
+
+    public short getUnitSize() {
+        return unitSize;
+    }
+
+    public void setNoEncrypt(byte noEncrypt) {
+        this.noEncrypt = noEncrypt;
+    }
+
+    public void setReceivedFileSize(int receivedFileSize) {
+        this.receivedFileSize = receivedFileSize;
     }
 }

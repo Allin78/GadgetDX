@@ -21,7 +21,8 @@ public class SendFileUploadChunk extends Request {
             //FIXME need new package type with raw data chunks ?
         return new FileUpload.FileNextChunkSend(this.paramsProvider).serializeFileChunk(
                 huaweiUploadManager.getCurrentChunk(),
-                huaweiUploadManager.getCurrentUploadPosition()
+                huaweiUploadManager.getCurrentUploadPosition(),
+                huaweiUploadManager.getUnitSize()
         );
 
     }

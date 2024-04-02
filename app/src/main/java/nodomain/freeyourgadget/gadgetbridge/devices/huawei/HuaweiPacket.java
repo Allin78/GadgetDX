@@ -673,28 +673,26 @@ public class HuaweiPacket {
         return retv;
     }
 
-    public List<byte[]> serializeFileChunk(byte[] fileChunk, int uploadPosition) {
+    public List<byte[]> serializeFileChunk(byte[] fileChunk, int uploadPosition, short unitSize) {
         List<byte[]> retv = new ArrayList<>();
         int headerLength = 5; // Magic + (short)(bodyLength + 1) + 0x00
         int sliceHeaderLenght =7;
-        int bodyHeaderLength = 2; // sID + cID
+
         int footerLength = 2; //CRC16
-        int sliceSize = Math.min(paramsProvider.getSliceSize(), paramsProvider.getMtu()); // at least on magicwatch2 slize size reported bigger than MTU and upload fail
-        int maxBodySize = sliceSize - headerLength - sliceHeaderLenght - footerLength;
-        int packetCount = (int) Math.ceil(((double) fileChunk.length ) / (double) maxBodySize);
+
+        int packetCount = (int) Math.ceil(((double) fileChunk.length ) / (double) unitSize);
 
         ByteBuffer buffer = ByteBuffer.wrap(fileChunk);
 
         byte fileType = 0x01; //TODO: 1 - watchface, 2 - music
         int sliceStart = uploadPosition;
 
-
-
         for (int i = 0; i < packetCount; i++) {
 
-            short packetSize = (short) Math.min(sliceSize, buffer.remaining() + headerLength + sliceHeaderLenght + footerLength);
+            short contentSize = (short) Math.min(unitSize, buffer.remaining());
+            short packetSize = (short)(contentSize + headerLength + sliceHeaderLenght + footerLength);
             ByteBuffer packet = ByteBuffer.allocate(packetSize);
-            short contentSize = (short) (packetSize - headerLength - sliceHeaderLenght - footerLength);
+
             int start = packet.position();
             packet.put((byte) 0x5a);                                // Magic byte
             packet.putShort((short) (packetSize - headerLength));   // Length
