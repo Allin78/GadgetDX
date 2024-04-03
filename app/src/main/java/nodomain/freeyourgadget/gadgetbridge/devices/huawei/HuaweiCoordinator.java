@@ -35,6 +35,7 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpec
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications.NotificationConstraintsType;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiWatchfaceManager;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.*;
@@ -50,6 +51,8 @@ public class HuaweiCoordinator {
     ByteBuffer notificationConstraints = null;
 
     private final HuaweiCoordinatorSupplier parent;
+
+    protected HuaweiWatchfaceManager huaweiWatchfaceManager = new HuaweiWatchfaceManager();
     private boolean transactionCrypted=true;
 
     public HuaweiCoordinator(HuaweiCoordinatorSupplier parent) {
@@ -73,6 +76,10 @@ public class HuaweiCoordinator {
                     )));
             }
         }
+    }
+
+    public HuaweiWatchfaceManager getHuaweiWatchfaceManager(){
+        return huaweiWatchfaceManager;
     }
 
     private SharedPreferences getCapabilitiesSharedPreferences() {
