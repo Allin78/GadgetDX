@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload.FileUploadParams;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBZipFile;
 import nodomain.freeyourgadget.gadgetbridge.util.UriHelper;
@@ -29,17 +30,7 @@ public class HuaweiUploadManager {
     String watchfaceVersion = "1.0.0"; //FIXME generate random version
 
     //ack values set from 28 4 response
-    byte fileId = 0;
-    String protocolVersion = "";
-    short appWaitTime = 0;
-
-    byte bitmapEnable = 0;
-    short unitSize = 0;
-    int maxApplyDataSize = 0;
-    short interval =0;
-    int receivedFileSize =0;
-
-    byte noEncrypt = 0;
+    FileUploadParams fileUploadParams;
 
 
     public HuaweiUploadManager(HuaweiSupportProvider support) {
@@ -124,43 +115,14 @@ public class HuaweiUploadManager {
         return ret;
     }
 
-    public void setFileId(byte fileId) {
-        this.fileId = fileId;
+    public void setFileUploadParams(FileUploadParams params) {
+        this.fileUploadParams = params;
     }
 
-    public void setProtocolVersion(String protocolVersion) {
-        this.protocolVersion = protocolVersion;
-    }
-
-    public void setInterval(short interval) {
-        this.interval = interval;
-    }
-
-    public void setMaxApplyDataSize(int maxApplyDataSize) {
-        this.maxApplyDataSize = maxApplyDataSize;
-    }
-
-    public void setAppWaitTime(short appWaitTime) {
-        this.appWaitTime = appWaitTime;
-    }
-
-    public void setBitmapEnable(byte bitmapEnable) {
-        this.bitmapEnable = bitmapEnable;
-    }
-
-    public void setUnitSize(short unitSize) {
-        this.unitSize = unitSize;
-    }
 
     public short getUnitSize() {
-        return unitSize;
+        return fileUploadParams.unit_size;
     }
 
-    public void setNoEncrypt(byte noEncrypt) {
-        this.noEncrypt = noEncrypt;
-    }
 
-    public void setReceivedFileSize(int receivedFileSize) {
-        this.receivedFileSize = receivedFileSize;
-    }
 }
