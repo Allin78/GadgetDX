@@ -25,8 +25,8 @@ public class SendFileUploadInfo extends Request{
         try {
             return new FileUpload.FileInfoSend.Request(this.paramsProvider,
                     huaweiUploadManager.getFileSize(),
-                    huaweiUploadManager.getWatchfaceName(),
-                    huaweiUploadManager.getWatchfaceVersion()
+                    huaweiUploadManager.getFileName(),
+                    huaweiUploadManager.getFileType()
             ).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);

@@ -26,18 +26,21 @@ public class FileUpload {
 
             public Request(ParamsProvider paramsProvider,
                             int fileSize,
-                            String watchfaceName,
-                            String watchfaceVersion) {
+                            String fileName,
+                            byte fileType) {
                 super(paramsProvider);
                 this.serviceId = FileUpload.id;
                 this.commandId = id;
-                String filename = watchfaceName + "_" + watchfaceVersion;
+                String watchfaceName = fileName.split("_")[0];
+                String watchfaceVersion = fileName.split("_")[1];
 
                 this.tlv = new HuaweiTLV()
-                        .put(0x01, filename)
+                        .put(0x01, fileName)
                         .put(0x02, fileSize)
-                        .put(0x03, (byte) 0x1) // file type 1 - watchface, 2 - music
-                        .put(0x05, watchfaceName)
+                        .put(0x03, (byte) fileType);
+
+                if (fileType == 1)
+                    this.tlv.put(0x05, watchfaceName)
                         .put(0x06, watchfaceVersion);
 
                 this.complete = true;
@@ -101,7 +104,7 @@ public class FileUpload {
 
         public static class Response extends HuaweiPacket {
 
-            public FileUploadParams fileUploadParams;
+            public FileUploadParams fileUploadParams = new FileUploadParams();
             public Response (ParamsProvider paramsProvider) {
                 super(paramsProvider);
             }

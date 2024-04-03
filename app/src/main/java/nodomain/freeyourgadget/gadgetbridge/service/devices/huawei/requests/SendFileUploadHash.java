@@ -22,7 +22,7 @@ public class SendFileUploadHash extends Request{
     protected List<byte[]> createRequest() throws RequestCreationException {
         try {
             return new FileUpload.FileHashSend.Request(this.paramsProvider,
-                    huaweiUploadManager.getWatchfaceSHA256()
+                    huaweiUploadManager.getFileSHA256()
             ).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);

@@ -7,6 +7,7 @@ import org.xml.sax.InputSource;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -98,6 +99,19 @@ public class HuaweiWatchfaceManager
 
     public short getHeight() {
         return params.height;
+    }
+
+    public String getRandomName() {
+        Random random = new Random();
+
+        String res="";
+        for (int i = 0; i < 9; i++) {
+            int ran = random.nextInt(9);
+            res += String.valueOf(ran);
+        }
+
+        res += "_1.0.0";
+        return res;
     }
 
 

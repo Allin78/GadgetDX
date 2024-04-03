@@ -19,15 +19,15 @@ import nodomain.freeyourgadget.gadgetbridge.util.ZipFileException;
 public class HuaweiUploadManager {
     private static final Logger LOG = LoggerFactory.getLogger(HuaweiUploadManager.class);
     private final HuaweiSupportProvider support;
-    byte[] watchfaceBin;
-    byte[] watchfaceSHA256;
+    byte[] fileBin;
+    byte[] fileSHA256;
+    byte fileType = 1; // 1 - watchface, 2 - music
     int fileSize = 0;
 
     int currentUploadPosition = 0;
     int uploadChunkSize =0;
 
-    String watchfaceName = "413493857"; //FIXME generate random name
-    String watchfaceVersion = "1.0.0"; //FIXME generate random version
+    String fileName = ""; //FIXME generate random name
 
     //ack values set from 28 4 response
     FileUploadParams fileUploadParams;
@@ -45,9 +45,8 @@ public class HuaweiUploadManager {
             uriHelper = UriHelper.get(uri, support.getContext());
 
             GBZipFile watchfacePackage = new GBZipFile(uriHelper.openInputStream());
-            String watchfaceDescription = new String(watchfacePackage.getFileFromZip("description.xml"));
-            watchfaceBin = watchfacePackage.getFileFromZip("com.huawei.watchface");
-            fileSize = watchfaceBin.length;
+            fileBin = watchfacePackage.getFileFromZip("com.huawei.watchface");
+            fileSize = fileBin.length;
 
 
         } catch (ZipFileException e) {
@@ -67,8 +66,8 @@ public class HuaweiUploadManager {
 
         try {
             MessageDigest m = MessageDigest.getInstance("SHA256");
-            m.update(watchfaceBin, 0, watchfaceBin.length);
-            watchfaceSHA256 =  m.digest();
+            m.update(fileBin, 0, fileBin.length);
+            fileSHA256 =  m.digest();
         } catch (NoSuchAlgorithmException e) {
             LOG.error("Digest alghoritm not found.", e);
             return;
@@ -77,7 +76,7 @@ public class HuaweiUploadManager {
         currentUploadPosition = 0;
         uploadChunkSize = 0;
         //TODO: generate random watchfaceName and watchfaceVersion
-        LOG.info("watchface loaded, SHA256: "+ GB.hexdump(watchfaceSHA256) + " watchfaceName: " + watchfaceName + " watchfaceVersion: "+watchfaceVersion);
+        LOG.info("watchface loaded, SHA256: "+ GB.hexdump(fileSHA256) + " fileName: " + fileName);
 
     }
 
@@ -85,16 +84,20 @@ public class HuaweiUploadManager {
         return fileSize;
     }
 
-    public String getWatchfaceName() {
-        return watchfaceName;
+    public String getFileName() {
+        return this.fileName;
     }
 
-    public String getWatchfaceVersion() {
-        return watchfaceVersion;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
-    public byte[] getWatchfaceSHA256() {
-        return watchfaceSHA256;
+    public byte getFileType() {
+        return this.fileType;
+    }
+
+    public byte[] getFileSHA256() {
+        return fileSHA256;
     }
 
     public void setUploadChunkSize(int chunkSize) {
@@ -111,7 +114,7 @@ public class HuaweiUploadManager {
 
     public byte[] getCurrentChunk() {
         byte[] ret = new byte[uploadChunkSize];
-        System.arraycopy(watchfaceBin, currentUploadPosition, ret, 0, uploadChunkSize);
+        System.arraycopy(fileBin, currentUploadPosition, ret, 0, uploadChunkSize);
         return ret;
     }
 
