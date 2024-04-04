@@ -70,4 +70,32 @@ public class Watchface {
 
     }
 
+    public static class WatchfaceConfirm {
+        public static final byte id = 0x05;
+
+        public static class Request extends HuaweiPacket {
+            public Request(ParamsProvider paramsProvider,
+                           String fileName) {
+                super(paramsProvider);
+                this.serviceId = Watchface.id;
+                this.tlv = new HuaweiTLV()
+                        .put(0x01, fileName.split("_")[0])
+                        .put(0x02, fileName.split("_")[1])
+                        .put(0x7f, 0x000186A0);
+
+                this.commandId = id;
+            }
+
+        }
+
+        public static class Response extends HuaweiPacket {
+            public Response (ParamsProvider paramsProvider) {
+                super(paramsProvider);
+            }
+        }
+
+
+    }
+
+
 }
