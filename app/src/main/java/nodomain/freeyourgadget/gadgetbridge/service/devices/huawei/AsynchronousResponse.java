@@ -59,6 +59,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.Send
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadChunk;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendFileUploadHash;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceConfirm;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceOperation;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWeatherDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SetMusicStatusRequest;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -431,7 +432,10 @@ public class AsynchronousResponse {
              } else if (response.commandId == FileUpload.FileUploadResult.id) {
                  try {
                      SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support);
+                     SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, this.support.huaweiUploadManager.getFileName());
                      sendFileUploadComplete.doPerform();
+
+                     sendWatchfaceOperation.doPerform();
                  } catch (IOException e) {
                      LOG.error("Could not send fileupload result request", e);
                  }
@@ -443,8 +447,10 @@ public class AsynchronousResponse {
         if (response.serviceId == Watchface.id) {
             if (response.commandId == Watchface.WatchfaceConfirm.id) {
                 try {
-                    SendWatchfaceConfirm sendWatchfaceConfirm = new SendWatchfaceConfirm(this.support, support.huaweiUploadManager.getFileName());
+                    SendWatchfaceConfirm sendWatchfaceConfirm = new SendWatchfaceConfirm(this.support, this.support.huaweiUploadManager.getFileName());
                     sendWatchfaceConfirm.doPerform();
+
+
                 } catch (IOException e) {
                     LOG.error("Could not send watchface confirm request", e);
                 }
