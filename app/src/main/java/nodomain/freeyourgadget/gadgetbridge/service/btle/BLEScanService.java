@@ -332,7 +332,7 @@ public class BLEScanService extends Service {
             LOG.warn("Running on android 11, skipping bluetooth permission check");
             return true;
         }
-        return ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED;
+        return ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void restartScan(boolean applyFilters) {
