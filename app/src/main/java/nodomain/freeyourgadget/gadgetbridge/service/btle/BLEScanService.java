@@ -339,6 +339,7 @@ public class BLEScanService extends Service {
         if (!hasBluetoothPermission()) {
             // this should never happen
             LOG.error("No BLUETOOTH_SCAN permission");
+            updateNotification("Missing Bluetooth scan permissions");
             return;
         }
 
