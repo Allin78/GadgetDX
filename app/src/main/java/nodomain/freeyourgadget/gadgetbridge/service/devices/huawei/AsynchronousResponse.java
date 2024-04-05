@@ -411,6 +411,7 @@ public class AsynchronousResponse {
                  support.huaweiUploadManager.setFileUploadParams(resp.fileUploadParams);
 
                  try {
+                     support.huaweiUploadManager.setDeviceBusy();
                      SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support, resp.fileUploadParams.no_encrypt);
                      sendFileUploadAck.doPerform();
                  } catch (IOException e) {
@@ -422,6 +423,8 @@ public class AsynchronousResponse {
                  FileUpload.FileNextChunkParams resp = (FileUpload.FileNextChunkParams) response;
                  support.huaweiUploadManager.setUploadChunkSize(resp.nextchunkSize);
                  support.huaweiUploadManager.setCurrentUploadPosition(resp.bytesUploaded);
+                 int progress = Math.round(((float)resp.bytesUploaded / (float)support.huaweiUploadManager.getFileSize())* 100);
+                 support.onUploadProgress(R.string.updatefirmwareoperation_update_in_progress, progress, true);
 
                  try {
                      SendFileUploadChunk sendFileUploadChunk = new SendFileUploadChunk(this.support, this.support.huaweiUploadManager);
@@ -431,6 +434,8 @@ public class AsynchronousResponse {
                  }
              } else if (response.commandId == FileUpload.FileUploadResult.id) {
                  try {
+                     support.huaweiUploadManager.unsetDeviceBusy();
+                     support.onUploadProgress(R.string.updatefirmwareoperation_update_complete, 100, false);
                      SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support);
                      SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, this.support.huaweiUploadManager.getFileName());
                      sendFileUploadComplete.doPerform();

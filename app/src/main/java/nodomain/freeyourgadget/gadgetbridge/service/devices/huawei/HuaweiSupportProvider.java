@@ -1847,8 +1847,33 @@ public class HuaweiSupportProvider {
             GB.toast(context, "Failed to send watchface info", Toast.LENGTH_SHORT, GB.ERROR, e);
             LOG.error("Failed to send watchface info", e);
         }
+    }
 
+    public void onUploadProgress(int textRsrc, int progressPercent, boolean ongoing) {
+        try {
+            if (isBLE()) {
+                nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder leBuilder = createLeTransactionBuilder("FetchRecordedData");
+                leBuilder.add(new nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetProgressAction(
+                        context.getString(textRsrc),
+                        ongoing,
+                        progressPercent,
+                        context
+                ));
+                leBuilder.queue(leSupport.getQueue());
+            } else {
+                nodomain.freeyourgadget.gadgetbridge.service.btbr.TransactionBuilder brBuilder = createBrTransactionBuilder("FetchRecordedData");
+                brBuilder.add(new nodomain.freeyourgadget.gadgetbridge.service.btbr.actions.SetProgressAction(
+                        context.getString(textRsrc),
+                        ongoing,
+                        progressPercent,
+                        context));
+                brBuilder.queue(brSupport.getQueue());
 
+            }
+
+        } catch (final Exception e) {
+            LOG.error("Failed to update progress notification", e);
+        }
     }
 
 

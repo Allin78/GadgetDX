@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.FileUpload.FileUploadParams;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.GBZipFile;
 import nodomain.freeyourgadget.gadgetbridge.util.UriHelper;
@@ -125,6 +127,23 @@ public class HuaweiUploadManager {
 
     public short getUnitSize() {
         return fileUploadParams.unit_size;
+    }
+
+    public void setDeviceBusy() {
+        final GBDevice device = support.getDevice();
+        device.setBusyTask(support.getContext().getString(R.string.uploading_watchface));
+        device.sendDeviceUpdateIntent(support.getContext());
+    }
+
+    public void unsetDeviceBusy() {
+        final GBDevice device = support.getDevice();
+        if (device != null && device.isConnected()) {
+            if (device.isBusy()) {
+                device.unsetBusyTask();
+                device.sendDeviceUpdateIntent(support.getContext());
+            }
+            device.sendDeviceUpdateIntent(support.getContext());
+        }
     }
 
 
