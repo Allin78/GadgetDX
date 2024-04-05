@@ -327,7 +327,7 @@ public class BLEScanService extends Service {
     }
 
     private boolean hasBluetoothPermission(){
-        if(Build.VERSION.SDK_INT == Build.VERSION_CODES.R){
+        if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.R){
             // workaround. Cannot give bluetooth permission on Android O
             LOG.warn("Running on android 11, skipping bluetooth permission check");
             return ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
