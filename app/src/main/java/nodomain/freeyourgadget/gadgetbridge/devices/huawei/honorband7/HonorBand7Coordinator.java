@@ -37,7 +37,7 @@ public class HonorBand7Coordinator extends HuaweiLECoordinator {
 
     @Override
     public DeviceType getDeviceType() {
-        return DeviceType.HUAWEIBAND7;
+        return DeviceType.HONORBAND7;
     }
 
     @Override
