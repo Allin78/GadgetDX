@@ -6,12 +6,14 @@ import org.xml.sax.InputSource;
 
 import java.io.StringReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Watchface;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Watchface.WatchfaceDeviceParams;
 
 public class HuaweiWatchfaceManager
@@ -85,12 +87,28 @@ public class HuaweiWatchfaceManager
 
 
     private WatchfaceDeviceParams params;
+    private List<Watchface.InstalledWatchfaceInfo> installedWatchfaceInfoList;
+    private HashMap<String, String> watchfacesNames;
 
     public HuaweiWatchfaceManager() {
 
     }
     public void setParams(WatchfaceDeviceParams params) {
         this.params = params;
+    }
+
+    public void setInstalledWatchfaceInfoList(List<Watchface.InstalledWatchfaceInfo> list) {
+        this.installedWatchfaceInfoList = list;
+    }
+
+    public List<Watchface.InstalledWatchfaceInfo> getInstalledWatchfaceInfoList()
+    {
+        return installedWatchfaceInfoList;
+    }
+
+
+    public void  setWatchfacesNames(HashMap<String, String> map) {
+        this.watchfacesNames = map;
     }
 
     public short getWidth() {

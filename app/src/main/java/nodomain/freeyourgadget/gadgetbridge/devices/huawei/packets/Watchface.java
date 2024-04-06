@@ -1,5 +1,9 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiPacket;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiTLV;
 
@@ -14,6 +18,37 @@ public class Watchface {
         public byte sort = 1;
         public String otherWatchfaceVersions = "";
     }
+
+    public static class InstalledWatchfaceInfo {
+        public String fileName = "";
+        public String version = "";
+        public byte type = 0;
+        // bit 0 - is current
+        // bit 1 - is factory preset
+        // bit 2 - ???
+        // bit 3 - editable
+        // bit 4 - video
+        // bit 5 - photo
+        // bit 6 - tryout (trial version)
+        // bit 7 - kaleidoskop
+        public byte expandedtype = 0;
+
+        public InstalledWatchfaceInfo(HuaweiTLV tlv) {
+            try {
+                if(tlv.contains(0x03))
+                        this.fileName = tlv.getString(0x03);
+                if(tlv.contains(0x04))
+                    this.version = tlv.getString(0x04);
+                if(tlv.contains(0x05))
+                    this.type = tlv.getByte(0x05);
+                if(tlv.contains(0x07))
+                    this.expandedtype = tlv.getByte(0x07);
+            } catch (HuaweiPacket.MissingTagException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 
     public static class WatchfaceParams {
         public static final byte id = 0x01;
@@ -70,6 +105,49 @@ public class Watchface {
 
     }
 
+    public static class DeviceWatchInfo {
+        public static final byte id = 0x02;
+
+        public static class Request extends HuaweiPacket {
+            public Request(ParamsProvider paramsProvider) {
+                super(paramsProvider);
+                this.serviceId = Watchface.id;
+                this.commandId = id;
+                this.tlv = new HuaweiTLV()
+                        .put(0x01)
+                        .put(0x06, (byte) 0x03); //3 -overseas non-test, 2 - test, 1 -null?
+            }
+
+        }
+
+        public static class Response extends HuaweiPacket {
+
+            public List<InstalledWatchfaceInfo> watchfaceInfoList;
+            public Response (ParamsProvider paramsProvider) {
+                super(paramsProvider);
+            }
+
+            @Override
+            public void parseTlv() throws HuaweiPacket.ParseException {
+                watchfaceInfoList = new ArrayList<>();
+                try {
+                    if(this.tlv.contains(0x81)) {
+                        for (HuaweiTLV subTlv : this.tlv.getObject(0x81).getObjects(0x82)) {
+                            watchfaceInfoList.add(new Watchface.InstalledWatchfaceInfo(subTlv));
+                        }
+                    }
+
+                } catch (HuaweiPacket.MissingTagException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+
+    }
+
+
+
     public static class WatchfaceOperation {
         public static final byte id = 0x03;
 
@@ -105,12 +183,13 @@ public class Watchface {
                            String fileName) {
                 super(paramsProvider);
                 this.serviceId = Watchface.id;
+                this.commandId = id;
                 this.tlv = new HuaweiTLV()
                         .put(0x01, fileName.split("_")[0])
                         .put(0x02, fileName.split("_")[1])
                         .put(0x7f, 0x000186A0);
 
-                this.commandId = id;
+
             }
 
         }
@@ -120,6 +199,60 @@ public class Watchface {
                 super(paramsProvider);
             }
         }
+
+    }
+
+
+    public static class WatchfaceNameInfo {
+        public static final byte id = 0x06;
+
+        public static class Request extends HuaweiPacket {
+            public Request(ParamsProvider paramsProvider,
+                           List<InstalledWatchfaceInfo> watchfaceList) {
+                super(paramsProvider);
+                this.serviceId = Watchface.id;
+                this.commandId = id;
+
+                HuaweiTLV tlvList = new HuaweiTLV();
+                for (InstalledWatchfaceInfo watchface : watchfaceList) {
+                    //TODO: ask name only for custom watchfaces
+                    HuaweiTLV wfTlv = new HuaweiTLV().put(0x04, watchface.fileName);
+                    tlvList.put(0x83, wfTlv);
+                }
+
+                this.tlv = new HuaweiTLV()
+                        .put(0x01, (byte) 0x01)
+                        .put(0x82, tlvList);
+
+            }
+
+        }
+
+        public static class Response extends HuaweiPacket {
+
+            public HashMap<String, String> watchFaceNames = new HashMap<String, String>();
+            public Response (ParamsProvider paramsProvider) {
+                super(paramsProvider);
+            }
+
+            @Override
+            public void parseTlv() throws HuaweiPacket.ParseException {
+
+                try {
+                    if(this.tlv.contains(0x82)) {
+                        for (HuaweiTLV subTlv : this.tlv.getObject(0x82).getObjects(0x83)) {
+                            watchFaceNames.put(subTlv.getString(0x04), subTlv.getString(0x05));
+                        }
+                    }
+
+                } catch (HuaweiPacket.MissingTagException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+        }
+
+
 
     }
 

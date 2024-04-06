@@ -80,12 +80,15 @@ import nodomain.freeyourgadget.gadgetbridge.model.MusicStateSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.AcceptAgreementsRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetEventAlarmList;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetGpsParameterRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetNotificationConstraintsRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetSmartAlarmList;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfaceParams;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfacesList;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfacesNames;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendExtendedAccountRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsAndTimeToDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsDataRequest;
@@ -733,6 +736,13 @@ public class HuaweiSupportProvider {
             if (getHuaweiCoordinator().supportsWatchfaceParams()) {
                 GetWatchfaceParams getWatchfaceParams = new GetWatchfaceParams(this);
                 getWatchfaceParams.doPerform();
+
+                GetWatchfacesList getWatchfacesList = new GetWatchfacesList(this);
+                getWatchfacesList.doPerform();
+
+                GetWatchfacesNames getWatchfacesNames = new GetWatchfacesNames(this,
+                        getHuaweiCoordinator().getHuaweiWatchfaceManager().getInstalledWatchfaceInfoList());
+                getWatchfacesNames.doPerform();
             }
         } catch (IOException e) {
             GB.toast(getContext(), "Initialize dynamic services of Huawei device failed", Toast.LENGTH_SHORT, GB.ERROR,
