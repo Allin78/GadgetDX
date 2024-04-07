@@ -33,6 +33,7 @@ import de.greenrobot.dao.query.QueryBuilder;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettings;
+import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractBLClassicDeviceCoordinator;
@@ -170,12 +171,21 @@ public abstract class HuaweiBRCoordinator extends AbstractBLClassicDeviceCoordin
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {
-        return null;
+        return AppManagerActivity.class;
     }
 
     @Override
+    public boolean supportsAppListFetching() {
+        return true;
+    }
+    @Override
     public boolean supportsAppsManagement(GBDevice device) {
-        return false;
+        return true;
+    }
+
+    @Override
+    public boolean supportsWatchfaceManagement(GBDevice device) {
+        return true;
     }
 
     @Override

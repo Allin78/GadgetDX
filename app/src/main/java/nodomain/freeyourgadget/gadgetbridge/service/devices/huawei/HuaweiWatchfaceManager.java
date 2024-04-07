@@ -1,23 +1,39 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.huawei;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
+import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventAppInfo;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Watchface;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Watchface.WatchfaceDeviceParams;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDeviceApp;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfacesList;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfacesNames;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.Request;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendWatchfaceOperation;
 
 public class HuaweiWatchfaceManager
 {
+    Logger LOG = LoggerFactory.getLogger(HuaweiCoordinator.class);
+
 
     public static class Resolution {
 
@@ -86,15 +102,14 @@ public class HuaweiWatchfaceManager
     }
 
 
-    private WatchfaceDeviceParams params;
+
     private List<Watchface.InstalledWatchfaceInfo> installedWatchfaceInfoList;
     private HashMap<String, String> watchfacesNames;
 
-    public HuaweiWatchfaceManager() {
+    private HuaweiSupportProvider support;
 
-    }
-    public void setParams(WatchfaceDeviceParams params) {
-        this.params = params;
+    public HuaweiWatchfaceManager(HuaweiSupportProvider support) {
+        this.support = support;
     }
 
     public void setInstalledWatchfaceInfoList(List<Watchface.InstalledWatchfaceInfo> list) {
@@ -111,13 +126,7 @@ public class HuaweiWatchfaceManager
         this.watchfacesNames = map;
     }
 
-    public short getWidth() {
-        return params.width;
-    }
 
-    public short getHeight() {
-        return params.height;
-    }
 
     public String getRandomName() {
         Random random = new Random();
@@ -131,6 +140,160 @@ public class HuaweiWatchfaceManager
         res += "_1.0.0";
         return res;
     }
+
+    public static UUID toWatchfaceUUID(final String id) {
+        // Watchface IDs are numbers as strings - pad them to the right with F
+        // and encode as UUID
+        final String padded = String.format("%-32s", id).replace(' ', 'F');
+        return UUID.fromString(
+                padded.substring(0, 8) + "-" +
+                        padded.substring(8, 12) + "-" +
+                        padded.substring(12, 16) + "-" +
+                        padded.substring(16, 20) + "-" +
+                        padded.substring(20, 32)
+        );
+    }
+
+    public static String toWatchfaceId(final UUID uuid) {
+        return uuid.toString()
+                .replaceAll("-", "")
+                .replaceAll("f", "")
+                .replaceAll("F", "");
+    }
+
+    public void handleWatchfaceList() {
+
+        final List<GBDeviceApp> gbDeviceApps = new ArrayList<>();
+
+        for (final Watchface.InstalledWatchfaceInfo watchfaceInfo : installedWatchfaceInfoList) {
+            final UUID uuid = toWatchfaceUUID(watchfaceInfo.fileName);
+            GBDeviceApp gbDeviceApp = new GBDeviceApp(
+                    uuid,
+                    watchfacesNames.get(watchfaceInfo.fileName),
+                    "",
+                    "",
+                    GBDeviceApp.Type.WATCHFACE
+            );
+            gbDeviceApps.add(gbDeviceApp);
+        }
+
+        final GBDeviceEventAppInfo appInfoCmd = new GBDeviceEventAppInfo();
+        appInfoCmd.apps = gbDeviceApps.toArray(new GBDeviceApp[0]);
+        support.evaluateGBDeviceEvent(appInfoCmd);
+    }
+
+    public void updateWatchfaceNames() {
+        Request.RequestCallback finalizeReq = new Request.RequestCallback() {
+            @Override
+            public void call() {
+                handleWatchfaceList();
+            }
+
+            @Override
+            public void handleException(Request.ResponseParseException e) {
+                LOG.error("Watchface update list exception", e);
+            }
+        };
+
+        try {
+            GetWatchfacesNames getWatchfacesNames = new GetWatchfacesNames(support, installedWatchfaceInfoList);
+            getWatchfacesNames.setFinalizeReq(finalizeReq);
+            getWatchfacesNames.doPerform();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public void requestWatchfaceList() {
+        Request.RequestCallback finalizeReq = new Request.RequestCallback() {
+            @Override
+            public void call() {
+                updateWatchfaceNames();
+            }
+
+            @Override
+            public void handleException(Request.ResponseParseException e) {
+                LOG.error("Watchface update list exception", e);
+            }
+        };
+
+
+        try {
+            GetWatchfacesList getWatchfacesList = new GetWatchfacesList(support);
+            getWatchfacesList.setFinalizeReq(finalizeReq);
+            getWatchfacesList.doPerform();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    };
+
+    public void setWatchface(UUID uuid) {
+        Request.RequestCallback finalizeReq = new Request.RequestCallback() {
+            @Override
+            public void call() {
+                requestWatchfaceList();
+            }
+
+            @Override
+            public void handleException(Request.ResponseParseException e) {
+                LOG.error("Watchface update list exception", e);
+            }
+        };
+
+        try {
+            SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(support,
+                    getFullFileName(uuid),
+                    Watchface.WatchfaceOperation.operationActive);
+            sendWatchfaceOperation.setFinalizeReq(finalizeReq);
+            sendWatchfaceOperation.doPerform();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    public void deleteWatchface(UUID uuid) {
+        Request.RequestCallback finalizeReq = new Request.RequestCallback() {
+            @Override
+            public void call() {
+                requestWatchfaceList();
+            }
+
+            @Override
+            public void handleException(Request.ResponseParseException e) {
+                LOG.error("Watchface update list exception", e);
+            }
+        };
+
+        try {
+            SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(support,
+                    getFullFileName(uuid),
+                    Watchface.WatchfaceOperation.operationDelete);
+            sendWatchfaceOperation.setFinalizeReq(finalizeReq);
+            sendWatchfaceOperation.doPerform();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String getFullFileName(UUID uuid) {
+        String name = toWatchfaceId(uuid);
+        String version = "";
+        for (final Watchface.InstalledWatchfaceInfo watchfaceInfo : installedWatchfaceInfoList) {
+            if (watchfaceInfo.fileName.equals(name)) {
+                version = watchfaceInfo.version;
+                break;
+            }
+        }
+
+        String filename = name + "_" + version;
+        return filename;
+
+    }
+
 
 
 }

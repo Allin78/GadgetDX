@@ -77,8 +77,8 @@ public class HuaweiInstallHandler implements InstallHandler {
         HuaweiWatchfaceManager.WatchfaceDescription description = new HuaweiWatchfaceManager.WatchfaceDescription(watchfaceDescription);
 
         HuaweiWatchfaceManager.Resolution resolution = new HuaweiWatchfaceManager.Resolution();
-        String deviceScreen =  String.format("%d*%d",huaweiCoordinatorSupplier.getHuaweiCoordinator().getHuaweiWatchfaceManager().getHeight(),
-                huaweiCoordinatorSupplier.getHuaweiCoordinator().getHuaweiWatchfaceManager().getWidth());
+        String deviceScreen =  String.format("%d*%d",huaweiCoordinatorSupplier.getHuaweiCoordinator().getHeight(),
+                huaweiCoordinatorSupplier.getHuaweiCoordinator().getWidth());
         this.valid = resolution.isValid(description.screen, deviceScreen);
 
         installActivity.setInstallEnabled(true);

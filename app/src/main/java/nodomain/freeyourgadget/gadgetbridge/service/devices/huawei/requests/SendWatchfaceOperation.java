@@ -8,17 +8,19 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiSupport
 
 public class SendWatchfaceOperation extends Request {
     private String fileName;
-    public SendWatchfaceOperation(HuaweiSupportProvider support, String filename) {
+    private byte operation;
+    public SendWatchfaceOperation(HuaweiSupportProvider support, String filename, byte operation) {
         super(support);
         this.serviceId = Watchface.id;
         this.commandId = Watchface.WatchfaceOperation.id;
         this.fileName = filename;
+        this.operation = operation;
     }
 
     @Override
     protected List<byte[]> createRequest() throws RequestCreationException {
         try {
-            return new Watchface.WatchfaceOperation.Request(this.paramsProvider, this.fileName ).serialize();
+            return new Watchface.WatchfaceOperation.Request(this.paramsProvider, this.fileName, this.operation ).serialize();
         } catch (HuaweiPacket.CryptoException e) {
             throw new RequestCreationException(e);
         }

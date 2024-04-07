@@ -95,7 +95,7 @@ public class FileUpload {
                 this.commandId = id;
                 this.tlv = new HuaweiTLV()
                         .put(0x7f, 0x000186A0) //ok
-                        .put(0x01, (byte) 0x01); // filetype 1 - watchface, 2 -music
+                        .put(0x01, (byte) 0x01); // filetype 1 - watchface, 2 -music, 3 - png image for watchface background, 7 - app
                 if (noEncryption == 1)
                     this.tlv.put(0x09, (byte)0x01); // need on devices which generally encrypted, but files
                 this.complete = true;

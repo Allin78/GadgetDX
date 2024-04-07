@@ -437,7 +437,7 @@ public class AsynchronousResponse {
                      support.huaweiUploadManager.unsetDeviceBusy();
                      support.onUploadProgress(R.string.updatefirmwareoperation_update_complete, 100, false);
                      SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support);
-                     SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, this.support.huaweiUploadManager.getFileName());
+                     SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, this.support.huaweiUploadManager.getFileName(), Watchface.WatchfaceOperation.operationActive);
                      sendFileUploadComplete.doPerform();
 
                      sendWatchfaceOperation.doPerform();

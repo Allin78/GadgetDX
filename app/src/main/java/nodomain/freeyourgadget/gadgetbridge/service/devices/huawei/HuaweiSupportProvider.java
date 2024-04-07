@@ -186,12 +186,17 @@ public class HuaweiSupportProvider {
     protected ResponseManager responseManager = new ResponseManager(this);
     protected HuaweiUploadManager huaweiUploadManager = new HuaweiUploadManager(this);
 
+    protected HuaweiWatchfaceManager huaweiWatchfaceManager = new HuaweiWatchfaceManager(this);
+
     public HuaweiCoordinatorSupplier getCoordinator() {
         return ((HuaweiCoordinatorSupplier) this.gbDevice.getDeviceCoordinator());
     }
 
     public HuaweiCoordinator getHuaweiCoordinator() {
         return getCoordinator().getHuaweiCoordinator();
+    }
+    public HuaweiWatchfaceManager getHuaweiWatchfaceManager() {
+        return huaweiWatchfaceManager;
     }
 
     public HuaweiSupportProvider(HuaweiBRSupport support) {
@@ -736,13 +741,6 @@ public class HuaweiSupportProvider {
             if (getHuaweiCoordinator().supportsWatchfaceParams()) {
                 GetWatchfaceParams getWatchfaceParams = new GetWatchfaceParams(this);
                 getWatchfaceParams.doPerform();
-
-                GetWatchfacesList getWatchfacesList = new GetWatchfacesList(this);
-                getWatchfacesList.doPerform();
-
-                GetWatchfacesNames getWatchfacesNames = new GetWatchfacesNames(this,
-                        getHuaweiCoordinator().getHuaweiWatchfaceManager().getInstalledWatchfaceInfoList());
-                getWatchfacesNames.doPerform();
             }
         } catch (IOException e) {
             GB.toast(getContext(), "Initialize dynamic services of Huawei device failed", Toast.LENGTH_SHORT, GB.ERROR,
@@ -1844,14 +1842,11 @@ public class HuaweiSupportProvider {
 
     public void onInstallApp(Uri uri) {
         LOG.info("enter onAppInstall uri: "+uri);
-        huaweiUploadManager.setFileName(getHuaweiCoordinator().getHuaweiWatchfaceManager().getRandomName());
+        huaweiUploadManager.setFileName(huaweiWatchfaceManager.getRandomName());
         huaweiUploadManager.setWatchfaceUri(uri);
 
-
-        SendFileUploadInfo sendFileUploadInfo = new SendFileUploadInfo(this, huaweiUploadManager);
-
-
         try {
+            SendFileUploadInfo sendFileUploadInfo = new SendFileUploadInfo(this, huaweiUploadManager);
             sendFileUploadInfo.doPerform();
         } catch (IOException e) {
             GB.toast(context, "Failed to send watchface info", Toast.LENGTH_SHORT, GB.ERROR, e);
@@ -1886,5 +1881,18 @@ public class HuaweiSupportProvider {
         }
     }
 
+    public void onAppInfoReq() {
+        huaweiWatchfaceManager.requestWatchfaceList();
+    }
+    
+    public void onAppStart(final UUID uuid, boolean start) {
+        if (start) {
+            huaweiWatchfaceManager.setWatchface(uuid);
+        }
+    }
+
+    public void onAppDelete(final UUID uuid) {
+        huaweiWatchfaceManager.deleteWatchface(uuid);
+    }
 
 }

@@ -22,6 +22,7 @@ import android.net.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiConstants;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -136,4 +137,22 @@ public class HuaweiBRSupport extends AbstractBTBRDeviceSupport {
     public void onInstallApp(Uri uri) {
         supportProvider.onInstallApp(uri);
     }
+
+    @Override
+    public void onAppInfoReq() {
+        supportProvider.onAppInfoReq();
+    }
+
+    @Override
+    public void onAppStart(final UUID uuid, boolean start) {
+        if (start) {
+            supportProvider.onAppStart(uuid, start);
+        }
+    }
+
+    @Override
+    public void onAppDelete(final UUID uuid) {
+        supportProvider.onAppDelete(uuid);
+    }
+
 }

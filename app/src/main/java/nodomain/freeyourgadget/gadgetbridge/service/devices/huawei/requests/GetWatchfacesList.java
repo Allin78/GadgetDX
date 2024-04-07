@@ -35,6 +35,6 @@ public class GetWatchfacesList extends Request{
             throw new ResponseTypeMismatchException(receivedPacket, Watchface.DeviceWatchInfo.Response.class);
 
         Watchface.DeviceWatchInfo.Response resp = (Watchface.DeviceWatchInfo.Response)(receivedPacket);
-        supportProvider.getHuaweiCoordinator().getHuaweiWatchfaceManager().setInstalledWatchfaceInfoList(resp.watchfaceInfoList);
+        supportProvider.getHuaweiWatchfaceManager().setInstalledWatchfaceInfoList(resp.watchfaceInfoList);
     }
 }

@@ -34,8 +34,8 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpec
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsScreen;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications.NotificationConstraintsType;
+import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Watchface;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiWatchfaceManager;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.*;
@@ -50,9 +50,11 @@ public class HuaweiCoordinator {
     byte notificationCapabilities = -0x01;
     ByteBuffer notificationConstraints = null;
 
+    private Watchface.WatchfaceDeviceParams watchfaceDeviceParams;
+
     private final HuaweiCoordinatorSupplier parent;
 
-    protected HuaweiWatchfaceManager huaweiWatchfaceManager = new HuaweiWatchfaceManager();
+
     private boolean transactionCrypted=true;
 
     public HuaweiCoordinator(HuaweiCoordinatorSupplier parent) {
@@ -78,9 +80,6 @@ public class HuaweiCoordinator {
         }
     }
 
-    public HuaweiWatchfaceManager getHuaweiWatchfaceManager(){
-        return huaweiWatchfaceManager;
-    }
 
     private SharedPreferences getCapabilitiesSharedPreferences() {
         return GBApplication.getContext().getSharedPreferences("huawei_coordinator_capatilities" + parent.getDeviceType().name(), Context.MODE_PRIVATE);
@@ -549,5 +548,18 @@ public class HuaweiCoordinator {
                 "zh_CN",
                 "zh_TW",
         };
+
+    }
+
+    public short getWidth() {
+        return watchfaceDeviceParams.width;
+    }
+
+    public short getHeight() {
+        return watchfaceDeviceParams.height;
+    }
+
+    public void setWatchfaceDeviceParams(Watchface.WatchfaceDeviceParams watchfaceDeviceParams) {
+        this.watchfaceDeviceParams = watchfaceDeviceParams;
     }
 }

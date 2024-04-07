@@ -38,6 +38,6 @@ public class GetWatchfacesNames extends Request{
             throw new ResponseTypeMismatchException(receivedPacket, Watchface.WatchfaceNameInfo.Response.class);
 
         Watchface.WatchfaceNameInfo.Response resp = (Watchface.WatchfaceNameInfo.Response)(receivedPacket);
-        supportProvider.getHuaweiCoordinator().getHuaweiWatchfaceManager().setWatchfacesNames(resp.watchFaceNames);
+        supportProvider.getHuaweiWatchfaceManager().setWatchfacesNames(resp.watchFaceNames);
     }
 }

@@ -35,6 +35,6 @@ public class GetWatchfaceParams extends Request{
             throw new ResponseTypeMismatchException(receivedPacket, Watchface.WatchfaceParams.Response.class);
 
         Watchface.WatchfaceParams.Response resp = (Watchface.WatchfaceParams.Response)(receivedPacket);
-        supportProvider.getHuaweiCoordinator().getHuaweiWatchfaceManager().setParams(resp.params);
+        supportProvider.getHuaweiCoordinator().setWatchfaceDeviceParams(resp.params);
     }
 }

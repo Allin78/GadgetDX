@@ -47,6 +47,35 @@ public class Watchface {
                 throw new RuntimeException(e);
             }
         }
+
+        public boolean isCurrent() {
+            return (this.type & 1) == 1;
+        }
+
+        public boolean isFactory() {
+            return ((this.type  >> 1 )& 1) == 1;
+        }
+
+        public boolean isEditable() {
+            return ((this.type  >> 3 )& 1) == 1;
+        }
+
+        public boolean isVideo() {
+            return ((this.type  >> 4 )& 1) == 1;
+        }
+
+        public boolean isPhoto() {
+            return ((this.type  >> 5 )& 1) == 1;
+        }
+
+        public boolean isTryout() {
+            return ((this.type  >> 6 )& 1) == 1;
+        }
+
+        public boolean isKaleidoskop() {
+            return ((this.type  >> 7 )& 1) == 1;
+        }
+
     }
 
 
@@ -151,15 +180,18 @@ public class Watchface {
     public static class WatchfaceOperation {
         public static final byte id = 0x03;
 
+        public static final byte  operationActive = 1;
+        public static final byte operationDelete = 2;
+
         public static class Request extends HuaweiPacket {
             public Request(ParamsProvider paramsProvider,
-                           String fileName) {
+                           String fileName, byte operation) {
                 super(paramsProvider);
                 this.serviceId = Watchface.id;
                 this.tlv = new HuaweiTLV()
                         .put(0x01, fileName.split("_")[0])
                         .put(0x02, fileName.split("_")[1])
-                        .put(0x03, (byte) 0x01);
+                        .put(0x03, operation);
 
                 this.commandId = id;
             }
