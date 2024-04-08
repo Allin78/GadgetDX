@@ -461,5 +461,6 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_AUTO_REPLY_INCOMING_CALL_DELAY = "pref_auto_reply_phonecall_delay";
     public static final String PREF_SPEAK_NOTIFICATIONS_ALOUD = "pref_speak_notifications_aloud";
 
-    public static final String PREF_BICYCLE_SENSOR_PERSISTENCE_INTERVAL = "pref_bicycle_persistence_interval";
+    public static final String PREF_CYCLING_SENSOR_PERSISTENCE_INTERVAL = "pref_cycling_persistence_interval";
+    public static final String PREF_CYCLING_SENSOR_WHEEL_DIAMETER = "pref_cycling_wheel_diameter";
 }
