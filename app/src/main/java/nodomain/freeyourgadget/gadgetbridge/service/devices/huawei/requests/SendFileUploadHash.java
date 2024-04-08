@@ -15,6 +15,7 @@ public class SendFileUploadHash extends Request{
         this.huaweiUploadManager = huaweiUploadManager;
         this.serviceId = FileUpload.id;
         this.commandId = FileUpload.FileHashSend.id;
+        this.addToResponse = false;
     }
 
 

@@ -15,6 +15,7 @@ public class SendWatchfaceConfirm extends Request {
         this.serviceId = Watchface.id;
         this.commandId = Watchface.WatchfaceConfirm.id;
         this.fileName = filename;
+        this.addToResponse = false;
     }
 
     @Override

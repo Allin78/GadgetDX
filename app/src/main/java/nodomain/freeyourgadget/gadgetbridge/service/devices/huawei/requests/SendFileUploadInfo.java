@@ -17,6 +17,7 @@ public class SendFileUploadInfo extends Request{
         this.huaweiUploadManager = huaweiUploadManager;
         this.serviceId = FileUpload.id;
         this.commandId = FileUpload.FileInfoSend.id;
+        this.addToResponse = false;
 
     }
 

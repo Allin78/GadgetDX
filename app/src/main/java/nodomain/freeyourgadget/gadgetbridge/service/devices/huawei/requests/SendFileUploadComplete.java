@@ -13,6 +13,7 @@ public class SendFileUploadComplete extends Request {
 
         this.serviceId = FileUpload.id;
         this.commandId = FileUpload.FileUploadResult.id;
+        this.addToResponse = false;
     }
 
 

@@ -13,6 +13,7 @@ public class SendFileUploadAck extends Request {
         this.serviceId = FileUpload.id;
         this.commandId = FileUpload.FileUploadConsultAck.id;
         this.noEncryption = noEncryption;
+        this.addToResponse = false;
     }
 
     @Override

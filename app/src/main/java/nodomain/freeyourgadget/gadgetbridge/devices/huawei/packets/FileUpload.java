@@ -46,11 +46,11 @@ public class FileUpload {
                 this.complete = true;
 
             }
+        }
 
-            public static class Response extends HuaweiPacket {
-                public Response (ParamsProvider paramsProvider) {
-                    super(paramsProvider);
-                }
+        public static class Response extends HuaweiPacket {
+            public Response (ParamsProvider paramsProvider) {
+                super(paramsProvider);
             }
         }
 
@@ -76,12 +76,12 @@ public class FileUpload {
 
             }
 
-            public static class Response extends HuaweiPacket {
-                public Response (ParamsProvider paramsProvider) {
-                    super(paramsProvider);
-                }
-            }
+        }
 
+        public static class Response extends HuaweiPacket {
+            public Response (ParamsProvider paramsProvider) {
+                super(paramsProvider);
+            }
         }
 
     }

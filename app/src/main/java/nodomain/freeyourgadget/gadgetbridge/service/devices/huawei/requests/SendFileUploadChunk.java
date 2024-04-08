@@ -14,6 +14,7 @@ public class SendFileUploadChunk extends Request {
         this.huaweiUploadManager = watchfaceManager;
         this.serviceId = FileUpload.id;
         this.commandId = FileUpload.FileNextChunkSend.id;
+        this.addToResponse = false;
     }
 
     @Override
