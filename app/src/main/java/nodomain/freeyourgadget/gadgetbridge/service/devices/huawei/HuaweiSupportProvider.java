@@ -87,8 +87,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetG
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetNotificationConstraintsRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetSmartAlarmList;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfaceParams;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfacesList;
-import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.GetWatchfacesNames;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendExtendedAccountRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsAndTimeToDeviceRequest;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.SendGpsDataRequest;
@@ -1843,7 +1841,8 @@ public class HuaweiSupportProvider {
     public void onInstallApp(Uri uri) {
         LOG.info("enter onAppInstall uri: "+uri);
         huaweiUploadManager.setFileName(huaweiWatchfaceManager.getRandomName());
-        huaweiUploadManager.setWatchfaceUri(uri);
+        HuaweiFwHelper huaweiFwHelper = new HuaweiFwHelper(uri, getContext());
+        huaweiUploadManager.setBytes(huaweiFwHelper.getBytes());
 
         try {
             SendFileUploadInfo sendFileUploadInfo = new SendFileUploadInfo(this, huaweiUploadManager);

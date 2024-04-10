@@ -23,7 +23,7 @@ public class HuaweiUploadManager {
     private final HuaweiSupportProvider support;
     byte[] fileBin;
     byte[] fileSHA256;
-    byte fileType = 1; // 1 - watchface, 2 - music
+    byte fileType = 1; // 1 - watchface, 2 - music, 3 - png for background , 7 - app
     int fileSize = 0;
 
     int currentUploadPosition = 0;
@@ -39,32 +39,10 @@ public class HuaweiUploadManager {
         this.support=support;
     }
 
-    public void setWatchfaceUri(Uri uri) {
+    public void setBytes(byte[] uploadArray) {
 
-        UriHelper uriHelper;
-
-        try {
-            uriHelper = UriHelper.get(uri, support.getContext());
-
-            GBZipFile watchfacePackage = new GBZipFile(uriHelper.openInputStream());
-            fileBin = watchfacePackage.getFileFromZip("com.huawei.watchface");
-            fileSize = fileBin.length;
-
-
-        } catch (ZipFileException e) {
-            LOG.error("Unable to read watchface file.", e);
-            return;
-        } catch (FileNotFoundException e) {
-            LOG.error("The watchface file was not found.", e);
-            return;
-        } catch (IOException e) {
-            LOG.error("General IO error occurred.", e);
-            return;
-        } catch (Exception e) {
-            LOG.error("Unknown error occurred.", e);
-            return;
-        }
-
+        this.fileSize = uploadArray.length;
+        this.fileBin = uploadArray;
 
         try {
             MessageDigest m = MessageDigest.getInstance("SHA256");
@@ -77,8 +55,8 @@ public class HuaweiUploadManager {
 
         currentUploadPosition = 0;
         uploadChunkSize = 0;
-        //TODO: generate random watchfaceName and watchfaceVersion
-        LOG.info("watchface loaded, SHA256: "+ GB.hexdump(fileSHA256) + " fileName: " + fileName);
+
+        LOG.info("File ready for upload, SHA256: "+ GB.hexdump(fileSHA256) + " fileName: " + fileName + " filetype: ", fileType);
 
     }
 

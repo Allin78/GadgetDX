@@ -1,16 +1,9 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.huawei;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.InstallActivity;
@@ -19,48 +12,22 @@ import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.GenericItem;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiFwHelper;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.HuaweiWatchfaceManager;
-import nodomain.freeyourgadget.gadgetbridge.util.GBZipFile;
-import nodomain.freeyourgadget.gadgetbridge.util.UriHelper;
-import nodomain.freeyourgadget.gadgetbridge.util.ZipFileException;
-
 
 public class HuaweiInstallHandler implements InstallHandler {
     private static final Logger LOG = LoggerFactory.getLogger(HuaweiInstallHandler.class);
 
     private final Context context;
-    Bitmap previewbMap;
-    String watchfaceDescription;
+    protected final HuaweiFwHelper helper;
+
     boolean valid = false;
 
     public HuaweiInstallHandler(Uri uri, Context context) {
         this.context = context;
-
-        UriHelper uriHelper;
-
-        try {
-            uriHelper = UriHelper.get(uri, this.context);
-
-            GBZipFile watchfacePackage = new GBZipFile(uriHelper.openInputStream());
-            watchfaceDescription = new String(watchfacePackage.getFileFromZip("description.xml"));
-            final byte[] preview = watchfacePackage.getFileFromZip("preview/cover.jpg");
-            previewbMap = BitmapFactory.decodeByteArray(preview, 0, preview.length);
-
-        } catch (ZipFileException e) {
-            LOG.error("Unable to read watchface file.", e);
-            return;
-        } catch (FileNotFoundException e) {
-            LOG.error("The watchface file was not found.", e);
-            return;
-        } catch (IOException e) {
-            LOG.error("General IO error occurred.", e);
-            return;
-        } catch (Exception e) {
-            LOG.error("Unknown error occurred.", e);
-            return;
-        }
-
+        this.helper = new HuaweiFwHelper(uri, context);
     }
+
 
     @Override
     public void validateInstallation(InstallActivity installActivity, GBDevice device) {
@@ -74,7 +41,7 @@ public class HuaweiInstallHandler implements InstallHandler {
 
         final HuaweiCoordinatorSupplier huaweiCoordinatorSupplier = (HuaweiCoordinatorSupplier) coordinator;
 
-        HuaweiWatchfaceManager.WatchfaceDescription description = new HuaweiWatchfaceManager.WatchfaceDescription(watchfaceDescription);
+        HuaweiWatchfaceManager.WatchfaceDescription description = helper.getWatchfaceDescription();
 
         HuaweiWatchfaceManager.Resolution resolution = new HuaweiWatchfaceManager.Resolution();
         String deviceScreen =  String.format("%d*%d",huaweiCoordinatorSupplier.getHuaweiCoordinator().getHeight(),
@@ -86,8 +53,8 @@ public class HuaweiInstallHandler implements InstallHandler {
         GenericItem installItem = new GenericItem();
 
 
-        if (previewbMap != null) {
-            installItem.setPreview(previewbMap);
+        if (helper.getWatchfacePreviewBitmap() != null) {
+            installItem.setPreview(helper.getWatchfacePreviewBitmap());
         }
 
         installItem.setName(description.title);
@@ -100,7 +67,7 @@ public class HuaweiInstallHandler implements InstallHandler {
             return;
         }
 
-        if ( !device.isConnected()) { //FIXME: Add all tested huawei devices?
+        if ( !device.isConnected()) {
             LOG.error("Firmware cannot be installed (not connected or wrong device)");
             installActivity.setInfoText("Firmware cannot be installed (not connected or wrong device)");
             installActivity.setInstallEnabled(false);
@@ -116,7 +83,7 @@ public class HuaweiInstallHandler implements InstallHandler {
         }
 
 
-        //installItem.setDetails(getVersion());
+        //installItem.setDetails(description.version);
 
         installItem.setIcon(R.drawable.ic_watchface);
         installActivity.setInfoText(context.getString(R.string.watchface_install_info, installItem.getName(), description.version, description.author));
@@ -127,10 +94,11 @@ public class HuaweiInstallHandler implements InstallHandler {
 
     @Override
     public boolean isValid() {
-        return true; //FIXME implement real check
+        return helper.isValid();
     }
 
     @Override
     public void onStartInstall(GBDevice device) {
+        helper.unsetFwBytes();
     }
 }
