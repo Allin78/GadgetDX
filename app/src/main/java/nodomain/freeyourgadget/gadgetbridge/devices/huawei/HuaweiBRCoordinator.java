@@ -185,7 +185,17 @@ public abstract class HuaweiBRCoordinator extends AbstractBLClassicDeviceCoordin
 
     @Override
     public boolean supportsWatchfaceManagement(GBDevice device) {
-        return true;
+        return supportsAppsManagement(device);
+    }
+
+    @Override
+    public boolean supportsInstalledAppManagement(GBDevice device) {
+        return false;
+    }
+
+    @Override
+    public boolean supportsCachedAppManagement(GBDevice device) {
+        return false;
     }
 
     @Override
