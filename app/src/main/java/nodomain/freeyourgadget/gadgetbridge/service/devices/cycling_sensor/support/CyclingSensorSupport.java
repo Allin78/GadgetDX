@@ -172,6 +172,7 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         try {
             measurement = CyclingSpeedCadenceMeasurement.fromPayload(value);
         }catch (RuntimeException e){
+            // do nothing, measurement stays null
         }
 
         if(measurement == null){
@@ -197,13 +198,15 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         if(lastMeasurementDelta <= 30_000){
             int ticksPassed = currentMeasurement.lastRevolutionTimeTicks - lastReportedMeasurement.lastRevolutionTimeTicks;
             // every second is subdivided in 1024 ticks
-            int millisDelta = ticksPassed * (1000 / 1024);
+            int millisDelta = (int)(ticksPassed * (1000f / 1024f));
 
-            int revolutionsDelta = currentMeasurement.revolutionCount - lastReportedMeasurement.revolutionCount;
+            if(millisDelta > 0) {
+                int revolutionsDelta = currentMeasurement.revolutionCount - lastReportedMeasurement.revolutionCount;
 
-            float revolutionsPerSecond = revolutionsDelta * (1000 / millisDelta);
+                float revolutionsPerSecond = revolutionsDelta * (1000f / millisDelta);
 
-            speed = revolutionsPerSecond * wheelCircumference;
+                speed = revolutionsPerSecond * wheelCircumference;
+            }
         }
 
         lastReportedMeasurement = currentMeasurement;
