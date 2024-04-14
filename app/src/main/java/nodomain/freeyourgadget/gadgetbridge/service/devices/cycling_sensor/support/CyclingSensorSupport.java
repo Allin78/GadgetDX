@@ -34,6 +34,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.NotifyAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.ReadAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfoProfile;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class CyclingSensorSupport extends CyclingSensorBaseSupport {
     static class CyclingSpeedCadenceMeasurement {
@@ -120,7 +121,9 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
     }
 
     private void loadConfiguration(){
-        SharedPreferences deviceSpecificPrefs = GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress());
+        Prefs deviceSpecificPrefs = new Prefs(
+                GBApplication.getDeviceSpecificSharedPrefs(getDevice().getAddress())
+        );
         persistenceInterval = deviceSpecificPrefs.getInt(DeviceSettingsPreferenceConst.PREF_CYCLING_SENSOR_PERSISTENCE_INTERVAL, 60);
         nextPersistenceTimestamp = 0;
         
@@ -223,9 +226,8 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
 
         if (currentMeasurement.revolutionDataPresent) {
             sample.setRevolutionCount(currentMeasurement.revolutionCount);
-            sample.setSteps(currentMeasurement.revolutionCount);
-            sample.setWheelCircumference(wheelCircumference);
             sample.setSpeed(speed);
+            sample.setDistance(currentMeasurement.revolutionCount * wheelCircumference);
         }
 
         sample.setTimestamp((int)(now / 1000));

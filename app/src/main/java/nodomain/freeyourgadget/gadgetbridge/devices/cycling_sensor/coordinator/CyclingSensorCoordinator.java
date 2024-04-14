@@ -28,15 +28,9 @@ public class CyclingSensorCoordinator extends AbstractBLEDeviceCoordinator {
 
     }
 
-    @Nullable
     @Override
-    public Class<? extends Activity> getPairingActivity() {
-        return null;
-    }
-
-    @Override
-    public boolean supportsActivityDataFetching() {
-        return false;
+    public boolean supports(GBDeviceCandidate candidate) {
+        return candidate.supportsService(CyclingSensorSupport.UUID_CYCLING_SENSOR_SERVICE);
     }
 
     @Override
@@ -60,28 +54,8 @@ public class CyclingSensorCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsScreenshots(GBDevice device) {
-        return false;
-    }
-
-    @Override
-    public int getAlarmSlotCount(GBDevice device) {
-        return 0;
-    }
-
-    @Override
-    public boolean supportsSmartWakeup(GBDevice device, int alarmPosition) {
-        return false;
-    }
-
-    @Override
     public String getManufacturer() {
         return "Unknown";
-    }
-
-    @Override
-    public boolean supportsAppsManagement(GBDevice device) {
-        return false;
     }
 
     @Override
@@ -90,18 +64,8 @@ public class CyclingSensorCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
-    public boolean supportsCalendarEvents() {
-        return false;
-    }
-
-    @Override
     public boolean supportsRealtimeData() {
         return true;
-    }
-
-    @Override
-    public boolean supportsFindDevice() {
-        return false;
     }
 
     @Override
