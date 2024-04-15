@@ -5,14 +5,8 @@
     android:layout_height="match_parent"
     grid:columnCount="2">
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/chart_cycling_speed"
-        grid:layout_columnWeight="1"
-        grid:layout_rowWeight="1">
-    </com.github.mikephil.charting.charts.PieChart>
-
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart_cycling_speed_history"
+        android:id="@+id/chart_cycling_history"
         grid:layout_columnSpan="2"
         grid:layout_columnWeight="1"
         grid:layout_rowWeight="1">

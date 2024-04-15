@@ -12,18 +12,25 @@ import androidx.annotation.Nullable;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.LineData;
 
 import java.util.List;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.cycling_sensor.db.CyclingSensorActivitySampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSensorActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.model.TemperatureSample;
 
 public class CyclingDataFragment extends AbstractChartFragment<CyclingDataFragment.CyclingChartsData>{
-    private PieChart currentSpeedChart;
-    private LineChart speedHistoryChart;
+    private LineChart cyclingHistoryChart;
 
     protected static class CyclingChartsData extends DefaultChartsData<LineData> {
         public CyclingChartsData(LineData lineData, TimestampTranslation tsTranslation) {
@@ -43,17 +50,13 @@ public class CyclingDataFragment extends AbstractChartFragment<CyclingDataFragme
 
     @Override
     protected CyclingChartsData refreshInBackground(ChartsHost chartsHost, DBHandler db, GBDevice device) {
-        List<? extends ActivitySample> samples = getSamples(db, device);
+        List<CyclingSensorActivitySample> samples = getSamples(db, device);
         return null;
     }
 
     @Override
     protected void renderCharts() {
 
-    }
-
-    protected List<? extends ActivitySample> getSamples(DBHandler db, GBDevice device) {
-        return null;
     }
 
     @Override
@@ -71,23 +74,29 @@ public class CyclingDataFragment extends AbstractChartFragment<CyclingDataFragme
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_cycling, container, false);
 
-        currentSpeedChart = rootView.findViewById(R.id.chart_cycling_speed);
-        speedHistoryChart = rootView.findViewById(R.id.chart_cycling_speed_history);
+        cyclingHistoryChart = rootView.findViewById(R.id.chart_cycling_history);
+        cyclingHistoryChart.setBackgroundColor(GBApplication.getBackgroundColor(requireContext()));
+        cyclingHistoryChart.getDescription().setTextColor(GBApplication.getTextColor(requireContext()));
 
-        currentSpeedChart.setNoDataText("");
-        currentSpeedChart.getLegend().setEnabled(false);
-        currentSpeedChart.setDrawHoleEnabled(true);
-        currentSpeedChart.setHoleColor(Color.WHITE);
-        currentSpeedChart.getDescription().setText("");
-        // currentSpeedChart.setTransparentCircleColor(Color.WHITE);
-        // currentSpeedChart.setTransparentCircleAlpha(110);
-        currentSpeedChart.setHoleRadius(70f);
-        currentSpeedChart.setTransparentCircleRadius(75f);
-        currentSpeedChart.setDrawCenterText(true);
-        currentSpeedChart.setRotationEnabled(true);
-        currentSpeedChart.setHighlightPerTapEnabled(true);
-        currentSpeedChart.setCenterTextOffset(0, 0);
+        XAxis xAxis = cyclingHistoryChart.getXAxis();
+        xAxis.setTextColor(GBApplication.getTextColor(requireContext()));
+        xAxis.setDrawLabels(true);
+        xAxis.setDrawGridLines(true);
+        xAxis.setEnabled(true);
+
+        YAxis yAxis = cyclingHistoryChart.getAxisRight();
+        yAxis.setEnabled(true);
+        yAxis.setDrawGridLines(true);
+        yAxis.setTextColor(GBApplication.getTextColor(requireContext()));
 
         return rootView;
+    }
+
+    private List<? extends TemperatureSample> getSamples(final DBHandler db, final GBDevice device) {
+        final int tsStart = getTSStart();
+        final int tsEnd = getTSEnd();
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
+        final TimeSampleProvider<? extends CyclingSensorActivitySample> sampleProvider = coordinator.getCyclingSensorActivityProvider(device, db.getDaoSession());
+        return sampleProvider.getAllSamples(tsStart * 1000L, tsEnd * 1000L);
     }
 }
