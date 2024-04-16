@@ -66,8 +66,10 @@ public class HuaweiFwHelper {
             GBZipFile watchfacePackage = new GBZipFile(uriHelper.openInputStream());
             String xmlDescription = new String(watchfacePackage.getFileFromZip("description.xml"));
             watchfaceDescription = new HuaweiWatchfaceManager.WatchfaceDescription(xmlDescription);
-            final byte[] preview = watchfacePackage.getFileFromZip("preview/cover.jpg");
-            watchfacePreviewBitmap = BitmapFactory.decodeByteArray(preview, 0, preview.length);
+            if (watchfacePackage.fileExists("preview/cover.jpg")) {
+                final byte[] preview = watchfacePackage.getFileFromZip("preview/cover.jpg");
+                watchfacePreviewBitmap = BitmapFactory.decodeByteArray(preview, 0, preview.length);
+            }
             fw = watchfacePackage.getFileFromZip("com.huawei.watchface");
             fileSize = fw.length;
 
