@@ -155,7 +155,7 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                 case "temperature":
                     return new TemperatureChartFragment();
                 case "cycling":
-                    return new CyclingDataFragment();
+                    return new CyclingChartFragment();
             }
             return null;
         }

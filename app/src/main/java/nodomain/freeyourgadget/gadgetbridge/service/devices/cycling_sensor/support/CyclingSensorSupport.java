@@ -5,7 +5,6 @@ import static nodomain.freeyourgadget.gadgetbridge.model.ActivityKind.TYPE_CYCLI
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -22,8 +21,8 @@ import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSett
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
-import nodomain.freeyourgadget.gadgetbridge.devices.cycling_sensor.db.CyclingSensorActivitySampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSensorActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.devices.cycling_sensor.db.CyclingSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSample;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.User;
@@ -222,7 +221,7 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
 
         nextPersistenceTimestamp = now + persistenceInterval;
 
-        CyclingSensorActivitySample sample = new CyclingSensorActivitySample();
+        CyclingSample sample = new CyclingSample();
 
         if (currentMeasurement.revolutionDataPresent) {
             sample.setRevolutionCount(currentMeasurement.revolutionCount);
@@ -233,7 +232,6 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         sample.setTimestamp((int)(now / 1000));
         sample.setDevice(databaseDevice);
         sample.setUser(databaseUser);
-        sample.setRawKind(TYPE_CYCLING);
 
         Intent liveIntent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES);
         liveIntent.putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
@@ -243,10 +241,10 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         try(DBHandler handler = GBApplication.acquireDB()) {
             DaoSession session = handler.getDaoSession();
 
-            CyclingSensorActivitySampleProvider sampleProvider =
-                    new CyclingSensorActivitySampleProvider(getDevice(), session);
+            CyclingSampleProvider sampleProvider =
+                    new CyclingSampleProvider(getDevice(), session);
 
-            sampleProvider.addGBActivitySample(sample);
+            sampleProvider.addSample(sample);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
