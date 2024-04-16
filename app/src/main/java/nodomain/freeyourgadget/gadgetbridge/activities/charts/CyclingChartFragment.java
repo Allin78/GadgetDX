@@ -22,7 +22,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -33,8 +39,6 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
-import nodomain.freeyourgadget.gadgetbridge.model.TemperatureSample;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFragment.CyclingChartsData>{
@@ -44,18 +48,13 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
     private int DESCRIPTION_COLOR;
     private int CHART_TEXT_COLOR;
     private int LEGEND_TEXT_COLOR;
-    private int CHART_LINE_COLOR;
+    private int CHART_LINE_COLOR_DISTANCE;
+    private int CHART_LINE_COLOR_SPEED;
     private final Prefs prefs = GBApplication.getPrefs();
 
-    protected static class CyclingChartsData extends ChartsData {
-        DefaultChartsData<LineData> chartsData;
-
-        public CyclingChartsData(DefaultChartsData<LineData> chartsData) {
-            this.chartsData = chartsData;
-        }
-
-        public DefaultChartsData<LineData> getChartsData() {
-            return chartsData;
+    protected static class CyclingChartsData extends DefaultChartsData<LineData> {
+        public CyclingChartsData(LineData lineData) {
+            super(lineData, new TimeFormatter());
         }
     }
 
@@ -71,9 +70,11 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
 
         if (prefs.getBoolean("chart_heartrate_color", false)) {
-            CHART_LINE_COLOR = ContextCompat.getColor(getContext(), R.color.chart_heartrate_alternative);
+            CHART_LINE_COLOR_DISTANCE = ContextCompat.getColor(getContext(), R.color.chart_activity_dark);
+            CHART_LINE_COLOR_SPEED  = ContextCompat.getColor(getContext(), R.color.chart_heartrate);
         } else {
-            CHART_LINE_COLOR = ContextCompat.getColor(getContext(), R.color.chart_heartrate);
+            CHART_LINE_COLOR_DISTANCE = ContextCompat.getColor(getContext(), R.color.chart_activity_light);
+            CHART_LINE_COLOR_SPEED = ContextCompat.getColor(getContext(), R.color.chart_heartrate_alternative);
         }
     }
 
@@ -87,8 +88,6 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
     protected class CyclingChartsDataBuilder {
         private final List<CyclingSample> samples;
 
-        private final TimestampTranslation tsTranslation = new TimestampTranslation();
-
         private final List<Entry> lineEntries = new ArrayList<>();
 
         long averageSum;
@@ -99,55 +98,54 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         }
 
         private void reset() {
-            tsTranslation.reset();
             lineEntries.clear();
 
             averageSum = 0;
             averageNumSamples = 0;
         }
 
-        private void processSamples() {
-            reset();
-
-            for (final CyclingSample sample : samples) {
-                processSample(sample);
-            }
-        }
-
-        private void processSample(final CyclingSample sample) {
-            final int ts = tsTranslation.shorten((int) (sample.getTimestamp() / 1000L));
-            lineEntries.add(new Entry(ts, sample.getDistance()));
-        }
-
         public CyclingChartsData build() {
-            processSamples();
+            List<Entry> distanceEntries = new ArrayList<>();
+            List<Entry> speedEntries = new ArrayList<>();
 
-            final List<ILineDataSet> lineDataSets = new ArrayList<>();
-
-            lineDataSets.add(createDataSet(lineEntries));
-
-            final LineData lineData = new LineData(lineDataSets);
-            final ValueFormatter xValueFormatter = new SampleXLabelFormatter(tsTranslation);
-            final DefaultChartsData<LineData> chartsData = new DefaultChartsData<>(lineData, xValueFormatter);
-            return new CyclingChartsData(chartsData);
-        }
-    }
-
-    protected LineDataSet createDataSet(final List<Entry> values) {
-        final LineDataSet lineDataSet = new LineDataSet(values, "Cycling");
-        lineDataSet.setColor(CHART_LINE_COLOR);
-        lineDataSet.setDrawCircles(false);
-        lineDataSet.setLineWidth(2.2f);
-        lineDataSet.setFillAlpha(255);
-        lineDataSet.setValueTextColor(CHART_TEXT_COLOR);
-        lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
-        lineDataSet.setValueFormatter(new ValueFormatter() {
-            @Override
-            public String getFormattedValue(float value) {
-                return String.format(Locale.ROOT, "%d", (int) value);
+            for (CyclingSample sample : samples) {
+                // add distance in Km
+                distanceEntries.add(new Entry(sample.getTimestamp(), sample.getDistance() / 1000f));
+                Float speed = sample.getSpeed();
+                if(speed != null){
+                    speedEntries.add(new Entry(sample.getTimestamp(), sample.getSpeed() * 3.6f));
+                }
             }
-        });
-        return lineDataSet;
+
+            LineDataSet distanceSet = new LineDataSet(distanceEntries, "Cycling");
+            distanceSet.setLineWidth(2.2f);
+            distanceSet.setColor(CHART_LINE_COLOR_DISTANCE);
+            distanceSet.setDrawCircles(false);
+            distanceSet.setDrawCircleHole(false);
+            distanceSet.setDrawValues(true);
+            distanceSet.setValueTextSize(10f);
+            distanceSet.setValueTextColor(CHART_TEXT_COLOR);
+            distanceSet.setHighlightEnabled(false);
+            distanceSet.setValueFormatter(new CyclingDistanceFormatter());
+            distanceSet.setAxisDependency(cyclingHistoryChart.getAxisLeft().getAxisDependency());
+            LineData lineData = new LineData(distanceSet);
+
+            LineDataSet speedSet = new LineDataSet(speedEntries, "Speed");
+            speedSet.setLineWidth(2.2f);
+            speedSet.setColor(CHART_LINE_COLOR_SPEED);
+            speedSet.setDrawCircles(false);
+            speedSet.setDrawCircleHole(false);
+            speedSet.setDrawValues(true);
+            speedSet.setValueTextSize(10f);
+            speedSet.setValueTextColor(CHART_TEXT_COLOR);
+            speedSet.setHighlightEnabled(true);
+            speedSet.setValueFormatter(new CyclingSpeedFormatter());
+            speedSet.setAxisDependency(cyclingHistoryChart.getAxisRight().getAxisDependency());
+
+            lineData.addDataSet(speedSet);
+
+            return new CyclingChartsData(lineData);
+        }
     }
 
     @Override
@@ -159,10 +157,15 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
     protected void setupLegend(final Chart<?> chart) {
         final List<LegendEntry> legendEntries = new ArrayList<>(2);
 
-        final LegendEntry entry = new LegendEntry();
-        entry.label = requireContext().getString(R.string.pref_header_spo2);
-        entry.formColor = CHART_LINE_COLOR;
-        legendEntries.add(entry);
+        final LegendEntry distanceEntry = new LegendEntry();
+        distanceEntry.label = "Distance";
+        distanceEntry.formColor = CHART_LINE_COLOR_DISTANCE;
+        legendEntries.add(distanceEntry);
+
+        final LegendEntry speedEntry = new LegendEntry();
+        speedEntry.label = "Speed";
+        speedEntry.formColor = CHART_LINE_COLOR_SPEED;
+        legendEntries.add(speedEntry);
 
         chart.getLegend().setCustom(legendEntries);
         chart.getLegend().setTextColor(LEGEND_TEXT_COLOR);
@@ -170,13 +173,11 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
 
     @Override
     protected void updateChartsnUIThread(CyclingChartsData cyclingData) {
-        final DefaultChartsData<LineData> chartsData = cyclingData.getChartsData();
         cyclingHistoryChart.setData(null); // workaround for https://github.com/PhilJay/MPAndroidChart/issues/2317
-        cyclingHistoryChart.getXAxis().setValueFormatter(chartsData.getXValueFormatter());
-        cyclingHistoryChart.setData(chartsData.getData());
-        cyclingHistoryChart.getAxisLeft().removeAllLimitLines();
+        cyclingHistoryChart.getXAxis().setValueFormatter(cyclingData.getXValueFormatter());
+        cyclingHistoryChart.getXAxis().setAvoidFirstLastClipping(true);
 
-        cyclingHistoryChart.getAxisRight().setEnabled(false);
+        cyclingHistoryChart.setData(cyclingData.getData());
     }
 
     @Nullable
@@ -185,19 +186,31 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         View rootView = inflater.inflate(R.layout.fragment_cycling, container, false);
 
         cyclingHistoryChart = rootView.findViewById(R.id.chart_cycling_history);
-        cyclingHistoryChart.setBackgroundColor(GBApplication.getBackgroundColor(requireContext()));
-        cyclingHistoryChart.getDescription().setTextColor(GBApplication.getTextColor(requireContext()));
 
-        XAxis xAxis = cyclingHistoryChart.getXAxis();
-        xAxis.setTextColor(GBApplication.getTextColor(requireContext()));
-        xAxis.setDrawLabels(true);
-        xAxis.setDrawGridLines(true);
-        xAxis.setEnabled(true);
+        cyclingHistoryChart.setBackgroundColor(BACKGROUND_COLOR);
+        cyclingHistoryChart.getDescription().setTextColor(DESCRIPTION_COLOR);
+        configureBarLineChartDefaults(cyclingHistoryChart);
 
-        YAxis yAxis = cyclingHistoryChart.getAxisRight();
-        yAxis.setEnabled(true);
-        yAxis.setDrawGridLines(true);
-        yAxis.setTextColor(GBApplication.getTextColor(requireContext()));
+        final XAxis x = cyclingHistoryChart.getXAxis();
+        x.setDrawLabels(true);
+        x.setDrawGridLines(true);
+        x.setEnabled(true);
+        x.setTextColor(CHART_TEXT_COLOR);
+        x.setDrawLimitLinesBehindData(true);
+
+        final YAxis yAxisLeft = cyclingHistoryChart.getAxisLeft();
+        yAxisLeft.setDrawGridLines(true);
+        yAxisLeft.setDrawTopYLabelEntry(false);
+        yAxisLeft.setTextColor(CHART_TEXT_COLOR);
+        yAxisLeft.setEnabled(true);
+
+        final YAxis yAxisRight = cyclingHistoryChart.getAxisRight();
+        yAxisRight.setDrawGridLines(false);
+        yAxisRight.setDrawTopYLabelEntry(false);
+        yAxisRight.setTextColor(CHART_TEXT_COLOR);
+        yAxisRight.setEnabled(true);
+
+        refresh();
 
         return rootView;
     }
@@ -207,6 +220,42 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         final int tsEnd = getTSEnd();
         final DeviceCoordinator coordinator = device.getDeviceCoordinator();
         final TimeSampleProvider<CyclingSample> sampleProvider = coordinator.getCyclingSampleProvider(device, db.getDaoSession());
-        return sampleProvider.getAllSamples(tsStart * 1000L, tsEnd * 1000L);
+        return sampleProvider.getAllSamples(tsStart, tsEnd);
+    }
+
+
+
+    protected static class CyclingDistanceFormatter extends ValueFormatter {
+        // private final DecimalFormat formatter = new DecimalFormat("0.00 km");
+
+        @Override
+        public String getPointLabel(Entry entry) {
+            return String.format("%f.2 km", entry.getY());
+        }
+    }
+
+    protected static class CyclingSpeedFormatter extends ValueFormatter {
+        // private final DecimalFormat formatter = new DecimalFormat("0.00 km");
+
+        @Override
+        public String getPointLabel(Entry entry) {
+            return String.format("%f.2 km/h", entry.getY());
+        }
+    }
+
+    protected static class TimeFormatter extends ValueFormatter {
+        DateFormat annotationDateFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT);
+        Calendar cal = GregorianCalendar.getInstance();
+
+        public TimeFormatter() {
+        }
+
+        @Override
+        public String getPointLabel(Entry entry) {
+            cal.clear();
+            cal.setTimeInMillis((long)entry.getX());
+            Date date = cal.getTime();
+            return annotationDateFormat.format(date);
+        }
     }
 }

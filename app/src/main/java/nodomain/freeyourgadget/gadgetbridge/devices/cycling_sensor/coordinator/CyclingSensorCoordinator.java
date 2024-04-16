@@ -49,6 +49,23 @@ public class CyclingSensorCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsSleepMeasurement() {
+        return false;
+    }
+    @Override
+    public boolean supportsStepCounter() {
+        return false;
+    }
+    @Override
+    public boolean supportsSpeedzones() {
+        return false;
+    }
+    @Override
+    public boolean supportsActivityTabs() {
+        return false;
+    }
+
+    @Override
     public InstallHandler findInstallHandler(Uri uri, Context context) {
         return null;
     }
@@ -65,7 +82,7 @@ public class CyclingSensorCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsRealtimeData() {
-        return true;
+        return false;
     }
 
     @Override
