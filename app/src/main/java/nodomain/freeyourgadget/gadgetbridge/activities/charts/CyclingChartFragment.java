@@ -201,14 +201,16 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         final YAxis yAxisLeft = cyclingHistoryChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
         yAxisLeft.setDrawTopYLabelEntry(false);
-        yAxisLeft.setTextColor(CHART_TEXT_COLOR);
+        yAxisLeft.setTextColor(CHART_LINE_COLOR_DISTANCE);
         yAxisLeft.setEnabled(true);
+        yAxisLeft.setGridColor(CHART_LINE_COLOR_DISTANCE);
 
         final YAxis yAxisRight = cyclingHistoryChart.getAxisRight();
-        yAxisRight.setDrawGridLines(false);
+        yAxisRight.setDrawGridLines(true);
         yAxisRight.setDrawTopYLabelEntry(false);
-        yAxisRight.setTextColor(CHART_TEXT_COLOR);
+        yAxisRight.setTextColor(CHART_LINE_COLOR_SPEED);
         yAxisRight.setEnabled(true);
+        yAxisRight.setGridColor(CHART_LINE_COLOR_SPEED);
 
         refresh();
 
@@ -230,7 +232,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
 
         @Override
         public String getPointLabel(Entry entry) {
-            return String.format("%f.2 km", entry.getY());
+            return String.format("%.1f km", entry.getY());
         }
     }
 
@@ -239,7 +241,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
 
         @Override
         public String getPointLabel(Entry entry) {
-            return String.format("%f.2 km/h", entry.getY());
+            return String.format("%.1f km/h", entry.getY());
         }
     }
 
