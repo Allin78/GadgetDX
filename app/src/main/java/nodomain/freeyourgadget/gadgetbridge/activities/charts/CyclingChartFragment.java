@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.LegendEntry;
@@ -108,13 +109,28 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
             List<Entry> distanceEntries = new ArrayList<>();
             List<Entry> speedEntries = new ArrayList<>();
 
+            Float dayStart = 0f;
+
+            if(!samples.isEmpty()){
+                dayStart = samples.get(0).getDistance() / 1000f;
+            }
+
+            int nextIndex = 0;
             for (CyclingSample sample : samples) {
                 // add distance in Km
-                distanceEntries.add(new Entry(sample.getTimestamp(), sample.getDistance() / 1000f));
+                distanceEntries.add(new Entry(sample.getTimestamp(), (sample.getDistance() / 1000f) - dayStart));
                 Float speed = sample.getSpeed();
-                if(speed != null){
-                    speedEntries.add(new Entry(sample.getTimestamp(), sample.getSpeed() * 3.6f));
+                speedEntries.add(new Entry(sample.getTimestamp(), (speed != null) ? (sample.getSpeed() * 3.6f) : 0));
+
+                if(nextIndex < samples.size()){
+                    CyclingSample nextSample = samples.get(nextIndex);
+                    if(nextSample.getSpeed() == null){
+                        // sensor is off, doesn't report zero speed. So let's inject it outselves
+                        speedEntries.add(new Entry(sample.getTimestamp() + 30_000, 0));
+                    }
                 }
+
+                nextIndex++;
             }
 
             LineDataSet distanceSet = new LineDataSet(distanceEntries, "Cycling");
@@ -126,7 +142,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
             distanceSet.setValueTextSize(10f);
             distanceSet.setValueTextColor(CHART_TEXT_COLOR);
             distanceSet.setHighlightEnabled(false);
-            distanceSet.setValueFormatter(new CyclingDistanceFormatter());
+            distanceSet.setValueFormatter(new CyclingDistanceFormatter(dayStart));
             distanceSet.setAxisDependency(cyclingHistoryChart.getAxisLeft().getAxisDependency());
             LineData lineData = new LineData(distanceSet);
 
@@ -150,7 +166,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
 
     @Override
     protected void renderCharts() {
-
+        cyclingHistoryChart.animateX(ANIM_TIME, Easing.EaseInOutQuart);
     }
 
     @Override
@@ -200,14 +216,12 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
 
         final YAxis yAxisLeft = cyclingHistoryChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
-        yAxisLeft.setDrawTopYLabelEntry(false);
         yAxisLeft.setTextColor(CHART_LINE_COLOR_DISTANCE);
         yAxisLeft.setEnabled(true);
         yAxisLeft.setGridColor(CHART_LINE_COLOR_DISTANCE);
 
         final YAxis yAxisRight = cyclingHistoryChart.getAxisRight();
         yAxisRight.setDrawGridLines(true);
-        yAxisRight.setDrawTopYLabelEntry(false);
         yAxisRight.setTextColor(CHART_LINE_COLOR_SPEED);
         yAxisRight.setEnabled(true);
         yAxisRight.setGridColor(CHART_LINE_COLOR_SPEED);
@@ -229,10 +243,15 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
 
     protected static class CyclingDistanceFormatter extends ValueFormatter {
         // private final DecimalFormat formatter = new DecimalFormat("0.00 km");
+        Float dayStartDistance;
+
+        public CyclingDistanceFormatter(Float dayStartDistance) {
+            this.dayStartDistance = dayStartDistance;
+        }
 
         @Override
         public String getPointLabel(Entry entry) {
-            return String.format("%.1f km", entry.getY());
+            return String.format("Today: %.1f km\nTotal: %.1f km", entry.getY(), entry.getY() + dayStartDistance);
         }
     }
 
