@@ -2832,5 +2832,6 @@
     <string name="watchface_resolution_doesnt_match">Watchface resolution doesnt match device screen. Watchface is %1$s device screen is %2$s</string>
     <string name="device_name_bicycle_sensor">Bicycle sensor</string>
     <string name="device_name_cycling_sensor">Cycling sensor</string>
+    <string name="devicetype_cycling_sensor">Cycling speed sensor</string>
     <string name="charts_cycling">Cycling</string>
 </resources>
