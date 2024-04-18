@@ -229,7 +229,7 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
             sample.setDistance(currentMeasurement.revolutionCount * wheelCircumference);
         }
 
-        sample.setTimestamp((int)(now / 1000));
+        sample.setTimestamp((int)(now));
         sample.setDevice(databaseDevice);
         sample.setUser(databaseUser);
 

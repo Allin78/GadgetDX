@@ -253,9 +253,9 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         }
 
         @Override
-        public String getPointLabel(Entry entry) {
+        public String getFormattedValue(float value) {
             cal.clear();
-            cal.setTimeInMillis((long)entry.getX());
+            cal.setTimeInMillis((long)(value));
             Date date = cal.getTime();
             return annotationDateFormat.format(date);
         }
