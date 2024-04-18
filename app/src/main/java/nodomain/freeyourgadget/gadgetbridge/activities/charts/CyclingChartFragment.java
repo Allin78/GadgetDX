@@ -222,7 +222,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         final int tsEnd = getTSEnd();
         final DeviceCoordinator coordinator = device.getDeviceCoordinator();
         final TimeSampleProvider<CyclingSample> sampleProvider = coordinator.getCyclingSampleProvider(device, db.getDaoSession());
-        return sampleProvider.getAllSamples(tsStart, tsEnd);
+        return sampleProvider.getAllSamples(tsStart * 1000L, tsEnd * 1000L);
     }
 
 
