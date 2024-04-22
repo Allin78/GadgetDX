@@ -33,19 +33,15 @@ public class Watchface {
         // bit 7 - kaleidoskop
         public byte expandedtype = 0;
 
-        public InstalledWatchfaceInfo(HuaweiTLV tlv) {
-            try {
-                if(tlv.contains(0x03))
-                        this.fileName = tlv.getString(0x03);
-                if(tlv.contains(0x04))
-                    this.version = tlv.getString(0x04);
-                if(tlv.contains(0x05))
-                    this.type = tlv.getByte(0x05);
-                if(tlv.contains(0x07))
-                    this.expandedtype = tlv.getByte(0x07);
-            } catch (HuaweiPacket.MissingTagException e) {
-                throw new RuntimeException(e);
-            }
+        public InstalledWatchfaceInfo(HuaweiTLV tlv) throws HuaweiPacket.MissingTagException {
+            if(tlv.contains(0x03))
+                    this.fileName = tlv.getString(0x03);
+            if(tlv.contains(0x04))
+                this.version = tlv.getString(0x04);
+            if(tlv.contains(0x05))
+                this.type = tlv.getByte(0x05);
+            if(tlv.contains(0x07))
+                this.expandedtype = tlv.getByte(0x07);
         }
 
         public boolean isCurrent() {
@@ -113,22 +109,18 @@ public class Watchface {
 
             @Override
             public void parseTlv() throws ParseException {
-                try {
-                    if(this.tlv.contains(0x01))
-                        this.params.maxVersion = this.tlv.getString(0x01);
-                    if(this.tlv.contains(0x02))
-                        this.params.width = this.tlv.getShort(0x02);
-                    if(this.tlv.contains(0x03))
-                        this.params.height = this.tlv.getShort(0x03);
-                    if(this.tlv.contains(0x04))
-                        this.params.supportFileType = this.tlv.getByte(0x04);
-                    if(this.tlv.contains(0x05))
-                        this.params.sort = this.tlv.getByte(0x05);
-                    if(this.tlv.contains(0x06))
-                        this.params.otherWatchfaceVersions = this.tlv.getString(0x06);
-                } catch (MissingTagException e) {
-                    throw new RuntimeException(e);
-                }
+                if(this.tlv.contains(0x01))
+                    this.params.maxVersion = this.tlv.getString(0x01);
+                if(this.tlv.contains(0x02))
+                    this.params.width = this.tlv.getShort(0x02);
+                if(this.tlv.contains(0x03))
+                    this.params.height = this.tlv.getShort(0x03);
+                if(this.tlv.contains(0x04))
+                    this.params.supportFileType = this.tlv.getByte(0x04);
+                if(this.tlv.contains(0x05))
+                    this.params.sort = this.tlv.getByte(0x05);
+                if(this.tlv.contains(0x06))
+                    this.params.otherWatchfaceVersions = this.tlv.getString(0x06);
             }
         }
 
@@ -159,15 +151,10 @@ public class Watchface {
             @Override
             public void parseTlv() throws HuaweiPacket.ParseException {
                 watchfaceInfoList = new ArrayList<>();
-                try {
-                    if(this.tlv.contains(0x81)) {
-                        for (HuaweiTLV subTlv : this.tlv.getObject(0x81).getObjects(0x82)) {
-                            watchfaceInfoList.add(new Watchface.InstalledWatchfaceInfo(subTlv));
-                        }
+                if(this.tlv.contains(0x81)) {
+                    for (HuaweiTLV subTlv : this.tlv.getObject(0x81).getObjects(0x82)) {
+                        watchfaceInfoList.add(new Watchface.InstalledWatchfaceInfo(subTlv));
                     }
-
-                } catch (HuaweiPacket.MissingTagException e) {
-                    throw new RuntimeException(e);
                 }
             }
 
@@ -269,16 +256,10 @@ public class Watchface {
 
             @Override
             public void parseTlv() throws HuaweiPacket.ParseException {
-
-                try {
-                    if(this.tlv.contains(0x82)) {
-                        for (HuaweiTLV subTlv : this.tlv.getObject(0x82).getObjects(0x83)) {
-                            watchFaceNames.put(subTlv.getString(0x04), subTlv.getString(0x05));
-                        }
+                if(this.tlv.contains(0x82)) {
+                    for (HuaweiTLV subTlv : this.tlv.getObject(0x82).getObjects(0x83)) {
+                        watchFaceNames.put(subTlv.getString(0x04), subTlv.getString(0x05));
                     }
-
-                } catch (HuaweiPacket.MissingTagException e) {
-                    throw new RuntimeException(e);
                 }
             }
 

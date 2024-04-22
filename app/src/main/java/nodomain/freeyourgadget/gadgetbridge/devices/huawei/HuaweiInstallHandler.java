@@ -76,8 +76,8 @@ public class HuaweiInstallHandler implements InstallHandler {
 
         if (!this.valid) {
             LOG.error("Watchface cannot be installed");
-            installActivity.setInfoText("Watchface resolution doesnt match device screen. Watchface is "
-                    + resolution.screenByThemeVersion(description.screen) + " device screen is " + deviceScreen);
+            installActivity.setInfoText(context.getString(R.string.watchface_resolution_doesnt_match,
+                     resolution.screenByThemeVersion(description.screen), deviceScreen));
             installActivity.setInstallEnabled(false);
             return;
         }
