@@ -441,4 +441,5 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_AUTO_REPLY_INCOMING_CALL = "pref_auto_reply_phonecall";
     public static final String PREF_AUTO_REPLY_INCOMING_CALL_DELAY = "pref_auto_reply_phonecall_delay";
     public static final String PREF_SPEAK_NOTIFICATIONS_ALOUD = "pref_speak_notifications_aloud";
+    public static final String PREF_GARMIN_DEFAULT_REPLY_SUFFIX = "pref_key_garmin_default_reply_suffix";
 }
