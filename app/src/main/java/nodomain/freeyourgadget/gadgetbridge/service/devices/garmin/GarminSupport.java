@@ -254,7 +254,7 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
         } else if (deviceEvent instanceof FileDownloadedDeviceEvent) {
             LOG.debug("FILE DOWNLOAD COMPLETE {}", ((FileDownloadedDeviceEvent) deviceEvent).directoryEntry.getFileName());
 
-            if (getKeepActivityDataOnDevice()) // delete file from watch upon successful download
+            if (!getKeepActivityDataOnDevice()) // delete file from watch upon successful download
                 sendOutgoingMessage(new SetFileFlagsMessage(((FileDownloadedDeviceEvent) deviceEvent).directoryEntry.getFileIndex(), SetFileFlagsMessage.FileFlags.ARCHIVE));
         }
 
@@ -447,7 +447,7 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
                 FileTransferHandler.DirectoryEntry directoryEntry = filesToDownload.remove();
                 while (checkFileExists(directoryEntry.getFileName())) {
                     LOG.debug("File: {} already downloaded, not downloading again.", directoryEntry.getFileName());
-                    if (getKeepActivityDataOnDevice()) // delete file from watch if already downloaded
+                    if (!getKeepActivityDataOnDevice()) // delete file from watch if already downloaded
                         sendOutgoingMessage(new SetFileFlagsMessage(directoryEntry.getFileIndex(), SetFileFlagsMessage.FileFlags.ARCHIVE));
                     directoryEntry = filesToDownload.remove();
                 }
