@@ -16,8 +16,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.huawei;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -30,8 +32,10 @@ import org.slf4j.Logger;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.activities.appmanager.AppManagerActivity;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettings;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsScreen;
+import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Notifications.NotificationConstraintsType;
 import nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets.Watchface;
@@ -562,4 +566,30 @@ public class HuaweiCoordinator {
     public void setWatchfaceDeviceParams(Watchface.WatchfaceDeviceParams watchfaceDeviceParams) {
         this.watchfaceDeviceParams = watchfaceDeviceParams;
     }
+
+    public Class<? extends Activity> getAppManagerActivity() {
+        return AppManagerActivity.class;
+    }
+
+    public boolean getSupportsAppListFetching() {
+        return true;
+    }
+
+    public boolean getSupportsAppsManagement(GBDevice device) {
+        return true;
+    }
+
+    public boolean getSupportsInstalledAppManagement(GBDevice device) {
+        return false;
+    }
+
+    public boolean getSupportsCachedAppManagement(GBDevice device) {
+        return false;
+    }
+
+    public InstallHandler getInstallHandler(Uri uri, Context context) {
+        HuaweiInstallHandler handler = new HuaweiInstallHandler(uri, context);
+        return handler.isValid() ? handler : null;
+    }
+
 }

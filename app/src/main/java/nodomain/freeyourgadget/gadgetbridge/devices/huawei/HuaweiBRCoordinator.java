@@ -171,16 +171,16 @@ public abstract class HuaweiBRCoordinator extends AbstractBLClassicDeviceCoordin
 
     @Override
     public Class<? extends Activity> getAppsManagementActivity() {
-        return AppManagerActivity.class;
+        return huaweiCoordinator.getAppManagerActivity();
     }
 
     @Override
     public boolean supportsAppListFetching() {
-        return true;
+        return huaweiCoordinator.getSupportsAppListFetching();
     }
     @Override
     public boolean supportsAppsManagement(GBDevice device) {
-        return true;
+        return huaweiCoordinator.getSupportsAppsManagement(device);
     }
 
     @Override
@@ -190,12 +190,12 @@ public abstract class HuaweiBRCoordinator extends AbstractBLClassicDeviceCoordin
 
     @Override
     public boolean supportsInstalledAppManagement(GBDevice device) {
-        return false;
+        return huaweiCoordinator.getSupportsInstalledAppManagement(device);
     }
 
     @Override
     public boolean supportsCachedAppManagement(GBDevice device) {
-        return false;
+        return huaweiCoordinator.getSupportsCachedAppManagement(device);
     }
 
     @Override
@@ -231,8 +231,7 @@ public abstract class HuaweiBRCoordinator extends AbstractBLClassicDeviceCoordin
 
     @Override
     public InstallHandler findInstallHandler(Uri uri, Context context) {
-        HuaweiInstallHandler handler = new HuaweiInstallHandler(uri, context);
-        return handler.isValid() ? handler : null;
+        return huaweiCoordinator.getInstallHandler(uri, context);
     }
 
     @Override

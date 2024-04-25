@@ -1840,16 +1840,21 @@ public class HuaweiSupportProvider {
 
     public void onInstallApp(Uri uri) {
         LOG.info("enter onAppInstall uri: "+uri);
-        huaweiUploadManager.setFileName(huaweiWatchfaceManager.getRandomName());
         HuaweiFwHelper huaweiFwHelper = new HuaweiFwHelper(uri, getContext());
         huaweiUploadManager.setBytes(huaweiFwHelper.getBytes());
+        huaweiUploadManager.setFileType(huaweiFwHelper.getFileType());
+        if (huaweiFwHelper.isWatchface()) {
+            huaweiUploadManager.setFileName(huaweiWatchfaceManager.getRandomName());
+        } else {
+            huaweiUploadManager.setFileName(huaweiFwHelper.getFileName());
+        }
 
         try {
             SendFileUploadInfo sendFileUploadInfo = new SendFileUploadInfo(this, huaweiUploadManager);
             sendFileUploadInfo.doPerform();
         } catch (IOException e) {
-            GB.toast(context, "Failed to send watchface info", Toast.LENGTH_SHORT, GB.ERROR, e);
-            LOG.error("Failed to send watchface info", e);
+            GB.toast(context, "Failed to send file upload info", Toast.LENGTH_SHORT, GB.ERROR, e);
+            LOG.error("Failed to send file upload info", e);
         }
     }
 

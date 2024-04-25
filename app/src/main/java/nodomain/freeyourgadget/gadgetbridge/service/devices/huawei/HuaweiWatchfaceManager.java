@@ -1,5 +1,21 @@
-package nodomain.freeyourgadget.gadgetbridge.service.devices.huawei;
+/*  Copyright (C) 2024 Vitalii Tomin
 
+    This file is part of Gadgetbridge.
+
+    Gadgetbridge is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Gadgetbridge is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+
+package nodomain.freeyourgadget.gadgetbridge.service.devices.huawei;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +49,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huawei.requests.Send
 public class HuaweiWatchfaceManager
 {
     Logger LOG = LoggerFactory.getLogger(HuaweiCoordinator.class);
-
 
     public static class Resolution {
 
@@ -101,8 +116,6 @@ public class HuaweiWatchfaceManager
         }
     }
 
-
-
     private List<Watchface.InstalledWatchfaceInfo> installedWatchfaceInfoList;
     private HashMap<String, String> watchfacesNames;
 
@@ -121,11 +134,9 @@ public class HuaweiWatchfaceManager
         return installedWatchfaceInfoList;
     }
 
-
     public void  setWatchfacesNames(HashMap<String, String> map) {
         this.watchfacesNames = map;
     }
-
 
 
     public String getRandomName() {
@@ -251,8 +262,6 @@ public class HuaweiWatchfaceManager
         } catch (IOException e) {
             LOG.error("Could not set watchface ", getFullFileName(uuid), e );
         }
-
-
     }
 
     public void deleteWatchface(UUID uuid) {
@@ -288,12 +297,7 @@ public class HuaweiWatchfaceManager
                 break;
             }
         }
-
         String filename = name + "_" + version;
         return filename;
-
     }
-
-
-
 }

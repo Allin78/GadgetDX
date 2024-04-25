@@ -398,7 +398,7 @@ public class AsynchronousResponse {
         if (response.serviceId == FileUpload.id) {
              if (response.commandId == FileUpload.FileHashSend.id) {
                  try {
-                     SendFileUploadHash sendFileUploadHash = new SendFileUploadHash(this.support, this.support.huaweiUploadManager);
+                     SendFileUploadHash sendFileUploadHash = new SendFileUploadHash(support, support.huaweiUploadManager);
                      sendFileUploadHash.doPerform();
                  } catch (IOException e) {
                      LOG.error("Could not send fileupload hash request", e);
@@ -412,7 +412,8 @@ public class AsynchronousResponse {
 
                  try {
                      support.huaweiUploadManager.setDeviceBusy();
-                     SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(this.support, resp.fileUploadParams.no_encrypt);
+                     SendFileUploadAck sendFileUploadAck = new SendFileUploadAck(support,
+                             resp.fileUploadParams.no_encrypt, support.huaweiUploadManager.getFileType());
                      sendFileUploadAck.doPerform();
                  } catch (IOException e) {
                      LOG.error("Could not send fileupload ack request", e);
@@ -427,7 +428,7 @@ public class AsynchronousResponse {
                  support.onUploadProgress(R.string.updatefirmwareoperation_update_in_progress, progress, true);
 
                  try {
-                     SendFileUploadChunk sendFileUploadChunk = new SendFileUploadChunk(this.support, this.support.huaweiUploadManager);
+                     SendFileUploadChunk sendFileUploadChunk = new SendFileUploadChunk(support, support.huaweiUploadManager);
                      sendFileUploadChunk.doPerform();
                  } catch (IOException e) {
                      LOG.error("Could not send fileupload next chunk request", e);
@@ -436,7 +437,7 @@ public class AsynchronousResponse {
                  try {
                      support.huaweiUploadManager.unsetDeviceBusy();
                      support.onUploadProgress(R.string.updatefirmwareoperation_update_complete, 100, false);
-                     SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support);
+                     SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support, this.support.huaweiUploadManager.getFileType());
                      SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, this.support.huaweiUploadManager.getFileName(), Watchface.WatchfaceOperation.operationActive);
                      sendFileUploadComplete.doPerform();
 

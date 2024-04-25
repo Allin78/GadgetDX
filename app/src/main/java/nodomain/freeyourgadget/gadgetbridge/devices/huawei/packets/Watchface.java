@@ -1,3 +1,20 @@
+/*  Copyright (C) 2024 Vitalii Tomin
+
+    This file is part of Gadgetbridge.
+
+    Gadgetbridge is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Gadgetbridge is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>. */
+
 package nodomain.freeyourgadget.gadgetbridge.devices.huawei.packets;
 
 import java.util.ArrayList;
@@ -34,46 +51,35 @@ public class Watchface {
         public byte expandedtype = 0;
 
         public InstalledWatchfaceInfo(HuaweiTLV tlv) throws HuaweiPacket.MissingTagException {
-            if(tlv.contains(0x03))
-                    this.fileName = tlv.getString(0x03);
-            if(tlv.contains(0x04))
-                this.version = tlv.getString(0x04);
-            if(tlv.contains(0x05))
-                this.type = tlv.getByte(0x05);
-            if(tlv.contains(0x07))
+            this.fileName = tlv.getString(0x03);
+            this.version = tlv.getString(0x04);
+            this.type = tlv.getByte(0x05);
+            if (tlv.contains(0x07)) // optional
                 this.expandedtype = tlv.getByte(0x07);
         }
 
         public boolean isCurrent() {
             return (this.type & 1) == 1;
         }
-
         public boolean isFactory() {
             return ((this.type  >> 1 )& 1) == 1;
         }
-
         public boolean isEditable() {
             return ((this.type  >> 3 )& 1) == 1;
         }
-
         public boolean isVideo() {
             return ((this.type  >> 4 )& 1) == 1;
         }
-
         public boolean isPhoto() {
             return ((this.type  >> 5 )& 1) == 1;
         }
-
         public boolean isTryout() {
             return ((this.type  >> 6 )& 1) == 1;
         }
-
         public boolean isKaleidoskop() {
             return ((this.type  >> 7 )& 1) == 1;
         }
-
     }
-
 
     public static class WatchfaceParams {
         public static final byte id = 0x01;
@@ -83,7 +89,6 @@ public class Watchface {
                 super(paramsProvider);
                 this.serviceId = Watchface.id;
                 this.commandId = id;
-
 
                 this.tlv = new HuaweiTLV()
                         .put(0x01)
@@ -95,11 +100,8 @@ public class Watchface {
                         .put(0x0f);
 
                 this.complete = true;
-
             }
-
         }
-
 
         public static class Response extends HuaweiPacket {
             public WatchfaceDeviceParams params = new WatchfaceDeviceParams();
@@ -109,21 +111,14 @@ public class Watchface {
 
             @Override
             public void parseTlv() throws ParseException {
-                if(this.tlv.contains(0x01))
-                    this.params.maxVersion = this.tlv.getString(0x01);
-                if(this.tlv.contains(0x02))
-                    this.params.width = this.tlv.getShort(0x02);
-                if(this.tlv.contains(0x03))
-                    this.params.height = this.tlv.getShort(0x03);
-                if(this.tlv.contains(0x04))
-                    this.params.supportFileType = this.tlv.getByte(0x04);
-                if(this.tlv.contains(0x05))
-                    this.params.sort = this.tlv.getByte(0x05);
-                if(this.tlv.contains(0x06))
-                    this.params.otherWatchfaceVersions = this.tlv.getString(0x06);
+                this.params.maxVersion = this.tlv.getString(0x01);
+                this.params.width = this.tlv.getShort(0x02);
+                this.params.height = this.tlv.getShort(0x03);
+                this.params.supportFileType = this.tlv.getByte(0x04);
+                this.params.sort = this.tlv.getByte(0x05);
+                this.params.otherWatchfaceVersions = this.tlv.getString(0x06);
             }
         }
-
     }
 
     public static class DeviceWatchInfo {
@@ -138,7 +133,6 @@ public class Watchface {
                         .put(0x01)
                         .put(0x06, (byte) 0x03); //3 -overseas non-test, 2 - test, 1 -null?
             }
-
         }
 
         public static class Response extends HuaweiPacket {
@@ -157,12 +151,8 @@ public class Watchface {
                     }
                 }
             }
-
         }
-
     }
-
-
 
     public static class WatchfaceOperation {
         public static final byte id = 0x03;
@@ -182,8 +172,6 @@ public class Watchface {
 
                 this.commandId = id;
             }
-
-
         }
 
         public static class Response extends HuaweiPacket {
@@ -191,7 +179,6 @@ public class Watchface {
                 super(paramsProvider);
             }
         }
-
     }
 
     public static class WatchfaceConfirm {
@@ -207,10 +194,7 @@ public class Watchface {
                         .put(0x01, fileName.split("_")[0])
                         .put(0x02, fileName.split("_")[1])
                         .put(0x7f, 0x000186A0);
-
-
             }
-
         }
 
         public static class Response extends HuaweiPacket {
@@ -218,9 +202,7 @@ public class Watchface {
                 super(paramsProvider);
             }
         }
-
     }
-
 
     public static class WatchfaceNameInfo {
         public static final byte id = 0x06;
@@ -244,11 +226,9 @@ public class Watchface {
                         .put(0x82, tlvList);
 
             }
-
         }
 
         public static class Response extends HuaweiPacket {
-
             public HashMap<String, String> watchFaceNames = new HashMap<String, String>();
             public Response (ParamsProvider paramsProvider) {
                 super(paramsProvider);
@@ -262,12 +242,6 @@ public class Watchface {
                     }
                 }
             }
-
         }
-
-
-
     }
-
-
 }
