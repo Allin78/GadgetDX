@@ -41,7 +41,7 @@ public class SendAccountRequest extends Request {
     protected List<byte[]> createRequest() throws RequestCreationException {
         String account = GBApplication
                 .getDeviceSpecificSharedPrefs(supportProvider.getDevice().getAddress())
-                .getString(HuaweiConstants.PREF_HUAWEI_ACCOUNT, "");
+                .getString(HuaweiConstants.PREF_HUAWEI_ACCOUNT, "").trim();
         try {
             return new AccountRelated.SendAccountToDevice.Request(paramsProvider, account).serialize();
         } catch (CryptoException e) {
