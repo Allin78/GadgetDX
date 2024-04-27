@@ -40,8 +40,6 @@ public class HuaweiFwHelper {
 
     private byte[] fw;
     private int fileSize = 0;
-    private boolean typeWatchface;
-
     private byte fileType = 0;
     String fileName = "";
 
@@ -68,7 +66,6 @@ public class HuaweiFwHelper {
         if (parseAsWatchFace()) {
             assert watchfaceDescription.screen != null;
             assert watchfaceDescription.title != null;
-            typeWatchface = true;
             fileType = FileUpload.Filetype.watchface;
         }
     }
@@ -82,6 +79,8 @@ public class HuaweiFwHelper {
     }
 
     boolean parseAsWatchFace() {
+        boolean isWatchface = false;
+
         try {
             final UriHelper uriHelper = UriHelper.get(uri, this.mContext);
 
@@ -94,26 +93,23 @@ public class HuaweiFwHelper {
             }
             fw = watchfacePackage.getFileFromZip("com.huawei.watchface");
             fileSize = fw.length;
+            isWatchface = true;
 
         } catch (ZipFileException e) {
             LOG.error("Unable to read watchface file.", e);
-            return false;
         } catch (FileNotFoundException e) {
             LOG.error("The watchface file was not found.", e);
-            return false;
         } catch (IOException e) {
             LOG.error("General IO error occurred.", e);
-            return false;
         } catch (Exception e) {
             LOG.error("Unknown error occurred.", e);
-            return false;
         }
 
-        return true;
+        return isWatchface;
     }
 
     public boolean isWatchface() {
-        return typeWatchface;
+        return fileType == FileUpload.Filetype.watchface;
     }
     public boolean isValid() {
         return isWatchface();

@@ -54,17 +54,18 @@ public class FileUpload {
                 super(paramsProvider);
                 this.serviceId = FileUpload.id;
                 this.commandId = id;
-                String watchfaceName = fileName.split("_")[0];
-                String watchfaceVersion = fileName.split("_")[1];
 
                 this.tlv = new HuaweiTLV()
                         .put(0x01, fileName)
                         .put(0x02, fileSize)
                         .put(0x03, (byte) fileType);
 
-                if (fileType == Filetype.watchface)
+                if (fileType == Filetype.watchface) {
+                    String watchfaceName = fileName.split("_")[0];
+                    String watchfaceVersion = fileName.split("_")[1];
                     this.tlv.put(0x05, watchfaceName)
-                        .put(0x06, watchfaceVersion);
+                            .put(0x06, watchfaceVersion);
+                }
 
                 this.complete = true;
             }

@@ -437,11 +437,13 @@ public class AsynchronousResponse {
                  try {
                      support.huaweiUploadManager.unsetDeviceBusy();
                      support.onUploadProgress(R.string.updatefirmwareoperation_update_complete, 100, false);
-                     SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support, this.support.huaweiUploadManager.getFileType());
-                     SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, this.support.huaweiUploadManager.getFileName(), Watchface.WatchfaceOperation.operationActive);
+                     SendFileUploadComplete sendFileUploadComplete = new SendFileUploadComplete(this.support, support.huaweiUploadManager.getFileType());
                      sendFileUploadComplete.doPerform();
-
-                     sendWatchfaceOperation.doPerform();
+                     if (support.huaweiUploadManager.getFileType() == FileUpload.Filetype.watchface) {
+                         //make uploaded watchface active
+                         SendWatchfaceOperation sendWatchfaceOperation = new SendWatchfaceOperation(this.support, support.huaweiUploadManager.getFileName(), Watchface.WatchfaceOperation.operationActive);
+                         sendWatchfaceOperation.doPerform();
+                     }
                  } catch (IOException e) {
                      LOG.error("Could not send fileupload result request", e);
                  }
