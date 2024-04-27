@@ -2,6 +2,7 @@
 
 #### Next release (WIP)
 
+* Initial support for Sony WH-XB910N
 * AsteroidOS: Added icons to the notifications
 * Bangle.js: Add screenshot support
 * Bangle.js: Add setting to disable notifications
