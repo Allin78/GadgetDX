@@ -25,8 +25,10 @@ import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.Weat
 import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeSpecial;
 import static nodomain.freeyourgadget.gadgetbridge.devices.pinetime.weather.WeatherData.mapOpenWeatherConditionToPineTimeCondition;
 
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -72,6 +74,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHelper;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
@@ -260,6 +263,10 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         }
     };
 
+    private static final byte AlertLevelNoAlert = 0;
+    private static final byte AlertLevelMildAlert = 1;
+    private static final byte AlertLevelHighAlert = 2;
+
     public PineTimeJFSupport() {
         super(LOG);
         addSupportedService(GattService.UUID_SERVICE_ALERT_NOTIFICATION);
@@ -296,6 +303,20 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         batteryInfoProfile = new BatteryInfoProfile<>(this);
         batteryInfoProfile.addListener(mListener);
         addSupportedProfile(batteryInfoProfile);
+
+        BluetoothGattService alertGATTService = new BluetoothGattService(
+            GattService.UUID_SERVICE_IMMEDIATE_ALERT,
+            BluetoothGattService.SERVICE_TYPE_PRIMARY);
+        BluetoothGattCharacteristic alertLevelCharacteristic = new BluetoothGattCharacteristic(
+            GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL,
+            BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE,
+            BluetoothGattCharacteristic.PERMISSION_WRITE);
+
+        alertLevelCharacteristic.setValue(new byte[]{AlertLevelNoAlert});
+
+        alertGATTService.addCharacteristic(alertLevelCharacteristic);
+
+        addSupportedServerService(alertGATTService);
     }
 
     private void handleBatteryInfo(nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.battery.BatteryInfo info) {
@@ -1271,5 +1292,29 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
     private void logDebug(String logMessage, String toastMessage) {
         LOG.debug(logMessage);
         //GB.toast(getContext(), toastMessage, Toast.LENGTH_LONG, GB.WARN);
+    }
+
+    @Override
+    public boolean onCharacteristicWriteRequest(BluetoothDevice device, int requestId, BluetoothGattCharacteristic characteristic, boolean preparedWrite, boolean responseNeeded, int offset, byte[] value) {
+      if (!characteristic.getUuid().equals(GattCharacteristic.UUID_CHARACTERISTIC_ALERT_LEVEL)) {
+        return false;
+      }
+      if (value.length != 1) {
+        LOG.error("Got unexpected data length " + String.valueOf(value.length));
+        return false;
+      }
+      boolean start = true;
+      if (value[0] == AlertLevelMildAlert || value[0] == AlertLevelHighAlert) {
+        start = true;
+      } else if (value[0] == AlertLevelNoAlert) {
+        start = false;
+      } else {
+        LOG.error("Got unexpected alert level " + String.valueOf(value[0]));
+        return false;
+      }
+      GBDeviceEventFindPhone deviceEventFindPhone = new GBDeviceEventFindPhone();
+      deviceEventFindPhone.event = start ? GBDeviceEventFindPhone.Event.START : GBDeviceEventFindPhone.Event.STOP;
+      evaluateGBDeviceEvent(deviceEventFindPhone);
+      return true;
     }
 }
