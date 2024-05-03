@@ -520,6 +520,10 @@
     <string name="pref_gps_satellite_search">Satellite Search</string>
     <string name="pref_crown_vibration">Crown Vibration</string>
     <string name="pref_alert_tone">Alert Tone</string>
+    <string name="pref_touch_tone">Touch Tone</string>
+    <string name="pref_touch_tone_summary">Plays a tone when the earbud is touched</string>
+    <string name="pref_wearing_tone">Wearing Tone</string>
+    <string name="pref_wearing_tone_summary">Plays a tone when the earbud is inserted</string>
     <string name="pref_cover_to_mute">Cover to Mute</string>
     <string name="pref_vibrate_for_alert">Vibrate for Alert</string>
     <string name="pref_text_to_speech">Text to Speech</string>
