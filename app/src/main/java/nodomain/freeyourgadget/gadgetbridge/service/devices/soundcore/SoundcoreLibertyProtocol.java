@@ -38,11 +38,6 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         super(device);
     }
 
-    private String readString(byte[] data, int position, int size) {
-        if (position + size > data.length) throw new IllegalStateException();
-        return new String(data, position, size, StandardCharsets.UTF_8);
-    }
-
     private GBDeviceEventBatteryInfo buildBatteryInfo(int batteryIndex, int level) {
         GBDeviceEventBatteryInfo info = new GBDeviceEventBatteryInfo();
         info.batteryIndex = batteryIndex;
@@ -58,6 +53,10 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         return info;
     }
 
+    private String readString(byte[] data, int position, int size) {
+        if (position + size > data.length) throw new IllegalStateException();
+        return new String(data, position, size, StandardCharsets.UTF_8);
+    }
     @Override
     public GBDeviceEvent[] decodeResponse(byte[] responseData) {
         // Byte 0-4: Header
@@ -103,81 +102,7 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         return devEvts.toArray(new GBDeviceEvent[devEvts.size()]);
     }
 
-    /**
-     * Encodes the following settings to a payload to set the audio-mode on the headphones:
-     * PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL If ANC, Transparent or neither should be active
-     * PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING If the strenght of the ANC should be set manual or adaptively according to ambient noise
-     * PREF_SONY_AMBIENT_SOUND_LEVEL How strong the ANC should be in manual mode
-     * PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE If the Transparency should focus on vocals or should be fully transparent
-     * PREF_SOUNDCORE_WIND_NOISE_REDUCTION If Transparency or ANC should reduce Wind Noise
-     * @return The payload
-     */
-    byte[] encodeAudioMode() {
-        Prefs prefs = getDevicePrefs();
-
-        byte anc_mode;
-        switch (prefs.getString(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL, "off")) {
-            case "noise_cancelling":
-                anc_mode = 0x00;
-                break;
-            case "ambient_sound":
-                anc_mode = 0x01;
-                break;
-            case "off":
-                anc_mode = 0x02;
-                break;
-            default:
-                LOG.error("Invalid Audio Mode selected");
-                return null;
-        }
-
-        byte anc_strength;
-        switch (prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_AMBIENT_SOUND_LEVEL, 0)) {
-            case 0:
-                anc_strength = 0x10;
-                break;
-            case 1:
-                anc_strength = 0x20;
-                break;
-            case 2:
-                anc_strength = 0x30;
-                break;
-            default:
-                LOG.error("Invalid ANC Strength selected");
-                return null;
-        }
-
-        byte adaptive_anc = encodeBoolean(prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING, true));
-        byte vocal_mode = encodeBoolean(prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE, false));
-        byte windnoise_reduction = encodeBoolean(prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_WIND_NOISE_REDUCTION, false));
-
-        byte[] payload = new byte[]{0x00, anc_mode, anc_strength, vocal_mode, adaptive_anc, windnoise_reduction, 0x01};
-        return encodeMessage((byte) 0x06, (byte) 0x81, payload);
-    }
-
-
-    byte[] encodeMessage(byte command1, byte command2, byte[] payload) {
-        int size = 8 + payload.length + 1;
-        ByteBuffer msgBuf = ByteBuffer.allocate(size);
-        msgBuf.order(ByteOrder.BIG_ENDIAN);
-        msgBuf.put(new byte[] {0x08, (byte) 0xee, 0x00, 0x00, 0x00}); // header
-        msgBuf.put(command1);
-        msgBuf.put(command2);
-        msgBuf.put((byte) size);
-
-        msgBuf.put(payload);
-
-        byte checksum = -10;
-        checksum += command1 + command2 + size;
-        for (int b : payload) {
-            checksum += b;
-        }
-        msgBuf.put(checksum);
-
-        return msgBuf.array();
-    }
-
-    void decodeAudioMode(byte[] payload) {
+    private void decodeAudioMode(byte[] payload) {
         SharedPreferences prefs = getDevicePrefs().getPreferences();
         SharedPreferences.Editor editor = prefs.edit();
         String soundmode = "off";
@@ -209,30 +134,6 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         editor.putBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING, adaptive_anc);
         editor.putBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_WIND_NOISE_REDUCTION, windnoiseReduction);
         editor.apply();
-    }
-
-    byte[] encodeDeviceInfoRequest() {
-        byte[] payload = new byte[]{0x00};
-        return encodeMessage((byte) 0x01, (byte) 0x01, payload);
-    }
-
-    byte[] encodeMysteryDataRequest1() {
-        byte[] payload = new byte[]{0x00, 0x00};
-        return encodeMessage((byte) 0x01, (byte) 0x8d, payload);
-    }
-    byte[] encodeMysteryDataRequest2() {
-        byte[] payload = new byte[]{0x00};
-        return encodeMessage((byte) 0x05, (byte) 0x01, payload);
-    }
-
-    byte[] encodeMysteryDataRequest3() {
-        byte[] payload = new byte[]{0x00, 0x00};
-        return encodeMessage((byte) 0x05, (byte) 0x82, payload);
-    }
-
-    byte encodeBoolean(boolean bool) {
-        if (bool) return 0x01;
-        else return 0x00;
     }
 
     @Override
@@ -314,6 +215,76 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         return super.encodeSendConfiguration(config);
     }
 
+    byte[] encodeDeviceInfoRequest() {
+        byte[] payload = new byte[]{0x00};
+        return encodeMessage((byte) 0x01, (byte) 0x01, payload);
+    }
+
+    byte[] encodeMysteryDataRequest1() {
+        byte[] payload = new byte[]{0x00, 0x00};
+        return encodeMessage((byte) 0x01, (byte) 0x8d, payload);
+    }
+    byte[] encodeMysteryDataRequest2() {
+        byte[] payload = new byte[]{0x00};
+        return encodeMessage((byte) 0x05, (byte) 0x01, payload);
+    }
+    byte[] encodeMysteryDataRequest3() {
+        byte[] payload = new byte[]{0x00, 0x00};
+        return encodeMessage((byte) 0x05, (byte) 0x82, payload);
+    }
+
+    /**
+     * Encodes the following settings to a payload to set the audio-mode on the headphones:
+     * PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL If ANC, Transparent or neither should be active
+     * PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING If the strenght of the ANC should be set manual or adaptively according to ambient noise
+     * PREF_SONY_AMBIENT_SOUND_LEVEL How strong the ANC should be in manual mode
+     * PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE If the Transparency should focus on vocals or should be fully transparent
+     * PREF_SOUNDCORE_WIND_NOISE_REDUCTION If Transparency or ANC should reduce Wind Noise
+     * @return The payload
+     */
+    private byte[] encodeAudioMode() {
+        Prefs prefs = getDevicePrefs();
+
+        byte anc_mode;
+        switch (prefs.getString(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_AMBIENT_SOUND_CONTROL, "off")) {
+            case "noise_cancelling":
+                anc_mode = 0x00;
+                break;
+            case "ambient_sound":
+                anc_mode = 0x01;
+                break;
+            case "off":
+                anc_mode = 0x02;
+                break;
+            default:
+                LOG.error("Invalid Audio Mode selected");
+                return null;
+        }
+
+        byte anc_strength;
+        switch (prefs.getInt(DeviceSettingsPreferenceConst.PREF_SONY_AMBIENT_SOUND_LEVEL, 0)) {
+            case 0:
+                anc_strength = 0x10;
+                break;
+            case 1:
+                anc_strength = 0x20;
+                break;
+            case 2:
+                anc_strength = 0x30;
+                break;
+            default:
+                LOG.error("Invalid ANC Strength selected");
+                return null;
+        }
+
+        byte adaptive_anc = encodeBoolean(prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_ADAPTIVE_NOISE_CANCELLING, true));
+        byte vocal_mode = encodeBoolean(prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_TRANSPARENCY_VOCAL_MODE, false));
+        byte windnoise_reduction = encodeBoolean(prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_SOUNDCORE_WIND_NOISE_REDUCTION, false));
+
+        byte[] payload = new byte[]{0x00, anc_mode, anc_strength, vocal_mode, adaptive_anc, windnoise_reduction, 0x01};
+        return encodeMessage((byte) 0x06, (byte) 0x81, payload);
+    }
+
     /**
      * Enables or disables a tap-action
      * @param action The byte that encodes the action (single/double/triple or long tap)
@@ -337,7 +308,7 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
                 LOG.error("Invalid Tap action");
                 return null;
         }
-        payload = new byte[]{0x00, 0x00, action.code, enabled_byte};
+        payload = new byte[]{0x00, 0x00, action.getCode(), enabled_byte};
         return encodeMessage((byte) 0x04, (byte) 0x83, payload);
     }
 
@@ -353,19 +324,19 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         switch (action) {
             case SINGLE_TAP:
             case DOUBLE_TAP:
-                function_byte = (byte) (16*6 + function.code);
+                function_byte = (byte) (16*6 + function.getCode());
                 break;
             case TRIPLE_TAP:
-                function_byte = (byte) (16*4 + function.code);
+                function_byte = (byte) (16*4 + function.getCode());
                 break;
             case LONG_PRESS:
-                function_byte = (byte) (16*5 + function.code);
+                function_byte = (byte) (16*5 + function.getCode());
                 break;
             default:
                 LOG.error("Invalid Tap action");
                 return null;
         }
-        byte[] payload = new byte[] {0x00, encodeBoolean(right), action.code, function_byte};
+        byte[] payload = new byte[] {0x00, encodeBoolean(right), action.getCode(), function_byte};
         return encodeMessage((byte) 0x04, (byte) 0x81, payload);
     }
 
@@ -379,35 +350,29 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         return encodeMessage((byte) 0x06, (byte) 0x82, new byte[] {0x00, ambientModes});
     }
 
-    enum TapAction {
-        SINGLE_TAP((byte) 0x02),
-        DOUBLE_TAP((byte) 0x00),
-        TRIPLE_TAP((byte) 0x05),
-        LONG_PRESS((byte) 0x01)
-        ;
-
-        private final byte code;
-
-        TapAction(final byte code) {
-            this.code = code;
-        }
+    private byte encodeBoolean(boolean bool) {
+        if (bool) return 0x01;
+        else return 0x00;
     }
 
-    enum TapFunction {
-        VOLUMEDOWN(1),
-        VOLUMEUP(0),
-        NEXT( 3),
-        PREVIOUS(2),
-        PLAYPAUSE(6),
-        VOICE_ASSISTANT(5),
-        AMBIENT_SOUND_CONTROL(4)
-        ;
+    private byte[] encodeMessage(byte command1, byte command2, byte[] payload) {
+        int size = 8 + payload.length + 1;
+        ByteBuffer msgBuf = ByteBuffer.allocate(size);
+        msgBuf.order(ByteOrder.BIG_ENDIAN);
+        msgBuf.put(new byte[] {0x08, (byte) 0xee, 0x00, 0x00, 0x00}); // header
+        msgBuf.put(command1);
+        msgBuf.put(command2);
+        msgBuf.put((byte) size);
 
-        private final int code;
+        msgBuf.put(payload);
 
-        TapFunction(final int code) {
-            this.code = code;
+        byte checksum = -10;
+        checksum += command1 + command2 + size;
+        for (int b : payload) {
+            checksum += b;
         }
-    }
+        msgBuf.put(checksum);
 
+        return msgBuf.array();
+    }
 }

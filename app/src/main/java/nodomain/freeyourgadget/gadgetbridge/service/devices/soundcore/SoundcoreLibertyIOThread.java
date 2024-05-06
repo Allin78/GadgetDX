@@ -18,26 +18,19 @@ import java.util.UUID;
 
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btclassic.BtClassicIoThread;
-import nodomain.freeyourgadget.gadgetbridge.service.serial.AbstractSerialDeviceSupport;
 
 public class SoundcoreLibertyIOThread extends BtClassicIoThread {
     private static final Logger LOG = LoggerFactory.getLogger(SoundcoreLibertyIOThread.class);
     private final SoundcoreLibertyProtocol mSoundcoreProtocol;
-    private final SoundcoreLiberty3ProDeviceSupport mDeviceSupport;
 
     public SoundcoreLibertyIOThread(GBDevice gbDevice, Context context, SoundcoreLibertyProtocol deviceProtocol, SoundcoreLiberty3ProDeviceSupport deviceSupport, BluetoothAdapter btAdapter) {
         super(gbDevice, context, deviceProtocol, deviceSupport, btAdapter);
         mSoundcoreProtocol = deviceProtocol;
-        mDeviceSupport = deviceSupport;
     }
 
     @Override
     protected void initialize() {
-//        write(mSoundcoreProtocol.encodeBatteryStatusRequest());
-//        write(mSoundcoreProtocol.encodeAudioModeStatusReq());
         write(mSoundcoreProtocol.encodeDeviceInfoRequest());
-//        write(mSoundcoreProtocol.encodeMysteryDataRequest1());
-//        gbDevice.setBatteryLevel(mDeviceSupport.);
         setUpdateState(GBDevice.State.INITIALIZED);
     }
 
@@ -45,8 +38,6 @@ public class SoundcoreLibertyIOThread extends BtClassicIoThread {
     protected UUID getUuidToConnect(@NonNull ParcelUuid[] uuids) {
         return mSoundcoreProtocol.UUID_DEVICE_CTRL;
     }
-
-
 
     @Override
     protected byte[] parseIncoming(InputStream inStream) throws IOException {
