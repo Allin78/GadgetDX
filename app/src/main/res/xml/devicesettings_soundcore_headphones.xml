@@ -15,6 +15,7 @@
 
         <SwitchPreferenceCompat
             android:defaultValue="true"
+            android:disableDependentsState="true"
             android:icon="@drawable/ic_hearing"
             android:key="pref_adaptive_noise_cancelling"
             android:layout="@layout/preference_checkbox"
@@ -23,6 +24,7 @@
 
         <!-- [0, 2], low moderate and high -->
         <SeekBarPreference
+            android:dependency="pref_adaptive_noise_cancelling"
             android:defaultValue="0"
             android:icon="@drawable/ic_hearing"
             android:key="pref_sony_ambient_sound_level"
@@ -52,127 +54,6 @@
         android:key="pref_key_header_soundcore_other"
         android:title="@string/pref_header_other">
 
-        <PreferenceScreen
-            android:icon="@drawable/ic_touch"
-            android:key="prefs_soundcore_touch_options"
-            android:persistent="false"
-            android:title="@string/prefs_galaxy_touch_options">
-
-            <ListPreference
-                android:defaultValue="nc_as_off"
-                android:entries="@array/sony_ambient_sound_control_button_mode_names"
-                android:entryValues="@array/sony_ambient_sound_control_button_mode_values"
-                android:icon="@drawable/ic_touch"
-                android:key="pref_sony_ambient_sound_control_button_mode"
-                android:summary="%s"
-                android:title="@string/sony_ambient_sound_control_button_modes" />
-
-            <PreferenceCategory android:title="@string/single_tap">
-                <SwitchPreferenceCompat
-                    android:defaultValue="false"
-                    android:disableDependentsState="true"
-                    android:icon="@drawable/ic_lock_open"
-                    android:key="pref_soundcore_control_single_tap_disabled"
-                    android:layout="@layout/preference_checkbox"
-                    android:summary="@string/prefs_touch_lock_summary"
-                    android:title="@string/prefs_touch_lock" />
-                    <ListPreference
-                        android:dependency="pref_soundcore_control_single_tap_disabled"
-                        android:entries="@array/soundcore_button_function_names"
-                        android:entryValues="@array/soundcore_button_function_values"
-                        android:icon="@drawable/ic_touch"
-                        android:key="pref_soundcore_control_single_tap_action_left"
-                        android:summary="%s"
-                        android:title="@string/prefs_left" />
-                    <ListPreference
-                        android:dependency="pref_soundcore_control_single_tap_disabled"
-                        android:entries="@array/soundcore_button_function_names"
-                        android:entryValues="@array/soundcore_button_function_values"
-                        android:icon="@drawable/ic_touch"
-                        android:key="pref_soundcore_control_single_tap_action_right"
-                        android:summary="%s"
-                        android:title="@string/prefs_right" />
-            </PreferenceCategory>
-            <PreferenceCategory android:title="@string/double_tap">
-                <SwitchPreferenceCompat
-                    android:defaultValue="false"
-                    android:disableDependentsState="true"
-                    android:icon="@drawable/ic_lock_open"
-                    android:key="pref_soundcore_control_double_tap_disabled"
-                    android:layout="@layout/preference_checkbox"
-                    android:summary="@string/prefs_touch_lock_summary"
-                    android:title="@string/prefs_touch_lock" />
-                <ListPreference
-                    android:dependency="pref_soundcore_control_double_tap_disabled"
-                    android:entries="@array/soundcore_button_function_names"
-                    android:entryValues="@array/soundcore_button_function_values"
-                    android:icon="@drawable/ic_touch"
-                    android:key="pref_soundcore_control_double_tap_action_left"
-                    android:summary="%s"
-                    android:title="@string/prefs_left" />
-                <ListPreference
-                    android:dependency="pref_soundcore_control_double_tap_disabled"
-                    android:entries="@array/soundcore_button_function_names"
-                    android:entryValues="@array/soundcore_button_function_values"
-                    android:icon="@drawable/ic_touch"
-                    android:key="pref_soundcore_control_double_tap_action_right"
-                    android:summary="%s"
-                    android:title="@string/prefs_right" />
-            </PreferenceCategory>
-            <PreferenceCategory android:title="@string/triple_tap">
-                <SwitchPreferenceCompat
-                    android:defaultValue="false"
-                    android:disableDependentsState="true"
-                    android:icon="@drawable/ic_lock_open"
-                    android:key="pref_soundcore_control_triple_tap_disabled"
-                    android:layout="@layout/preference_checkbox"
-                    android:summary="@string/prefs_touch_lock_summary"
-                    android:title="@string/prefs_touch_lock" />
-                <ListPreference
-                    android:dependency="pref_soundcore_control_triple_tap_disabled"
-                    android:entries="@array/soundcore_button_function_names"
-                    android:entryValues="@array/soundcore_button_function_values"
-                    android:icon="@drawable/ic_touch"
-                    android:key="pref_soundcore_control_triple_tap_action_left"
-                    android:summary="%s"
-                    android:title="@string/prefs_left" />
-                <ListPreference
-                    android:dependency="pref_soundcore_control_triple_tap_disabled"
-                    android:entries="@array/soundcore_button_function_names"
-                    android:entryValues="@array/soundcore_button_function_values"
-                    android:icon="@drawable/ic_touch"
-                    android:key="pref_soundcore_control_triple_tap_action_right"
-                    android:summary="%s"
-                    android:title="@string/prefs_right" />
-            </PreferenceCategory>
-            <PreferenceCategory android:title="@string/long_press">
-                <SwitchPreferenceCompat
-                    android:defaultValue="false"
-                    android:disableDependentsState="true"
-                    android:icon="@drawable/ic_lock_open"
-                    android:key="pref_soundcore_control_long_press_disabled"
-                    android:layout="@layout/preference_checkbox"
-                    android:summary="@string/prefs_touch_lock_summary"
-                    android:title="@string/prefs_touch_lock" />
-                <ListPreference
-                    android:dependency="pref_soundcore_control_long_press_disabled"
-                    android:entries="@array/soundcore_button_function_names"
-                    android:entryValues="@array/soundcore_button_function_values"
-                    android:icon="@drawable/ic_touch"
-                    android:key="pref_soundcore_control_long_press_action_left"
-                    android:summary="%s"
-                    android:title="@string/prefs_left" />
-                <ListPreference
-                    android:dependency="pref_soundcore_control_long_press_disabled"
-                    android:entries="@array/soundcore_button_function_names"
-                    android:entryValues="@array/soundcore_button_function_values"
-                    android:icon="@drawable/ic_touch"
-                    android:key="pref_soundcore_control_long_press_action_right"
-                    android:summary="%s"
-                    android:title="@string/prefs_right" />
-            </PreferenceCategory>
-
-        </PreferenceScreen>
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:layout="@layout/preference_checkbox"
