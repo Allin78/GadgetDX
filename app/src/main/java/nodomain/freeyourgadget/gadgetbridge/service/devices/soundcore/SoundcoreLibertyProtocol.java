@@ -86,7 +86,6 @@ public class SoundcoreLibertyProtocol extends GBDeviceProtocol {
         } else if (Arrays.equals(command, new byte[]{0x06, 0x01})) { //Sound Mode Update
             decodeAudioMode(data);
         } else if (Arrays.equals(command, new byte[]{0x01, 0x03})) { // Battery Update
-            // unsure which battery is left and which is right
             int batteryLeft = data[1] * 20;
             int batteryRight = data[2] * 20;
             int batteryCase = data[3] * 20;
