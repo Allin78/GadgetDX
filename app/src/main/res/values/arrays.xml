@@ -3452,11 +3452,11 @@
     </string-array>
 
     <string-array name="soundcore_button_function_values">
-        <item>@string/pref_media_volumedown_value</item>
-        <item>@string/pref_media_volumeup_value</item>
-        <item>@string/pref_media_next_value</item>
-        <item>@string/pref_media_previous_value</item>
-        <item>@string/pref_media_playpause_value</item>
+        <item>VOLUME_DOWN</item>
+        <item>VOLUME_UP</item>
+        <item>MEDIA_NEXT</item>
+        <item>MEDIA_PREV</item>
+        <item>PLAYPAUSE</item>
         <item>VOICE_ASSISTANT</item>
         <item>AMBIENT_SOUND_CONTROL</item>
     </string-array>
