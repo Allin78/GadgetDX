@@ -370,7 +370,9 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
             today.setFieldByName("observed_location_lat", weather.latitude);
             today.setFieldByName("observed_location_long", weather.longitude);
             today.setFieldByName("dew_point", weather.dewPoint);
-            today.setFieldByName("air_quality", weather.airQuality.aqi);
+            if (null != weather.airQuality) {
+                today.setFieldByName("air_quality", weather.airQuality.aqi);
+            }
             today.setFieldByName("location", weather.location);
             weatherData.add(today);
 
@@ -402,7 +404,9 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
             todayDailyForecast.setFieldByName("condition", weather.currentConditionCode);
             todayDailyForecast.setFieldByName("precipitation_probability", weather.precipProbability);
             todayDailyForecast.setFieldByName("day_of_week", weather.timestamp);
-            todayDailyForecast.setFieldByName("air_quality", weather.airQuality.aqi);
+            if (null != weather.airQuality) {
+                todayDailyForecast.setFieldByName("air_quality", weather.airQuality.aqi);
+            }
             weatherData.add(todayDailyForecast);
 
 
@@ -417,7 +421,9 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
                     weatherDailyForecast.setFieldByName("high_temperature", daily.maxTemp);
                     weatherDailyForecast.setFieldByName("condition", daily.conditionCode);
                     weatherDailyForecast.setFieldByName("precipitation_probability", daily.precipProbability);
-                    weatherDailyForecast.setFieldByName("air_quality", daily.airQuality.aqi);
+                    if (null != daily.airQuality) {
+                        weatherDailyForecast.setFieldByName("air_quality", daily.airQuality.aqi);
+                    }
                     weatherDailyForecast.setFieldByName("day_of_week", ts);
                     weatherData.add(weatherDailyForecast);
                 }
