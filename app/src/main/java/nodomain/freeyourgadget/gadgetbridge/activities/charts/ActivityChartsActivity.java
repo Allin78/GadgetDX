@@ -207,7 +207,7 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                 case "temperature":
                     return getString(R.string.menuitem_temperature);
                 case "cycling":
-                    return "Cycling";
+                    return getString(R.string.title_cycling);
             }
             return super.getPageTitle(position);
         }
