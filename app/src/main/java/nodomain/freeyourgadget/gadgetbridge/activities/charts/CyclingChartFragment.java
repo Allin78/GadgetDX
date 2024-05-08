@@ -142,7 +142,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
             distanceSet.setValueTextSize(10f);
             distanceSet.setValueTextColor(CHART_TEXT_COLOR);
             distanceSet.setHighlightEnabled(false);
-            distanceSet.setValueFormatter(new CyclingDistanceFormatter(dayStart));
+            distanceSet.setValueFormatter(new CyclingDistanceFormatter(CyclingChartFragment.this, dayStart));
             distanceSet.setAxisDependency(cyclingHistoryChart.getAxisLeft().getAxisDependency());
             LineData lineData = new LineData(distanceSet);
 
@@ -155,7 +155,7 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
             speedSet.setValueTextSize(10f);
             speedSet.setValueTextColor(CHART_TEXT_COLOR);
             speedSet.setHighlightEnabled(true);
-            speedSet.setValueFormatter(new CyclingSpeedFormatter());
+            speedSet.setValueFormatter(new CyclingSpeedFormatter(CyclingChartFragment.this));
             speedSet.setAxisDependency(cyclingHistoryChart.getAxisRight().getAxisDependency());
 
             lineData.addDataSet(speedSet);
@@ -174,12 +174,12 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
         final List<LegendEntry> legendEntries = new ArrayList<>(2);
 
         final LegendEntry distanceEntry = new LegendEntry();
-        distanceEntry.label = "Distance";
+        distanceEntry.label = getString(R.string.activity_list_summary_distance);
         distanceEntry.formColor = CHART_LINE_COLOR_DISTANCE;
         legendEntries.add(distanceEntry);
 
         final LegendEntry speedEntry = new LegendEntry();
-        speedEntry.label = "Speed";
+        speedEntry.label = getString(R.string.Speed);
         speedEntry.formColor = CHART_LINE_COLOR_SPEED;
         legendEntries.add(speedEntry);
 
@@ -244,23 +244,29 @@ public class CyclingChartFragment extends AbstractChartFragment<CyclingChartFrag
     protected static class CyclingDistanceFormatter extends ValueFormatter {
         // private final DecimalFormat formatter = new DecimalFormat("0.00 km");
         Float dayStartDistance;
+        CyclingChartFragment fragment;
 
-        public CyclingDistanceFormatter(Float dayStartDistance) {
+        public CyclingDistanceFormatter(CyclingChartFragment fragment, Float dayStartDistance) {
             this.dayStartDistance = dayStartDistance;
+            this.fragment = fragment;
         }
 
         @Override
         public String getPointLabel(Entry entry) {
-            return String.format("Today: %.1f km\nTotal: %.1f km", entry.getY(), entry.getY() + dayStartDistance);
+            return fragment.getString(R.string.chart_cycling_point_label_distance, entry.getY(), entry.getY() + dayStartDistance);
         }
     }
 
     protected static class CyclingSpeedFormatter extends ValueFormatter {
-        // private final DecimalFormat formatter = new DecimalFormat("0.00 km");
+        CyclingChartFragment fragment;
+
+        public CyclingSpeedFormatter(CyclingChartFragment fragment) {
+            this.fragment = fragment;
+        }
 
         @Override
         public String getPointLabel(Entry entry) {
-            return String.format("%.1f km/h", entry.getY());
+            return fragment.getString(R.string.chart_cycling_point_label_speed, entry.getY());
         }
     }
 

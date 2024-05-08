@@ -2838,4 +2838,6 @@
     <string name="pref_title_wheel_diameter">Wheel diameter</string>
     <string name="pref_summary_cycling_persistence_interval">Interval in seconds when the current cycling data should be written to the database</string>
     <string name="pref_title_cycling_persistence_interval">Persistence interval</string>
+    <string name="chart_cycling_point_label_distance">Today: %.1f km\nTotal: %.1f km</string>
+    <string name="chart_cycling_point_label_speed">%.1f km/h</string>
 </resources>
