@@ -95,9 +95,6 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
 
     private float wheelCircumference;
 
-    private Device databaseDevice;
-    private User databaseUser;
-
     private CyclingSpeedCadenceMeasurement lastReportedMeasurement = null;
     private long lastMeasurementTime = 0;
 
@@ -149,15 +146,6 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         loadConfiguration();
 
         gbDevice.setFirmwareVersion("1.0.0");
-
-        try(DBHandler handler = GBApplication.acquireDB()){
-            DaoSession session = handler.getDaoSession();
-
-            databaseDevice = DBHelper.getDevice(getDevice(), session);
-            databaseUser = DBHelper.getUser(session);
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
 
         return builder;
     }
@@ -230,8 +218,6 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         }
 
         sample.setTimestamp(now);
-        sample.setDevice(databaseDevice);
-        sample.setUser(databaseUser);
 
         Intent liveIntent = new Intent(DeviceService.ACTION_REALTIME_SAMPLES);
         liveIntent.putExtra(DeviceService.EXTRA_REALTIME_SAMPLE, sample);
@@ -243,6 +229,11 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
 
             CyclingSampleProvider sampleProvider =
                     new CyclingSampleProvider(getDevice(), session);
+
+            Device databaseDevice = DBHelper.getDevice(getDevice(), session);
+            User databaseUser = DBHelper.getUser(session);
+            sample.setDevice(databaseDevice);
+            sample.setUser(databaseUser);
 
             sampleProvider.addSample(sample);
         } catch (Exception e) {
