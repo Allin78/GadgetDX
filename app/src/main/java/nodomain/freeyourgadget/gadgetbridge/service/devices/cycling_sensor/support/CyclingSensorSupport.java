@@ -111,6 +111,7 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
     public void onSendConfiguration(String config) {
         switch (config){
             case DeviceSettingsPreferenceConst.PREF_CYCLING_SENSOR_PERSISTENCE_INTERVAL:
+            case DeviceSettingsPreferenceConst.PREF_CYCLING_SENSOR_WHEEL_DIAMETER:
                 loadConfiguration();
                 break;
         }

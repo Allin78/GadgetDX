@@ -644,6 +644,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SPO_AUTOMATIC_ENABLE);
 
         addPreferenceHandlerFor(PREF_CYCLING_SENSOR_PERSISTENCE_INTERVAL);
+        addPreferenceHandlerFor(PREF_CYCLING_SENSOR_WHEEL_DIAMETER);
 
         addPreferenceHandlerFor("lock");
 
