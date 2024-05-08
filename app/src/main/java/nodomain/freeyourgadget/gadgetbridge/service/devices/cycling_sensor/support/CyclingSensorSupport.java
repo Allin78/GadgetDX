@@ -237,7 +237,8 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
 
             sampleProvider.addSample(sample);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            // throw new RuntimeException(e);
+            logger.error("failed adding DB cycling sample");
         }
     }
 
