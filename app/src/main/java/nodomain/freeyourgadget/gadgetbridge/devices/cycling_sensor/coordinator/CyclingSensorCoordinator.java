@@ -13,6 +13,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.InstallHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.devices.cycling_sensor.db.CyclingSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSample;
+import nodomain.freeyourgadget.gadgetbridge.entities.CyclingSampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
@@ -23,7 +24,11 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.cycling_sensor.suppo
 public class CyclingSensorCoordinator extends AbstractBLEDeviceCoordinator {
     @Override
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) throws GBException {
+        final Long deviceId = device.getId();
 
+        session.getCyclingSampleDao().queryBuilder()
+                .where(CyclingSampleDao.Properties.DeviceId.eq(deviceId))
+                .buildDelete().executeDeleteWithoutDetachingEntities();
     }
 
     @Override
