@@ -47,6 +47,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -110,9 +111,9 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallContro
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventFindPhone;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventMusicControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventScreenshot;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
-import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventScreenshot;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants;
 import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
@@ -120,8 +121,9 @@ import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncState;
 import nodomain.freeyourgadget.gadgetbridge.entities.CalendarSyncStateDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.CalendarReceiver;
-import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationProviderType;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.sleepasandroid.SleepAsAndroidAction;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
@@ -136,6 +138,7 @@ import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
 import nodomain.freeyourgadget.gadgetbridge.model.RecordedDataTypes;
 import nodomain.freeyourgadget.gadgetbridge.model.WeatherSpec;
+import nodomain.freeyourgadget.gadgetbridge.service.SleepAsAndroidSender;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.AbstractBTLEDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
@@ -187,6 +190,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     public static final String BANGLEJS_COMMAND_RX = "banglejs_command_rx";
     // Global Intents
     private static final String BANGLE_ACTION_UART_TX = "com.banglejs.uart.tx";
+
+    private SleepAsAndroidSender sleepAsAndroidSender;
 
     public BangleJSDeviceSupport() {
         super(LOG);
@@ -321,6 +326,10 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         LOG.info("Initializing");
+
+        if (sleepAsAndroidSender == null) {
+            sleepAsAndroidSender = new SleepAsAndroidSender(gbDevice);
+        }
 
         gbDevice.setState(GBDevice.State.INITIALIZING);
         gbDevice.sendDeviceUpdateIntent(getContext());
@@ -600,9 +609,69 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     stopLocationUpdate();
                 }
             } break;
+            case "sleep_as_android":
+                handleSleepAsAndroid(json);
+                break;
             default : {
                 LOG.info("UART RX JSON packet type '"+packetType+"' not understood.");
             }
+        }
+    }
+
+    @Override
+    public void onSleepAsAndroidAction(String action, Bundle extras) {
+        // Validate if our device can work with an action
+        try {
+            sleepAsAndroidSender.validateAction(action);
+        } catch (UnsupportedOperationException e) {
+            return;
+        }
+
+        // Consult the SleepAsAndroid documentation for a set of actions and their extra
+        // https://docs.sleep.urbandroid.org/devs/wearable_api.html
+        switch (action) {
+            case SleepAsAndroidAction.CHECK_CONNECTED:
+                sleepAsAndroidSender.confirmConnected();
+                break;
+            // Received when the app starts sleep tracking
+            case SleepAsAndroidAction.START_TRACKING:
+                sleepAsAndroidSender.startTracking();
+                break;
+            // Received when the app stops sleep tracking
+            case SleepAsAndroidAction.STOP_TRACKING:
+                sleepAsAndroidSender.stopTracking();
+                break;
+            // Received when the app pauses sleep tracking
+//            case SleepAsAndroidAction.SET_PAUSE:
+//                long pauseTimestamp = extras.getLong("TIMESTAMP");
+//                long delay = pauseTimestamp > 0 ? pauseTimestamp - System.currentTimeMillis() : 0;
+//                setRawSensor(delay > 0);
+//                enableRealtimeSamplesTimer(delay > 0);
+//                sleepAsAndroidSender.pauseTracking(delay);
+//                break;
+            // Same as above but controlled by a boolean value
+            case SleepAsAndroidAction.SET_SUSPENDED:
+                boolean suspended = extras.getBoolean("SUSPENDED", false);
+                sleepAsAndroidSender.pauseTracking(suspended);
+                // Received when the app changes the batch size for the movement data
+            case SleepAsAndroidAction.SET_BATCH_SIZE:
+                long batchSize = extras.getLong("SIZE", 12L);
+                sleepAsAndroidSender.setBatchSize(batchSize);
+                break;
+            default:
+                LOG.warn("Received unsupported " + action);
+                break;
+        }
+    }
+
+    /**
+     * Handle "sleep" packets: Sleep as Android Support
+     */
+    private void handleSleepAsAndroid(JSONObject json) throws JSONException {
+        if (json.has("accel")) {
+            JSONObject accel = json.getJSONObject("accel");
+            sleepAsAndroidSender.onAccelChanged((float) accel.getDouble("x"),
+                    (float) accel.getDouble("y"), (float) accel.getDouble("z"));
         }
     }
 
