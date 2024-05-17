@@ -77,7 +77,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -145,7 +144,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
-import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.EmojiConverter;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -611,8 +609,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     stopLocationUpdate();
                 }
             } break;
-            case "accel":
-                handleAcceleration(json);
+            case "sleep_as_android":
+                handleSleepAsAndroid(json);
                 break;
             default : {
                 LOG.info("UART RX JSON packet type '"+packetType+"' not understood.");
@@ -637,36 +635,28 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 break;
             // Received when the app starts sleep tracking
             case SleepAsAndroidAction.START_TRACKING:
-                this.enableAccelSender(true);
                 sleepAsAndroidSender.startTracking();
                 break;
             // Received when the app stops sleep tracking
             case SleepAsAndroidAction.STOP_TRACKING:
-                this.enableAccelSender(false);
                 sleepAsAndroidSender.stopTracking();
                 break;
+            // Received when the app pauses sleep tracking
+//            case SleepAsAndroidAction.SET_PAUSE:
+//                long pauseTimestamp = extras.getLong("TIMESTAMP");
+//                long delay = pauseTimestamp > 0 ? pauseTimestamp - System.currentTimeMillis() : 0;
+//                setRawSensor(delay > 0);
+//                enableRealtimeSamplesTimer(delay > 0);
+//                sleepAsAndroidSender.pauseTracking(delay);
+//                break;
+            // Same as above but controlled by a boolean value
             case SleepAsAndroidAction.SET_SUSPENDED:
                 boolean suspended = extras.getBoolean("SUSPENDED", false);
-                this.enableAccelSender(false);
                 sleepAsAndroidSender.pauseTracking(suspended);
                 // Received when the app changes the batch size for the movement data
             case SleepAsAndroidAction.SET_BATCH_SIZE:
                 long batchSize = extras.getLong("SIZE", 12L);
                 sleepAsAndroidSender.setBatchSize(batchSize);
-                break;
-            // Received when the app sends a notificaation
-            case SleepAsAndroidAction.SHOW_NOTIFICATION:
-                NotificationSpec notificationSpec = new NotificationSpec();
-                notificationSpec.title = extras.getString("TITLE");
-                notificationSpec.body = extras.getString("BODY");
-                this.onNotification(notificationSpec);
-                break;
-            case SleepAsAndroidAction.UPDATE_ALARM:
-                long alarmTimestamp = extras.getLong("TIMESTAMP");
-
-                // Sets the alarm at a giver hour and minute
-                // Snoozing from the app will create a new alarm in the future
-                this.setSleepAsAndroidAlarm(alarmTimestamp);
                 break;
             default:
                 LOG.warn("Received unsupported " + action);
@@ -674,41 +664,14 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private void enableAccelSender(boolean enable) {
-        /**
-         * Sends an event to the Banglejs to enable/disable Acceleration tracking
-         * @param enable: whether to enable tracking
-         **/
-        try {
-            JSONObject o = new JSONObject();
-            o.put("t", "accelsender");
-            o.put("enable", enable);
-            o.put("interval", 10000);
-            uartTxJSON("enableAccelSender", o);
-        } catch (JSONException e) {
-            LOG.info("JSONException: " + e.getLocalizedMessage());
-        }
-    }
-
-    private void setSleepAsAndroidAlarm(long alarmTimestamp) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(new Timestamp(alarmTimestamp).getTime());
-        Alarm alarm = AlarmUtils.createSingleShot(SleepAsAndroidSender.getAlarmSlot(), false, false, calendar);
-        ArrayList<Alarm> alarms = new ArrayList<>(1);
-        alarms.add(alarm);
-
-        GBApplication.deviceService(gbDevice).onSetAlarms(alarms);
-    }
-
     /**
-     * Handle "accel" packets: Acceleration data streaming
+     * Handle "sleep" packets: Sleep as Android Support
      */
-    private void handleAcceleration(JSONObject json) throws JSONException {
+    private void handleSleepAsAndroid(JSONObject json) throws JSONException {
         if (json.has("accel")) {
             JSONObject accel = json.getJSONObject("accel");
-            sleepAsAndroidSender.onAccelChanged((float) (accel.getDouble("x") * 9.80665),
-                    (float) (accel.getDouble("y") * 9.80665), (float) (accel.getDouble("z") * 9.80665));
+            sleepAsAndroidSender.onAccelChanged((float) accel.getDouble("x"),
+                    (float) accel.getDouble("y"), (float) accel.getDouble("z"));
         }
     }
 
@@ -820,9 +783,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 LOG.info("JSON activity '"+actName+"' not found");
             }
         }*/
-        if(hrm>0) {
-            sleepAsAndroidSender.onHrChanged(hrm, 0);
-        }
         sample.setTimestamp(timestamp);
         sample.setRawKind(activity);
         sample.setHeartRate(hrm);
@@ -986,11 +946,10 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
      * Handle "force_calendar_sync" packet
      */
     private void handleCalendarSync(JSONObject json) throws JSONException {
-        if(!GBApplication.getPrefs().getBoolean("enable_calendar_sync", false)) return;
+        //if(!GBApplication.getPrefs().getBoolean("enable_calendar_sync", false)) return;
         //pretty much like the updateEvents in CalendarReceiver, but would need a lot of libraries here
         JSONArray ids = json.getJSONArray("ids");
         ArrayList<Long> idsList = new ArrayList<>(ids.length());
-        ArrayList<Long> idsDeletedList = new ArrayList<>(ids.length());
         try (DBHandler dbHandler = GBApplication.acquireDB()) {
             DaoSession session = dbHandler.getDaoSession();
             Long deviceId = DBHelper.getDevice(gbDevice, session).getId();
@@ -1007,7 +966,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                         qb.and(CalendarSyncStateDao.Properties.DeviceId.eq(deviceId),
                                 CalendarSyncStateDao.Properties.CalendarEntryId.eq(id))).build().unique();
                 if(calendarSyncState == null) {
-                    idsDeletedList.add(id);
                     onDeleteCalendarEvent((byte)0, id);
                     LOG.info("event id="+ id +" is on device id="+ deviceId +", removing it there");
                 } else {
@@ -1015,9 +973,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     idsList.add(id);
                 }
             }
-            // Now issue the command to delete from the Bangle
-            if (idsDeletedList.size() > 0)
-                deleteCalendarEvents(idsDeletedList);
 
             //remove all elements not in ids from database (we don't have them)
             for(CalendarSyncState calendarSyncState : states) {
@@ -1736,7 +1691,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onAddCalendarEvent(CalendarEventSpec calendarEventSpec) {
-        if(!GBApplication.getPrefs().getBoolean("enable_calendar_sync", false)) return;
         String description = calendarEventSpec.description;
         if (description != null) {
             // remove any HTML formatting
@@ -1744,8 +1698,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 description = androidx.core.text.HtmlCompat.fromHtml(description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString();
             // Replace "-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-" lines from Google meet
             description = ("\n"+description+"\n").replaceAll("\n-[:~-]*\n","");
-            // Replace ____________________ from MicrosoftTeams
-            description = description.replaceAll("__________+", "");
             // replace double newlines and trim beginning and end
             description = description.replaceAll("\n\\s*\n","\n").trim();
         }
@@ -1770,8 +1722,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     public void onDeleteCalendarEvent(byte type, long id) {
-        // FIXME: CalenderReceiver will call this directly - can we somehow batch up delete calls and use deleteCalendarEvents?
-        if(!GBApplication.getPrefs().getBoolean("enable_calendar_sync", false)) return;
         try {
             JSONObject o = new JSONObject();
             o.put("t", "calendar-");
@@ -1780,26 +1730,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
-    }
-
-    /* Called when we need to get rid of multiple calendar events */
-    public void deleteCalendarEvents(ArrayList<Long> ids) {
-        if(!GBApplication.getPrefs().getBoolean("enable_calendar_sync", false)) return;
-        if (ids.size() > 0)
-            try {
-                JSONObject o = new JSONObject();
-                o.put("t", "calendar-");
-                if (ids.size() == 1) {
-                    o.put("id", ids.get(0));
-                } else {
-                    JSONArray a = new JSONArray();
-                    for (long id : ids) a.put(id);
-                    o.put("id", a);
-                }
-                uartTxJSON("onDeleteCalendarEvent", o);
-            } catch (JSONException e) {
-                LOG.info("JSONException: " + e.getLocalizedMessage());
-            }
     }
 
     @Override

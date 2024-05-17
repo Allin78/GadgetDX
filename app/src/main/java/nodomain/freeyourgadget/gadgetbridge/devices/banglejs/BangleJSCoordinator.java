@@ -90,7 +90,7 @@ public class BangleJSCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public Set<SleepAsAndroidFeature> getSleepAsAndroidFeatures() {
-        return EnumSet.of(SleepAsAndroidFeature.ACCELEROMETER, SleepAsAndroidFeature.HEART_RATE, SleepAsAndroidFeature.NOTIFICATIONS, SleepAsAndroidFeature.ALARMS);
+        return EnumSet.of(SleepAsAndroidFeature.ACCELEROMETER);
     }
 
     @Override
