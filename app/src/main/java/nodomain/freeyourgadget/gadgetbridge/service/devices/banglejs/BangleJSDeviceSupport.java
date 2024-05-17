@@ -77,6 +77,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -144,6 +145,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BtLEQueue;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
+import nodomain.freeyourgadget.gadgetbridge.util.AlarmUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.EmojiConverter;
 import nodomain.freeyourgadget.gadgetbridge.util.FileUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -658,10 +660,35 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 long batchSize = extras.getLong("SIZE", 12L);
                 sleepAsAndroidSender.setBatchSize(batchSize);
                 break;
+            // Received when the app sends a notificaation
+            case SleepAsAndroidAction.SHOW_NOTIFICATION:
+                NotificationSpec notificationSpec = new NotificationSpec();
+                notificationSpec.title = extras.getString("TITLE");
+                notificationSpec.body = extras.getString("BODY");
+                this.onNotification(notificationSpec);
+                break;
+            case SleepAsAndroidAction.UPDATE_ALARM:
+                long alarmTimestamp = extras.getLong("TIMESTAMP");
+
+                // Sets the alarm at a giver hour and minute
+                // Snoozing from the app will create a new alarm in the future
+                setSleepAsAndroidAlarm(alarmTimestamp);
+                break;
             default:
                 LOG.warn("Received unsupported " + action);
                 break;
         }
+    }
+
+    private void setSleepAsAndroidAlarm(long alarmTimestamp) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(new Timestamp(alarmTimestamp).getTime());
+        Alarm alarm = AlarmUtils.createSingleShot(SleepAsAndroidSender.getAlarmSlot(), false, false, calendar);
+        ArrayList<Alarm> alarms = new ArrayList<>(1);
+        alarms.add(alarm);
+
+        GBApplication.deviceService(gbDevice).onSetAlarms(alarms);
     }
 
     /**
@@ -672,6 +699,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             JSONObject accel = json.getJSONObject("accel");
             sleepAsAndroidSender.onAccelChanged((float) accel.getDouble("x"),
                     (float) accel.getDouble("y"), (float) accel.getDouble("z"));
+        }
+        if (json.has("bpm")) {
+            sleepAsAndroidSender.onHrChanged((float) json.getInt("bpm"), 0);
         }
     }
 
