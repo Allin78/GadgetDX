@@ -637,14 +637,17 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 break;
             // Received when the app starts sleep tracking
             case SleepAsAndroidAction.START_TRACKING:
+                this.enableSleepAsAndroid(true);
                 sleepAsAndroidSender.startTracking();
                 break;
             // Received when the app stops sleep tracking
             case SleepAsAndroidAction.STOP_TRACKING:
+                this.enableSleepAsAndroid(false);
                 sleepAsAndroidSender.stopTracking();
                 break;
             case SleepAsAndroidAction.SET_SUSPENDED:
                 boolean suspended = extras.getBoolean("SUSPENDED", false);
+                this.enableSleepAsAndroid(false);
                 sleepAsAndroidSender.pauseTracking(suspended);
                 // Received when the app changes the batch size for the movement data
             case SleepAsAndroidAction.SET_BATCH_SIZE:
@@ -668,6 +671,21 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             default:
                 LOG.warn("Received unsupported " + action);
                 break;
+        }
+    }
+
+    private void enableSleepAsAndroid(boolean enable) {
+        /**
+         * Sends an event to the Banglejs to enable/disable Sleep as Android tracking
+         * @param enable: whether to enable tracking
+         **/
+        try {
+            JSONObject o = new JSONObject();
+            o.put("t", "sleepasandroid");
+            o.put("enable", enable);
+            uartTxJSON("enableSleepAsAndroid", o);
+        } catch (JSONException e) {
+            LOG.info("JSONException: " + e.getLocalizedMessage());
         }
     }
 
