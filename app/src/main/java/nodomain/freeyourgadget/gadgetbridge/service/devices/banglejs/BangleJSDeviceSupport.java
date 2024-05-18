@@ -643,15 +643,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             case SleepAsAndroidAction.STOP_TRACKING:
                 sleepAsAndroidSender.stopTracking();
                 break;
-            // Received when the app pauses sleep tracking
-//            case SleepAsAndroidAction.SET_PAUSE:
-//                long pauseTimestamp = extras.getLong("TIMESTAMP");
-//                long delay = pauseTimestamp > 0 ? pauseTimestamp - System.currentTimeMillis() : 0;
-//                setRawSensor(delay > 0);
-//                enableRealtimeSamplesTimer(delay > 0);
-//                sleepAsAndroidSender.pauseTracking(delay);
-//                break;
-            // Same as above but controlled by a boolean value
             case SleepAsAndroidAction.SET_SUSPENDED:
                 boolean suspended = extras.getBoolean("SUSPENDED", false);
                 sleepAsAndroidSender.pauseTracking(suspended);
@@ -672,7 +663,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
 
                 // Sets the alarm at a giver hour and minute
                 // Snoozing from the app will create a new alarm in the future
-                setSleepAsAndroidAlarm(alarmTimestamp);
+                this.setSleepAsAndroidAlarm(alarmTimestamp);
                 break;
             default:
                 LOG.warn("Received unsupported " + action);
