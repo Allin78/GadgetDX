@@ -649,6 +649,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 boolean suspended = extras.getBoolean("SUSPENDED", false);
                 this.enableAccelSender(false);
                 sleepAsAndroidSender.pauseTracking(suspended);
+                break;
                 // Received when the app changes the batch size for the movement data
             case SleepAsAndroidAction.SET_BATCH_SIZE:
                 long batchSize = extras.getLong("SIZE", 12L);
@@ -691,14 +692,27 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     private void setSleepAsAndroidAlarm(long alarmTimestamp) {
-
+        /**
+         * Updates the Sleep as Android Alarm slot.
+         * @param alarmTimestamp: Unix timestamp of the upcoming alarm.
+         **/
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(new Timestamp(alarmTimestamp).getTime());
-        Alarm alarm = AlarmUtils.createSingleShot(SleepAsAndroidSender.getAlarmSlot(), false, false, calendar);
-        ArrayList<Alarm> alarms = new ArrayList<>(1);
-        alarms.add(alarm);
 
-        GBApplication.deviceService(gbDevice).onSetAlarms(alarms);
+        // Get Alarm in relevant slot
+        nodomain.freeyourgadget.gadgetbridge.entities.Alarm currentAlarm = DBHelper.getAlarms(gbDevice).get(SleepAsAndroidSender.getAlarmSlot());
+        currentAlarm.setRepetition(Alarm.ALARM_ONCE);
+        currentAlarm.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+        currentAlarm.setMinute(calendar.get(Calendar.MINUTE));
+        currentAlarm.setEnabled(true);
+        currentAlarm.setUnused(false);
+
+        // Store modified alarm
+        DBHelper.store(currentAlarm);
+
+        // Send alarms to Gadgetbridge
+        this.onSetAlarms(new ArrayList<Alarm>(DBHelper.getAlarms(gbDevice)));
+
     }
 
     /**
