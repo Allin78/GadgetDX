@@ -611,8 +611,8 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                     stopLocationUpdate();
                 }
             } break;
-            case "sleep_as_android":
-                handleSleepAsAndroid(json);
+            case "accel":
+                handleAcceleration(json);
                 break;
             default : {
                 LOG.info("UART RX JSON packet type '"+packetType+"' not understood.");
@@ -637,17 +637,17 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 break;
             // Received when the app starts sleep tracking
             case SleepAsAndroidAction.START_TRACKING:
-                this.enableSleepAsAndroid(true);
+                this.enableAccelSender(true);
                 sleepAsAndroidSender.startTracking();
                 break;
             // Received when the app stops sleep tracking
             case SleepAsAndroidAction.STOP_TRACKING:
-                this.enableSleepAsAndroid(false);
+                this.enableAccelSender(false);
                 sleepAsAndroidSender.stopTracking();
                 break;
             case SleepAsAndroidAction.SET_SUSPENDED:
                 boolean suspended = extras.getBoolean("SUSPENDED", false);
-                this.enableSleepAsAndroid(false);
+                this.enableAccelSender(false);
                 sleepAsAndroidSender.pauseTracking(suspended);
                 // Received when the app changes the batch size for the movement data
             case SleepAsAndroidAction.SET_BATCH_SIZE:
@@ -674,16 +674,17 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
     }
 
-    private void enableSleepAsAndroid(boolean enable) {
+    private void enableAccelSender(boolean enable) {
         /**
-         * Sends an event to the Banglejs to enable/disable Sleep as Android tracking
+         * Sends an event to the Banglejs to enable/disable Acceleration tracking
          * @param enable: whether to enable tracking
          **/
         try {
             JSONObject o = new JSONObject();
-            o.put("t", "sleepasandroid");
+            o.put("t", "accelsender");
             o.put("enable", enable);
-            uartTxJSON("enableSleepAsAndroid", o);
+            o.put("interval", 10000);
+            uartTxJSON("enableAccelSender", o);
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());
         }
@@ -701,16 +702,13 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
     }
 
     /**
-     * Handle "sleep" packets: Sleep as Android Support
+     * Handle "accel" packets: Acceleration data streaming
      */
-    private void handleSleepAsAndroid(JSONObject json) throws JSONException {
+    private void handleAcceleration(JSONObject json) throws JSONException {
         if (json.has("accel")) {
             JSONObject accel = json.getJSONObject("accel");
-            sleepAsAndroidSender.onAccelChanged((float) accel.getDouble("x"),
-                    (float) accel.getDouble("y"), (float) accel.getDouble("z"));
-        }
-        if (json.has("bpm")) {
-            sleepAsAndroidSender.onHrChanged((float) json.getInt("bpm"), 0);
+            sleepAsAndroidSender.onAccelChanged((float) (accel.getDouble("x") * 9.80665),
+                    (float) (accel.getDouble("y") * 9.80665), (float) (accel.getDouble("z") * 9.80665));
         }
     }
 
@@ -822,6 +820,9 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 LOG.info("JSON activity '"+actName+"' not found");
             }
         }*/
+        if(hrm>0) {
+            sleepAsAndroidSender.onHrChanged(hrm, 0);
+        }
         sample.setTimestamp(timestamp);
         sample.setRawKind(activity);
         sample.setHeartRate(hrm);
