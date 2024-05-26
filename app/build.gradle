@@ -289,8 +289,8 @@ dependencies {
     implementation group: 'org.ahocorasick', name: 'ahocorasick', version: '0.6.3'
 
     // Tensorflow lite for ai applications
-    implementation 'org.tensorflow:tensorflow-lite:2.16.1'
-    implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.16.1'
+    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
+    implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.14.0'
 }
 
 preBuild.dependsOn(":GBDaoGenerator:genSources")

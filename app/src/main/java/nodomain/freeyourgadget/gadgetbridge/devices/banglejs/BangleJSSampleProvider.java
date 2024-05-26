@@ -53,7 +53,8 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
         super(device, session);
 
         try {
-            this.sleepClassificationModel = new Interpreter(loadModelFile());
+            this.sleepClassificationModel = new Interpreter(loadModelFile()
+                    );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -161,12 +162,14 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
     }
 
     private MappedByteBuffer loadModelFile() throws IOException {
-        AssetFileDescriptor fileDescriptor = GBApplication.getContext().getAssets().openFd("models/model.tflite");
-        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
-        FileChannel fileChannel = inputStream.getChannel();
-        long startOffset = fileDescriptor.getStartOffset();
-        long declareLength = fileDescriptor.getDeclaredLength();
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declareLength);
+        try(AssetFileDescriptor fileDescriptor = GBApplication.getContext().getAssets().openFd("models/model.tflite")) {
+            try(FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor())) {
+                FileChannel fileChannel = inputStream.getChannel();
+                long startOffset = fileDescriptor.getStartOffset();
+                long declareLength = fileDescriptor.getDeclaredLength();
+                return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declareLength);
+            }
+        }
     }
 
 
