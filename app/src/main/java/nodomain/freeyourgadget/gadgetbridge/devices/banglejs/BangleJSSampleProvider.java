@@ -16,16 +16,25 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.banglejs;
 
+import android.content.res.AssetFileDescriptor;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tensorflow.lite.Interpreter;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySampleDao;
@@ -35,12 +44,131 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 
 public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActivitySample> {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSSampleProvider.class);
+    public static final int TEN_MINUTES = 600;
+    private Interpreter sleepClassificationModel = null;
+
+    public static final int TYPE_ACTIVITY = 0;
 
     public BangleJSSampleProvider(GBDevice device, DaoSession session) {
         super(device, session);
+
+        try {
+            this.sleepClassificationModel = new Interpreter(loadModelFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    public static final int TYPE_ACTIVITY = 0;
+    @Override
+    protected List<BangleJSActivitySample> getGBActivitySamples(final int timestamp_from, final int timestamp_to, final int activityType) {
+        final List<BangleJSActivitySample> samples = super.getGBActivitySamples(timestamp_from, timestamp_to, activityType);
+
+        overlaySleep(samples, timestamp_from, timestamp_to, activityType);
+
+        return samples;
+    }
+
+    private void overlaySleep(List<BangleJSActivitySample> samples_to_predict, int timestampFrom, int timestampTo, final int activityType) {
+        final List<BangleJSActivitySample> allSamples = super.getGBActivitySamples(timestampFrom - 12 * TEN_MINUTES, timestampFrom, activityType);
+        allSamples.addAll(samples_to_predict);
+
+        for (int curTimestamp = timestampFrom; curTimestamp < timestampTo; curTimestamp += TEN_MINUTES) {
+            float[][] output = new float[1][3];
+            float[][] input = this.createModelInput(allSamples, curTimestamp);
+            sleepClassificationModel.run(input, output);
+            int label = getSleepLabel(output[0]);
+
+            for (BangleJSActivitySample sample : samples_to_predict) {
+                if (curTimestamp - TEN_MINUTES < sample.getTimestamp() && sample.getTimestamp() <= curTimestamp) {
+                    sample.setRawKind(label != ActivityKind.TYPE_UNKNOWN ? label : sample.getRawKind());
+                }
+            }
+        }
+
+    }
+
+    private int getSleepLabel(float[] prediction) {
+        int label_idx = -1;
+        float max_val = 0;
+        for (int i = 0; i < prediction.length; i++) {
+            if (prediction[i] > max_val) {
+                max_val = prediction[i];
+                label_idx = i;
+            }
+        }
+
+        switch (label_idx) {
+            case 0:
+                return ActivityKind.TYPE_ACTIVITY;
+            case 1:
+                return ActivityKind.TYPE_LIGHT_SLEEP;
+            case 2:
+                return ActivityKind.TYPE_DEEP_SLEEP;
+            default:
+                return ActivityKind.TYPE_UNKNOWN;
+        }
+    }
+
+    private float[][] createModelInput(List<BangleJSActivitySample> allSamples, int timestampTo) {
+        float[][] result = new float[12][4];
+        int timestampFrom = timestampTo - 12 * TEN_MINUTES;
+        for (int i = 0; i < 12; i++) {
+            int curTimestamp = timestampFrom + i * TEN_MINUTES;
+            result[i] = this.createFeature(allSamples, curTimestamp, curTimestamp + TEN_MINUTES);
+        }
+        return result;
+    }
+
+    private float[] createFeature(List<BangleJSActivitySample> allSamples, int timestampFrom, int timestampTo) {
+        ArrayList<Double> heartrates = new ArrayList<>();
+        double hrSum = 0;
+        double hr_min = Double.MAX_VALUE;
+        double hr_max = Double.MIN_VALUE;
+        for (int i = 0; i < allSamples.size(); i++) {
+            BangleJSActivitySample entry = allSamples.get(i);
+            if (entry.getTimestamp() <= timestampTo && entry.getTimestamp() >= timestampFrom) {
+                double currentHr = entry.getHeartRate();
+                hrSum += currentHr;
+                heartrates.add(currentHr);
+
+                if (currentHr < hr_min) {
+                    hr_min = currentHr;
+                }
+                if (currentHr > hr_max) {
+                    hr_max = currentHr;
+                }
+            }
+        }
+
+
+        double hr_mean = hrSum / heartrates.size();
+        double hr_std = 0;
+        for (double currentHeartrate : heartrates) {
+            hr_std += Math.pow(currentHeartrate - hr_mean, 2);
+        }
+        hr_std = Math.sqrt(hr_std / heartrates.size());
+
+
+        float[] features = new float[4];
+
+        features[0] = (float) ((hr_mean - 30) / 230);
+        features[1] = (float) ((hr_min - 30) / 230);
+        features[2] = (float) ((hr_max - 30) / 230);
+        features[3] = (float) (hr_std / 60);
+
+        return features;
+    }
+
+    private MappedByteBuffer loadModelFile() throws IOException {
+        AssetFileDescriptor fileDescriptor = GBApplication.getContext().getAssets().openFd("models/model.tflite");
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declareLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declareLength);
+    }
+
 
     @Override
     public AbstractDao<BangleJSActivitySample, ?> getSampleDao() {
@@ -70,6 +198,10 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
         switch (rawType) {
             case TYPE_ACTIVITY:
                 return ActivityKind.TYPE_ACTIVITY;
+            case ActivityKind.TYPE_LIGHT_SLEEP:
+                return ActivityKind.TYPE_LIGHT_SLEEP;
+            case ActivityKind.TYPE_DEEP_SLEEP:
+                return ActivityKind.TYPE_DEEP_SLEEP;
             default: // fall through
                 return ActivityKind.TYPE_UNKNOWN;
         }

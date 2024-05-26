@@ -185,6 +185,10 @@ android {
         }
     }
 
+    aaptOptions {
+        noCompress "models/model.tflite"
+    }
+
     lint {
         abortOnError ABORT_ON_CHECK_FAILURE
         lintConfig file("$rootDir/app/src/main/lint.xml")
@@ -283,6 +287,10 @@ dependencies {
 
     // Needed for Armenian transliteration
     implementation group: 'org.ahocorasick', name: 'ahocorasick', version: '0.6.3'
+
+    // Tensorflow lite for ai applications
+    implementation 'org.tensorflow:tensorflow-lite:2.16.1'
+    implementation 'org.tensorflow:tensorflow-lite-select-tf-ops:2.16.1'
 }
 
 preBuild.dependsOn(":GBDaoGenerator:genSources")
