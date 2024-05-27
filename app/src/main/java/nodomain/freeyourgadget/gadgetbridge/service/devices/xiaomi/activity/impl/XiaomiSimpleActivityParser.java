@@ -66,8 +66,8 @@ public class XiaomiSimpleActivityParser {
             }
 
             // Each bit in the header marks whether the data is valid or not, in order of the fields
-            //final boolean validData = (header[i / 8] & (1 << (7 - (i % 8)))) != 0;
-            // FIXME: We can't use the header before identifying the correct field lengths for unknown fields
+            final boolean validData = (header[i / 8] & (1 << (7 - (i % 8)))) != 0;
+            // FIXME: We can't use the header before identifying the correct field lenggths for unknown fields
             // or parsing gets out of sync with the header and we will potentially ignore valid data
             //if (!validData) {
             //    LOG.debug("Ignoring non-valid data {}", i);
