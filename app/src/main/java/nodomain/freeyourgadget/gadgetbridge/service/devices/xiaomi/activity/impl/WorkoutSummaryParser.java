@@ -398,7 +398,6 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
 
         final XiaomiSimpleActivityParser.Builder builder = new XiaomiSimpleActivityParser.Builder();
         builder.setHeaderSize(headerSize);
-        //builder.addUnknown(2);
         builder.addInt(TIME_START, UNIT_UNIX_EPOCH_SECONDS);
         builder.addInt(TIME_END, UNIT_UNIX_EPOCH_SECONDS);
         builder.addInt(ACTIVE_SECONDS, UNIT_SECONDS);
@@ -410,8 +409,8 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
         builder.addUnknown(1);
         builder.addShort(LAPS, UNIT_LAPS);
         builder.addShort(SWOLF_AVG, UNIT_NONE);
-        builder.addUnknown(5);
-        builder.addInt("activeSec2", UNIT_SECONDS);
+        builder.addUnknown(9);
+        // builder.addInt("activeSec2", UNIT_SECONDS);
         builder.addInt("configuredTimeGoal", UNIT_SECONDS);
         builder.addShort("configuredCaloriesGoal", UNIT_KCAL);
         builder.addInt("configuredLaneLength", UNIT_CM);
@@ -419,26 +418,26 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
         builder.addByte("configuredLengthsGoal", UNIT_NONE);
         builder.addUnknown(14);
         builder.addByte("vitality_gain", UNIT_NONE);
-        builder.addUnknown(20);
-        builder.addInt("startingTime2", UNIT_UNIX_EPOCH_SECONDS);
-        builder.addInt("endTime2", UNIT_UNIX_EPOCH_SECONDS);
-        builder.addUnknown(4);
-        builder.addInt("activeSec3", UNIT_SECONDS);
-        builder.addInt("activeSec4", UNIT_SECONDS);
-        builder.addUnknown(8);
-        builder.addInt("caloriesBurnt2", UNIT_KCAL);
-        builder.addInt("distanceMeter2", UNIT_METERS);
-        builder.addUnknown(4);
+        builder.addUnknown(60);
+        // builder.addInt("startingTime2", UNIT_UNIX_EPOCH_SECONDS);
+        // builder.addInt("endTime2", UNIT_UNIX_EPOCH_SECONDS);
+        // builder.addUnknown(4);
+        // builder.addInt("activeSec3", UNIT_SECONDS);
+        // builder.addInt("activeSec4", UNIT_SECONDS);
+        // builder.addUnknown(8);
+        // builder.addInt("caloriesBurnt2", UNIT_KCAL);
+        // builder.addInt("distanceMeter2", UNIT_METERS);
+        // builder.addUnknown(4);
         builder.addInt(LAP_PACE_AVERAGE, UNIT_SECONDS);
         builder.addInt(PACE_MAX, UNIT_SECONDS); // not confirmed
         builder.addUnknown(4);
         builder.addInt(STROKE_RATE_AVG, UNIT_STROKES_PER_MINUTE);
-        builder.addUnknown(8);
-        builder.addInt("laps2", UNIT_LAPS);
-        builder.addShort("avgSWOLF2", UNIT_NONE);
+        builder.addUnknown(14);
+        // builder.addInt("laps2", UNIT_LAPS);
+        // builder.addShort("avgSWOLF2", UNIT_NONE);
         builder.addShort("minSWOLF", UNIT_NONE); // not confirmed
         builder.addShort("maxSWOLF", UNIT_NONE); // not confirmed
-        builder.addInt("totalStrokes2", UNIT_STROKES);
+        // builder.addInt("totalStrokes2", UNIT_STROKES);
 
         return builder.build();
     }
