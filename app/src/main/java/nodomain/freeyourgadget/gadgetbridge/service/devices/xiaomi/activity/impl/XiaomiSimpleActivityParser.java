@@ -87,11 +87,11 @@ public class XiaomiSimpleActivityParser {
                 Float swimStyle = value.floatValue();
 
                 if (swimStyle == 0) {
-                    swimStyleName = "Medley";
+                    swimStyleName = "medley";
                 } else if (swimStyle == 1) {
-                    swimStyleName = "Breaststroke";
+                    swimStyleName = "breaststroke";
                 } else if (swimStyle == 2) {
-                    swimStyleName = "Freestyle";
+                    swimStyleName = "freestyle";
                 }// TODO: add missing swim styles
 
                 addSummaryData(summaryData, dataEntry.getKey(), swimStyleName);
