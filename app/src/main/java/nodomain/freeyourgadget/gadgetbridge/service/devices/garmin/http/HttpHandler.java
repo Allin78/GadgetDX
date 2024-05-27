@@ -57,6 +57,9 @@ public class HttpHandler {
         } else if (request.getPath().startsWith("/device-gateway/usercontact/")) {
             LOG.info("Got contacts request for {}", request.getPath());
             response = contactsHandler.handleRequest(request);
+        } else if (request.getPath().equalsIgnoreCase("/api/oauth/token")){
+            LOG.info("Got oauth request for {}", request.getPath());
+            response = FakeOauthHandler.handleRequest(request);
         } else {
             LOG.warn("Unhandled path {}", request.getPath());
             response = null;
