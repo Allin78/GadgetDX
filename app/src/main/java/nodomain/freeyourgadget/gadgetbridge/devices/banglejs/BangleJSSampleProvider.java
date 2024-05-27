@@ -74,9 +74,10 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
         final List<BangleJSActivitySample> allSamples = super.getGBActivitySamples(timestampFrom - 12 * TEN_MINUTES, timestampFrom, activityType);
         allSamples.addAll(samples_to_predict);
 
-        for (int curTimestamp = timestampFrom; curTimestamp < timestampTo; curTimestamp += TEN_MINUTES) {
+        for (int curTimestamp = timestampFrom; curTimestamp <= timestampTo; curTimestamp += TEN_MINUTES) {
             float[][] output = new float[1][3];
-            float[][] input = this.createModelInput(allSamples, curTimestamp);
+            float[][][] input = this.createModelInput(allSamples, curTimestamp);
+            sleepClassificationModel.allocateTensors();
             sleepClassificationModel.run(input, output);
             int label = getSleepLabel(output[0]);
 
@@ -111,12 +112,12 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
         }
     }
 
-    private float[][] createModelInput(List<BangleJSActivitySample> allSamples, int timestampTo) {
-        float[][] result = new float[12][4];
+    private float[][][] createModelInput(List<BangleJSActivitySample> allSamples, int timestampTo) {
+        float[][][] result = new float[1][12][6];
         int timestampFrom = timestampTo - 12 * TEN_MINUTES;
         for (int i = 0; i < 12; i++) {
             int curTimestamp = timestampFrom + i * TEN_MINUTES;
-            result[i] = this.createFeature(allSamples, curTimestamp, curTimestamp + TEN_MINUTES);
+            result[0][i] = this.createFeature(allSamples, curTimestamp, curTimestamp + TEN_MINUTES);
         }
         return result;
     }
@@ -126,12 +127,17 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
         double hrSum = 0;
         double hr_min = Double.MAX_VALUE;
         double hr_max = Double.MIN_VALUE;
+        int step_count = 0;
+        int movement=0;
         for (int i = 0; i < allSamples.size(); i++) {
             BangleJSActivitySample entry = allSamples.get(i);
             if (entry.getTimestamp() <= timestampTo && entry.getTimestamp() >= timestampFrom) {
                 double currentHr = entry.getHeartRate();
                 hrSum += currentHr;
                 heartrates.add(currentHr);
+                step_count+=entry.getSteps();
+                movement+=entry.getRawIntensity();
+
 
                 if (currentHr < hr_min) {
                     hr_min = currentHr;
@@ -151,12 +157,14 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
         hr_std = Math.sqrt(hr_std / heartrates.size());
 
 
-        float[] features = new float[4];
+        float[] features = new float[6];
 
-        features[0] = (float) ((hr_mean - 30) / 230);
-        features[1] = (float) ((hr_min - 30) / 230);
-        features[2] = (float) ((hr_max - 30) / 230);
-        features[3] = (float) (hr_std / 60);
+        features[0] = (float) step_count/1500;
+        features[1] = this.normalizeIntensity(movement);
+        features[2] = (float) (hr_mean-30) / 185;
+        features[3] = (float) (hr_min -30) / 185;
+        features[4] = (float) (hr_max -30) / 185;
+        features[5] = (float) (hr_std / 60);
 
         return features;
     }

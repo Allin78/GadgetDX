@@ -186,7 +186,7 @@ android {
     }
 
     aaptOptions {
-        noCompress "models/model.tflite"
+        noCompress "model.tflite"
     }
 
     lint {
