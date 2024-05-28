@@ -10,6 +10,9 @@ public class BangleJsSleepFeatureExtractor implements SleepClassificationFeature
     private final int vectorLength = 6;
     @Override
     public float[] getVector(List<AbstractActivitySample> featureSamples) {
+        if(featureSamples.isEmpty()){
+            return new float[this.vectorLength];
+        }
         ArrayList<Double> heartrates = new ArrayList<>();
         double hrSum = 0;
         double hr_min = Double.MAX_VALUE;
