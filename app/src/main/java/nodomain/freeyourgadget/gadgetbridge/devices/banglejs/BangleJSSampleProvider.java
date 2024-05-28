@@ -16,26 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.devices.banglejs;
 
-import android.content.res.AssetFileDescriptor;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tensorflow.lite.Interpreter;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
-import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractSampleProvider;
+import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.sleep.BangleJsSleepFeatureExtractor;
+import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.sleep.SleepClassificationModel;
+import nodomain.freeyourgadget.gadgetbridge.devices.banglejs.sleep.SleepLabelEnum;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.BangleJSActivitySampleDao;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
@@ -44,21 +39,17 @@ import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 
 public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActivitySample> {
     private static final Logger LOG = LoggerFactory.getLogger(BangleJSSampleProvider.class);
-    public static final int TEN_MINUTES = 600;
-    private Interpreter sleepClassificationModel = null;
+    private SleepClassificationModel sleepClassificationModel = null;
 
     public static final int TYPE_ACTIVITY = 0;
 
     public BangleJSSampleProvider(GBDevice device, DaoSession session) {
         super(device, session);
-
         try {
-            this.sleepClassificationModel = new Interpreter(loadModelFile()
-                    );
+            this.sleepClassificationModel = new SleepClassificationModel("models/model.tflite", new BangleJsSleepFeatureExtractor(), 12, 600);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOG.error("Could not load Sleep classification model.");
         }
-
     }
 
     @Override
@@ -71,113 +62,49 @@ public class BangleJSSampleProvider extends AbstractSampleProvider<BangleJSActiv
     }
 
     private void overlaySleep(List<BangleJSActivitySample> samples_to_predict, int timestampFrom, int timestampTo, final int activityType) {
-        final List<BangleJSActivitySample> allSamples = super.getGBActivitySamples(timestampFrom - 12 * TEN_MINUTES, timestampFrom, activityType);
+        List<BangleJSActivitySample> allSamples = super.getGBActivitySamples(timestampFrom - sleepClassificationModel.getInputTimeLength(), timestampFrom, activityType);
         allSamples.addAll(samples_to_predict);
 
-        for (int curTimestamp = timestampFrom; curTimestamp <= timestampTo; curTimestamp += TEN_MINUTES) {
-            float[][] output = new float[1][3];
-            float[][][] input = this.createModelInput(allSamples, curTimestamp);
-            sleepClassificationModel.allocateTensors();
-            sleepClassificationModel.run(input, output);
-            int label = getSleepLabel(output[0]);
+        int startSleep =-1;
+        for (int curTimestamp = timestampFrom; curTimestamp <= timestampTo; curTimestamp += sleepClassificationModel.getTimeSliceLength()) {
 
+
+            int timestampFromNewLabel=curTimestamp - sleepClassificationModel.getTimeSliceLength();
+            SleepLabelEnum label = this.sleepClassificationModel.predict(allSamples, curTimestamp);
+
+            if(startSleep==-1 && (label == SleepLabelEnum.DEEP || label==SleepLabelEnum.LIGHT)){
+                startSleep = curTimestamp-sleepClassificationModel.getTimeSliceLength();
+            } else if (startSleep!=-1 && (label == SleepLabelEnum.UNKNOWN || label==SleepLabelEnum.WAKE)) {
+                if(Math.abs(curTimestamp-startSleep) < 30*60) { // Min of 30 min consecutive sleep
+                    timestampFromNewLabel = startSleep; // This does not work correctly and is just used for testing.
+                }
+                startSleep = -1;
+            }
+
+            int raw_label;
+            switch (label) {
+                case WAKE:
+                    raw_label = TYPE_ACTIVITY;
+                    break;
+                case LIGHT:
+                    raw_label = ActivityKind.TYPE_LIGHT_SLEEP;
+                    break;
+                case DEEP:
+                    raw_label = ActivityKind.TYPE_DEEP_SLEEP;
+                    break;
+                default:
+                    raw_label = ActivityKind.TYPE_UNKNOWN;
+            }
             for (BangleJSActivitySample sample : samples_to_predict) {
-                if (curTimestamp - TEN_MINUTES < sample.getTimestamp() && sample.getTimestamp() <= curTimestamp) {
-                    sample.setRawKind(label != ActivityKind.TYPE_UNKNOWN ? label : sample.getRawKind());
-                }
-            }
-        }
+                if (timestampFromNewLabel < sample.getTimestamp() && sample.getTimestamp() <= curTimestamp) {
 
-    }
-
-    private int getSleepLabel(float[] prediction) {
-        int label_idx = -1;
-        float max_val = 0;
-        for (int i = 0; i < prediction.length; i++) {
-            if (prediction[i] > max_val) {
-                max_val = prediction[i];
-                label_idx = i;
-            }
-        }
-
-        switch (label_idx) {
-            case 0:
-                return ActivityKind.TYPE_ACTIVITY;
-            case 1:
-                return ActivityKind.TYPE_LIGHT_SLEEP;
-            case 2:
-                return ActivityKind.TYPE_DEEP_SLEEP;
-            default:
-                return ActivityKind.TYPE_UNKNOWN;
-        }
-    }
-
-    private float[][][] createModelInput(List<BangleJSActivitySample> allSamples, int timestampTo) {
-        float[][][] result = new float[1][12][6];
-        int timestampFrom = timestampTo - 12 * TEN_MINUTES;
-        for (int i = 0; i < 12; i++) {
-            int curTimestamp = timestampFrom + i * TEN_MINUTES;
-            result[0][i] = this.createFeature(allSamples, curTimestamp, curTimestamp + TEN_MINUTES);
-        }
-        return result;
-    }
-
-    private float[] createFeature(List<BangleJSActivitySample> allSamples, int timestampFrom, int timestampTo) {
-        ArrayList<Double> heartrates = new ArrayList<>();
-        double hrSum = 0;
-        double hr_min = Double.MAX_VALUE;
-        double hr_max = Double.MIN_VALUE;
-        int step_count = 0;
-        int movement=0;
-        for (int i = 0; i < allSamples.size(); i++) {
-            BangleJSActivitySample entry = allSamples.get(i);
-            if (entry.getTimestamp() <= timestampTo && entry.getTimestamp() >= timestampFrom) {
-                double currentHr = entry.getHeartRate();
-                hrSum += currentHr;
-                heartrates.add(currentHr);
-                step_count+=entry.getSteps();
-                movement+=entry.getRawIntensity();
-
-
-                if (currentHr < hr_min) {
-                    hr_min = currentHr;
-                }
-                if (currentHr > hr_max) {
-                    hr_max = currentHr;
+                    sample.setRawKind(raw_label != ActivityKind.TYPE_UNKNOWN ? raw_label : sample.getRawKind());
                 }
             }
         }
 
 
-        double hr_mean = hrSum / heartrates.size();
-        double hr_std = 0;
-        for (double currentHeartrate : heartrates) {
-            hr_std += Math.pow(currentHeartrate - hr_mean, 2);
-        }
-        hr_std = Math.sqrt(hr_std / heartrates.size());
 
-
-        float[] features = new float[6];
-
-        features[0] = (float) step_count/1500;
-        features[1] = this.normalizeIntensity(movement);
-        features[2] = (float) (hr_mean-30) / 185;
-        features[3] = (float) (hr_min -30) / 185;
-        features[4] = (float) (hr_max -30) / 185;
-        features[5] = (float) (hr_std / 60);
-
-        return features;
-    }
-
-    private MappedByteBuffer loadModelFile() throws IOException {
-        try(AssetFileDescriptor fileDescriptor = GBApplication.getContext().getAssets().openFd("models/model.tflite")) {
-            try(FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor())) {
-                FileChannel fileChannel = inputStream.getChannel();
-                long startOffset = fileDescriptor.getStartOffset();
-                long declareLength = fileDescriptor.getDeclaredLength();
-                return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declareLength);
-            }
-        }
     }
 
 
