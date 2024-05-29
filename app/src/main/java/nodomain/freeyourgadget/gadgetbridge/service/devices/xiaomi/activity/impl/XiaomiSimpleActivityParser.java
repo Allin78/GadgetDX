@@ -92,7 +92,11 @@ public class XiaomiSimpleActivityParser {
                     swimStyleName = "breaststroke";
                 } else if (swimStyle == 2) {
                     swimStyleName = "freestyle";
-                }// TODO: add missing swim styles
+                } else if (swimStyle == 3) {
+                    swimStyleName = "backstroke";
+                } else if (swimStyle == 4) {
+                    swimStyleName = "butterfly";
+                }
 
                 addSummaryData(summaryData, dataEntry.getKey(), swimStyleName);
             } else if (dataEntry.getKey().equals(XIAOMI_WORKOUT_TYPE)) {
