@@ -409,7 +409,7 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
         builder.addUnknown(1);
         builder.addShort(LAPS, UNIT_LAPS);
         builder.addShort(SWOLF_AVG, UNIT_NONE);
-        builder.addUnknown(2);
+        builder.addUnknown(2); // minSWOLF
         builder.addByte("configuredLaneLength", UNIT_METERS);
         builder.addUnknown(6);
         // builder.addInt("activeSec2", UNIT_SECONDS);
@@ -436,8 +436,8 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
         builder.addUnknown(14);
         // builder.addInt("laps2", UNIT_LAPS);
         // builder.addShort("avgSWOLF2", UNIT_NONE);
-        builder.addShort("minSWOLF", UNIT_NONE); // not confirmed
-        builder.addShort("maxSWOLF", UNIT_NONE); // not confirmed
+        builder.addShort("minSWOLF", UNIT_NONE);
+        builder.addShort("maxSWOLF", UNIT_NONE);
         // builder.addInt("totalStrokes2", UNIT_STROKES);
 
         return builder.build();
