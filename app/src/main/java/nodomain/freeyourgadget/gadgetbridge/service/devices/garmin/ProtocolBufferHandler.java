@@ -124,6 +124,9 @@ public class ProtocolBufferHandler implements MessageHandler {
                 processed = true;
                 processProtobufFindMyWatchResponse(smart.getFindMyWatchService());
             }
+            if (smart.hasCredentialsService() && smart.getCredentialsService().hasGcOauthRequest() ) {
+                return prepareProtobufResponse(processProtobufOauthRequest(smart.getCredentialsService().getGcOauthRequest()), message.getRequestId());
+            }
             if (smart.hasSettingsService()) {
                 processed = true;
                 processProtobufSettingsService(smart.getSettingsService());
@@ -150,6 +153,25 @@ public class ProtocolBufferHandler implements MessageHandler {
             }
         }
         return null;
+    }
+
+    private GdiSmartProto.Smart processProtobufOauthRequest(GdiCredentialsService.GCOAuthCredentialsRequest oauthRequest) {
+        LOG.debug(" Sending fake protobuf oAuth response");
+        return GdiSmartProto.Smart.newBuilder()
+                .setCredentialsService(GdiCredentialsService.CredentialsService.newBuilder()
+                        .setGcOauthResponse(GdiCredentialsService.GCOAuthCredentialsResponse.newBuilder()
+                                .setGcsLocation(GdiCredentialsService.GCSLocation.PRODUCTION)
+                                .setOauthCredentials(GdiCredentialsService.OAuthCredentials.newBuilder()
+                                        .setConsumerKey("ck")
+                                        .setConsumerSecret("cs")
+                                        .setOauthSecret("os")
+                                        .setOauthToken("ot")
+                                        .build()
+                                ).build()
+                        ).build()
+                ).build();
+
+
     }
 
     private ProtobufMessage processIncoming(ProtobufStatusMessage statusMessage) {

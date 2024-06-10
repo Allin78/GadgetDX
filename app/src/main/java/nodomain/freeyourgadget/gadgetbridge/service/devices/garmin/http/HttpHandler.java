@@ -59,7 +59,10 @@ public class HttpHandler {
             response = contactsHandler.handleRequest(request);
         } else if (request.getPath().equalsIgnoreCase("/api/oauth/token")){
             LOG.info("Got oauth request for {}", request.getPath());
-            response = FakeOauthHandler.handleRequest(request);
+            response = FakeOauthHandler.handleOAuthRequest(request);
+        } else if (request.getPath().equalsIgnoreCase("/oauthTokenExchangeService/connectToIT")){
+            LOG.info("Got initial oauth request for {}", request.getPath());
+            response = FakeOauthHandler.handleInitialOAuthRequest(request);
         } else {
             LOG.warn("Unhandled path {}", request.getPath());
             response = null;
