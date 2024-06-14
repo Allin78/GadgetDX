@@ -471,4 +471,6 @@ public class DeviceSettingsPreferenceConst {
 
     public static final String PREF_CYCLING_SENSOR_PERSISTENCE_INTERVAL = "pref_cycling_persistence_interval";
     public static final String PREF_CYCLING_SENSOR_WHEEL_DIAMETER = "pref_cycling_wheel_diameter";
+
+    public static final String PREF_GARMIN_USE_FAKE_OAUTH = "pref_garmin_use_fake_oauth";
 }

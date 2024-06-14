@@ -28,6 +28,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService
 import nodomain.freeyourgadget.gadgetbridge.model.CannedMessagesSpec;
 import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiCalendarService;
 import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiCore;
+import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiCredentialsService;
 import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiDataTransferService;
 import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiDeviceStatus;
 import nodomain.freeyourgadget.gadgetbridge.proto.garmin.GdiFindMyWatch;
@@ -125,7 +126,9 @@ public class ProtocolBufferHandler implements MessageHandler {
                 processProtobufFindMyWatchResponse(smart.getFindMyWatchService());
             }
             if (smart.hasCredentialsService() && smart.getCredentialsService().hasGcOauthRequest() ) {
-                return prepareProtobufResponse(processProtobufOauthRequest(smart.getCredentialsService().getGcOauthRequest()), message.getRequestId());
+                final boolean sendFakeOauth = deviceSupport.getDevicePrefs().getBoolean(DeviceSettingsPreferenceConst.PREF_GARMIN_USE_FAKE_OAUTH, false);
+                if (sendFakeOauth)
+                    return prepareProtobufResponse(processProtobufOauthRequest(smart.getCredentialsService().getGcOauthRequest()), message.getRequestId());
             }
             if (smart.hasSettingsService()) {
                 processed = true;
@@ -170,8 +173,6 @@ public class ProtocolBufferHandler implements MessageHandler {
                                 ).build()
                         ).build()
                 ).build();
-
-
     }
 
     private ProtobufMessage processIncoming(ProtobufStatusMessage statusMessage) {

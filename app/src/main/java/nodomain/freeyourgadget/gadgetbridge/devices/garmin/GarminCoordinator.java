@@ -95,6 +95,10 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     public TimeSampleProvider<? extends Spo2Sample> getSpo2SampleProvider(final GBDevice device, final DaoSession session) {
         return new GarminSpo2SampleProvider(device, session);
     }
+    @Override
+    public int[] getSupportedDeviceSpecificAuthenticationSettings() {
+        return new int[]{R.xml.devicesettings_garmin_fake_oauth};
+    }
 
     @Override
     public DeviceSpecificSettings getDeviceSpecificSettings(final GBDevice device) {

@@ -2826,4 +2826,8 @@
     <string name="serbian">Сербский</string>
     <string name="pref_title_huawei_account">Учётная запись Huawei</string>
     <string name="pref_summary_huawei_account">Используется для сопряжения без сброса устройства.</string>
+    <string name="pref_title_garmin_use_fake_oauth">Посылать поддельные ключи доступа на часы</string>
+    <string name="pref_summary_garmin_use_fake_oauth">Ключи доступа необходимы для того, чтобы часы делали запрос на обновления AGPS.
+        \n
+        \nВнимание! Эта функция может сделать нерабочими некоторые функции оффициального приложения, требующих доступа к интернету, на некоторое время или до полного сброса часов.</string>
 </resources>

@@ -2914,4 +2914,9 @@
     <string name="battery_full_threshold">Full battery threshold</string>
     <string name="default_percentage">Default (%1$d%%)</string>
     <string name="battery_percentage_str">%1$s%%</string>
+    <string name="pref_summary_garmin_use_fake_oauth">OAuth is necessary for the watch to request A-GPS updates.
+        \n
+        \nAttention!
+        \nThis feature may disable some functions of the official application that require online access for some time or til factory reset of watch.</string>
+    <string name="pref_title_garmin_use_fake_oauth">Send fake oAuth to the watch</string>
 </resources>
