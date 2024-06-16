@@ -2,14 +2,19 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.agps;
 
 import androidx.documentfile.provider.DocumentFile;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarFile;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.threeten.bp.Instant;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -50,9 +55,8 @@ public class AgpsHandler {
                 }
 
                 final GarminHttpResponse response = new GarminHttpResponse();
-
                 final byte[] rawBytes = FileUtils.readAll(agpsIn, 1024 * 1024); // 1MB, they're usually ~60KB
-                final String fileHash = GB.hexdump(CheckSums.md5(rawBytes)).toLowerCase(Locale.ROOT);
+                final String fileHash = GB.hexdump(getFileHash(rawBytes)).toLowerCase(Locale.ROOT);
                 final String etag = "\"" + fileHash + "\"";
                 response.getHeaders().put("etag", etag);
 
@@ -139,5 +143,30 @@ public class AgpsHandler {
             );
             return null;
         };
+    }
+
+    private byte[] getFileHash(byte[] rawBytes) {
+        // If this is a tar file, make hash independent of entries' order and modification times
+        try {
+            TarFile tarFile = new TarFile(rawBytes);
+            // Sort entries by file name for order-invariance
+            List<TarArchiveEntry> entries = tarFile.getEntries();
+            Collections.sort(entries, new Comparator<TarArchiveEntry>() {
+                @Override
+                public int compare(TarArchiveEntry t1, TarArchiveEntry t2) {
+                    return t1.getName().compareTo(t2.getName());
+                }
+            });
+            ByteArrayOutputStream checksums = new ByteArrayOutputStream();
+            for (TarArchiveEntry entry : entries) {
+                final byte[] entryContents = IOUtils.readFully(tarFile.getInputStream(entry), Math.min((int) entry.getSize(), 1024 * 1024));
+                checksums.write(entry.getName().getBytes());
+                checksums.write(CheckSums.md5(entryContents));
+            }
+            return CheckSums.md5(checksums.toByteArray());
+        } catch (final IOException e) {
+            LOG.warn("AGPS file cannot be read as tar file", e);
+            return CheckSums.md5(rawBytes);
+        }
     }
 }
