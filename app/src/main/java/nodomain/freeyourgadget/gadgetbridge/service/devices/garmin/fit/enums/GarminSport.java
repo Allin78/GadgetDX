@@ -109,7 +109,7 @@ public enum GarminSport {
     WATER_TUBING(76, 0),
     WAKESURFING(77, 0),
     MIXED_MARTIAL_ARTS(80, 0), // aka MMA
-    DANSE(83, 0),
+    DANCE(83, 0),
     JUMP_ROPE(84, 0),
     ;
 
