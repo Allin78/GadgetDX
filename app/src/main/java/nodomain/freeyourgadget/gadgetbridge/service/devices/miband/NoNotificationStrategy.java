@@ -32,16 +32,16 @@ public class NoNotificationStrategy implements NotificationStrategy {
 
     @Override
     public void sendDefaultNotification(TransactionBuilder builder, SimpleNotification simpleNotification, BtLEAction extraAction) {
-        LOG.info("dummy notification stragegy: default notification");
+        LOG.info("dummy notification strategy: default notification");
     }
 
     @Override
     public void sendCustomNotification(VibrationProfile vibrationProfile, SimpleNotification simpleNotification, int flashTimes, int flashColour, int originalColour, long flashDuration, BtLEAction extraAction, TransactionBuilder builder) {
-        LOG.info("dummy notification stragegy: custom notification: " + simpleNotification);
+        LOG.info("dummy notification strategy: custom notification: " + simpleNotification);
     }
 
     @Override
     public void stopCurrentNotification(TransactionBuilder builder) {
-        LOG.info("dummy notification stragegy: stop notification");
+        LOG.info("dummy notification strategy: stop notification");
     }
 }
