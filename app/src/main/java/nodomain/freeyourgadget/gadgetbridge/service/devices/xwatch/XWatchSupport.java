@@ -209,7 +209,7 @@ public class XWatchSupport extends AbstractBTLEDeviceSupport {
     @Override
     public void onSetCallState(CallSpec callSpec) {
         if (callSpec.command == CallSpec.CALL_INCOMING) {
-            LOG.debug("Incoming call8");
+            LOG.debug("Incoming call");
             try {
                 TransactionBuilder builder = performInitialized("callnotification");
                 BluetoothGattCharacteristic deviceData = getCharacteristic(XWatchService.UUID_WRITE);
