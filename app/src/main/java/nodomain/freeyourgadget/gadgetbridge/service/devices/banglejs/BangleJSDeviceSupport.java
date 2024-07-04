@@ -798,7 +798,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             getDevice().unsetBusyTask();
             GB.updateTransferNotification(null, "", false, 100, getContext());
         } else {
-            LOG.warn("Unknown actfetch state {}", state);
+            LOG.warn("Unknown ActivityFetch state {}", state);
         }
 
         final GBDeviceEventUpdatePreferences event = new GBDeviceEventUpdatePreferences()
