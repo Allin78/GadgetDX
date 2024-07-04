@@ -1072,7 +1072,7 @@ public class FossilHRWatchAdapter extends FossilWatchAdapter {
             queueWrite(new FileGetRawRequest(majorHandle, minorHandle, this) {
                 @Override
                 public void handleFileRawData(byte[] fileData) {
-                    LOG.debug("downloaded regular file");
+                    LOG.debug("downloading regular file");
                     handleFileDownload(name, fileData, toCache);
                 }
             });
