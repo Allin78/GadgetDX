@@ -1081,7 +1081,7 @@ public class WatchXPlusDeviceSupport extends AbstractBTLEDeviceSupport {
      * for testing purposes only
      */
     private WatchXPlusDeviceSupport getUnitsSettings() {
-        LOG.info(" Get units from watch... ");
+        LOG.info(" Getting units from watch... ");
         try {
             TransactionBuilder builder = performInitialized("getUnits");
             builder.write(getCharacteristic(WatchXPlusConstants.UUID_CHARACTERISTIC_WRITE),
