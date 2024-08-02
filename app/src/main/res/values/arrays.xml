@@ -3017,6 +3017,7 @@
         <item>@string/liveactivity_live_activity</item>
         <item>@string/pref_header_spo2</item>
         <item>@string/menuitem_temperature</item>
+        <item>@string/pref_header_hrv_status</item>
     </string-array>
 
     <string-array name="pref_charts_tabs_values">
@@ -3028,6 +3029,7 @@
         <item>@string/p_stress</item>
         <item>@string/p_pai</item>
         <item>@string/p_speed_zones</item>
+        <item>@string/p_hrv_status</item>
         <item>@string/p_live_stats</item>
         <item>@string/p_spo2</item>
         <item>@string/p_temperature</item>
@@ -3039,6 +3041,7 @@
         <item>@string/p_activity_list</item>
         <item>@string/p_sleep</item>
         <item>@string/p_sleep_week</item>
+        <item>@string/p_hrv_status</item>
         <item>@string/p_steps_week</item>
         <item>@string/p_stress</item>
         <item>@string/p_pai</item>

@@ -248,6 +248,12 @@ public interface DeviceCoordinator {
     boolean supportsPai();
 
     /**
+     * Returns true if PAI (Personal Activity Intelligence) measurement and fetching is supported by
+     * the device (with this coordinator).
+     */
+    boolean supportsHRVStatus();
+
+    /**
      * Returns the device-specific name for PAI (eg. Vitality Score).
      */
     @StringRes

@@ -1438,6 +1438,8 @@
     <string name="activity_summary_detail_editing_gpx_track">Editing linked GPX track</string>
     <string name="activity_summary_today">Today</string>
     <string name="activity_summary_yesterday">Yesterday</string>
+    <string name="hrv_status_seven_days_avg">7D AVG</string>
+    <string name="hrv_status_last_night">Last Night</string>
     <string name="activity_type_biking">Biking</string>
     <string name="activity_type_treadmill">Treadmill</string>
     <string name="activity_type_exercise">Exercise</string>
@@ -2298,6 +2300,7 @@
     <string name="pref_header_heartrate_alerts">Heart rate alerts</string>
     <string name="pref_header_stress">Stress</string>
     <string name="pref_header_spo2">Blood Oxygen</string>
+    <string name="pref_header_hrv_status">HRV Status</string>
     <string name="pref_header_sony_ambient_sound_control">Ambient Sound Control</string>
     <string name="pref_header_sony_sound_control">Sound Control</string>
     <string name="pref_header_sony_device_info">Device Information</string>
