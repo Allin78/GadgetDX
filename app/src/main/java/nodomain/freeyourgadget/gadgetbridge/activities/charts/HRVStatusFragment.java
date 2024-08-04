@@ -63,6 +63,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
     private TextView mHRVStatusLastNight;
     private TextView mHRVStatusLastNight5MinHighest;
     private TextView mHRVStatusDayAvg;
+    private TextView mHRVStatusBaseline;
     private TextView mDateView;
     protected int CHART_TEXT_COLOR;
     protected int LEGEND_TEXT_COLOR;
@@ -78,6 +79,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         mHRVStatusSevenDaysAvgStatus = rootView.findViewById(R.id.hrv_status_seven_days_avg_rate);
         mHRVStatusLastNight5MinHighest = rootView.findViewById(R.id.hrv_status_last_night_highest_5);
         mHRVStatusDayAvg = rootView.findViewById(R.id.hrv_status_day_avg);
+        mHRVStatusBaseline = rootView.findViewById(R.id.hrv_status_baseline);
         mDateView = rootView.findViewById(R.id.hrv_status_date_view);
 
         setupLineChart();
@@ -175,6 +177,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         mHRVStatusLastNight.setText(today.lastNight > 0 ? getString(R.string.hrv_status_unit, today.lastNight) : "-");
         mHRVStatusLastNight5MinHighest.setText(today.lastNight5MinHigh > 0 ? getString(R.string.hrv_status_unit, today.lastNight5MinHigh) : "-");
         mHRVStatusDayAvg.setText(today.dayAvg > 0 ? getString(R.string.hrv_status_unit, today.dayAvg) : "-");
+        mHRVStatusBaseline.setText(today.baseLineBalancedLower > 0 && today.baseLineBalancedUpper > 0 ? getString(R.string.hrv_status_baseline, today.baseLineBalancedLower, today.baseLineBalancedUpper) : "-");
         switch (today.status.getNum()) {
             case 0:
                 mHRVStatusSevenDaysAvgStatus.setText("-");
@@ -216,7 +219,17 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
                 int finalCounter = counter;
                 Calendar finalDay = (Calendar) day.clone();
                 summarySamples.forEach(sample -> {
-                    weeklyData.add(new HRVStatusDayData(finalDay, finalCounter, sample.getTimestamp(), avgHRV, sample.getWeeklyAverage(), sample.getLastNightAverage(), sample.getLastNight5MinHigh(), sample.getStatus()));
+                    weeklyData.add(new HRVStatusDayData(
+                            finalDay,
+                            finalCounter,
+                            sample.getTimestamp(),
+                            avgHRV, sample.getWeeklyAverage(),
+                            sample.getLastNightAverage(),
+                            sample.getLastNight5MinHigh(),
+                            sample.getBaselineBalancedLower(),
+                            sample.getBaselineBalancedUpper(),
+                            sample.getStatus()
+                    ));
                 });
             } else {
                 HRVStatusDayData d = new HRVStatusDayData(
@@ -224,6 +237,8 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
                         counter,
                         0,
                         avgHRV,
+                        0,
+                        0,
                         0,
                         0,
                         0,
@@ -319,10 +334,20 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         public Integer lastNight;
         public Integer lastNight5MinHigh;
         public Integer dayAvg;
+        public Integer baseLineBalancedLower;
+        public Integer baseLineBalancedUpper;
         public HrvSummarySample.Status status;
         public Calendar day;
 
-        public HRVStatusDayData(Calendar day, int i, long timestamp, Integer dayAvg, Integer weeklyAvg, Integer lastNight, Integer lastNight5MinHigh, HrvSummarySample.Status status) {
+        public HRVStatusDayData(Calendar day,
+                                int i, long timestamp,
+                                Integer dayAvg,
+                                Integer weeklyAvg,
+                                Integer lastNight,
+                                Integer lastNight5MinHigh,
+                                Integer baseLineBalancedLower,
+                                Integer baseLineBalancedUpper,
+                                HrvSummarySample.Status status) {
             this.lastNight = lastNight;
             this.weeklyAvg = weeklyAvg;
             this.lastNight5MinHigh = lastNight5MinHigh;
@@ -331,6 +356,8 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
             this.status = status;
             this.day = day;
             this.dayAvg = dayAvg;
+            this.baseLineBalancedLower = baseLineBalancedLower;
+            this.baseLineBalancedUpper = baseLineBalancedUpper;
         }
     }
 }

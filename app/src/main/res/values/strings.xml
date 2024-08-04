@@ -1451,6 +1451,8 @@
     <string name="hrv_status_last_night_highest_5">LST N HIGHEST 5-MIN AVG</string>
     <string name="hrv_status_seven_days_avg_long">7 DAY AVERAGE</string>
     <string name="hrv_status_unit">%1$d ms</string>
+    <string name="hrv_status_baseline">%1$d-%2$d ms</string>
+    <string name="hrv_status_baseline_label">BASELINE</string>
     <string name="activity_type_biking">Biking</string>
     <string name="activity_type_treadmill">Treadmill</string>
     <string name="activity_type_exercise">Exercise</string>
