@@ -111,7 +111,7 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
         if(!coordinator.supportsCyclingData()) {
             tabList.remove("cycling");
         }
-        if (!coordinator.supportsHRVStatus()) {
+        if (!coordinator.supportsHrvMeasurement()) {
             tabList.remove("hrvstatus");
         }
         return tabList;

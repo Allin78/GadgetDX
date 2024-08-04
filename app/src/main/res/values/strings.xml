@@ -842,6 +842,7 @@
     <string name="prefs_charts_tabs">Charts tabs</string>
     <string name="prefs_charts_tabs_summary">Visible chart tabs</string>
     <string name="sleepchart_your_sleep">Sleep</string>
+    <string name="hrv_status">HRV Status</string>
     <string name="weeksleepchart_sleep_a_week">Sleep per week</string>
     <string name="weeksleepchart_today_sleep_description">Sleep today, target: %1$s</string>
     <string name="weekstepschart_steps_a_week">Steps per week</string>
@@ -1439,7 +1440,14 @@
     <string name="activity_summary_today">Today</string>
     <string name="activity_summary_yesterday">Yesterday</string>
     <string name="hrv_status_seven_days_avg">7D AVG</string>
-    <string name="hrv_status_last_night">Last Night</string>
+    <string name="hrv_status_seven_days_avg_status">STATUS</string>
+    <string name="hrv_status_balanced">Balanced</string>
+    <string name="hrv_status_unbalanced">Unbalanced</string>
+    <string name="hrv_status_low">Low</string>
+    <string name="hrv_status_poor">Poor</string>
+    <string name="hrv_status_last_night">LAST NIGHT</string>
+    <string name="hrv_status_last_night_highest_5">HIGHEST 5-MIN AVG</string>
+    <string name="hrv_status_seven_days_avg_long">7 DAY AVERAGE</string>
     <string name="activity_type_biking">Biking</string>
     <string name="activity_type_treadmill">Treadmill</string>
     <string name="activity_type_exercise">Exercise</string>

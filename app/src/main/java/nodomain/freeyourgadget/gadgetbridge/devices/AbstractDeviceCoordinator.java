@@ -507,11 +507,6 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
-    public boolean supportsHRVStatus() {
-        return supportsPai();
-    }
-
-    @Override
     public boolean supportsSleepRespiratoryRate() {
         return false;
     }

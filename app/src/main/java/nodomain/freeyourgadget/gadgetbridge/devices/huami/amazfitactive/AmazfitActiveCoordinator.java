@@ -80,8 +80,4 @@ public class AmazfitActiveCoordinator extends ZeppOsCoordinator {
         return true;
     }
 
-    public boolean supportsHRVStatus(final GBDevice device) {
-        return true; // TODO remove later
-    }
-
 }
