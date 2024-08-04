@@ -43,13 +43,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.HrvSummarySample;
-import nodomain.freeyourgadget.gadgetbridge.util.DateTimeUtils;
 
 
 public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.HRVStatusWeeklyData> {
@@ -62,6 +62,8 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
     private TextView mHRVStatusLastNight;
     private TextView mHRVStatusLastNight5MinHighest;
     private TextView mDateView;
+    protected int CHART_TEXT_COLOR;
+    protected int LEGEND_TEXT_COLOR;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,7 +88,10 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
     }
 
     @Override
-    protected void init() {}
+    protected void init() {
+        LEGEND_TEXT_COLOR = GBApplication.getTextColor(getContext());
+        CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(getContext());
+    }
 
     @Override
     protected HRVStatusWeeklyData refreshInBackground(ChartsHost chartsHost, DBHandler db, GBDevice device) {
@@ -117,6 +122,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineDataSet.setDrawValues(true);
         lineDataSet.setValueTextSize(10f);
+        lineDataSet.setValueTextColor(CHART_TEXT_COLOR);
         lineDataSet.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -150,6 +156,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         activityEntry.label = getString(R.string.hrv_status_seven_days_avg);
         activityEntry.formColor = getResources().getColor(R.color.hrv_status_char_line_color);
         legendEntries.add(activityEntry);
+        mWeeklyHRVStatusChart.getLegend().setTextColor(LEGEND_TEXT_COLOR);
         mWeeklyHRVStatusChart.getLegend().setCustom(legendEntries);
 
         final LineData lineData = new LineData(lineDataSets);
@@ -233,10 +240,9 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         xAxisBottom.setDrawGridLines(false);
         xAxisBottom.setEnabled(true);
         xAxisBottom.setDrawLimitLinesBehindData(true);
-        xAxisBottom.setSpaceMin(0.5f);
-        xAxisBottom.setSpaceMax(0.5f);
-        xAxisBottom.setAxisMaximum(6);
-        xAxisBottom.setAxisMinimum(0);
+        xAxisBottom.setAxisMaximum(6 + 0.5f);
+        xAxisBottom.setAxisMinimum(0 - 0.5f);
+        xAxisBottom.setTextColor(CHART_TEXT_COLOR);
 
         final YAxis yAxisLeft = mWeeklyHRVStatusChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
@@ -244,11 +250,13 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         yAxisLeft.setAxisMinimum(0);
         yAxisLeft.setDrawTopYLabelEntry(false);
         yAxisLeft.setEnabled(true);
+        yAxisLeft.setTextColor(CHART_TEXT_COLOR);
 
         final YAxis yAxisRight = mWeeklyHRVStatusChart.getAxisRight();
-        yAxisRight.setDrawGridLines(false);
-        yAxisRight.setEnabled(false);
+        yAxisRight.setEnabled(true);
         yAxisRight.setDrawLabels(false);
+        yAxisRight.setDrawGridLines(false);
+        yAxisRight.setDrawAxisLine(true);
     }
 
     ValueFormatter getHRVStatusChartDayValueFormatter(HRVStatusWeeklyData weeklyData) {
