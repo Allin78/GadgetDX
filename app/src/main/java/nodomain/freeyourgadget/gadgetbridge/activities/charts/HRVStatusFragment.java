@@ -264,6 +264,10 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
 
     private void setupLineChart() {
         mWeeklyHRVStatusChart.getDescription().setEnabled(false);
+        mWeeklyHRVStatusChart.setTouchEnabled(false);
+        mWeeklyHRVStatusChart.setPinchZoom(false);
+        mWeeklyHRVStatusChart.setDoubleTapToZoomEnabled(false);
+
 
         final XAxis xAxisBottom = mWeeklyHRVStatusChart.getXAxis();
         xAxisBottom.setPosition(XAxis.XAxisPosition.BOTTOM);
