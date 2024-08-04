@@ -50,6 +50,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.TimeSampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.HrvSummarySample;
+import nodomain.freeyourgadget.gadgetbridge.model.HrvValueSample;
 
 
 public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.HRVStatusWeeklyData> {
@@ -61,9 +62,11 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
     private TextView mHRVStatusSevenDaysAvgStatus; // Balanced, Unbalanced, Low
     private TextView mHRVStatusLastNight;
     private TextView mHRVStatusLastNight5MinHighest;
+    private TextView mHRVStatusDayAvg;
     private TextView mDateView;
     protected int CHART_TEXT_COLOR;
     protected int LEGEND_TEXT_COLOR;
+    protected int TEXT_COLOR;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         mHRVStatusSevenDaysAvg = rootView.findViewById(R.id.hrv_status_seven_days_avg);
         mHRVStatusSevenDaysAvgStatus = rootView.findViewById(R.id.hrv_status_seven_days_avg_rate);
         mHRVStatusLastNight5MinHighest = rootView.findViewById(R.id.hrv_status_last_night_highest_5);
+        mHRVStatusDayAvg = rootView.findViewById(R.id.hrv_status_day_avg);
         mDateView = rootView.findViewById(R.id.hrv_status_date_view);
 
         setupLineChart();
@@ -89,6 +93,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
 
     @Override
     protected void init() {
+        TEXT_COLOR = GBApplication.getTextColor(getContext());
         LEGEND_TEXT_COLOR = GBApplication.getTextColor(getContext());
         CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(getContext());
     }
@@ -110,7 +115,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
     }
 
     protected LineDataSet createDataSet(final List<Entry> values) {
-        final LineDataSet lineDataSet = new LineDataSet(values, getString(R.string.hrv_status_seven_days_avg));
+        final LineDataSet lineDataSet = new LineDataSet(values, getString(R.string.hrv_status_day_avg));
         lineDataSet.setColor(getResources().getColor(R.color.hrv_status_char_line_color));
         lineDataSet.setDrawCircles(false);
         lineDataSet.setLineWidth(2f);
@@ -139,7 +144,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         final List<ILineDataSet> lineDataSets = new ArrayList<>();
         weeklyData.getDaysData().forEach((HRVStatusDayData day) -> {
             if (day.status.getNum() > 0) {
-                lineEntries.add(new Entry(day.i, day.weeklyAvg));
+                lineEntries.add(new Entry(day.i, day.dayAvg));
             } else {
                 if (!lineEntries.isEmpty()) {
                     lineDataSets.add(createDataSet(lineEntries));
@@ -153,7 +158,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
 
         List<LegendEntry> legendEntries = new ArrayList<>(1);
         LegendEntry activityEntry = new LegendEntry();
-        activityEntry.label = getString(R.string.hrv_status_seven_days_avg);
+        activityEntry.label = getString(R.string.hrv_status_day_avg_legend);
         activityEntry.formColor = getResources().getColor(R.color.hrv_status_char_line_color);
         legendEntries.add(activityEntry);
         mWeeklyHRVStatusChart.getLegend().setTextColor(LEGEND_TEXT_COLOR);
@@ -166,13 +171,14 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         x.setValueFormatter(getHRVStatusChartDayValueFormatter(weeklyData));
 
         HRVStatusDayData today = weeklyData.getCurrentDay();
-        mHRVStatusSevenDaysAvg.setText(today.weeklyAvg > 0 ? today.weeklyAvg.toString() : "-");
-        mHRVStatusLastNight.setText(today.lastNight > 0 ? today.lastNight.toString() : "-");
-        mHRVStatusLastNight5MinHighest.setText(today.lastNight5MinHigh > 0 ? today.lastNight5MinHigh.toString() : "-");
+        mHRVStatusSevenDaysAvg.setText(today.weeklyAvg > 0 ? getString(R.string.hrv_status_unit, today.weeklyAvg) : "-");
+        mHRVStatusLastNight.setText(today.lastNight > 0 ? getString(R.string.hrv_status_unit, today.lastNight) : "-");
+        mHRVStatusLastNight5MinHighest.setText(today.lastNight5MinHigh > 0 ? getString(R.string.hrv_status_unit, today.lastNight5MinHigh) : "-");
+        mHRVStatusDayAvg.setText(today.dayAvg > 0 ? getString(R.string.hrv_status_unit, today.dayAvg) : "-");
         switch (today.status.getNum()) {
             case 0:
                 mHRVStatusSevenDaysAvgStatus.setText("-");
-                mHRVStatusSevenDaysAvgStatus.setTextColor(0);
+                mHRVStatusSevenDaysAvgStatus.setTextColor(TEXT_COLOR);
                 break;
             case 1:
                 mHRVStatusSevenDaysAvgStatus.setText(getString(R.string.hrv_status_poor));
@@ -197,23 +203,27 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         day = (Calendar) day.clone(); // do not modify the caller's argument
         day.add(Calendar.DATE, -TOTAL_DAYS);
 
-        List<HRVStatusDayData> weeklyData = new ArrayList<>();;
+        List<HRVStatusDayData> weeklyData = new ArrayList<>();
         for (int counter = 0; counter < TOTAL_DAYS; counter++) {
             int startTs = (int) (day.getTimeInMillis() / 1000);
             int endTs = startTs + 24 * 60 * 60 - 1;
             day.add(Calendar.DATE, 1);
-            List<? extends HrvSummarySample> samples = getSamples(db, device, startTs, endTs);
-            if (!samples.isEmpty()) {
+            List<? extends HrvSummarySample> summarySamples = getSamples(db, device, startTs, endTs);
+            List<? extends HrvValueSample> valueSamples = getHrvValueSamples(db, device, startTs, endTs);
+
+            int avgHRV = (int) valueSamples.stream().mapToInt(v -> {return v.getValue();}).average().orElse(0);
+            if (!summarySamples.isEmpty()) {
                 int finalCounter = counter;
                 Calendar finalDay = (Calendar) day.clone();
-                samples.forEach(sample -> {
-                    weeklyData.add(new HRVStatusDayData(finalDay, finalCounter, sample.getTimestamp(), sample.getWeeklyAverage(), sample.getLastNightAverage(), sample.getLastNight5MinHigh(), sample.getStatus()));
+                summarySamples.forEach(sample -> {
+                    weeklyData.add(new HRVStatusDayData(finalDay, finalCounter, sample.getTimestamp(), avgHRV, sample.getWeeklyAverage(), sample.getLastNightAverage(), sample.getLastNight5MinHigh(), sample.getStatus()));
                 });
             } else {
                 HRVStatusDayData d = new HRVStatusDayData(
                         (Calendar) day.clone(),
                         counter,
                         0,
+                        avgHRV,
                         0,
                         0,
                         0,
@@ -228,6 +238,12 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
     private List<? extends HrvSummarySample> getSamples(final DBHandler db, final GBDevice device, int tsFrom, int tsTo) {
         final DeviceCoordinator coordinator = device.getDeviceCoordinator();
         final TimeSampleProvider<? extends HrvSummarySample> sampleProvider = coordinator.getHrvSummarySampleProvider(device, db.getDaoSession());
+        return sampleProvider.getAllSamples(tsFrom * 1000L, tsTo * 1000L);
+    }
+
+    public List<? extends HrvValueSample> getHrvValueSamples(final DBHandler db, final GBDevice device, int tsFrom, int tsTo) {
+        final DeviceCoordinator coordinator = device.getDeviceCoordinator();
+        final TimeSampleProvider<? extends HrvValueSample> sampleProvider = coordinator.getHrvValueSampleProvider(device, db.getDaoSession());
         return sampleProvider.getAllSamples(tsFrom * 1000L, tsTo * 1000L);
     }
 
@@ -302,10 +318,11 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
         public Integer weeklyAvg;
         public Integer lastNight;
         public Integer lastNight5MinHigh;
+        public Integer dayAvg;
         public HrvSummarySample.Status status;
         public Calendar day;
 
-        public HRVStatusDayData(Calendar day, int i, long timestamp, Integer weeklyAvg, Integer lastNight, Integer lastNight5MinHigh, HrvSummarySample.Status status) {
+        public HRVStatusDayData(Calendar day, int i, long timestamp, Integer dayAvg, Integer weeklyAvg, Integer lastNight, Integer lastNight5MinHigh, HrvSummarySample.Status status) {
             this.lastNight = lastNight;
             this.weeklyAvg = weeklyAvg;
             this.lastNight5MinHigh = lastNight5MinHigh;
@@ -313,6 +330,7 @@ public class HRVStatusFragment extends AbstractChartFragment<HRVStatusFragment.H
             this.timestamp = timestamp;
             this.status = status;
             this.day = day;
+            this.dayAvg = dayAvg;
         }
     }
 }

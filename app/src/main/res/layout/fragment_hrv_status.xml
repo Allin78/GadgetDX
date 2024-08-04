@@ -172,6 +172,48 @@
                         android:textSize="12sp" />
                 </LinearLayout>
             </TableRow>
+
+            <TableRow
+                android:id="@+id/tableRow2"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:id="@+id/sleep_chart_legend_rem_time_wrapper"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingLeft="20dip"
+                    android:paddingTop="20dip"
+                    android:paddingRight="20dip">
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="5px"
+                        android:background="@color/value_line_color" />
+
+                    <TextView
+                        android:id="@+id/hrv_status_day_avg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:layout_marginTop="20dip"
+                        android:text="-"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="start"
+                        android:text="@string/hrv_status_day_avg"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </TableRow>
+
+
         </TableLayout>
 
         <LinearLayout
