@@ -19,11 +19,14 @@
             android:layout_marginTop="15dp"
             />
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/body_energy_level_chart"
-            android:layout_width="fill_parent"
-            android:layout_height="300dp"
-            />
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:scaleType="fitStart"
+            android:id="@+id/body_energy_gauge" />
+
 
 <!--        <TableLayout-->
 <!--            android:layout_width="fill_parent"-->

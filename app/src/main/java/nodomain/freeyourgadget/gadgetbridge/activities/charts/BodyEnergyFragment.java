@@ -1,14 +1,20 @@
 package nodomain.freeyourgadget.gadgetbridge.activities.charts;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
 
 import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.Chart;
@@ -44,14 +50,12 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
     protected static final Logger LOG = LoggerFactory.getLogger(BodyEnergyFragment.class);
     protected final int TOTAL_DAYS = 7;
 
-    private PieChart mBodyEnergyLevelChart;
-//    private TextView mHRVStatusSevenDaysAvg;
-//    private TextView mHRVStatusSevenDaysAvgStatus; // Balanced, Unbalanced, Low
-//    private TextView mHRVStatusLastNight;
-//    private TextView mHRVStatusLastNight5MinHighest;
-//    private TextView mHRVStatusDayAvg;
-//    private TextView mHRVStatusBaseline;
+    protected @ColorInt int color_unknown = Color.argb(25, 128, 128, 128);
+    protected @ColorInt int color_active_time = Color.rgb(170, 0, 255);
+
     private TextView mDateView;
+    private ImageView bodyEnergyGauge;
+
     protected int CHART_TEXT_COLOR;
     protected int LEGEND_TEXT_COLOR;
     protected int TEXT_COLOR;
@@ -60,7 +64,6 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_body_energy, container, false);
 
-        mBodyEnergyLevelChart = rootView.findViewById(R.id.body_energy_level_chart);
 //        mHRVStatusLastNight = rootView.findViewById(R.id.hrv_status_last_night);
 //        mHRVStatusSevenDaysAvg = rootView.findViewById(R.id.hrv_status_seven_days_avg);
 //        mHRVStatusSevenDaysAvgStatus = rootView.findViewById(R.id.hrv_status_seven_days_avg_rate);
@@ -68,54 +71,14 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
 //        mHRVStatusDayAvg = rootView.findViewById(R.id.hrv_status_day_avg);
 //        mHRVStatusBaseline = rootView.findViewById(R.id.hrv_status_baseline);
         mDateView = rootView.findViewById(R.id.hrv_status_date_view);
+        bodyEnergyGauge = rootView.findViewById(R.id.body_energy_gauge);
 
-        setupBodyEnergyLevelChart();
 //        refresh();
 
 
         return rootView;
     }
 
-
-    private void setupBodyEnergyLevelChart() {
-        final PieData data = new PieData();
-        final List<PieEntry> entries = new ArrayList<>();
-
-        entries.add(new PieEntry(60, "y"));
-        entries.add(new PieEntry(40, "x"));
-
-        final PieDataSet pieDataSet = new PieDataSet(entries, "");
-
-        pieDataSet.setColors(Color.GREEN, Color.GRAY);
-
-        data.setDataSet(pieDataSet);
-        //Get the chart
-        mBodyEnergyLevelChart.setData(data);
-        mBodyEnergyLevelChart.invalidate();
-        mBodyEnergyLevelChart.setCenterText("30");
-        mBodyEnergyLevelChart.setDrawEntryLabels(false);
-        mBodyEnergyLevelChart.setContentDescription("");
-        //pieChart.setDrawMarkers(true);
-        //pieChart.setMaxHighlightDistance(34);
-        mBodyEnergyLevelChart.setEntryLabelTextSize(28f);
-        mBodyEnergyLevelChart.setHoleRadius(75);
-        mBodyEnergyLevelChart.setMaxAngle(270f);
-        mBodyEnergyLevelChart.setRotationAngle(-135f);
-        mBodyEnergyLevelChart.setDrawRoundedSlices(true);
-        mBodyEnergyLevelChart.setBackgroundColor(GBApplication.getBackgroundColor(getContext()));
-        mBodyEnergyLevelChart.getDescription().setTextColor(GBApplication.getTextColor(getContext()));
-        mBodyEnergyLevelChart.setNoDataText("-");
-        mBodyEnergyLevelChart.setHoleColor(getContext().getResources().getColor(R.color.transparent));
-        mBodyEnergyLevelChart.getLegend().setEnabled(false);
-
-
-        //legend attributes
-//        Legend legend = pieChart.getLegend();
-//        legend.setForm(Legend.LegendForm.CIRCLE);
-//        legend.setTextSize(12);
-//        legend.setFormSize(20);
-//        legend.setFormToTextSpace(2);
-    }
 
     @Override
     public String getTitle() {
@@ -133,7 +96,9 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
     protected BodyEnergyData refreshInBackground(ChartsHost chartsHost, DBHandler db, GBDevice device) {
         String formattedDate = new SimpleDateFormat("E, MMM dd").format(getTSEnd());
         mDateView.setText(formattedDate);
-        List<? extends BodyEnergySample> samples = getBodyEnergySamples(db, device, getTSStart(), getTSEnd());
+//        List<? extends BodyEnergySample> samples = getBodyEnergySamples(db, device, getTSStart(), getTSEnd());
+
+        bodyEnergyGauge.setImageBitmap(drawGauge(300, 20, color_active_time, 0.30F));
 
         return null;
     }
@@ -164,6 +129,60 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
     @Override
     protected void updateChartsnUIThread(BodyEnergyData chartsData) {
 
+    }
+
+    /**
+     * @param width Bitmap width in pixels
+     * @param barWidth Gauge bar width in pixels
+     * @param filledColor Color of the filled part of the gauge
+     * @param filledFactor Factor between 0 and 1 that determines the amount of the gauge that should be filled
+     * @return Bitmap containing the gauge
+     */
+    Bitmap drawGauge(int width, int barWidth, @ColorInt int filledColor, float filledFactor) {
+        int height = width;
+        int barMargin = (int) Math.ceil(barWidth / 2f);
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeWidth(barWidth);
+        paint.setColor(color_unknown);
+        canvas.drawArc(
+                barMargin,
+                barMargin,
+                width - barMargin,
+                width - barMargin,
+                120,
+                300,
+                false,
+                paint);
+        paint.setStrokeWidth(barWidth);
+        paint.setColor(filledColor);
+        canvas.drawArc(
+                barMargin,
+                barMargin,
+                width - barMargin,
+                height - barMargin,
+                120,
+                300 * filledFactor,
+                false,
+                paint
+        );
+
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        float textPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, requireContext().getResources().getDisplayMetrics());
+        textPaint.setTextSize(textPixels);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        int yPos = (int) ((float) height / 2 - ((textPaint.descent() + textPaint.ascent()) / 2)) ;
+        canvas.drawText("30", width / 2f, yPos, textPaint);
+
+
+
+        return bitmap;
     }
 
     protected static class BodyEnergyData extends ChartsData {}
