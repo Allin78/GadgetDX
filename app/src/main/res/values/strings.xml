@@ -843,7 +843,6 @@
     <string name="prefs_charts_tabs_summary">Visible chart tabs</string>
     <string name="sleepchart_your_sleep">Sleep</string>
     <string name="hrv_status">HRV Status</string>
-    <string name="body_energy">Body Energy</string>
     <string name="weeksleepchart_sleep_a_week">Sleep per week</string>
     <string name="weeksleepchart_today_sleep_description">Sleep today, target: %1$s</string>
     <string name="weekstepschart_steps_a_week">Steps per week</string>
@@ -1454,6 +1453,9 @@
     <string name="hrv_status_unit">%1$d ms</string>
     <string name="hrv_status_baseline">%1$d-%2$d ms</string>
     <string name="hrv_status_baseline_label">Baseline</string>
+    <string name="body_energy_gained">Gained</string>
+    <string name="body_energy_lost">Lost</string>
+    <string name="body_energy_legend_level">Body Energy Level</string>
     <string name="activity_type_biking">Biking</string>
     <string name="activity_type_treadmill">Treadmill</string>
     <string name="activity_type_exercise">Exercise</string>
@@ -2315,7 +2317,7 @@
     <string name="pref_header_stress">Stress</string>
     <string name="pref_header_spo2">Blood Oxygen</string>
     <string name="pref_header_hrv_status">HRV Status</string>
-    <string name="pref_header_body_energy">Body Energy</string>
+    <string name="body_energy">Body Energy</string>
     <string name="pref_header_sony_ambient_sound_control">Ambient Sound Control</string>
     <string name="pref_header_sony_sound_control">Sound Control</string>
     <string name="pref_header_sony_device_info">Device Information</string>
