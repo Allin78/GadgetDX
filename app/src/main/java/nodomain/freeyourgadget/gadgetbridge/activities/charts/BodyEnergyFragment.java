@@ -2,12 +2,8 @@ package nodomain.freeyourgadget.gadgetbridge.activities.charts;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,32 +13,20 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 
-import com.github.mikephil.charting.animation.ChartAnimator;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.LegendEntry;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
-import com.github.mikephil.charting.renderer.PieChartRenderer;
-import com.github.mikephil.charting.utils.MPPointF;
-import com.github.mikephil.charting.utils.Utils;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,7 +67,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         bodyEnergyGained = rootView.findViewById(R.id.body_energy_gained);
         bodyEnergyLost = rootView.findViewById(R.id.body_energy_lost);
         bodyEnergyChart = rootView.findViewById(R.id.body_energy_chart);
-        setupBodyBatteryChart();
+        setupBodyEnergyLevelChart();
         refresh();
 
 
@@ -116,7 +100,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
 
         List<Entry> lineEntries = new ArrayList<>();
         final List<ILineDataSet> lineDataSets = new ArrayList<>();
-        final AtomicInteger chargedValue = new AtomicInteger(0);
+        final AtomicInteger gainedValue = new AtomicInteger(0);
         final AtomicInteger drainedValue = new AtomicInteger(0);
         int newestValue = 0;
         long referencedTimestamp;
@@ -128,7 +112,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
                 if (sample.getEnergy() < lastValue[0].intValue()) {
                     drainedValue.incrementAndGet();
                 } else if (lastValue[0].intValue() > 0 && sample.getEnergy() > lastValue[0].intValue()) {
-                    chargedValue.set(chargedValue.get() - 1);
+                    gainedValue.set(gainedValue.get() + 1);
                 }
                 lastValue[0].set(sample.getEnergy());
                 float x = (float) sample.getTimestamp() / 1000 - (float) referencedTimestamp / 1000;
@@ -170,7 +154,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
                 newestValue,
                 100
         ));
-        bodyEnergyGained.setText(String.format("+ %s", chargedValue.intValue() * -1));
+        bodyEnergyGained.setText(String.format("+ %s", gainedValue.intValue()));
         bodyEnergyLost.setText(String.format("- %s", drainedValue));
     }
 
@@ -249,7 +233,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         return bitmap;
     }
 
-    private void setupBodyBatteryChart() {
+    private void setupBodyEnergyLevelChart() {
         bodyEnergyChart.getDescription().setEnabled(false);
         bodyEnergyChart.setTouchEnabled(false);
         bodyEnergyChart.setPinchZoom(false);
