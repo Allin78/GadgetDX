@@ -51,6 +51,7 @@
     <color name="body_energy_level_color" type="color">#5ac234</color>
 
     <color name="value_line_color" type="color">#858585</color>
+    <color name="gauge_line_color" type="color">#383838</color>
 
     <color name="alternate_row_background_light">#FFEDEDED</color>
     <color name="alternate_row_background_dark">#545254</color>

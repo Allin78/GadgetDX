@@ -30,6 +30,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
@@ -41,12 +42,14 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
@@ -60,10 +63,6 @@ import nodomain.freeyourgadget.gadgetbridge.model.BodyEnergySample;
 
 public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment.BodyEnergyData> {
     protected static final Logger LOG = LoggerFactory.getLogger(BodyEnergyFragment.class);
-    protected final int TOTAL_DAYS = 7;
-
-    protected @ColorInt int color_unknown = Color.argb(25, 128, 128, 128);
-    protected @ColorInt int color_active_time = Color.rgb(170, 0, 255);
 
     private TextView mDateView;
     private ImageView bodyEnergyGauge;
@@ -120,12 +119,11 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         final AtomicInteger chargedValue = new AtomicInteger(0);
         final AtomicInteger drainedValue = new AtomicInteger(0);
         int newestValue = 0;
-        long referencedTimestamp = 0;
+        long referencedTimestamp;
         if (!bodyEnergyData.samples.isEmpty()) {
             newestValue = bodyEnergyData.samples.get(bodyEnergyData.samples.size() - 1).getEnergy();
             referencedTimestamp = bodyEnergyData.samples.get(0).getTimestamp();
             final AtomicInteger[] lastValue = {new AtomicInteger(0)};
-            long finalReferencedTimestamp = referencedTimestamp;
             bodyEnergyData.samples.forEach((sample) -> {
                 if (sample.getEnergy() < lastValue[0].intValue()) {
                     drainedValue.incrementAndGet();
@@ -133,9 +131,11 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
                     chargedValue.set(chargedValue.get() - 1);
                 }
                 lastValue[0].set(sample.getEnergy());
-                float x = (sample.getTimestamp() / 1000) - (finalReferencedTimestamp / 1000);
+                float x = (float) sample.getTimestamp() / 1000 - (float) referencedTimestamp / 1000;
                 lineEntries.add(new Entry(x, sample.getEnergy()));
             });
+        } else {
+            referencedTimestamp = 0;
         }
 
 
@@ -159,8 +159,6 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         bodyEnergyChart.getLegend().setCustom(legendEntries);
         final XAxis x = bodyEnergyChart.getXAxis();
         x.setValueFormatter(getBodyEnergyChartXValueFormatter(referencedTimestamp));
-
-
 
         lineDataSets.add(lineDataSet);
         final LineData lineData = new LineData(lineDataSets);
@@ -210,7 +208,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeCap(Paint.Cap.ROUND);
         paint.setStrokeWidth(barWidth);
-        paint.setColor(color_unknown);
+        paint.setColor(getResources().getColor(R.color.gauge_line_color));
         canvas.drawArc(
                 barMargin,
                 barMargin,
@@ -265,6 +263,8 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         xAxisBottom.setEnabled(true);
         xAxisBottom.setDrawLimitLinesBehindData(true);
         xAxisBottom.setTextColor(CHART_TEXT_COLOR);
+        xAxisBottom.setAxisMaximum(0);
+        xAxisBottom.setAxisMaximum(60 * 60 * 24);
 
         final YAxis yAxisLeft = bodyEnergyChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
@@ -279,13 +279,19 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         yAxisRight.setDrawLabels(false);
         yAxisRight.setDrawGridLines(false);
         yAxisRight.setDrawAxisLine(true);
+
     }
 
     ValueFormatter getBodyEnergyChartXValueFormatter(long referencedTimestamp) {
         return new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return String.valueOf(value);
+                long timestamp = (long) (value * 1000);
+                Date date = new Date ();
+                date.setTime(timestamp);
+                SimpleDateFormat df = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                return df.format(date);
             }
         };
     }
