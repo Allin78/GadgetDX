@@ -63,7 +63,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_body_energy, container, false);
 
-        mDateView = rootView.findViewById(R.id.hrv_status_date_view);
+        mDateView = rootView.findViewById(R.id.body_energy_date_view);
         bodyEnergyGauge = rootView.findViewById(R.id.body_energy_gauge);
         bodyEnergyGained = rootView.findViewById(R.id.body_energy_gained);
         bodyEnergyLost = rootView.findViewById(R.id.body_energy_lost);
@@ -90,7 +90,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
 
     @Override
     protected BodyEnergyData refreshInBackground(ChartsHost chartsHost, DBHandler db, GBDevice device) {
-        String formattedDate = new SimpleDateFormat("E, MMM dd").format(getTSEnd());
+        String formattedDate = new SimpleDateFormat("E, MMM dd").format(getEndDate());
         mDateView.setText(formattedDate);
         List<? extends BodyEnergySample> samples = getBodyEnergySamples(db, device, getTSStart(), getTSEnd());
         return new BodyEnergyData(samples);
