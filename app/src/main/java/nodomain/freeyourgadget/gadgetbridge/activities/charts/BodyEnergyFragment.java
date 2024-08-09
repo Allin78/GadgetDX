@@ -251,7 +251,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         yAxisLeft.setDrawGridLines(true);
         yAxisLeft.setAxisMaximum(100);
         yAxisLeft.setAxisMinimum(0);
-        yAxisLeft.setDrawTopYLabelEntry(false);
+        yAxisLeft.setDrawTopYLabelEntry(true);
         yAxisLeft.setEnabled(true);
         yAxisLeft.setTextColor(CHART_TEXT_COLOR);
 
