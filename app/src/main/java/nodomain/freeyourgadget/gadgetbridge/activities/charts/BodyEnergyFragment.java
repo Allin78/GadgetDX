@@ -110,9 +110,9 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
             final AtomicInteger[] lastValue = {new AtomicInteger(0)};
             bodyEnergyData.samples.forEach((sample) -> {
                 if (sample.getEnergy() < lastValue[0].intValue()) {
-                    drainedValue.incrementAndGet();
+                    drainedValue.set(drainedValue.get() + lastValue[0].intValue() - sample.getEnergy());
                 } else if (lastValue[0].intValue() > 0 && sample.getEnergy() > lastValue[0].intValue()) {
-                    gainedValue.set(gainedValue.get() + 1);
+                    gainedValue.set(gainedValue.get() + sample.getEnergy() - lastValue[0].intValue());
                 }
                 lastValue[0].set(sample.getEnergy());
                 float x = (float) sample.getTimestamp() / 1000 - (float) referencedTimestamp / 1000;
