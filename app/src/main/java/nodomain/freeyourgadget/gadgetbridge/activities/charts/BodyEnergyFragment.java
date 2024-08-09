@@ -2,6 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.activities.charts;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -130,6 +131,9 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         lineDataSet.setDrawValues(false);
         lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lineDataSet.setDrawFilled(true);
+        lineDataSet.setFillAlpha(60);
+        lineDataSet.setFillColor(getResources().getColor(R.color.body_energy_level_color ));
 
         List<LegendEntry> legendEntries = new ArrayList<>(1);
         LegendEntry activityEntry = new LegendEntry();
