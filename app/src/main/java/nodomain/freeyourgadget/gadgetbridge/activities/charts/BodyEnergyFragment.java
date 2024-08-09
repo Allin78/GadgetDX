@@ -118,10 +118,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
                 float x = (float) sample.getTimestamp() / 1000 - (float) referencedTimestamp / 1000;
                 lineEntries.add(new Entry(x, sample.getEnergy()));
             });
-        } else {
-            referencedTimestamp = 0;
         }
-
 
         final LineDataSet lineDataSet = new LineDataSet(lineEntries, getString(R.string.body_energy_legend_level));
         lineDataSet.setColor(getResources().getColor(R.color.body_energy_level_color));
@@ -141,8 +138,6 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         legendEntries.add(activityEntry);
         bodyEnergyChart.getLegend().setTextColor(LEGEND_TEXT_COLOR);
         bodyEnergyChart.getLegend().setCustom(legendEntries);
-        final XAxis x = bodyEnergyChart.getXAxis();
-        x.setValueFormatter(getBodyEnergyChartXValueFormatter(referencedTimestamp));
 
         lineDataSets.add(lineDataSet);
         final LineData lineData = new LineData(lineDataSets);
@@ -247,8 +242,10 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
         xAxisBottom.setEnabled(true);
         xAxisBottom.setDrawLimitLinesBehindData(true);
         xAxisBottom.setTextColor(CHART_TEXT_COLOR);
-        xAxisBottom.setAxisMaximum(0);
-        xAxisBottom.setAxisMaximum(60 * 60 * 24);
+        xAxisBottom.setAxisMinimum(0f);
+        xAxisBottom.setAxisMaximum(86400f);
+        xAxisBottom.setLabelCount(7, true);
+        xAxisBottom.setValueFormatter(getBodyEnergyChartXValueFormatter());
 
         final YAxis yAxisLeft = bodyEnergyChart.getAxisLeft();
         yAxisLeft.setDrawGridLines(true);
@@ -266,7 +263,7 @@ public class BodyEnergyFragment extends AbstractChartFragment<BodyEnergyFragment
 
     }
 
-    ValueFormatter getBodyEnergyChartXValueFormatter(long referencedTimestamp) {
+    ValueFormatter getBodyEnergyChartXValueFormatter() {
         return new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {

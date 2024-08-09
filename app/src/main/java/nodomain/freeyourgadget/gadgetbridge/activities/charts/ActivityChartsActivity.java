@@ -205,7 +205,7 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                 case "hrvstatus":
                     return getString(R.string.pref_header_hrv_status);
                 case "bodyenergy":
-                    return getString(R.string.pref_header_body_energy);
+                    return getString(R.string.body_energy);
                 case "stress":
                     return getString(R.string.menuitem_stress);
                 case "pai":
