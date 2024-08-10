@@ -63,12 +63,9 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
     private BarChart stepsChart;
 
     protected int CHART_TEXT_COLOR;
-    protected int LEGEND_TEXT_COLOR;
     protected int TEXT_COLOR;
     protected int STEPS_GOAL;
-
-
-    private int TOTAL_DAYS = 7;
+    protected int TOTAL_DAYS = 7;
 
     protected int BACKGROUND_COLOR;
     protected int DESCRIPTION_COLOR;
@@ -93,8 +90,10 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
 
         if (GBApplication.getPrefs().getBoolean("charts_range", true)) {
             stepsChartTitle.setText(getString(R.string.weekstepschart_steps_a_month));
+            TOTAL_DAYS = 30;
         } else {
             stepsChartTitle.setText(getString(R.string.weekstepschart_steps_a_week));
+            TOTAL_DAYS = 7;
         }
 
 
@@ -121,6 +120,7 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
         yAxisLeft.setDrawTopYLabelEntry(true);
         yAxisLeft.setEnabled(true);
         yAxisLeft.setTextColor(CHART_TEXT_COLOR);
+        yAxisLeft.setAxisMinimum(0f);
 
         final YAxis yAxisRight = stepsChart.getAxisRight();
         yAxisRight.setEnabled(true);
@@ -131,13 +131,12 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
 
         @Override
     public String getTitle() {
-        return getString(R.string.body_energy);
+        return getString(R.string.steps);
     }
 
     @Override
     protected void init() {
         TEXT_COLOR = GBApplication.getTextColor(requireContext());
-        LEGEND_TEXT_COLOR = GBApplication.getTextColor(requireContext());
         CHART_TEXT_COLOR = GBApplication.getSecondaryTextColor(requireContext());
         BACKGROUND_COLOR = GBApplication.getBackgroundColor(getContext());
         DESCRIPTION_COLOR = GBApplication.getTextColor(getContext());
@@ -169,6 +168,9 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
         set.setColors(getResources().getColor(R.color.steps_color));
         final XAxis x = stepsChart.getXAxis();
         x.setValueFormatter(getStepsChartDayValueFormatter(stepsData));
+        if (TOTAL_DAYS > 7) {
+            x.setLabelCount(2, true);
+        }
 
         BarData barData = new BarData(set);
         barData.setValueTextColor(Color.GRAY); //prevent tearing other graph elements with the black text. Another approach would be to hide the values cmpletely with data.setDrawValues(false);
@@ -196,7 +198,8 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
             @Override
             public String getFormattedValue(float value) {
                 StepsFragment.StepsDay day = stepsData.days.get((int) value);
-                SimpleDateFormat formatLetterDay = new SimpleDateFormat("EEE", Locale.getDefault());
+                String pattern = TOTAL_DAYS > 7 ? "dd/MM" : "EEE";
+                SimpleDateFormat formatLetterDay = new SimpleDateFormat(pattern, Locale.getDefault());
                 return formatLetterDay.format(new Date(day.day.getTimeInMillis()));
             }
         };
@@ -229,16 +232,7 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
         return daysData;
     }
 
-    protected long calculateBalance(ActivityAmounts activityAmounts) {
-        long balance = 0;
-        for (ActivityAmount amount : activityAmounts.getAmounts()) {
-            balance += amount.getTotalSteps();
-        }
-        return balance;
-    }
-
     protected ActivityAmounts getActivityAmountsForDay(DBHandler db, Calendar day, GBDevice device) {
-
         LimitedQueue<Integer, ActivityAmounts> activityAmountCache = null;
         ActivityAmounts amounts = null;
 
@@ -277,27 +271,8 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
     }
 
     protected List<? extends ActivitySample> getSamples(DBHandler db, GBDevice device, int tsFrom, int tsTo) {
-        return getAllSamples(db, device, tsFrom, tsTo);
-    }
-
-    private static class DayData {
-        private final PieData data;
-        private final CharSequence centerText;
-
-        DayData(PieData data, String centerText) {
-            this.data = data;
-            this.centerText = centerText;
-        }
-    }
-
-    protected List<? extends ActivitySample> getAllSamples(DBHandler db, GBDevice device, int tsFrom, int tsTo) {
-        SampleProvider<? extends ActivitySample> provider = getProvider(db, device);
+        SampleProvider<? extends ActivitySample> provider = device.getDeviceCoordinator().getSampleProvider(device, db.getDaoSession());
         return provider.getAllActivitySamples(tsFrom, tsTo);
-    }
-
-    protected SampleProvider<? extends AbstractActivitySample> getProvider(DBHandler db, GBDevice device) {
-        DeviceCoordinator coordinator = device.getDeviceCoordinator();
-        return coordinator.getSampleProvider(device, db.getDaoSession());
     }
 
     Bitmap drawGauge(int width, int barWidth, @ColorInt int filledColor, int value, int maxValue) {
@@ -382,8 +357,10 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
                     daysCounter++;
                 }
             }
-            this.stepsDailyAvg = this.totalSteps / daysCounter;
-            this.distanceDailyAvg = this.totalDistance / daysCounter;
+            if (daysCounter > 0) {
+                this.stepsDailyAvg = this.totalSteps / daysCounter;
+                this.distanceDailyAvg = this.totalDistance / daysCounter;
+            }
             this.todayStepsDay = days.get(days.size() - 1);
         }
     }
