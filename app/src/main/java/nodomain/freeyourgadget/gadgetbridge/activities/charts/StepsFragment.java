@@ -22,12 +22,12 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,9 +38,7 @@ import java.util.Locale;
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
-import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
-import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityAmount;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityAmounts;
@@ -225,8 +223,13 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
                     totalSteps += amount.getTotalSteps();
                 }
             }
+            double distance = 0;
+            if (totalSteps > 0) {
+                double avgStep = (0.67+0.762)/2; // https://marathonhandbook.com/average-stride-length/  (female+male)/2
+                distance = avgStep * totalSteps / 1000;
+            }
             Calendar d = (Calendar) day.clone();
-            daysData.add(new StepsDay(d, totalSteps, (long) 2));
+            daysData.add(new StepsDay(d, totalSteps, distance));
             day.add(Calendar.DATE, 1);
         }
         return daysData;
@@ -330,10 +333,10 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
 
     protected static class StepsDay {
         public long steps;
-        public long distance;
+        public double distance;
         public Calendar day;
 
-        protected StepsDay(Calendar day, long steps, long distance) {
+        protected StepsDay(Calendar day, long steps, double distance) {
             this.steps = steps;
             this.distance = distance;
             this.day = day;
@@ -343,9 +346,9 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
     protected static class StepsData extends ChartsData {
         List<StepsDay> days;
         long stepsDailyAvg = 0;
-        long distanceDailyAvg = 0;
+        double distanceDailyAvg = 0;
         long totalSteps = 0;
-        long totalDistance = 0;
+        double totalDistance = 0;
         StepsDay todayStepsDay;
         protected StepsData(List<StepsDay> days) {
             this.days = days;
