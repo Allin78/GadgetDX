@@ -155,7 +155,7 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                 case "pai":
                     return new PaiChartFragment();
                 case "stepsweek":
-                    return new WeekStepsChartFragment();
+                    return new StepsFragment();
                 case "speedzones":
                     return new SpeedZonesFragment();
                 case "livestats":
@@ -183,14 +183,6 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
             }
         }
 
-        public String getStepsTitle() {
-            if (GBApplication.getPrefs().getBoolean("charts_range", true)) {
-                return getString(R.string.weekstepschart_steps_a_month);
-            } else {
-                return getString(R.string.weekstepschart_steps_a_week);
-            }
-        }
-
         @Override
         public CharSequence getPageTitle(int position) {
             switch (enabledTabsList.get(position)) {
@@ -211,7 +203,7 @@ public class ActivityChartsActivity extends AbstractChartsActivity {
                 case "pai":
                     return getString(getDevice().getDeviceCoordinator().getPaiName());
                 case "stepsweek":
-                    return getStepsTitle();
+                    return getString(R.string.steps);
                 case "speedzones":
                     return getString(R.string.stats_title);
                 case "livestats":

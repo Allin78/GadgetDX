@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.fragment.app.FragmentManager;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
@@ -27,7 +28,6 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -59,6 +59,7 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
     private TextView distanceTotal;
     private TextView stepsChartTitle;
     private BarChart stepsChart;
+    ImageView stepsStreaksButton;
 
     protected int CHART_TEXT_COLOR;
     protected int TEXT_COLOR;
@@ -93,6 +94,16 @@ public class StepsFragment extends AbstractChartFragment<StepsFragment.StepsData
             stepsChartTitle.setText(getString(R.string.weekstepschart_steps_a_week));
             TOTAL_DAYS = 7;
         }
+
+        stepsStreaksButton = rootView.findViewById(R.id.steps_streaks_button);
+        stepsStreaksButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                StepStreaksDashboard stepStreaksDashboard = StepStreaksDashboard.newInstance(STEPS_GOAL, getChartsHost().getDevice());
+                stepStreaksDashboard.show(fm, "steps_streaks_dashboard");
+            }
+        });
 
 
         return rootView;
