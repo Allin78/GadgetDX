@@ -40,12 +40,13 @@ public class GBDaoGenerator {
     private static final String SAMPLE_HEART_RATE = "heartRate";
     private static final String SAMPLE_TEMPERATURE = "temperature";
     private static final String SAMPLE_TEMPERATURE_TYPE = "temperatureType";
+    private static final String SAMPLE_WEIGHT_KG = "weightKg";
     private static final String TIMESTAMP_FROM = "timestampFrom";
     private static final String TIMESTAMP_TO = "timestampTo";
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(76, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(77, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -124,6 +125,7 @@ public class GBDaoGenerator {
         addWena3Vo2Sample(schema, user, device);
         addWena3StressSample(schema, user, device);
         addFemometerVinca2TemperatureSample(schema, user, device);
+        addMiScaleWeightSample(schema, user, device);
 
         addHuaweiActivitySample(schema, user, device);
 
@@ -1290,6 +1292,13 @@ public class GBDaoGenerator {
         Entity sample = addEntity(schema, "FemometerVinca2TemperatureSample");
         addCommonTimeSampleProperties("AbstractTemperatureSample", sample, user, device);
         addTemperatureProperties(sample);
+        return sample;
+    }
+
+    private static Entity addMiScaleWeightSample(Schema schema, Entity user, Entity device) {
+        Entity sample = addEntity(schema, "MiScaleWeightSample");
+        addCommonTimeSampleProperties("AbstractWeightSample", sample, user, device);
+        sample.addFloatProperty(SAMPLE_WEIGHT_KG).notNull().codeBeforeGetter(OVERRIDE);
         return sample;
     }
 }
