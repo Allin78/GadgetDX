@@ -17,11 +17,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.service.btle;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +46,8 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.AbstractDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.CheckInitializedAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBleProfile;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
+import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 /**
  * Abstract base class for all devices connected through Bluetooth Low Energy (LE) aka
@@ -54,6 +62,13 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBlePro
  */
 public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport implements GattCallback, GattServerCallback {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractBTLEDeviceSupport.class);
+    public static final String PREFS_KEY_DEVICE_ALLOW_BLE_API = "prefs_device_allow_ble_api";
+    public static final String PREFS_KEY_DEVICE_BLE_API_PACKAGE = "prefs_device_ble_api_package";
+
+    public static final String BLE_API_COMMAND_READ = "nodomain.freeyourgadget.gadgetbridge.ble_api.commands.CHARACTERISTIC_READ";
+    public static final String BLE_API_COMMAND_WRITE = "nodomain.freeyourgadget.gadgetbridge.ble_api.commands.CHARACTERISTIC_WRITE";
+    public static final String BLE_API_EVENT_CHARACTERISTIC_CHANGED = "nodomain.freeyourgadget.gadgetbridge.ble_api.events.CHARACTERISTIC_CHANGED";
+    public static final String BLE_API_EVENT_CONNECTION_CHANGED = "nodomain.freeyourgadget.gadgetbridge.ble_api.events.CONNECTION_CHANGED";
 
     private int mMTU = 23;
     private BtLEQueue mQueue;
@@ -65,6 +80,10 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
     private final List<AbstractBleProfile<?>> mSupportedProfiles = new ArrayList<>();
     public static final String BASE_UUID = "0000%s-0000-1000-8000-00805f9b34fb"; //this is common for all BTLE devices. see http://stackoverflow.com/questions/18699251/finding-out-android-bluetooth-le-gatt-profiles
     private final Object characteristicsMonitor = new Object();
+
+    private boolean intentApiEnabled = false;
+    private String intentApiPackage = "";
+    private boolean intentApiReceiverRegistered = false;
 
     public AbstractBTLEDeviceSupport(Logger logger) {
         this.logger = logger;
@@ -82,6 +101,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             mQueue.setImplicitGattCallbackModify(getImplicitCallbackModify());
             mQueue.setSendWriteRequestResponse(getSendWriteRequestResponse());
         }
+
         return mQueue.connect();
     }
 
@@ -90,6 +110,101 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             mQueue.disconnect();
         }
     }
+
+    BroadcastReceiver intentApiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String deviceAddress = intent.getStringExtra("EXTRA_DEVICE_ADDRESS");
+            if (StringUtils.isEmpty(deviceAddress)) {
+                logger.error("BLE API: missing EXTRA_DEVICE_ADDRESS");
+                return;
+            }
+            if(!deviceAddress.equals(getDevice().getAddress())){
+                return;
+            }
+
+            if(!getDevice().getState().equalsOrHigherThan(GBDevice.State.INITIALIZED)) {
+                logger.error(String.format("BLE API: Device %s not initialized.", getDevice()));
+            }
+
+            String action = intent.getAction();
+
+            boolean isWrite = BLE_API_COMMAND_WRITE.equals(action);
+            boolean isRead = BLE_API_COMMAND_READ.equals(action);
+
+            if((!isWrite) && (!isRead)) {
+                return;
+            }
+
+            String uuid = intent.getStringExtra("EXTRA_CHARACTERISTIC_UUID");
+            if (StringUtils.isEmpty(uuid)) {
+                logger.error("BLE API: missing EXTRA_CHARACTERISTIC_UUID");
+                return;
+            }
+            String hexData = intent.getStringExtra("EXTRA_PAYLOAD");
+            if (hexData == null) {
+                logger.error("BLE API: missing EXTRA_PAYLOAD");
+                return;
+            }
+
+            BluetoothGattCharacteristic characteristic = getCharacteristic(UUID.fromString(
+                    uuid
+            ));
+
+            if(isWrite) {
+                new TransactionBuilder("BLE API write")
+                        .write(characteristic, StringUtils.hexToBytes(hexData))
+                        .queue(getQueue());
+                return;
+            }
+
+            if(isRead) {
+                new TransactionBuilder("BLE API read")
+                        .read(characteristic)
+                        .queue(getQueue());
+                return;
+            }
+        }
+    };
+
+    private void handleBLEApiPrefs(){
+        Prefs devicePrefs = getDevicePrefs();
+
+        this.intentApiEnabled = devicePrefs.getBoolean(PREFS_KEY_DEVICE_ALLOW_BLE_API, false);
+        this.intentApiPackage = devicePrefs.getString(PREFS_KEY_DEVICE_BLE_API_PACKAGE, "");
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BLE_API_COMMAND_READ);
+        filter.addAction(BLE_API_COMMAND_WRITE);
+
+        if(intentApiEnabled == intentApiReceiverRegistered) {
+            return;
+        }
+
+        if(intentApiEnabled){
+            getContext().registerReceiver(intentApiReceiver, filter);
+        }else{
+            getContext().unregisterReceiver(intentApiReceiver);
+        }
+        intentApiReceiverRegistered = intentApiEnabled;
+    }
+
+    @Override
+    public void setContext(GBDevice gbDevice, BluetoothAdapter btAdapter, Context context) {
+        super.setContext(gbDevice, btAdapter, context);
+
+        handleBLEApiPrefs();
+        getDevicePrefs().getPreferences().registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if(PREFS_KEY_DEVICE_ALLOW_BLE_API.equals(key) || PREFS_KEY_DEVICE_BLE_API_PACKAGE.equals(key)) {
+                    handleBLEApiPrefs();
+                }
+            }
+        });
+    }
+
+
 
     /**
      * Returns whether the gatt callback should be implicitly set to the one on the transaction,
@@ -271,7 +386,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
         Set<UUID> supportedServices = getSupportedServices();
         Map<UUID, BluetoothGattCharacteristic> newCharacteristics = new HashMap<>();
         for (BluetoothGattService service : discoveredGattServices) {
-            if (supportedServices.contains(service.getUuid())) {
+            if (intentApiEnabled || supportedServices.contains(service.getUuid())) {
                 logger.debug("discovered supported service: {}: {}", BleNamesResolver.resolveServiceName(service.getUuid().toString()), service.getUuid());
                 List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
                 if (characteristics == null || characteristics.isEmpty()) {
@@ -328,12 +443,27 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
     @Override
     public boolean onCharacteristicRead(BluetoothGatt gatt,
                                         BluetoothGattCharacteristic characteristic, int status) {
+        handleBleApiCharacteristicChange(characteristic);
+
         for (AbstractBleProfile<?> profile : mSupportedProfiles) {
             if (profile.onCharacteristicRead(gatt, characteristic, status)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private void handleBleApiCharacteristicChange(BluetoothGattCharacteristic characteristic) {
+        if(!intentApiEnabled) {
+            return;
+        }
+        Intent intent = new Intent(BLE_API_EVENT_CHARACTERISTIC_CHANGED);
+        if(!StringUtils.isEmpty(intentApiPackage)) {
+            intent.setPackage(intentApiPackage);
+        }
+        intent.putExtra("EXTRA_DEVICE_ADDRESS", getDevice().getAddress());
+        intent.putExtra("EXTRA_CHARACTERISTIC", characteristic.getUuid().toString());
+        intent.putExtra("EXTRA_PAYLOAD", StringUtils.bytesToHex(characteristic.getValue()));
     }
 
     @Override
@@ -370,6 +500,8 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
     @Override
     public boolean onCharacteristicChanged(BluetoothGatt gatt,
                                            BluetoothGattCharacteristic characteristic) {
+        handleBleApiCharacteristicChange(characteristic);
+
         for (AbstractBleProfile<?> profile : mSupportedProfiles) {
             if (profile.onCharacteristicChanged(gatt, characteristic)) {
                 return true;

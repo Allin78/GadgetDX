@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="BLE Intent API" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_bluetooth"
+        android:key="prefs_device_allow_ble_api"
+        android:layout="@layout/preference_checkbox"
+        android:title="Allow BLE Intent API for this device"
+        android:defaultValue="false" />
+
+    <EditTextPreference
+        android:key="prefs_device_ble_api_package"
+        android:title="Restrict BLE Intent API communication to this package" />
+
+</PreferenceScreen>
