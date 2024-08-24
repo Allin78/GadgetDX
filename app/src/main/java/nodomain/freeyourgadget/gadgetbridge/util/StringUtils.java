@@ -198,7 +198,7 @@ public class StringUtils {
         byte[] bytes = new byte[hexString.length() / 2];
         for(int i = 0; i < bytes.length; i++) {
             String slice = hexString.substring(i * 2, i * 2 + 2);
-            bytes[i] = Byte.parseByte(slice, 16);
+            bytes[i] = (byte) Integer.parseInt(slice, 16);
         }
 
         return bytes;

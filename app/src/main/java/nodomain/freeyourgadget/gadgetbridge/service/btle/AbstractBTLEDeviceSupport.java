@@ -123,7 +123,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
                 logger.error("BLE API: missing EXTRA_DEVICE_ADDRESS");
                 return;
             }
-            if(!deviceAddress.equals(getDevice().getAddress())){
+            if(!deviceAddress.toUpperCase().equals(getDevice().getAddress())){
                 return;
             }
 
