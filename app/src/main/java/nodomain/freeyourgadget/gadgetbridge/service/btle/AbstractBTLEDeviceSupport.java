@@ -28,9 +28,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +46,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.Logging;
+import nodomain.freeyourgadget.gadgetbridge.devices.DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.AbstractDeviceSupport;
+import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.CheckInitializedAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBleProfile;
 import nodomain.freeyourgadget.gadgetbridge.util.GB;
@@ -69,10 +74,11 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
     public static final String PREFS_KEY_DEVICE_ALLOW_BLE_API = "prefs_device_allow_ble_api";
     public static final String PREFS_KEY_DEVICE_BLE_API_PACKAGE = "prefs_device_ble_api_package";
 
+    public static final String BLE_API_COMMAND_CONNECT = "nodomain.freeyourgadget.gadgetbridge.ble_api.commands.DEVICE_CONNECT";
     public static final String BLE_API_COMMAND_READ = "nodomain.freeyourgadget.gadgetbridge.ble_api.commands.CHARACTERISTIC_READ";
     public static final String BLE_API_COMMAND_WRITE = "nodomain.freeyourgadget.gadgetbridge.ble_api.commands.CHARACTERISTIC_WRITE";
     public static final String BLE_API_EVENT_CHARACTERISTIC_CHANGED = "nodomain.freeyourgadget.gadgetbridge.ble_api.events.CHARACTERISTIC_CHANGED";
-    public static final String BLE_API_EVENT_CONNECTION_CHANGED = "nodomain.freeyourgadget.gadgetbridge.ble_api.events.CONNECTION_CHANGED";
+    public static final String BLE_API_EVENT_DEVICE_STATE_CHANGED = "nodomain.freeyourgadget.gadgetbridge.ble_api.events.DEVICE_STATE_CHANGED";
 
     private int mMTU = 23;
     private BtLEQueue mQueue;
@@ -171,26 +177,121 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
         }
     };
 
+    public static Intent getBleApiIntent(String deviceAddress, String action) {
+        Intent updateIntent = new Intent(action);
+        updateIntent.putExtra("EXTRA_DEVICE_ADDRESS", deviceAddress);
+        return updateIntent;
+    }
+
+    private Intent getBleApiIntent(String action) {
+        return getBleApiIntent(getDevice().getAddress(), action);
+    }
+
+    public void sendDeviceApiState(String state) {
+        if(!intentApiEnabled) {
+            return;
+        }
+
+        Intent updateIntent = getBleApiIntent(BLE_API_EVENT_DEVICE_STATE_CHANGED);
+        updateIntent.putExtra("EXTRA_DEVICE_STATE", state);
+
+        if(!StringUtils.isNullOrEmpty(intentApiPackage)) {
+            updateIntent.setPackage(intentApiPackage);
+        }
+
+        getContext().sendBroadcast(updateIntent);
+    }
+
+    private final BroadcastReceiver deviceStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+
+            if(!GBDevice.ACTION_DEVICE_CHANGED.equals(action)){
+                return;
+            }
+
+            GBDevice device = intent.getParcelableExtra(GBDevice.EXTRA_DEVICE);
+
+            if(device == null) {
+                return;
+            }
+
+            if(!device.getAddress().equals(getDevice().getAddress())) {
+                return;
+            }
+
+            GBDevice.DeviceUpdateSubject subject = (GBDevice.DeviceUpdateSubject)
+                    intent.getSerializableExtra(GBDevice.EXTRA_UPDATE_SUBJECT);
+
+            GBDevice.State currentState = getDevice().getState();
+
+            boolean isDevice = (subject == GBDevice.DeviceUpdateSubject.DEVICE_STATE);
+
+            boolean isConnection = (subject == GBDevice.DeviceUpdateSubject.CONNECTION_STATE);
+
+            String state = null;
+
+            if(isDevice){
+                if(currentState == GBDevice.State.INITIALIZED){
+                    state = "connected";
+                }else if(currentState == GBDevice.State.SCANNED){
+                    state = "scanned";
+                }else{
+                    return;
+                }
+            }else if(isConnection){
+                if(currentState == GBDevice.State.NOT_CONNECTED){
+                    state = "disconnected";
+                }else if(currentState == GBDevice.State.WAITING_FOR_SCAN){
+                    state = "disconnected";
+                }else{
+                    return;
+                }
+            }else {
+                return;
+            }
+
+            sendDeviceApiState(state);
+        }
+    };
+
+    private void registerBleApiReceivers(boolean enable){
+        if(enable == intentApiReceiverRegistered) {
+            return;
+        }
+
+        if(intentApiEnabled){
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(BLE_API_COMMAND_READ);
+            filter.addAction(BLE_API_COMMAND_WRITE);
+
+            ContextCompat.registerReceiver(
+                    getContext(),
+                    intentApiReceiver,
+                    filter,
+                    ContextCompat.RECEIVER_EXPORTED
+            );
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(
+                    deviceStateReceiver,
+                    new IntentFilter(GBDevice.ACTION_DEVICE_CHANGED)
+            );
+        }else{
+            getContext().unregisterReceiver(intentApiReceiver);
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(
+                    deviceStateReceiver
+            );
+        }
+        intentApiReceiverRegistered = intentApiEnabled;
+    }
+
     private void handleBLEApiPrefs(){
         Prefs devicePrefs = getDevicePrefs();
 
         this.intentApiEnabled = devicePrefs.getBoolean(PREFS_KEY_DEVICE_ALLOW_BLE_API, false);
         this.intentApiPackage = devicePrefs.getString(PREFS_KEY_DEVICE_BLE_API_PACKAGE, "");
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BLE_API_COMMAND_READ);
-        filter.addAction(BLE_API_COMMAND_WRITE);
-
-        if(intentApiEnabled == intentApiReceiverRegistered) {
-            return;
-        }
-
-        if(intentApiEnabled){
-            ContextCompat.registerReceiver(getContext(), intentApiReceiver, filter, ContextCompat.RECEIVER_EXPORTED);
-        }else{
-            getContext().unregisterReceiver(intentApiReceiver);
-        }
-        intentApiReceiverRegistered = intentApiEnabled;
+        registerBleApiReceivers(this.intentApiEnabled);
     }
 
     @Override
@@ -260,6 +361,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             mQueue.dispose();
             mQueue = null;
         }
+        registerBleApiReceivers(false);
     }
 
     public TransactionBuilder createTransactionBuilder(String taskName) {
@@ -463,11 +565,10 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
         if(!intentApiEnabled) {
             return;
         }
-        Intent intent = new Intent(BLE_API_EVENT_CHARACTERISTIC_CHANGED);
+        Intent intent = getBleApiIntent(BLE_API_EVENT_CHARACTERISTIC_CHANGED);
         if(!StringUtils.isNullOrEmpty(intentApiPackage)) {
             intent.setPackage(intentApiPackage);
         }
-        intent.putExtra("EXTRA_DEVICE_ADDRESS", getDevice().getAddress());
         intent.putExtra("EXTRA_CHARACTERISTIC", characteristic.getUuid().toString());
         intent.putExtra("EXTRA_PAYLOAD", StringUtils.bytesToHex(characteristic.getValue()));
     }
