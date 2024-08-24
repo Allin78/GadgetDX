@@ -3210,4 +3210,5 @@
     <string name="insufficient_space_for_upload">"Insufficient space for upload"</string>
     <string name="smart_ring_measurement_error_worn_incorrectly">Measurement error. Are the ring\'s sensors oriented correctly?</string>
     <string name="smart_ring_measurement_error_unknown">Unknown measurement error %d received from ring</string>
+    <string name="devicetype_ble_gatt_client">Generic BLE GATT Client</string>
 </resources>

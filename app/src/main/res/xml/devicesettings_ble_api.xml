@@ -12,6 +12,7 @@
 
     <EditTextPreference
         android:key="prefs_device_ble_api_package"
-        android:title="Restrict BLE Intent API communication to this package" />
+        android:title="BLE API package"
+        android:summary="Restrict BLE Intent API communication to this package" />
 
 </PreferenceScreen>

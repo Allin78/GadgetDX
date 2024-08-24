@@ -28,6 +28,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.widget.Toast;
+
+import androidx.core.content.ContextCompat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +49,7 @@ import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.AbstractDeviceSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.CheckInitializedAction;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.profiles.AbstractBleProfile;
+import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
@@ -115,7 +119,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
         @Override
         public void onReceive(Context context, Intent intent) {
             String deviceAddress = intent.getStringExtra("EXTRA_DEVICE_ADDRESS");
-            if (StringUtils.isEmpty(deviceAddress)) {
+            if (StringUtils.isNullOrEmpty(deviceAddress)) {
                 logger.error("BLE API: missing EXTRA_DEVICE_ADDRESS");
                 return;
             }
@@ -137,7 +141,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             }
 
             String uuid = intent.getStringExtra("EXTRA_CHARACTERISTIC_UUID");
-            if (StringUtils.isEmpty(uuid)) {
+            if (StringUtils.isNullOrEmpty(uuid)) {
                 logger.error("BLE API: missing EXTRA_CHARACTERISTIC_UUID");
                 return;
             }
@@ -182,7 +186,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
         }
 
         if(intentApiEnabled){
-            getContext().registerReceiver(intentApiReceiver, filter);
+            ContextCompat.registerReceiver(getContext(), intentApiReceiver, filter, ContextCompat.RECEIVER_EXPORTED);
         }else{
             getContext().unregisterReceiver(intentApiReceiver);
         }
@@ -198,7 +202,9 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                 if(PREFS_KEY_DEVICE_ALLOW_BLE_API.equals(key) || PREFS_KEY_DEVICE_BLE_API_PACKAGE.equals(key)) {
-                    handleBLEApiPrefs();
+                    // could subscribe here, but there is more setup to do than that...
+                    // handleBLEApiPrefs();
+                    GB.toast("Please reconnect to device", Toast.LENGTH_SHORT, GB.INFO);
                 }
             }
         });
@@ -458,7 +464,7 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
             return;
         }
         Intent intent = new Intent(BLE_API_EVENT_CHARACTERISTIC_CHANGED);
-        if(!StringUtils.isEmpty(intentApiPackage)) {
+        if(!StringUtils.isNullOrEmpty(intentApiPackage)) {
             intent.setPackage(intentApiPackage);
         }
         intent.putExtra("EXTRA_DEVICE_ADDRESS", getDevice().getAddress());
