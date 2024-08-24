@@ -571,6 +571,8 @@ public abstract class AbstractBTLEDeviceSupport extends AbstractDeviceSupport im
         }
         intent.putExtra("EXTRA_CHARACTERISTIC", characteristic.getUuid().toString());
         intent.putExtra("EXTRA_PAYLOAD", StringUtils.bytesToHex(characteristic.getValue()));
+
+        getContext().sendBroadcast(intent);
     }
 
     @Override

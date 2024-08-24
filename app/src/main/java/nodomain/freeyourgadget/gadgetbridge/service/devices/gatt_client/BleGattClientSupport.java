@@ -63,7 +63,7 @@ public class BleGattClientSupport extends AbstractBTLEDeviceSupport {
 
         int filters = BluetoothGattCharacteristic.PROPERTY_NOTIFY;
         for(BluetoothGattCharacteristic characteristic : discoveredCharacteristics) {
-            if((characteristic.getProperties() | filters) != filters) {
+            if((characteristic.getProperties() & filters) != filters) {
                 continue;
             }
             builder.notify(characteristic, true);
