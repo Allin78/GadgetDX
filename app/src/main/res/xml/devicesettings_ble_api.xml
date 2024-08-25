@@ -5,9 +5,26 @@
 
     <SwitchPreferenceCompat
         android:icon="@drawable/ic_bluetooth"
-        android:key="prefs_device_allow_ble_api"
+        android:key="prefs_device_ble_api_state"
         android:layout="@layout/preference_checkbox"
-        android:title="Allow BLE Intent API for this device"
+        android:title="Send BLE Intent API device state updates"
+        android:summary="Receive BLE connection state changes via Intents"
+        android:defaultValue="false" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_bluetooth"
+        android:key="prefs_device_ble_api_characteristic_read_write"
+        android:layout="@layout/preference_checkbox"
+        android:title="Allow GATT interaction through BLE Intent API"
+        android:summary="Allow to send BLE characteristic read/write and connect commands"
+        android:defaultValue="false" />
+
+    <SwitchPreferenceCompat
+        android:icon="@drawable/ic_bluetooth"
+        android:key="prefs_device_ble_api_characteristic_notify"
+        android:layout="@layout/preference_checkbox"
+        android:title="Allow GATT notifications through BLE Intent API"
+        android:summary="Receive BLE characteristic changes through Intents"
         android:defaultValue="false" />
 
     <EditTextPreference
