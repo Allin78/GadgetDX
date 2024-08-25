@@ -17,8 +17,6 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.actions.SetDeviceStateAction;
 
 public class BleGattClientSupport extends AbstractBTLEDeviceSupport {
-    ArrayList<BluetoothGattCharacteristic> discoveredCharacteristics = new ArrayList<>();
-
     public static final Logger logger = LoggerFactory.getLogger(BleGattClientSupport.class);
 
     public BleGattClientSupport() {
@@ -33,14 +31,6 @@ public class BleGattClientSupport extends AbstractBTLEDeviceSupport {
     }
 
     @Override
-    public void onServicesDiscovered(BluetoothGatt gatt) {
-        for(BluetoothGattService service : gatt.getServices()) {
-            discoveredCharacteristics.addAll(service.getCharacteristics());
-        }
-        super.onServicesDiscovered(gatt);
-    }
-
-    @Override
     public boolean onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         if(characteristic.getUuid().equals(GattCharacteristic.UUID_CHARACTERISTIC_BATTERY_LEVEL)) {
             int level = characteristic.getValue()[0];
@@ -52,21 +42,13 @@ public class BleGattClientSupport extends AbstractBTLEDeviceSupport {
 
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
-        BluetoothGattCharacteristic batteryCharacteristic = getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_BATTERY_LEVEL);
-
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
+
+        BluetoothGattCharacteristic batteryCharacteristic = getCharacteristic(GattCharacteristic.UUID_CHARACTERISTIC_BATTERY_LEVEL);
 
         if(batteryCharacteristic != null) {
             logger.debug("found battery characteristic!");
             builder.read(batteryCharacteristic);
-        }
-
-        int filters = BluetoothGattCharacteristic.PROPERTY_NOTIFY;
-        for(BluetoothGattCharacteristic characteristic : discoveredCharacteristics) {
-            if((characteristic.getProperties() & filters) != filters) {
-                continue;
-            }
-            builder.notify(characteristic, true);
         }
 
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZED, getContext()));
