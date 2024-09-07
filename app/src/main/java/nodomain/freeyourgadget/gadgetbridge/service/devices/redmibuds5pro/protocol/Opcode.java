@@ -4,6 +4,7 @@ public enum Opcode {
     GET_DEVICE_INFO(0x02),
     ANC(0x08),
     SETTINGS(0xF2),
+    REPORT_STATUS(0x0E),
     AUTH_CHALLENGE(0x50),
     AUTH_CONFIRM(0x51),
     UNKNOWN(0xFF);

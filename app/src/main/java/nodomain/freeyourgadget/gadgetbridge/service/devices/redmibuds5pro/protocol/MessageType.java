@@ -4,8 +4,8 @@ public enum MessageType {
     PHONE_REQUEST(0xC4),
     RESPONSE(0x04),
     EARBUDS_REQUEST(0xC0),
+    EARBUDS_NOTIFY(0xC7),
     UNKNOWN(0xFF);
-    // C7
 
     private final byte code;
     private final boolean isRequest;

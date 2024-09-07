@@ -676,6 +676,8 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
 
         addPreferenceHandlerFor(PREF_WATCHFACE);
 
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL);
+
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);
         addPreferenceHandlerFor(PREF_SONY_FOCUS_VOICE);

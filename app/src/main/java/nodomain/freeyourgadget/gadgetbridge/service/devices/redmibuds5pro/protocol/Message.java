@@ -4,6 +4,9 @@ import static nodomain.freeyourgadget.gadgetbridge.util.GB.hexdump;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Message {
 
@@ -60,6 +63,26 @@ public class Message {
         byte[] payload = new byte[actualPayloadLength];
         System.arraycopy(message, payloadOffset, payload, 0, actualPayloadLength);
         return new Message(type, opcode, sequenceNumber, payload);
+    }
+
+    public static List<Message> splitPiggybackedMessages(byte[] input) {
+        List<Message> messages = new ArrayList<>();
+
+        int start = -1;
+        for (int i = 0; i < input.length - 3; i++) {
+            if (input[i] == MESSAGE_HEADER[0] && input[i+1] == MESSAGE_HEADER[1] && input[i+2] == MESSAGE_HEADER[2]) {
+                if (start != -1) {
+                    messages.add(fromBytes(Arrays.copyOfRange(input, start, i + 4)));
+                }
+                start = i;
+            }
+            if (start != -1 && input[i+3] == MESSAGE_TRAILER) {
+                messages.add(fromBytes(Arrays.copyOfRange(input, start, i + 4)));
+                start = -1;
+            }
+        }
+
+        return messages;
     }
 
     @Override

@@ -365,6 +365,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_GALAXY_BUDS_PRO_ANC_LEVEL="pref_galaxy_buds_pro_anc_level";
     public static final String PREFS_GALAXY_BUDS_SEAMLESS_CONNECTION="prefs_galaxy_buds_seamless_connection";
 
+    public static final String PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL="pref_redmi_buds_5_pro_ambient_sound_control";
     public static final String PREF_SONY_AUDIO_CODEC = "pref_sony_audio_codec";
     public static final String PREF_SONY_PROTOCOL_VERSION = "pref_protocol_version";
     public static final String PREF_SONY_ACTUAL_PROTOCOL_VERSION = "pref_actual_protocol_version";
