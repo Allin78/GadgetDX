@@ -199,6 +199,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.miscale.MiSmartScaleCoordina
 import nodomain.freeyourgadget.gadgetbridge.devices.miscale.MiCompositionScaleCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moondrop.MoondropSpaceTravelCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.ColmiI28UltraCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.moyoung.MisirunC17Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.no1f1.No1F1Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nothing.CmfBudsPro2Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.nothing.Ear1Coordinator;
@@ -501,6 +502,7 @@ public enum DeviceType {
     COLMI_R03(ColmiR03Coordinator.class),
     COLMI_R06(ColmiR06Coordinator.class),
     COLMI_I28_ULTRA(ColmiI28UltraCoordinator.class),
+    MISIRUN_C17(MisirunC17Coordinator.class),
     SCANNABLE(ScannableDeviceCoordinator.class),
     CYCLING_SENSOR(CyclingSensorCoordinator.class),
     BLE_GATT_CLIENT(BleGattClientCoordinator.class),
