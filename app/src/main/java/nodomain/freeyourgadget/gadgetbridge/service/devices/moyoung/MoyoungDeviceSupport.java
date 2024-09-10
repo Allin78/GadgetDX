@@ -679,7 +679,14 @@ public class MoyoungDeviceSupport extends AbstractBTLEDeviceSupport {
                     repetition |= 32;
                 if (alarm.getRepetition(Alarm.ALARM_SAT))
                     repetition |= 64;
-                buffer.put(repetition);
+                byte repeat;
+                if (repetition == 0)
+                    repeat = 0;
+                else if (repetition == 127)
+                    repeat = 1;
+                else
+                    repeat = 2;
+                buffer.put(repeat);
                 buffer.put((byte)alarm.getHour());
                 buffer.put((byte)alarm.getMinute());
                 if (repetition == 0)
@@ -694,14 +701,7 @@ public class MoyoungDeviceSupport extends AbstractBTLEDeviceSupport {
                     buffer.put((byte)0);
                     buffer.put((byte)0);
                 }
-                byte repeat;
-                if (repetition == 0)
-                    repeat = 0;
-                else if (repetition == 127)
-                    repeat = 1;
-                else
-                    repeat = 2;
-                buffer.put(repeat);
+                buffer.put(repetition);
                 sendPacket(builder, MoyoungPacketOut.buildPacket(mtu, MoyoungConstants.CMD_SET_ALARM_CLOCK, buffer.array()));
             }
             builder.queue(getQueue());
