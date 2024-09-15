@@ -190,9 +190,6 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
             return new DefaultChartsData(lineData, xValueFormatter);
         }
 
-        boolean annotate = true;
-        boolean use_steps_as_movement;
-
         ActivityKind last_type = ActivityKind.UNKNOWN;
 
         int numEntries = samples.size();
@@ -217,21 +214,15 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
             // filled charts
             int index = getIndexOfActivity(type);
             int last_index = getIndexOfActivity(last_type);
-            if (index >= 0 && last_index >= 0) {
-                if (last_type != type) {
-                    entries.get(index).add(createLineEntry(0, ts));
-                    entries.get(last_index).add(createLineEntry(last_value, ts));
-                    entries.get(last_index).add(createLineEntry(0, ts));
-                }
-                if (type == ActivityKind.NOT_WORN) {
-                    entries.get(index).add(createLineEntry(Y_VALUE_DEEP_SLEEP, ts));
-                } else {
-                    entries.get(index).add(createLineEntry(value, ts));
-                }
-            } else if (last_index >= 0) {
-                entries.get(last_index).add(createLineEntry(0, ts));
-            } else if (index >= 0) {
+            if (last_type != type) {
                 entries.get(index).add(createLineEntry(0, ts));
+                entries.get(last_index).add(createLineEntry(last_value, ts));
+                entries.get(last_index).add(createLineEntry(0, ts));
+            }
+            if (type == ActivityKind.NOT_WORN) {
+                entries.get(index).add(createLineEntry(Y_VALUE_DEEP_SLEEP, ts));
+            } else {
+                entries.get(index).add(createLineEntry(value, ts));
             }
 
             // heart rate line graph
@@ -406,13 +397,12 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
 
     private int getIndexOfActivity(ActivityKind kind) {
         switch (kind) {
-            case UNKNOWN: return -1;
             case DEEP_SLEEP: return 0;
             case LIGHT_SLEEP: return 1;
             case REM_SLEEP: return 2;
             case AWAKE_SLEEP: return 3;
             case NOT_WORN: return 4;
-            default: return 5; // ActivityKind.ACTIVITY
+            default: return 5; // treated as ActivityKind.ACTIVITY
         }
     }
 }
