@@ -204,7 +204,6 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
         int lastHrSampleIndex = -1;
         HeartRateUtils heartRateUtilsInstance = HeartRateUtils.getInstance();
 
-        float last_value = 0;
         for (int i = 0; i < numEntries; i++) {
             ActivitySample sample = samples.get(i);
             ActivityKind type = sample.getKind();
@@ -216,7 +215,7 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
             int last_index = getIndexOfActivity(last_type);
             if (last_type != type) {
                 entries.get(index).add(createLineEntry(0, ts));
-                entries.get(last_index).add(createLineEntry(last_value, ts));
+                entries.get(last_index).add(createLineEntry(value, ts));
                 entries.get(last_index).add(createLineEntry(0, ts));
             }
             if (type == ActivityKind.NOT_WORN) {
@@ -234,7 +233,6 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
                 heartrateEntries.add(createLineEntry(sample.getHeartRate(), ts));
                 lastHrSampleIndex = ts;
             }
-            last_value = value;
             last_type = type;
         }
 
