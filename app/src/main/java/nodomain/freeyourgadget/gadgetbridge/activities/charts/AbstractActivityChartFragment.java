@@ -275,6 +275,17 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
         return new DefaultChartsData(lineData, xValueFormatter);
     }
 
+    protected int getIndexOfActivity(ActivityKind kind) {
+        switch (kind) {
+            case DEEP_SLEEP: return 0;
+            case LIGHT_SLEEP: return 1;
+            case REM_SLEEP: return 2;
+            case AWAKE_SLEEP: return 3;
+            case NOT_WORN: return 4;
+            default: return 5; // treated as ActivityKind.ACTIVITY
+        }
+    }
+
     protected Entry createLineEntry(float value, int xValue) {
         return new Entry(xValue, value);
     }
@@ -393,17 +404,6 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
         }
         sample.setTimestamp(timestamp);
         return sample;
-    }
-
-    private int getIndexOfActivity(ActivityKind kind) {
-        switch (kind) {
-            case DEEP_SLEEP: return 0;
-            case LIGHT_SLEEP: return 1;
-            case REM_SLEEP: return 2;
-            case AWAKE_SLEEP: return 3;
-            case NOT_WORN: return 4;
-            default: return 5; // treated as ActivityKind.ACTIVITY
-        }
     }
 }
 
