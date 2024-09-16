@@ -191,6 +191,7 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
         }
 
         ActivityKind last_type = ActivityKind.UNKNOWN;
+        float last_value = 0;
 
         int numEntries = samples.size();
         List<List<Entry>> entries = new ArrayList<>();
@@ -208,21 +209,20 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
             ActivitySample sample = samples.get(i);
             ActivityKind type = sample.getKind();
             int ts = tsTranslation.shorten(sample.getTimestamp());
-            float value = sample.getIntensity();
+            float value = type != ActivityKind.NOT_WORN ? sample.getIntensity() : Y_VALUE_DEEP_SLEEP;
+            // do not interpolate NOT_WORN on any side
+            boolean interpolate = !(last_type == ActivityKind.NOT_WORN || type == ActivityKind.NOT_WORN);
+            float interpolation_value = interpolate ? value : last_value;
 
             // filled charts
             int index = getIndexOfActivity(type);
             int last_index = getIndexOfActivity(last_type);
             if (last_type != type) {
                 entries.get(index).add(createLineEntry(0, ts));
-                entries.get(last_index).add(createLineEntry(value, ts));
+                entries.get(last_index).add(createLineEntry(interpolation_value, ts));
                 entries.get(last_index).add(createLineEntry(0, ts));
             }
-            if (type == ActivityKind.NOT_WORN) {
-                entries.get(index).add(createLineEntry(Y_VALUE_DEEP_SLEEP, ts));
-            } else {
-                entries.get(index).add(createLineEntry(value, ts));
-            }
+            entries.get(index).add(createLineEntry(value, ts));
 
             // heart rate line graph
             if (hr && type != ActivityKind.NOT_WORN && heartRateUtilsInstance.isValidHeartRateValue(sample.getHeartRate())) {
@@ -234,6 +234,7 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
                 lastHrSampleIndex = ts;
             }
             last_type = type;
+            last_value = value;
         }
 
         // convert Entry Lists to Datasets
