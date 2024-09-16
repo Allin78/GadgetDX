@@ -249,7 +249,7 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
             entries.get(getIndexOfActivity(ActivityKind.LIGHT_SLEEP)), akLightSleep.color, "Light Sleep"
         ));
         lineDataSets.add(createDataSet(
-            entries.get(getIndexOfActivity(ActivityKind.NOT_WORN)), akActivity.color, "Not worn"
+            entries.get(getIndexOfActivity(ActivityKind.NOT_WORN)), akNotWorn.color, "Not worn"
         ));
 
         if (supportsRemSleep(gbDevice)) {
