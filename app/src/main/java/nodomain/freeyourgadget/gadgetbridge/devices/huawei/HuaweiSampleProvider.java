@@ -317,7 +317,7 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         List<HuaweiActivitySample> rawSamples = getRawOrderedActivitySamples(timestamp_from, timestamp_to);
         List<HuaweiWorkoutDataSample> workoutSamples = getRawOrderedWorkoutSamplesWithHeartRate(timestamp_from, timestamp_to);
 
-        List<int[]> workoutSpans = getWorkoutSpans(rawSamples, workoutSamples, 3);
+        List<int[]> workoutSpans = getWorkoutSpans(rawSamples, workoutSamples, 5);
         List<HuaweiActivitySample> processedSamples = new ArrayList<>();
 
         Iterator<HuaweiActivitySample> itRawSamples = rawSamples.iterator();
@@ -364,7 +364,6 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         HuaweiActivitySample currentActivity = activityIterator.hasNext() ? activityIterator.next() : null;
         HuaweiWorkoutDataSample currentWorkout = workoutIterator.hasNext() ? workoutIterator.next() : null;
 
-        boolean inWorkout = false;
         int consecutiveActivityCount = 0;
         Integer spanStart = null;
 
@@ -372,12 +371,11 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         while (currentActivity != null || currentWorkout != null) {
             if (currentWorkout == null || (currentActivity != null && currentActivity.getTimestamp() < currentWorkout.getTimestamp())) {
                 // handle activity
-                if (inWorkout) {
+                if (spanStart != null) {
                     // We're in workout, check for activity interruption
                     consecutiveActivityCount++;
-                    if (consecutiveActivityCount > threshold && spanStart != null) {
+                    if (consecutiveActivityCount > threshold) {
                         // Enough activity samples to interrupt the workout
-                        inWorkout = false;
                         validActivitySpans.add(new int[]{spanStart, workoutEnd});
                         spanStart = null;
                         consecutiveActivityCount = 0;
@@ -389,8 +387,6 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
                 if (spanStart == null) {
                     spanStart = currentWorkout.getTimestamp();
                 }
-                // Begin new workout session
-                inWorkout = true;
                 workoutEnd = currentWorkout.getTimestamp();
                 consecutiveActivityCount = 0;
                 currentWorkout = workoutIterator.hasNext() ? workoutIterator.next() : null;
@@ -398,8 +394,8 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         }
 
         // If there's an open valid span at the end, close it
-        if (!inWorkout && spanStart != null) {
-            validActivitySpans.add(new int[]{spanStart, currentActivity != null ? currentActivity.getTimestamp() : Integer.MAX_VALUE});
+        if (spanStart != null) {
+            validActivitySpans.add(new int[]{spanStart, workoutEnd});
         }
 
         return validActivitySpans;
