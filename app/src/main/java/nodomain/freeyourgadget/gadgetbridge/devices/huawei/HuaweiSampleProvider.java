@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import de.greenrobot.dao.AbstractDao;
 import de.greenrobot.dao.Property;
@@ -302,7 +301,7 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
      * that is necessary for proper displaying of data.
      *
      * This essentially boils down to four things:
-     *  - It adds in the workout heart rate data while overwriting normal activity
+     *  - It adds in the workout heart rate data without activity data in between
      *  - It adds a sample with intensity zero before start markers (start of block)
      *  - It adds a sample with intensity zero after end markers (end of block)
      *  - It modifies some blocks so the sleep data gets handled correctly
