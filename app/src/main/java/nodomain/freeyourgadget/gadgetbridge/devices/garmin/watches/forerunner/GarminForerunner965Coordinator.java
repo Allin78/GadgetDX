@@ -13,6 +13,6 @@ public class GarminForerunner965Coordinator extends GarminCoordinator {
 
     @Override
     public int getDeviceNameResource() {
-        return R.string.devicetype_garmin_forerunner_245;
+        return R.string.devicetype_garmin_forerunner_965;
     }
 }
