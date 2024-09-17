@@ -317,7 +317,7 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         List<HuaweiActivitySample> rawSamples = getRawOrderedActivitySamples(timestamp_from, timestamp_to);
         List<HuaweiWorkoutDataSample> workoutSamples = getRawOrderedWorkoutSamplesWithHeartRate(timestamp_from, timestamp_to);
 
-        List<int[]> validActivities = getValidActivitySpans(rawSamples, workoutSamples, 10);
+        List<int[]> workoutSpans = getWorkoutSpans(rawSamples, workoutSamples, 3);
         List<HuaweiActivitySample> processedSamples = new ArrayList<>();
 
         Iterator<HuaweiActivitySample> itRawSamples = rawSamples.iterator();
@@ -337,11 +337,11 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         }
 
         while (nextRawSample != null || nextWorkoutSample != null) {
-            if (nextRawSample == null || (nextWorkoutSample != null && nextWorkoutSample.getTimestamp() <= nextRawSample.getTimestamp())) {
+            if (nextRawSample == null || (nextWorkoutSample != null && nextWorkoutSample.getTimestamp() < nextRawSample.getTimestamp())) {
                 processWorkoutSample(processedSamples, state, nextWorkoutSample);
                 nextWorkoutSample = itWorkoutSamples.hasNext() ? itWorkoutSamples.next() : null;
             } else {
-                if (isActivityValid(validActivities, nextRawSample))
+                if (!isActivityInWorkout(workoutSpans, nextRawSample))
                     processRawSample(processedSamples, state, nextRawSample);
                 nextRawSample = itRawSamples.hasNext() ? itRawSamples.next() : null;
             }
@@ -352,12 +352,10 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
     }
 
     /*
-    * calculates the timespans: [start, end] of valid activities. a timespan is not valid for an activity if
-    * samples of a workout are inside of it. So if this is the case no normal activity sample should
-    * write to that timespan, because it would report seemingly false heart rate and disconnected activity 
-    * spikes within that workout.
+    * Calculates the timespans: [start, end] of workouts
+    * Normal activities should not be processed when in middle of workout
     **/
-    private List<int[]> getValidActivitySpans(List<HuaweiActivitySample> activity, List<HuaweiWorkoutDataSample> workout, int threshold) {
+    private List<int[]> getWorkoutSpans(List<HuaweiActivitySample> activity, List<HuaweiWorkoutDataSample> workout, int threshold) {
         List<int[]> validActivitySpans = new ArrayList<>();
 
         Iterator<HuaweiActivitySample> activityIterator = activity.iterator();
@@ -370,32 +368,30 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         int consecutiveActivityCount = 0;
         Integer spanStart = null;
 
+        int workoutEnd = 0;
         while (currentActivity != null || currentWorkout != null) {
             if (currentWorkout == null || (currentActivity != null && currentActivity.getTimestamp() < currentWorkout.getTimestamp())) {
-                if (!inWorkout) {
-                    // If not in workout, this is a valid activity, check if we're starting a new span
-                    if (spanStart == null) {
-                        spanStart = currentActivity.getTimestamp();
-                    }
-                } else {
+                // handle activity
+                if (inWorkout) {
                     // We're in workout, check for activity interruption
                     consecutiveActivityCount++;
-                    if (consecutiveActivityCount >= threshold) {
+                    if (consecutiveActivityCount > threshold && spanStart != null) {
                         // Enough activity samples to interrupt the workout
                         inWorkout = false;
-                        // End current workout span and begin a new valid activity span
-                        spanStart = currentActivity.getTimestamp();
+                        validActivitySpans.add(new int[]{spanStart, workoutEnd});
+                        spanStart = null;
+                        consecutiveActivityCount = 0;
                     }
                 }
                 currentActivity = activityIterator.hasNext() ? activityIterator.next() : null;
             } else {
-                // If not in workout, end current valid span
-                if (spanStart != null) {
-                    validActivitySpans.add(new int[]{spanStart, currentWorkout.getTimestamp()});
-                    spanStart = null;
+                // handle workout
+                if (spanStart == null) {
+                    spanStart = currentWorkout.getTimestamp();
                 }
                 // Begin new workout session
                 inWorkout = true;
+                workoutEnd = currentWorkout.getTimestamp();
                 consecutiveActivityCount = 0;
                 currentWorkout = workoutIterator.hasNext() ? workoutIterator.next() : null;
             }
@@ -409,14 +405,14 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         return validActivitySpans;
     }
 
-    private boolean isActivityValid(List<int[]> validSpans, HuaweiActivitySample sample) {
+    private boolean isActivityInWorkout(List<int[]> validSpans, HuaweiActivitySample sample) {
         int sampleTimestamp = sample.getTimestamp();
         for (int[] span : validSpans) {
-            if (sampleTimestamp >= span[0] && sampleTimestamp <= span[1]) {
-                return true;  // Activity is within a valid span
+            if (sampleTimestamp > span[0] && sampleTimestamp < span[1]) {
+                return true;
             }
         }
-        return false;  // Activity falls within a workout span
+        return false;
     }
 
     private List<HuaweiActivitySample> interpolate(List<HuaweiActivitySample> processedSamples) {
@@ -576,8 +572,7 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
                 state.userId,
                 0,
                 (byte) 0x00,
-                // ActivitySample.NOT_MEASURED,
-                1,
+                ActivitySample.NOT_MEASURED,
                 ActivitySample.NOT_MEASURED,
                 ActivitySample.NOT_MEASURED,
                 ActivitySample.NOT_MEASURED,
