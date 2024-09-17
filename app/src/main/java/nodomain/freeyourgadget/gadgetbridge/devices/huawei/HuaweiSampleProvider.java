@@ -302,7 +302,7 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
      * that is necessary for proper displaying of data.
      *
      * This essentially boils down to four things:
-     *  - It adds in the workout heart rate data
+     *  - It adds in the workout heart rate data while overwriting normal activity
      *  - It adds a sample with intensity zero before start markers (start of block)
      *  - It adds a sample with intensity zero after end markers (end of block)
      *  - It modifies some blocks so the sleep data gets handled correctly
@@ -314,7 +314,6 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
     @Override
     protected List<HuaweiActivitySample> getGBActivitySamples(int timestamp_from, int timestamp_to) {
         // Note that the result of this function has to be sorted by timestamp!
-
         List<HuaweiActivitySample> rawSamples = getRawOrderedActivitySamples(timestamp_from, timestamp_to);
         List<HuaweiWorkoutDataSample> workoutSamples = getRawOrderedWorkoutSamplesWithHeartRate(timestamp_from, timestamp_to);
 
@@ -340,27 +339,23 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         while (nextRawSample != null || nextWorkoutSample != null) {
             if (nextRawSample == null || (nextWorkoutSample != null && nextWorkoutSample.getTimestamp() <= nextRawSample.getTimestamp())) {
                 processWorkoutSample(processedSamples, state, nextWorkoutSample);
-                nextWorkoutSample = null;
-                if (itWorkoutSamples.hasNext())
-                    nextWorkoutSample = itWorkoutSamples.next();
+                nextWorkoutSample = itWorkoutSamples.hasNext() ? itWorkoutSamples.next() : null;
             } else {
                 if (isActivityValid(validActivities, nextRawSample))
                     processRawSample(processedSamples, state, nextRawSample);
-
-                nextRawSample = null;
-                if (itRawSamples.hasNext())
-                    nextRawSample = itRawSamples.next();
+                nextRawSample = itRawSamples.hasNext() ? itRawSamples.next() : null;
             }
         }
-        // processedSamples = interpolate(processedSamples);
+        processedSamples = interpolate(processedSamples);
 
         return processedSamples;
     }
 
     /*
-    * calculates the timespans: [start, end] of valid activites. a timespan is not valid for an activity if
-    * samples of a workout are inside of it. So if this is the case no normal activiy sample should
-    * write to that timespan, because it would report seemingly false heartrate
+    * calculates the timespans: [start, end] of valid activities. a timespan is not valid for an activity if
+    * samples of a workout are inside of it. So if this is the case no normal activity sample should
+    * write to that timespan, because it would report seemingly false heart rate and disconnected activity 
+    * spikes within that workout.
     **/
     private List<int[]> getValidActivitySpans(List<HuaweiActivitySample> activity, List<HuaweiWorkoutDataSample> workout, int threshold) {
         List<int[]> validActivitySpans = new ArrayList<>();
@@ -377,7 +372,6 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
 
         while (currentActivity != null || currentWorkout != null) {
             if (currentWorkout == null || (currentActivity != null && currentActivity.getTimestamp() < currentWorkout.getTimestamp())) {
-                // We're processing an activity sample
                 if (!inWorkout) {
                     // If not in workout, this is a valid activity, check if we're starting a new span
                     if (spanStart == null) {
