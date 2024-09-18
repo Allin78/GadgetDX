@@ -340,8 +340,12 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
                 processWorkoutSample(processedSamples, state, nextWorkoutSample);
                 nextWorkoutSample = itWorkoutSamples.hasNext() ? itWorkoutSamples.next() : null;
             } else {
-                if (!isActivityInWorkout(workoutSpans, nextRawSample))
-                    processRawSample(processedSamples, state, nextRawSample);
+                boolean sampleInWorkout = isInWorkout(workoutSpans, nextRawSample.getTimestamp());
+                if (sampleInWorkout) {
+                    nextRawSample.setHeartRate(ActivitySample.NOT_MEASURED);
+                    nextRawSample.setRawIntensity(0);
+                }
+                processRawSample(processedSamples, state, nextRawSample);
                 nextRawSample = itRawSamples.hasNext() ? itRawSamples.next() : null;
             }
         }
@@ -400,10 +404,9 @@ public class HuaweiSampleProvider extends AbstractSampleProvider<HuaweiActivityS
         return validActivitySpans;
     }
 
-    private boolean isActivityInWorkout(List<int[]> validSpans, HuaweiActivitySample sample) {
-        int sampleTimestamp = sample.getTimestamp();
+    private boolean isInWorkout(List<int[]> validSpans, int timestamp) {
         for (int[] span : validSpans) {
-            if (sampleTimestamp > span[0] && sampleTimestamp < span[1]) {
+            if (timestamp > span[0] && timestamp < span[1]) {
                 return true;
             }
         }
