@@ -22,6 +22,7 @@
     <item name="p_calories" type="string">calories</item>
     <item name="p_heart_rate" type="string">heart_rate</item>
     <item name="p_battery" type="string">battery</item>
+    <item name="p_heartrate" type="string">heartrate</item>
 
     <item name="p_menuitem_status" type="string">status</item>
     <item name="p_menuitem_activity" type="string">activity</item>

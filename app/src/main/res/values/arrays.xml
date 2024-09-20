@@ -3049,6 +3049,7 @@
         <item>@string/pref_header_spo2</item>
         <item>@string/menuitem_temperature</item>
         <item>@string/menuitem_weight</item>
+        <item>@string/heart_rate</item>
     </string-array>
 
     <string-array name="pref_charts_tabs_values">
@@ -3066,6 +3067,7 @@
         <item>@string/p_spo2</item>
         <item>@string/p_temperature</item>
         <item>@string/p_weight</item>
+        <item>@string/p_heartrate</item>
     </string-array>
 
     <string-array name="pref_charts_tabs_items_default">
