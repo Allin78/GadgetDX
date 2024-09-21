@@ -17,6 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.model;
 
+import android.app.PendingIntent;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -81,8 +83,11 @@ public class NotificationSpec {
         public static final int TYPE_SYNTECTIC_MUTE = 5;
         public static final int TYPE_SYNTECTIC_OPEN = 6;
 
+        public static final int TYPE_CUSTOM = 7;
+
         public int type = TYPE_UNDEFINED;
         public long handle;
         public String title;
+
     }
 }

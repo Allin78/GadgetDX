@@ -20,6 +20,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
 package nodomain.freeyourgadget.gadgetbridge.model;
 
+import android.app.PendingIntent;
+
+import java.util.HashMap;
+
 import nodomain.freeyourgadget.gadgetbridge.devices.EventHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.DeviceCommunicationService;
@@ -171,6 +175,10 @@ public interface DeviceService extends EventHandler {
     String EXTRA_CALENDAREVENT_LOCATION = "calendarevent_location";
     String EXTRA_CALENDAREVENT_CALNAME = "calendarevent_calname";
     String EXTRA_CALENDAREVENT_COLOR = "calendarevent_color";
+
+    final HashMap<Integer, PendingIntent> pendingIntents = new HashMap<Integer, PendingIntent>();
+
+    void start();
 
     void connect();
 

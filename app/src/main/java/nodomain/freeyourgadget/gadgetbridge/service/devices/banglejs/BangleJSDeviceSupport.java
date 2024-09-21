@@ -32,6 +32,8 @@ import static nodomain.freeyourgadget.gadgetbridge.database.DBHelper.getUser;
 import static nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants.PREF_BANGLEJS_ACTIVITY_FULL_SYNC_START;
 import static nodomain.freeyourgadget.gadgetbridge.devices.banglejs.BangleJSConstants.PREF_BANGLEJS_ACTIVITY_FULL_SYNC_STATUS;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.BroadcastReceiver;
@@ -49,6 +51,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -485,6 +488,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         try {
             TransactionBuilder builder = performInitialized(taskName);
             uartTx(builder, "\u0010GB("+jsonToString(json)+")\n");
+            Log.d("txJSON", "GB("+jsonToString(json)+")");
             builder.queue(getQueue());
         } catch (IOException e) {
             GB.toast(getContext(), "Error in "+taskName+": " + e.getLocalizedMessage(), Toast.LENGTH_LONG, GB.ERROR);
@@ -772,6 +776,7 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
 
         GBDeviceEventNotificationControl deviceEvtNotificationControl = new GBDeviceEventNotificationControl();
+        Log.d("rxJSON", json.toString());
         // .title appears unused
         deviceEvtNotificationControl.event = GBDeviceEventNotificationControl.Event.valueOf(response);
         if (json.has("id"))
@@ -783,6 +788,17 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         /* REPLY responses don't use the ID from the event (MUTE/etc seem to), but instead
          * they use a handle that was provided in an action list on the onNotification.. event  */
         if (deviceEvtNotificationControl.event == GBDeviceEventNotificationControl.Event.REPLY) {
+            if (json.has("hash")) {
+                PendingIntent tmpIntent = GBApplication.deviceService().pendingIntents.get(Integer.valueOf(json.getString("hash")));
+                Log.d("ACTIONZ", String.valueOf(tmpIntent));
+                try {
+                    assert tmpIntent != null;
+                    tmpIntent.send();
+                } catch (PendingIntent.CanceledException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
+            }
             Long foundHandle = mNotificationReplyAction.lookup((int)deviceEvtNotificationControl.handle);
             if (foundHandle!=null)
                 deviceEvtNotificationControl.handle = foundHandle;
@@ -1465,14 +1481,16 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         }
 
         boolean canReply = false;
-        if (notificationSpec.attachedActions!=null)
-            for (int i=0;i<notificationSpec.attachedActions.size();i++) {
+        if (notificationSpec.attachedActions != null) {
+            for (int i = 0; i < notificationSpec.attachedActions.size(); i++) {
                 NotificationSpec.Action action = notificationSpec.attachedActions.get(i);
-                if (action.type==NotificationSpec.Action.TYPE_WEARABLE_REPLY) {
+                if (action.type == NotificationSpec.Action.TYPE_WEARABLE_REPLY) {
+                    mNotificationReplyAction.add(notificationSpec.getId(), ((long) notificationSpec.getId() << 4) + i + 1);
+                } /*else if (action.type == NotificationSpec.Action.TYPE_CUSTOM) {
                     mNotificationReplyAction.add(notificationSpec.getId(), action.handle);
-                    canReply = true;
-                }
+                }*/
             }
+        }
         // sourceName isn't set for SMS messages
         String src = notificationSpec.sourceName;
         if (notificationSpec.type == NotificationType.GENERIC_SMS)
@@ -1489,6 +1507,24 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
             o.put("sender", renderUnicodeAsImage(cropToLength(notificationSpec.sender,40)));
             o.put("tel", notificationSpec.phoneNumber);
             if (canReply) o.put("reply", true);
+            if (notificationSpec.attachedActions != null) {
+                JSONArray customActions = new JSONArray();
+                for (int i = 0; i < notificationSpec.attachedActions.size(); i++) {
+                    NotificationSpec.Action action = notificationSpec.attachedActions.get(i);
+                    if (action.type == NotificationSpec.Action.TYPE_CUSTOM) {
+                        try {
+                            customActions.put((new JSONObject())
+                                    .put("title", action.title)
+                                    .put("hash", action.handle)
+                            );
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                }
+                o.put("act", customActions);
+            }
             uartTxJSON("onNotification", o);
         } catch (JSONException e) {
             LOG.info("JSONException: " + e.getLocalizedMessage());

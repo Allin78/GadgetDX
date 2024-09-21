@@ -40,6 +40,7 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -48,6 +49,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.palette.graphics.Palette;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +97,7 @@ import static nodomain.freeyourgadget.gadgetbridge.activities.NotificationFilter
 import static nodomain.freeyourgadget.gadgetbridge.util.StringUtils.ensureNotNull;
 
 public class NotificationListener extends NotificationListenerService {
+
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationListener.class);
 
@@ -416,6 +421,45 @@ public class NotificationListener extends NotificationListenerService {
 
         notificationSpec.attachedActions = new ArrayList<>();
         notificationSpec.dndSuppressed = dndSuppressed;
+
+        JSONArray customActions = null;
+        if (notification.actions != null && notification.actions.length > 0) {
+            customActions = new JSONArray();
+            for (Notification.Action action : notification.actions) {
+
+                Log.d("ACTIONZ", "title   : " + action.title);
+                Log.d("ACTIONZ", "package : " + action.actionIntent.getCreatorPackage());
+                Log.d("ACTIONZ", "hash    : " + action.hashCode());
+
+                StringBuilder tmp = new StringBuilder("Extras:");
+                Bundle extras = action.getExtras();
+                for (String key: extras.keySet())
+                {
+                    tmp.append("\n\t").append(key).append(":").append(extras.get(key));
+                }
+                Log.d ("ACTIONZ", tmp.toString());
+
+                NotificationSpec.Action tmpAction = new NotificationSpec.Action();
+                tmpAction.title = String.valueOf(action.title);
+                tmpAction.type = NotificationSpec.Action.TYPE_CUSTOM;
+                tmpAction.handle = action.hashCode();
+                notificationSpec.attachedActions.add(tmpAction);
+
+                // Store reference to PendingIntent, 'cause I have no effin' clue how to do this properly.
+                GBApplication.deviceService().pendingIntents.put(action.hashCode(), action.actionIntent);
+
+                try {
+                    customActions.put((new JSONObject())
+                            .put("title", action.title)
+                            .put("package", action.actionIntent.getCreatorPackage())
+                            .put("hash", action.hashCode())
+                    );
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            Log.d("ACTIONZ", customActions.toString());
+        }
 
         // DISMISS action
         NotificationSpec.Action dismissAction = new NotificationSpec.Action();
