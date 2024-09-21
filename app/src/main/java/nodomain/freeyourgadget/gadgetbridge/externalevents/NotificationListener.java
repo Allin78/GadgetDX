@@ -40,7 +40,6 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -426,18 +425,12 @@ public class NotificationListener extends NotificationListenerService {
         if (notification.actions != null && notification.actions.length > 0) {
             customActions = new JSONArray();
             for (Notification.Action action : notification.actions) {
-
-                Log.d("ACTIONZ", "title   : " + action.title);
-                Log.d("ACTIONZ", "package : " + action.actionIntent.getCreatorPackage());
-                Log.d("ACTIONZ", "hash    : " + action.hashCode());
-
                 StringBuilder tmp = new StringBuilder("Extras:");
                 Bundle extras = action.getExtras();
                 for (String key: extras.keySet())
                 {
                     tmp.append("\n\t").append(key).append(":").append(extras.get(key));
                 }
-                Log.d ("ACTIONZ", tmp.toString());
 
                 NotificationSpec.Action tmpAction = new NotificationSpec.Action();
                 tmpAction.title = String.valueOf(action.title);
@@ -458,7 +451,6 @@ public class NotificationListener extends NotificationListenerService {
                     throw new RuntimeException(e);
                 }
             }
-            Log.d("ACTIONZ", customActions.toString());
         }
 
         // DISMISS action

@@ -790,7 +790,6 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         if (deviceEvtNotificationControl.event == GBDeviceEventNotificationControl.Event.REPLY) {
             if (json.has("hash")) {
                 PendingIntent tmpIntent = GBApplication.deviceService().pendingIntents.get(Integer.valueOf(json.getString("hash")));
-                Log.d("ACTIONZ", String.valueOf(tmpIntent));
                 try {
                     assert tmpIntent != null;
                     tmpIntent.send();
