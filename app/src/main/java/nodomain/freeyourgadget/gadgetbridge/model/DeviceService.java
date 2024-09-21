@@ -178,7 +178,7 @@ public interface DeviceService extends EventHandler {
 
     final HashMap<Integer, PendingIntent> pendingIntents = new HashMap<Integer, PendingIntent>();
 
-    void start();
+    //void start();
 
     void connect();
 
