@@ -37,6 +37,7 @@ import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.XTimePreference;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.*;
+import static nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiConstants.PREF_HUAWEI_CALENDAR_SYNC_POLLING;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiConstants.PREF_HUAWEI_DEBUG_REQUEST;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiConstants.PREF_HUAWEI_CONTINUOUS_SKIN_TEMPERATURE_MEASUREMENT;
 import static nodomain.freeyourgadget.gadgetbridge.devices.huawei.HuaweiConstants.PREF_HUAWEI_TRUSLEEP;
@@ -106,6 +107,7 @@ public class HuaweiSettingsCustomizer implements DeviceSpecificSettingsCustomize
         handler.addPreferenceHandlerFor(PREF_HUAWEI_TRUSLEEP);
         handler.addPreferenceHandlerFor(PREF_HUAWEI_DEBUG_REQUEST);
         handler.addPreferenceHandlerFor(PREF_HUAWEI_CONTINUOUS_SKIN_TEMPERATURE_MEASUREMENT);
+        handler.addPreferenceHandlerFor(PREF_HUAWEI_CALENDAR_SYNC_POLLING);
 
         final Preference forceOptions = handler.findPreference(PREF_FORCE_OPTIONS);
         if (forceOptions != null) {

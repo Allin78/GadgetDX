@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreferenceCompat
+        android:defaultValue="false"
+        android:dependency="sync_calendar"
+        android:icon="@drawable/ic_calendar_sync"
+        android:key="huawei_calendar_sync_polling"
+        android:layout="@layout/preference_checkbox"
+        android:summary="@string/huawei_sync_calendar_polling_summary"
+        android:title="@string/huawei_sync_calendar_polling_title" />
+</androidx.preference.PreferenceScreen>
