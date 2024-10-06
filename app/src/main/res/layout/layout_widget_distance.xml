@@ -13,11 +13,23 @@
 
     <ImageView
         android:id="@+id/line_layout_distance_icon"
+        android:layout_marginTop="10dp"
         android:layout_width="19dp"
         android:layout_height="19dp"
         android:layout_gravity="center"
         android:contentDescription="@string/candidate_item_device_image"
         app:srcCompat="@drawable/ic_distance" />
+
+    <TextView
+        android:id="@+id/line_layout_distance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:maxLines="1"
+        android:scrollHorizontally="false"
+        android:text="@string/stats_empty_value"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/line_layout_distance_title"
@@ -28,20 +40,6 @@
         android:maxLines="2"
         android:scrollHorizontally="false"
         android:text="@string/distance"
-        android:textAllCaps="true"
-        android:textColor="@color/accent"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/line_layout_distance_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:fontFamily="sans-serif-black"
-        android:gravity="center"
-        android:maxLines="1"
-        android:scrollHorizontally="false"
-        android:text="@string/stats_empty_value"
-        android:textSize="24sp" />
+        android:textSize="12sp" />
 
 </LinearLayout>
