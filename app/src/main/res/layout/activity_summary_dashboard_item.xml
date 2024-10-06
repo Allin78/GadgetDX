@@ -37,12 +37,11 @@
 
                 <ImageView
                     android:id="@+id/summary_dashboard_layout_big_activity_icon"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_activity_unknown_small" />
-
 
             </LinearLayout>
 
@@ -69,12 +68,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_distance_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_distance" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_distance_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="15000"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_distance_title"
@@ -85,21 +96,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/distance"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_distance_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="15000"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -116,12 +113,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_calories_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_calories" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_calories_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="30000"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_calories_title"
@@ -132,26 +141,13 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/caloriesBurnt"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_calories_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="30000"
-                    android:textSize="18sp" />
+                    android:textSize="12sp"/>
 
             </LinearLayout>
 
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -175,12 +171,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_duration_icon"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_timer" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_duration_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="1d 20h 35m"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_duration_title"
@@ -191,21 +199,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/activity_detail_duration_label"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_duration_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="1d 20h 35m"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -221,12 +215,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_active_duration_icon"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_timer" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_active_duration_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="1d 13h 30m"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_active_duration_title"
@@ -237,21 +243,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/activity_list_summary_active_time"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_active_duration_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="1d 13h 30m"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -280,12 +272,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_activity_icon"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_activity_unknown_small" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_activity_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="All Activities"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_activity_title"
@@ -296,21 +300,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/Activity"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_activity_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="All Activities"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -327,12 +317,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_count_icon"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_activity_stacked" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_count_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="15"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_count_title"
@@ -343,21 +345,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/activity_list_summary_activities"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_count_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="15"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -384,12 +372,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_from_icon"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_date_range" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_from_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="January 1, 1970"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_from_title"
@@ -400,21 +400,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/activity_filter_date_from"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_from_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="January 1, 1970"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
@@ -430,12 +416,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:layout_marginTop="10dp"
                     android:id="@+id/summary_dashboard_layout_to_icon"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     android:layout_gravity="center"
                     android:contentDescription="@string/candidate_item_device_image"
                     app:srcCompat="@drawable/ic_date_range" />
+
+                <TextView
+                    android:id="@+id/summary_dashboard_layout_to_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:scrollHorizontally="false"
+                    android:text="December 1, 2020"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/summary_dashboard_layout_to_title"
@@ -446,21 +444,7 @@
                     android:maxLines="2"
                     android:scrollHorizontally="false"
                     android:text="@string/activity_filter_date_to"
-                    android:textAllCaps="true"
-                    android:textColor="@color/accent"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/summary_dashboard_layout_to_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:scrollHorizontally="false"
-                    android:text="December 1, 2020"
-                    android:textSize="18sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
 
