@@ -65,8 +65,10 @@
     <color name="value_line_color" type="color">#858585</color>
     <color name="gauge_line_color" type="color">#19808080</color>
 
-    <color name="alternate_row_background_light">#FFEDEDED</color>
-    <color name="alternate_row_background_dark">#545254</color>
+    <color name="row_separator_light" type="color">#ffe2e2e5</color>
+    <color name="row_separator_dark" type="color">#19808080</color>
+    <color name="alternate_row_background_light">#08000000</color>
+    <color name="alternate_row_background_dark">#08FFFFFF</color>
 
     <color name="transparent">#00000000</color>
 

@@ -2,6 +2,7 @@ package nodomain.freeyourgadget.gadgetbridge.model;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.View;
@@ -28,11 +29,13 @@ public class ActivityListItem {
     private final TextView timeFromView;
     private final TextView timeToView;
     private final TextView activityName;
+    private final TextView activityType;
     private final TextView stepLabel;
     private final TextView distanceLabel;
     private final TextView hrLabel;
     private final TextView intensityLabel;
     private final TextView durationLabel;
+    private final TextView durationLabelTop;
     private final TextView dateLabel;
     private final LinearLayout timeLayout;
     private final LinearLayout hrLayout;
@@ -54,11 +57,13 @@ public class ActivityListItem {
         this.timeFromView = itemView.findViewById(R.id.line_layout_time_from);
         this.timeToView = itemView.findViewById(R.id.line_layout_time_to);
         this.activityName = itemView.findViewById(R.id.line_layout_activity_name);
+        this.activityType = itemView.findViewById(R.id.line_layout_activity_type);
         this.stepLabel = itemView.findViewById(R.id.line_layout_step_label);
         this.distanceLabel = itemView.findViewById(R.id.line_layout_distance_label);
         this.hrLabel = itemView.findViewById(R.id.line_layout_hr_label);
         this.intensityLabel = itemView.findViewById(R.id.line_layout_intensity_label);
         this.durationLabel = itemView.findViewById(R.id.line_layout_duration_label);
+        this.durationLabelTop = itemView.findViewById(R.id.line_layout_duration_label_top);
         this.dateLabel = itemView.findViewById(R.id.line_layout_date_label);
 
         this.timeLayout = itemView.findViewById(R.id.line_layout_time);
@@ -74,8 +79,8 @@ public class ActivityListItem {
         this.gpsIcon = itemView.findViewById(R.id.line_layout_gps_icon);
 
         this.backgroundColor = 0;
-        this.alternateColor = getThemedColor(itemView.getContext(), R.attr.alternate_row_background);
-        this.selectedColor = ContextCompat.getColor(itemView.getContext(), R.color.accent);
+        this.alternateColor = getThemedColor(itemView.getContext(), R.attr.alternate_row_background) - 0xC0000000;
+        this.selectedColor = ContextCompat.getColor(itemView.getContext(), R.color.accent) - 0x70000000;
     }
 
     public void update(@Nullable final Date timeFrom,
@@ -91,13 +96,25 @@ public class ActivityListItem {
                        @Nullable final Date date,
                        final boolean zebraStripe,
                        final boolean selected) {
+
         final String activityKindLabel = activityKind.getLabel(activityName.getContext());
         if (StringUtils.isNotBlank(activityLabel)) {
-            activityName.setText(String.format("%s, %s", activityKindLabel, activityLabel));
+            activityName.setText(activityLabel);
+            activityType.setText(activityKindLabel);
         } else {
             activityName.setText(activityKindLabel);
+            activityType.setText("");
         }
-        durationLabel.setText(DateTimeUtils.formatDurationHoursMinutes(duration, TimeUnit.MILLISECONDS));
+
+        if (date != null) {
+            durationLabelTop.setText(DateTimeUtils.formatDurationHoursMinutes(duration, TimeUnit.MILLISECONDS));
+            durationLabelTop.setVisibility(View.VISIBLE);
+            durationLabel.setVisibility(View.GONE);
+        } else {
+            durationLabel.setText(DateTimeUtils.formatDurationHoursMinutes(duration, TimeUnit.MILLISECONDS));
+            durationLabel.setVisibility(View.VISIBLE);
+            durationLabelTop.setVisibility(View.GONE);
+        }
 
         if (heartRate > 0) {
             hrLabel.setText(String.valueOf(heartRate));

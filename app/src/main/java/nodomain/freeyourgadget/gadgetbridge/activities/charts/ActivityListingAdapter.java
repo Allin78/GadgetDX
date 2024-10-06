@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -41,6 +42,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.adapter.AbstractActivityListingAdapter;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityListItem;
@@ -99,7 +101,7 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
         }
         dataSet.setSliceSpace(0f);
         dataSet.setSelectionShift(5f);
-        dataSet.setColors(chartColor, Color.LTGRAY);
+        dataSet.setColors(chartColor, ContextCompat.getColor(context, R.color.gauge_line_color));
 
         PieData data = new PieData(dataSet);
         data.setValueTextSize(0f);
@@ -271,15 +273,16 @@ public class ActivityListingAdapter extends AbstractActivityListingAdapter<Activ
             DashboardChart.setNoDataText("");
             DashboardChart.getLegend().setEnabled(false);
             DashboardChart.setDrawHoleEnabled(true);
-            DashboardChart.setHoleColor(Color.WHITE);
+            DashboardChart.setCenterTextColor(GBApplication.getTextColor(getContext()));
+            DashboardChart.setHoleColor(Color.TRANSPARENT);
             DashboardChart.getDescription().setText("");
             DashboardChart.setTransparentCircleColor(Color.WHITE);
             DashboardChart.setTransparentCircleAlpha(110);
-            DashboardChart.setHoleRadius(70f);
-            DashboardChart.setTransparentCircleRadius(75f);
+            DashboardChart.setHoleRadius(80f);
+            DashboardChart.setTransparentCircleRadius(80f);
             DashboardChart.setDrawCenterText(true);
             DashboardChart.setRotationEnabled(true);
-            DashboardChart.setHighlightPerTapEnabled(true);
+            DashboardChart.setHighlightPerTapEnabled(false);
             DashboardChart.setCenterTextOffset(0, 0);
         }
     }

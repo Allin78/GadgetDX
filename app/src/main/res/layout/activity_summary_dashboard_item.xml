@@ -9,6 +9,7 @@
     -->
 
     <LinearLayout
+        android:id="@+id/list_item_subparent_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -466,5 +467,11 @@
 
         </LinearLayout>
     </LinearLayout>
+
+    <View android:id="@+id/line_separator"
+        android:layout_below="@id/list_item_subparent_layout"
+        android:background="?attr/row_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 
 </RelativeLayout>
