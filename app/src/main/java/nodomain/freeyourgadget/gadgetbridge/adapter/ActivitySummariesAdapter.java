@@ -201,11 +201,11 @@ public class ActivitySummariesAdapter extends AbstractActivityListingAdapter<Bas
         public void fill(final int position, final BaseActivitySummary summary, final boolean selected) {
             final boolean hasGps;
 
+            final ActivitySummaryData summaryData = ActivitySummaryData.fromJson(summary.getSummaryData());
             if (summary.getGpxTrack() != null) {
                 hasGps = true;
-            } else if (summary.getSummaryData() != null && summary.getSummaryData().contains(ActivitySummaryEntries.INTERNAL_HAS_GPS)) {
-                final ActivitySummaryData summaryData = ActivitySummaryData.fromJson(summary.getSummaryData());
-                hasGps = summaryData != null && summaryData.getBoolean(INTERNAL_HAS_GPS, false);
+            } else if (summaryData != null && summary.getSummaryData().contains(ActivitySummaryEntries.INTERNAL_HAS_GPS)) {
+                hasGps = summaryData.getBoolean(INTERNAL_HAS_GPS, false);
             } else {
                 hasGps = false;
             }
@@ -215,10 +215,10 @@ public class ActivitySummariesAdapter extends AbstractActivityListingAdapter<Bas
                     null,
                     ActivityKind.fromCode(summary.getActivityKind()),
                     summary.getName(),
-                    -1,
-                    -1,
-                    -1,
-                    -1,
+                    summaryData != null ? summaryData.getNumber(ActivitySummaryEntries.STEPS, -1).intValue() : -1,
+                    summaryData != null ? summaryData.getNumber(ActivitySummaryEntries.DISTANCE_METERS, -1).intValue() : -1,
+                    summaryData != null ? summaryData.getNumber(ActivitySummaryEntries.HR_AVG, -1).intValue() : -1,
+                    summaryData != null ? summaryData.getNumber(ActivitySummaryEntries.CALORIES_BURNT, -1).intValue() : -1,
                     summary.getEndTime().getTime() - summary.getStartTime().getTime(),
                     hasGps,
                     summary.getStartTime(),
