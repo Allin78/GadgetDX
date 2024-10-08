@@ -237,4 +237,9 @@ public abstract class AbstractColmiR0xCoordinator extends AbstractBLEDeviceCoord
         health.add(R.xml.devicesettings_colmi_r0x);
         return deviceSpecificSettings;
     }
+
+    @Override
+    public int getLiveActivityFragmentPulseInterval() {
+        return 2000;
+    }
 }
