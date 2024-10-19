@@ -2611,6 +2611,13 @@
     <string name="weight_kg">%1$.2f kg</string>
     <string name="weight_lbs">%1$.2f lbs</string>
     <string name="target">Target</string>
+    <string name="redmi_buds_5_pro_anc_balanced">Balanced</string>
+    <string name="redmi_buds_5_pro_anc_light">Light</string>
+    <string name="redmi_buds_5_pro_anc_deep">Deep</string>
+    <string name="redmi_buds_5_pro_transparency_strength">Transparency Strength</string>
+    <string name="redmi_buds_5_pro_transparency_regular">Regular</string>
+    <string name="redmi_buds_5_pro_transparency_voice">Enhance Voices</string>
+    <string name="redmi_buds_5_pro_transparency_ambient">Enhance Ambient Sounds</string>
     <string name="sony_ambient_sound">Mode</string>
     <string name="sony_ambient_sound_off">Off</string>
     <string name="sony_ambient_sound_noise_cancelling">Noise Cancelling</string>
@@ -2674,6 +2681,8 @@
     <string name="pref_adaptive_volume_control_title">Adaptive volume control</string>
     <string name="pref_adaptive_noise_cancelling_title">Adaptive ANC</string>
     <string name="pref_adaptive_noise_cancelling_summary">Set the strength of the ANC automatically depending on the ambient sound level</string>
+    <string name="pref_personalized_noise_cancelling_title">Personalized ANC</string>
+    <string name="pref_personalized_noise_cancelling_summary">Set whether to use personalized active noise cancelling</string>
     <string name="sony_speak_to_chat">Speak-to-chat</string>
     <string name="sony_speak_to_chat_summary">Turn off noise cancelling automatically when you start talking.</string>
     <string name="sony_speak_to_chat_sensitivity">Voice Detection Sensitivity</string>

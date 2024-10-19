@@ -68,20 +68,20 @@ public class Message {
     public static List<Message> splitPiggybackedMessages(byte[] input) {
         List<Message> messages = new ArrayList<>();
 
-        int start = -1;
+        List<Integer> startHeader = new ArrayList<>();
         for (int i = 0; i < input.length - 3; i++) {
             if (input[i] == MESSAGE_HEADER[0] && input[i+1] == MESSAGE_HEADER[1] && input[i+2] == MESSAGE_HEADER[2]) {
-                if (start != -1) {
-                    messages.add(fromBytes(Arrays.copyOfRange(input, start, i + 4)));
-                }
-                start = i;
-            }
-            if (start != -1 && input[i+3] == MESSAGE_TRAILER) {
-                messages.add(fromBytes(Arrays.copyOfRange(input, start, i + 4)));
-                start = -1;
+                startHeader.add(i);
             }
         }
 
+        for (int i = 0; i < startHeader.size(); i++) {
+            if (i == startHeader.size() - 1) {
+                messages.add(fromBytes(Arrays.copyOfRange(input, startHeader.get(i), input.length)));
+            } else {
+                messages.add(fromBytes(Arrays.copyOfRange(input, startHeader.get(i), startHeader.get(i + 1))));
+            }
+        }
         return messages;
     }
 

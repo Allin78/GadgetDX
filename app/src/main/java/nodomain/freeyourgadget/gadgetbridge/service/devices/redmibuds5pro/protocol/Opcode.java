@@ -3,10 +3,13 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro.proto
 public enum Opcode {
     GET_DEVICE_INFO(0x02),
     ANC(0x08),
-    SETTINGS(0xF2),
+    GET_DEVICE_RUN_INFO(0x09),
     REPORT_STATUS(0x0E),
     AUTH_CHALLENGE(0x50),
     AUTH_CONFIRM(0x51),
+    SET_CONFIG(0xF2),
+    GET_CONFIG(0xF3),
+    NOTIFY_CONFIG(0xF4),
     UNKNOWN(0xFF);
 
     private final byte opcode;

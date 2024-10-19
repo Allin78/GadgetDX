@@ -677,6 +677,10 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_WATCHFACE);
 
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING);
 
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);

@@ -3377,6 +3377,30 @@
         <item>3</item>
     </string-array>
 
+    <string-array name="redmi_buds_5_pro_noise_cancelling_strength_names">
+        <item>@string/redmi_buds_5_pro_anc_balanced</item>
+        <item>@string/redmi_buds_5_pro_anc_light</item>
+        <item>@string/redmi_buds_5_pro_anc_deep</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_noise_cancelling_strength_values">
+        <item>balanced</item>
+        <item>light</item>
+        <item>deep</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_transparency_strength_names">
+        <item>@string/redmi_buds_5_pro_transparency_regular</item>
+        <item>@string/redmi_buds_5_pro_transparency_voice</item>
+        <item>@string/redmi_buds_5_pro_transparency_ambient</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_transparency_strength_values">
+        <item>regular</item>
+        <item>voice</item>
+        <item>ambient</item>
+    </string-array>
+
     <string-array name="sony_ambient_sound_control_wind_noise_reduction_names">
         <item>@string/sony_ambient_sound_off</item>
         <item>@string/sony_ambient_sound_noise_cancelling</item>
