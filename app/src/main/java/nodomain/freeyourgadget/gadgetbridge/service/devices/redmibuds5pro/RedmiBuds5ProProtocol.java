@@ -84,28 +84,14 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
 
     public byte[] encodeSetNoiseCancellingStrength() {
         Prefs prefs = getDevicePrefs();
-        String mode = prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, "balanced");
-        byte value = 0x00;
-        switch (mode) {
-            case "light": value = 0x01; break;
-            case "balanced": value = 0x00; break;
-            case "deep": value = 0x02; break;
-        }
-        // setAudioMode("noise_cancelling");
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, 0x01, value}).encode();
+        byte mode = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, 0x01, mode}).encode();
     }
 
     public byte[] encodeSetTransparencyStrength() {
         Prefs prefs = getDevicePrefs();
-        String mode = prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, "regular");
-        byte value = 0x00;
-        switch (mode) {
-            case "regular": value = 0x00; break;
-            case "voice": value = 0x01; break;
-            case "ambient": value = 0x02; break;
-        }
-        // setAudioMode("ambient_sound");
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, 0x02, value}).encode();
+        byte mode = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, 0x02, mode}).encode();
     }
 
     public byte[] encodeGetConfig() {
@@ -130,35 +116,11 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         SharedPreferences.Editor editor = preferences.edit();
         switch (configPayload[2]) {
             case 0x0B:
+                byte mode = configPayload[4];
                 if (configPayload[3] == 0x01) {
-                    String anc_strength = "balanced";
-                    switch (configPayload[4]) {
-                        case 0x00:
-                            anc_strength = "balanced";
-                            break;
-                        case 0x01:
-                            anc_strength = "light";
-                            break;
-                        case 0x02:
-                            anc_strength = "deep";
-                            break;
-                    }
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, anc_strength);
-                }
-                else if (configPayload[3] == 0x02) {
-                    String transparency_strength = "regular";
-                    switch (configPayload[4]) {
-                        case 0x00:
-                            transparency_strength = "regular";
-                            break;
-                        case 0x01:
-                            transparency_strength = "voice";
-                            break;
-                        case 0x02:
-                            transparency_strength = "ambient";
-                            break;
-                    }
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, transparency_strength);
+                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, Integer.toString(mode));
+                } else if (configPayload[3] == 0x02) {
+                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
                 }
             case 0x25:
                 editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING, configPayload[3] == 0x01);
@@ -172,22 +134,8 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
 
     public byte[] encodeSetAmbientSoundControl() {
         Prefs prefs = getDevicePrefs();
-        byte anc_mode;
-        switch (prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "off")) {
-            case "off":
-                anc_mode = 0x00;
-                break;
-            case "noise_cancelling":
-                anc_mode = 0x01;
-                break;
-            case "ambient_sound":
-                anc_mode = 0x02;
-                break;
-            default:
-                LOG.error("Invalid audio mode");
-                return null;
-        }
-        return new Message(MessageType.PHONE_REQUEST, Opcode.ANC, sequenceNumber++, new byte[]{0x02, 0x04, anc_mode}).encode();
+        byte mode = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.ANC, sequenceNumber++, new byte[]{0x02, 0x04, mode}).encode();
     }
 
     private GBDeviceEventBatteryInfo parseBatteryInfo(byte batteryInfo, int index) {
@@ -229,12 +177,9 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             i += len + 1;
         }
 
-        String fwVersion1 = ((fw[0] >> 4) & 0xF) + "." + (fw[0] & 0xF) + "." +
-                ((fw[1] >> 4) & 0xF) + "." + (fw[1] & 0xF);
-        String fwVersion2 = ((fw[2] >> 4) & 0xF) + "." + (fw[2] & 0xF) + "." +
-                ((fw[3] >> 4) & 0xF) + "." + (fw[3] & 0xF);
-        String hwVersion = String.format("VID: 0x%02X%02X, PID: 0x%02X%02X",
-                vidPid[0], vidPid[1], vidPid[2], vidPid[3]);
+        String fwVersion1 = ((fw[0] >> 4) & 0xF) + "." + (fw[0] & 0xF) + "." + ((fw[1] >> 4) & 0xF) + "." + (fw[1] & 0xF);
+        String fwVersion2 = ((fw[2] >> 4) & 0xF) + "." + (fw[2] & 0xF) + "." + ((fw[3] >> 4) & 0xF) + "." + (fw[3] & 0xF);
+        String hwVersion = String.format("VID: 0x%02X%02X, PID: 0x%02X%02X", vidPid[0], vidPid[1], vidPid[2], vidPid[3]);
 
         info.fwVersion = fwVersion1;
         info.fwVersion2 = fwVersion2;
@@ -257,23 +202,13 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 case 0x09:
                     SharedPreferences preferences = getDevicePrefs().getPreferences();
                     SharedPreferences.Editor editor = preferences.edit();
-                    switch (deviceRunInfoPayload[i+2]) {
-                        case 0x00:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "off");
-                            break;
-                        case 0x01:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "noise_cancelling");
-                            break;
-                        case 0x02:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "ambient_sound");
-                            break;
-
-                    }
+                    byte mode = deviceRunInfoPayload[i + 2];
+                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
                     editor.apply();
                     break;
                 // TODO: Autoplay?
                 case 0x0A:
-                    LOG.debug("AUTOPLAY: {}", deviceRunInfoPayload[i+2]);
+                    LOG.debug("AUTOPLAY: {}", deviceRunInfoPayload[i + 2]);
             }
             i += len + 1;
         }
@@ -289,26 +224,16 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             byte index = updatePayload[i + 1];
             switch (index) {
                 case 0x00:
-                    events.add(parseBatteryInfo(updatePayload[i+2], 1));
-                    events.add(parseBatteryInfo(updatePayload[i+3], 2));
-                    events.add(parseBatteryInfo(updatePayload[i+4], 0));
+                    events.add(parseBatteryInfo(updatePayload[i + 2], 1));
+                    events.add(parseBatteryInfo(updatePayload[i + 3], 2));
+                    events.add(parseBatteryInfo(updatePayload[i + 4], 0));
                     break;
                 case 0x04:
                     SharedPreferences preferences = getDevicePrefs().getPreferences();
                     SharedPreferences.Editor editor = preferences.edit();
 
-                    switch (updatePayload[i+2]) {
-                        case 0x00:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "off");
-                            break;
-                        case 0x01:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "noise_cancelling");
-                            break;
-                        case 0x02:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "ambient_sound");
-                            break;
-
-                    }
+                    byte mode = updatePayload[i + 2];
+                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
                     editor.apply();
                     break;
                 default:
@@ -342,46 +267,14 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                     SharedPreferences preferences = getDevicePrefs().getPreferences();
                     SharedPreferences.Editor editor = preferences.edit();
 
-                    switch (notifyPayload[i + 3]) {
-                        case 0x00:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "off");
-                            break;
-                        case 0x01:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "noise_cancelling");
-                            break;
-                        case 0x02:
-                            editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "ambient_sound");
-                            break;
-                    }
+                    byte soundCtrlMode = notifyPayload[i + 3];
+                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(soundCtrlMode));
 
+                    byte mode = notifyPayload[i + 4];
                     if (notifyPayload[i + 3] == 0x01) {
-                        String anc_strength = "balanced";
-                        switch (notifyPayload[i + 4]) {
-                            case 0x00:
-                                anc_strength = "balanced";
-                                break;
-                            case 0x01:
-                                anc_strength = "light";
-                                break;
-                            case 0x02:
-                                anc_strength = "deep";
-                                break;
-                        }
-                        editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, anc_strength);
+                        editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, Integer.toString(mode));
                     } else {
-                        String transparency_strength = "regular";
-                        switch (notifyPayload[i + 4]) {
-                            case 0x00:
-                                transparency_strength = "regular";
-                                break;
-                            case 0x01:
-                                transparency_strength = "voice";
-                                break;
-                            case 0x02:
-                                transparency_strength = "ambient";
-                                break;
-                        }
-                        editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, transparency_strength);
+                        editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
                     }
 
                     editor.apply();
@@ -468,8 +361,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
 
             } else if (response.getOpcode() == Opcode.NOTIFY_CONFIG) {
                 events.addAll(Arrays.asList(decodeNotifyConfig(response)));
-            }
-            else {
+            } else {
                 LOG.debug("[ERROR] Unhandled message: {}", response);
             }
         }

@@ -5,16 +5,16 @@
         android:title="@string/pref_header_sony_ambient_sound_control">
 
         <ListPreference
-            android:defaultValue="noise_cancelling"
-            android:entries="@array/sony_ambient_sound_control_names"
-            android:entryValues="@array/sony_ambient_sound_control_values"
+            android:defaultValue="0"
+            android:entries="@array/redmi_buds_5_pro_ambient_sound_control_names"
+            android:entryValues="@array/redmi_buds_5_pro_ambient_sound_control_values"
             android:icon="@drawable/ic_hearing"
             android:key="pref_redmi_buds_5_pro_ambient_sound_control"
             android:summary="%s"
             android:title="@string/sony_ambient_sound" />
 
         <ListPreference
-            android:defaultValue="balanced"
+            android:defaultValue="0"
             android:dependency="pref_redmi_buds_5_pro_adaptive_noise_cancelling"
             android:entries="@array/redmi_buds_5_pro_noise_cancelling_strength_names"
             android:entryValues="@array/redmi_buds_5_pro_noise_cancelling_strength_values"
@@ -23,7 +23,7 @@
             android:title="@string/sony_ambient_sound_level" />
 
         <ListPreference
-            android:defaultValue="regular"
+            android:defaultValue="0"
             android:entries="@array/redmi_buds_5_pro_transparency_strength_names"
             android:entryValues="@array/redmi_buds_5_pro_transparency_strength_values"
             android:key="pref_redmi_buds_5_pro_transparency_strength"
