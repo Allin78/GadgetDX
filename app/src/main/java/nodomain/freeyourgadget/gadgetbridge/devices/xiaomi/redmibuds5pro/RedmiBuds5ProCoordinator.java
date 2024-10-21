@@ -64,6 +64,7 @@ public class RedmiBuds5ProCoordinator extends AbstractDeviceCoordinator {
     public DeviceSpecificSettings getDeviceSpecificSettings(final GBDevice device) {
         final DeviceSpecificSettings deviceSpecificSettings = new DeviceSpecificSettings();
         deviceSpecificSettings.addRootScreen(R.xml.devicesettings_redmibuds5pro_headphones);
+        deviceSpecificSettings.addRootScreen(R.xml.devicesettings_redmibuds5pro_gestures);
         return deviceSpecificSettings;
     }
 

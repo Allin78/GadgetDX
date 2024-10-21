@@ -370,6 +370,16 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH="pref_redmi_buds_5_pro_transparency_strength";
     public static final String PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING="pref_redmi_buds_5_pro_adaptive_noise_cancelling";
     public static final String PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING="pref_redmi_buds_5_pro_personalized_noise_cancelling";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT="pref_redmi_buds_5_pro_control_single_tap_left";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT="pref_redmi_buds_5_pro_control_single_tap_right";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT="pref_redmi_buds_5_pro_control_double_tap_left";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT="pref_redmi_buds_5_pro_control_double_tap_right";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT="pref_redmi_buds_5_pro_control_triple_tap_left";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT="pref_redmi_buds_5_pro_control_triple_tap_right";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT ="pref_redmi_buds_5_pro_control_long_tap_mode_left";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT ="pref_redmi_buds_5_pro_control_long_tap_mode_right";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT ="pref_redmi_buds_5_pro_control_long_tap_settings_left";
+    public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT ="pref_redmi_buds_5_pro_control_long_tap_settings_right";
 
     public static final String PREF_SONY_AUDIO_CODEC = "pref_sony_audio_codec";
     public static final String PREF_SONY_PROTOCOL_VERSION = "pref_protocol_version";

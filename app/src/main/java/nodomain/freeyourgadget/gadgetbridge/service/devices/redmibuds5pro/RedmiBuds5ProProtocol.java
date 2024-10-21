@@ -20,6 +20,7 @@ import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInf
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro.prefs.Gestures;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro.protocol.Authentication;
@@ -63,11 +64,55 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 return encodeSetAdaptiveNoiseCancelling();
             case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING:
                 return encodeSetCustomizedNoiseCancelling();
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT:
+                return encodeSetGesture(config, Gestures.InteractionType.SINGLE, Gestures.Position.LEFT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT:
+                return encodeSetGesture(config, Gestures.InteractionType.SINGLE, Gestures.Position.RIGHT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT:
+                return encodeSetGesture(config, Gestures.InteractionType.DOUBLE, Gestures.Position.LEFT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT:
+                return encodeSetGesture(config, Gestures.InteractionType.DOUBLE, Gestures.Position.RIGHT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT:
+                return encodeSetGesture(config, Gestures.InteractionType.TRIPLE, Gestures.Position.LEFT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT:
+                return encodeSetGesture(config, Gestures.InteractionType.TRIPLE, Gestures.Position.RIGHT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT:
+                return encodeSetGesture(config, Gestures.InteractionType.LONG, Gestures.Position.LEFT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT:
+                return encodeSetGesture(config, Gestures.InteractionType.LONG, Gestures.Position.RIGHT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT:
+                return encodeSetLongGestureMode(config, Gestures.Position.LEFT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT:
+                return encodeSetLongGestureMode(config, Gestures.Position.RIGHT);
             default:
                 LOG.debug("Unsupported config: " + config);
         }
 
         return super.encodeSendConfiguration(config);
+    }
+
+    public byte[] encodeSetLongGestureMode(String config, Gestures.Position position) {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) Integer.parseInt(prefs.getString(config, "7"));
+        byte[] payload = new byte[] {0x04, 0x00, 0x0a, (byte) 0xFF, (byte) 0xFF};
+        if (position == Gestures.Position.LEFT) {
+            payload[3] = value;
+        } else {
+            payload[4] = value;
+        }
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, payload).encode();
+    }
+
+    public byte[] encodeSetGesture(String config, Gestures.InteractionType interactionType, Gestures.Position position) {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) Integer.parseInt(prefs.getString(config, "1"));
+        byte[] payload = new byte[] {0x05, 0x00, 0x02, interactionType.value, (byte) 0xFF, (byte) 0xFF};
+        if (position == Gestures.Position.LEFT) {
+            payload[4] = value;
+        } else {
+            payload[5] = value;
+        }
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, payload).encode();
     }
 
     public byte[] encodeSetAdaptiveNoiseCancelling() {
@@ -98,12 +143,16 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         Message strength = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x0b});
         Message adaptiveAnc = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x25});
         Message customAnc = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x3b});
+        Message gestures = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x02});
+        Message longGestures = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x0a});
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             outputStream.write(strength.encode());
             outputStream.write(adaptiveAnc.encode());
             outputStream.write(customAnc.encode());
+            outputStream.write(gestures.encode());
+            outputStream.write(longGestures.encode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -115,6 +164,25 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         SharedPreferences preferences = getDevicePrefs().getPreferences();
         SharedPreferences.Editor editor = preferences.edit();
         switch (configPayload[2]) {
+            case 0x02:
+                LOG.debug("[Gesture] Click config: {}", hexdump(configPayload));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT, Integer.toString(configPayload[4]));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT, Integer.toString(configPayload[5]));
+
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT, Integer.toString(configPayload[7]));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT, Integer.toString(configPayload[8]));
+
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT, Integer.toString(configPayload[10]));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT, Integer.toString(configPayload[11]));
+
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, Integer.toString(configPayload[13]));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, Integer.toString(configPayload[14]));
+                break;
+            case 0x0A:
+                LOG.debug("[Gesture] Long press: {}", hexdump(configPayload));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT, Integer.toString(configPayload[3]));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT, Integer.toString(configPayload[4]));
+                break;
             case 0x0B:
                 byte mode = configPayload[4];
                 if (configPayload[3] == 0x01) {

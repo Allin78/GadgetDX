@@ -681,6 +681,16 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT);
 
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);

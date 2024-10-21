@@ -3413,6 +3413,64 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="redmi_buds_5_pro_single_button_function_names">
+        <item>@string/none</item>
+        <item>@string/pref_media_playpause</item>
+        <item>@string/pref_media_previous</item>
+        <item>@string/pref_media_next</item>
+        <item>@string/pref_media_volumeup</item>
+        <item>@string/pref_media_volumedown</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_single_button_function_values">
+        <item>8</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_button_function_names">
+        <item>@string/pref_media_playpause</item>
+        <item>@string/pref_media_previous</item>
+        <item>@string/pref_media_next</item>
+        <item>@string/pref_media_volumeup</item>
+        <item>@string/pref_media_volumedown</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_button_function_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_long_button_mode_names">
+        <item>@string/pref_title_touch_voice_assistant</item>
+        <item>@string/pref_header_sony_ambient_sound_control</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_long_button_mode_values">
+        <item>0</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_long_button_settings_names">
+        <item>@string/redmi_buds_5_pro_combo_anc_off</item>
+        <item>@string/redmi_buds_5_pro_combo_transparency_off</item>
+        <item>@string/redmi_buds_5_pro_combo_anc_transparency</item>
+        <item>@string/redmi_buds_5_pro_combo_all</item>
+    </string-array>
+
+    <string-array name="redmi_buds_5_pro_long_button_settings_values">
+        <item>3</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
     <string-array name="sony_ambient_sound_control_wind_noise_reduction_names">
         <item>@string/sony_ambient_sound_off</item>
         <item>@string/sony_ambient_sound_noise_cancelling</item>

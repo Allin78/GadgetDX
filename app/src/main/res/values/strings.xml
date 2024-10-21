@@ -2618,6 +2618,10 @@
     <string name="redmi_buds_5_pro_transparency_regular">Regular</string>
     <string name="redmi_buds_5_pro_transparency_voice">Enhance Voices</string>
     <string name="redmi_buds_5_pro_transparency_ambient">Enhance Ambient Sounds</string>
+    <string name="redmi_buds_5_pro_combo_anc_off">ANC / Off</string>
+    <string name="redmi_buds_5_pro_combo_transparency_off">Transparency / Off</string>
+    <string name="redmi_buds_5_pro_combo_anc_transparency">ANC / Transparency</string>
+    <string name="redmi_buds_5_pro_combo_all">ANC / Transparency / Off</string>
     <string name="sony_ambient_sound">Mode</string>
     <string name="sony_ambient_sound_off">Off</string>
     <string name="sony_ambient_sound_noise_cancelling">Noise Cancelling</string>
