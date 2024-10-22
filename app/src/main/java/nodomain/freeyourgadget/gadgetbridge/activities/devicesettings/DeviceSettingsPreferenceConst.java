@@ -380,7 +380,9 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT ="pref_redmi_buds_5_pro_control_long_tap_mode_right";
     public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT ="pref_redmi_buds_5_pro_control_long_tap_settings_left";
     public static final String PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT ="pref_redmi_buds_5_pro_control_long_tap_settings_right";
-
+    public static final String PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION="pref_redmi_buds_5_pro_wearing_detection";
+    public static final String PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL="pref_redmi_buds_5_pro_auto_reply_phonecall";
+    public static final String PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION="pref_redmi_buds_5_pro_double_connection";
     public static final String PREF_SONY_AUDIO_CODEC = "pref_sony_audio_codec";
     public static final String PREF_SONY_PROTOCOL_VERSION = "pref_protocol_version";
     public static final String PREF_SONY_ACTUAL_PROTOCOL_VERSION = "pref_actual_protocol_version";

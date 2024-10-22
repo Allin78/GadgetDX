@@ -74,7 +74,7 @@
                     android:entryValues="@array/redmi_buds_5_pro_long_button_settings_values"
                     android:key="pref_redmi_buds_5_pro_control_long_tap_settings_left"
                     android:summary="%s"
-                    android:title="@string/sony_ambient_sound_ambient_sound" />
+                    android:title="@string/sony_ambient_sound_control_button_modes" />
                 <ListPreference
                     android:entries="@array/redmi_buds_5_pro_long_button_mode_names"
                     android:entryValues="@array/redmi_buds_5_pro_long_button_mode_values"
@@ -87,9 +87,30 @@
                     android:entryValues="@array/redmi_buds_5_pro_long_button_settings_values"
                     android:key="pref_redmi_buds_5_pro_control_long_tap_settings_right"
                     android:summary="%s"
-                    android:title="@string/sony_ambient_sound_ambient_sound" />
+                    android:title="@string/sony_ambient_sound_control_button_modes" />
             </PreferenceCategory>
         </PreferenceScreen>
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="pref_redmi_buds_5_pro_wearing_detection"
+            android:layout="@layout/preference_checkbox"
+            android:icon="@drawable/ic_pause"
+            android:summary="@string/nothing_prefs_inear_summary"
+            android:title="@string/nothing_prefs_inear_title"/>
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:icon="@drawable/ic_phone"
+            android:key="pref_redmi_buds_5_pro_auto_reply_phonecall"
+            android:summary="@string/pref_auto_reply_calls_summary"
+            android:title="@string/pref_auto_reply_calls_title"/>
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="pref_redmi_buds_5_pro_double_connection"
+            android:summary="@string/redmi_buds_5_pro_double_connection_description"
+            android:title="@string/redmi_buds_5_pro_double_connection"/>
 
     </PreferenceCategory>
 </androidx.preference.PreferenceScreen>

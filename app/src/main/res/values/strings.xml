@@ -2622,6 +2622,8 @@
     <string name="redmi_buds_5_pro_combo_transparency_off">Transparency / Off</string>
     <string name="redmi_buds_5_pro_combo_anc_transparency">ANC / Transparency</string>
     <string name="redmi_buds_5_pro_combo_all">ANC / Transparency / Off</string>
+    <string name="redmi_buds_5_pro_double_connection">Double Connection</string>
+    <string name="redmi_buds_5_pro_double_connection_description">Allow the earbuds to connect to two devices at the same time</string>
     <string name="sony_ambient_sound">Mode</string>
     <string name="sony_ambient_sound_off">Off</string>
     <string name="sony_ambient_sound_noise_cancelling">Noise Cancelling</string>

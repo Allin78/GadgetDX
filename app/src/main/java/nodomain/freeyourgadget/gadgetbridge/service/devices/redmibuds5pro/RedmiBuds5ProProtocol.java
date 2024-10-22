@@ -84,11 +84,35 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 return encodeSetLongGestureMode(config, Gestures.Position.LEFT);
             case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT:
                 return encodeSetLongGestureMode(config, Gestures.Position.RIGHT);
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION:
+                return encodeSetEarDetection();
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL:
+                return encodeSetAutoAnswerCall();
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION:
+                return encodeSetDoubleConnection();
             default:
                 LOG.debug("Unsupported config: " + config);
         }
 
         return super.encodeSendConfiguration(config);
+    }
+
+    public byte[] encodeSetEarDetection() {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION, false) ? 0x00 : 0x01);
+        return new Message(MessageType.PHONE_REQUEST, Opcode.ANC, sequenceNumber++, new byte[]{0x02, 0x06, value}).encode();
+    }
+
+    public byte[] encodeSetAutoAnswerCall() {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL, false) ? 0x01 : 0x00);
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x03, value}).encode();
+    }
+
+    public byte[] encodeSetDoubleConnection() {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION, false) ? 0x01 : 0x00);
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x04, value}).encode();
     }
 
     public byte[] encodeSetLongGestureMode(String config, Gestures.Position position) {
@@ -145,6 +169,9 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         Message customAnc = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x3b});
         Message gestures = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x02});
         Message longGestures = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x0a});
+        Message earDetection = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x06});
+        Message doubleConnection = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x04});
+        Message autoCallAnswer = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x03});
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -153,6 +180,9 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             outputStream.write(customAnc.encode());
             outputStream.write(gestures.encode());
             outputStream.write(longGestures.encode());
+            outputStream.write(earDetection.encode());
+            outputStream.write(doubleConnection.encode());
+            outputStream.write(autoCallAnswer.encode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -165,7 +195,6 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         SharedPreferences.Editor editor = preferences.edit();
         switch (configPayload[2]) {
             case 0x02:
-                LOG.debug("[Gesture] Click config: {}", hexdump(configPayload));
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT, Integer.toString(configPayload[4]));
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT, Integer.toString(configPayload[5]));
 
@@ -178,8 +207,13 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, Integer.toString(configPayload[13]));
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, Integer.toString(configPayload[14]));
                 break;
+            case 0x03:
+                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL, configPayload[3] == 0x01);
+                break;
+            case 0x04:
+                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION, configPayload[3] == 0x01);
+                break;
             case 0x0A:
-                LOG.debug("[Gesture] Long press: {}", hexdump(configPayload));
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT, Integer.toString(configPayload[3]));
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT, Integer.toString(configPayload[4]));
                 break;
@@ -196,6 +230,8 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             case 0x3B:
                 editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, configPayload[3] == 0x01);
                 break;
+            default:
+                LOG.debug("Unhandled device update: {}", hexdump(configPayload));
         }
         editor.apply();
     }
@@ -266,18 +302,17 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         while (i < deviceRunInfoPayload.length) {
             byte len = deviceRunInfoPayload[i];
             byte index = deviceRunInfoPayload[i + 1];
+            SharedPreferences preferences = getDevicePrefs().getPreferences();
+            SharedPreferences.Editor editor = preferences.edit();
             switch (index) {
                 case 0x09:
-                    SharedPreferences preferences = getDevicePrefs().getPreferences();
-                    SharedPreferences.Editor editor = preferences.edit();
                     byte mode = deviceRunInfoPayload[i + 2];
                     editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
-                    editor.apply();
                     break;
-                // TODO: Autoplay?
                 case 0x0A:
-                    LOG.debug("AUTOPLAY: {}", deviceRunInfoPayload[i + 2]);
+                    editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION, deviceRunInfoPayload[i + 2] == 0x00);
             }
+            editor.apply();
             i += len + 1;
         }
     }
