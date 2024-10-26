@@ -694,7 +694,20 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION);
-
+//        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND);
+//        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k);
+        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);
         addPreferenceHandlerFor(PREF_SONY_FOCUS_VOICE);

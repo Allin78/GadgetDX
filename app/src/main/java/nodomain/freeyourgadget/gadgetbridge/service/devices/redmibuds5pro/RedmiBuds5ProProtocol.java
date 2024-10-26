@@ -43,7 +43,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
 
     public byte[] encodeStartAuthentication() {
         byte[] authRnd = Authentication.random();
-        LOG.debug("[AUTH] Sending challenge: " + hexdump(authRnd));
+        LOG.debug("[AUTH] Sending challenge: {}", hexdump(authRnd));
 
         byte[] payload = new byte[17];
         payload[0] = 0x01;
@@ -90,11 +90,79 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 return encodeSetAutoAnswerCall();
             case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION:
                 return encodeSetDoubleConnection();
+//            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND:
+//                return encodeSetSurroundSound();
+//            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE:
+//                return encodeSetSurroundSoundMode();
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND:
+                return encodeSetAdaptiveSound();
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET:
+                return encodeSetEqualizerPreset();
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k:
+            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k:
+                return encodeSetCustomEqualizer();
             default:
-                LOG.debug("Unsupported config: " + config);
+                LOG.debug("Unsupported config: {}", config);
         }
 
         return super.encodeSendConfiguration(config);
+    }
+
+//    public byte[] encodeSetSurroundSoundMode() {
+//        Prefs prefs = getDevicePrefs();
+//        byte value = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE, "1"));
+//        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x36, 0x01, value}).encode();
+//    }
+//
+//
+//    public byte[] encodeSetSurroundSound() {
+//
+//        Prefs prefs = getDevicePrefs();
+//        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND, false) ? 0x03 : 0x02);
+//        LOG.debug("SURROUND SETTING");
+//        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x1D, value}).encode();
+//    }
+
+    public byte[] encodeSetCustomEqualizer() {
+        Prefs prefs = getDevicePrefs();
+        byte value_62 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62, "0"));
+        byte value_125 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125, "0"));
+        byte value_250 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250, "0"));
+        byte value_500 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500, "0"));
+        byte value_1k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k, "0"));
+        byte value_2k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k, "0"));
+        byte value_4k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k, "0"));
+        byte value_8k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k, "0"));
+        byte value_12k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, "0"));
+        byte value_16k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{
+                0x24, 0x00, 0x37, 0x05, 0x01, 0x01, 0x0A,
+                0x00, 0x3E, value_62, 0x00, 0x7D, value_125,
+                0x00, (byte) 0xFA, value_250, 0x01, (byte) 0xF4, value_500,
+                0x03, (byte) 0xE8, value_1k, 0x07, (byte) 0xE0, value_2k,
+                0x0F, (byte) 0xA0, value_4k, 0x1F, 0x40, value_8k,
+                0x2E, (byte) 0xE0, value_12k, 0x3E, (byte) 0x80, value_16k
+        }).encode();
+    }
+
+    public byte[] encodeSetEqualizerPreset() {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x07, value}).encode();
+    }
+
+    public byte[] encodeSetAdaptiveSound() {
+        Prefs prefs = getDevicePrefs();
+        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND, false) ? 0x01 : 0x00);
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x29, value}).encode();
     }
 
     public byte[] encodeSetEarDetection() {
@@ -172,7 +240,11 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         Message earDetection = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x06});
         Message doubleConnection = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x04});
         Message autoCallAnswer = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x03});
-
+//        Message surroundSound = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x1D});
+//        Message surroundSoundMode = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x36});
+        Message adaptiveSound = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x29});
+        Message equalizerPreset = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x07});
+        Message equalizerCurve = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x37});
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             outputStream.write(strength.encode());
@@ -183,6 +255,11 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             outputStream.write(earDetection.encode());
             outputStream.write(doubleConnection.encode());
             outputStream.write(autoCallAnswer.encode());
+//            outputStream.write(surroundSound.encode());
+//            outputStream.write(surroundSoundMode.encode());
+            outputStream.write(adaptiveSound.encode());
+            outputStream.write(equalizerPreset.encode());
+            outputStream.write(equalizerCurve.encode());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -213,6 +290,9 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             case 0x04:
                 editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION, configPayload[3] == 0x01);
                 break;
+            case 0x07:
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, Integer.toString(configPayload[3]));
+                break;
             case 0x0A:
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT, Integer.toString(configPayload[3]));
                 editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT, Integer.toString(configPayload[4]));
@@ -224,8 +304,31 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 } else if (configPayload[3] == 0x02) {
                     editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
                 }
+                break;
+//            case 0x1D:
+//                LOG.debug("Surround Sound: {}", hexdump(configPayload));
+//                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND, configPayload[3] == 0x03);
+//                break;
             case 0x25:
                 editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING, configPayload[3] == 0x01);
+                break;
+            case 0x29:
+                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND, configPayload[3] == 0x01);
+                break;
+//            case 0x36:
+//                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE, Integer.toString(configPayload[4]));
+//                break;
+            case 0x37:
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62, Integer.toString(configPayload[12] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125, Integer.toString(configPayload[15] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250, Integer.toString(configPayload[18] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500, Integer.toString(configPayload[21] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k, Integer.toString(configPayload[24] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k, Integer.toString(configPayload[27] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k, Integer.toString(configPayload[30] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k, Integer.toString(configPayload[33] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, Integer.toString(configPayload[36] & 0xFF));
+                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k, Integer.toString(configPayload[39] & 0xFF));
                 break;
             case 0x3B:
                 editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, configPayload[3] == 0x01);
