@@ -44,18 +44,13 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
         // mark the device as initializing
         builder.add(new SetDeviceStateAction(getDevice(), GBDevice.State.INITIALIZING, getContext()));
 
-        // We mix the indices for display purposes. GB shows index 0 in the device list card.
-        // Battery ---- B&W index ---- GB index
-        // Left         0              1
-        // Right        1              2
-        // Case         2              0
-        getDevice().setBatteryLabel(R.string.left_earbud, 1);
-        getDevice().setBatteryLabel(R.string.right_earbud, 2);
-        getDevice().setBatteryLabel(R.string.battery_case, 0);
+        getDevice().setBatteryLabel(R.string.left_earbud, 0);
+        getDevice().setBatteryLabel(R.string.right_earbud, 1);
+        getDevice().setBatteryLabel(R.string.battery_case, 2);
 
         for (int i = 0; i < 3; i++) {
             batteryInfo[i] = new GBDeviceEventBatteryInfo();
-            batteryInfo[i].batteryIndex = (i + 1) % 3;
+            batteryInfo[i].batteryIndex = i;
             batteryInfo[i].level = BATTERY_UNKNOWN;
             handleGBDeviceEvent(batteryInfo[i]);
         }

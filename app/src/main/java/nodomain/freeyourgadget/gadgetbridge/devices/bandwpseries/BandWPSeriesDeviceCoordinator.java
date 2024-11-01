@@ -39,10 +39,15 @@ public class BandWPSeriesDeviceCoordinator extends AbstractDeviceCoordinator {
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) {
     }
 
+    @Override
+    public int getBatteryCount() {
+        return 3;
+    }
+
     public BatteryConfig[] getBatteryConfig(final GBDevice device) {
-        BatteryConfig battery0 = new BatteryConfig(0, R.drawable.ic_tws_case, R.string.battery_case);
-        BatteryConfig battery1 = new BatteryConfig(1, R.drawable.ic_earbuds_battery, R.string.left_earbud);
-        BatteryConfig battery2 = new BatteryConfig(2, R.drawable.ic_earbuds_battery, R.string.right_earbud);
+        BatteryConfig battery0 = new BatteryConfig(0, R.drawable.ic_earbuds_battery, R.string.left_earbud);
+        BatteryConfig battery1 = new BatteryConfig(1, R.drawable.ic_earbuds_battery, R.string.right_earbud);
+        BatteryConfig battery2 = new BatteryConfig(2, R.drawable.ic_tws_case, R.string.battery_case);
         return new BatteryConfig[]{battery0, battery1, battery2};
     }
 
