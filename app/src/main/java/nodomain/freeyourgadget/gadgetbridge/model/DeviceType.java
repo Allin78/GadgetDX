@@ -506,6 +506,7 @@ public enum DeviceType {
     HUAWEIBANDAW70(HuaweiBandAw70Coordinator.class),
     HUAWEIBAND6(HuaweiBand6Coordinator.class),
     HUAWEIWATCHGT(HuaweiWatchGTCoordinator.class),
+    HUAWEIBAND3PRO(HuaweiBand3ProCoordinator.class),
     HUAWEIBAND4PRO(HuaweiBand4ProCoordinator.class),
     HUAWEIWATCHGT2(HuaweiWatchGT2Coordinator.class),
     HUAWEIWATCHGT2E(HuaweiWatchGT2eCoordinator.class),
