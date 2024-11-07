@@ -109,6 +109,7 @@ public class DeviceSettingsPreferenceConst {
     public static final String PREF_BANDW_PSERIES_ANC_MODE = "bandw_pseries_anc_mode";
     public static final String PREF_BANDW_PSERIES_VPT_ENABLED = "bandw_pseries_vpt_enabled";
     public static final String PREF_BANDW_PSERIES_VPT_LEVEL = "bandw_pseries_vpt_level";
+    public static final String PREF_BANDW_PSERIES_GUI_VPT_LEVEL = "bandw_pseries_gui_vpt_level";
 
     public static final String PREF_BANGLEJS_TEXT_BITMAP = "banglejs_text_bitmap";
     public static final String PREF_BANGLEJS_TEXT_BITMAP_SIZE = "banglejs_txt_bitmap_size";

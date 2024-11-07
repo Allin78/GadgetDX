@@ -8,18 +8,11 @@
             android:summary="@string/prefs_active_noise_cancelling_summary"
             android:title="@string/prefs_active_noise_cancelling" />
 
-        <SwitchPreferenceCompat
-            android:defaultValue="false"
-            android:icon="@drawable/ic_hearing"
-            android:key="bandw_pseries_vpt_enabled"
-            android:layout="@layout/preference_checkbox"
-            android:summary="@string/pref_voice_passthrough_enabled_summary"
-            android:title="@string/pref_voice_passthrough_enabled" />
-
         <SeekBarPreference
             style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:icon="@drawable/ic_volume_up"
-            android:key="bandw_pseries_vpt_level"
-            android:max="1"
+            android:icon="@drawable/ic_hearing"
+            android:key="bandw_pseries_gui_vpt_level"
+            android:max="2"
+            android:summary="@string/pref_voice_passthrough_enabled_summary"
             android:title="@string/pref_voice_passthrough_level" />
 </androidx.preference.PreferenceScreen>

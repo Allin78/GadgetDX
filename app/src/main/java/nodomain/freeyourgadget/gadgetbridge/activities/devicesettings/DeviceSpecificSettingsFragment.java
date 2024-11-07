@@ -612,8 +612,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SLEEP_MODE_SMART_ENABLE);
 
         addPreferenceHandlerFor(PREF_BANDW_PSERIES_ANC_MODE);
-        addPreferenceHandlerFor(PREF_BANDW_PSERIES_VPT_ENABLED);
-        addPreferenceHandlerFor(PREF_BANDW_PSERIES_VPT_LEVEL);
+        addPreferenceHandlerFor(PREF_BANDW_PSERIES_GUI_VPT_LEVEL);
 
         addPreferenceHandlerFor(PREF_HYBRID_HR_DRAW_WIDGET_CIRCLES);
         addPreferenceHandlerFor(PREF_HYBRID_HR_FORCE_WHITE_COLOR);

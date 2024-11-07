@@ -1,6 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.bandwpseries;
 
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_ANC_MODE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_GUI_VPT_LEVEL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_VPT_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_VPT_LEVEL;
 import static nodomain.freeyourgadget.gadgetbridge.impl.GBDevice.BATTERY_UNKNOWN;
@@ -111,11 +112,10 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
                 case 0x01:
                     return handleGetAncModeStateResponse(response);
                 case 0x02:
+                case 0x04:
                     return getIntResponseStatus(response);
                 case 0x03:
                     return handleGetVptLevelResponse(response);
-                case 0x04:
-                    return getIntResponseStatus(response);
                 case 0x05:
                     return handleGetVptEnabledResponse(response);
                 case 0x06:
@@ -206,8 +206,10 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
             GB.toast("Could not extract vptEnabled from payload: " + Arrays.toString(response.payload), Toast.LENGTH_SHORT, GB.ERROR);
             return false;
         }
+        int vptLevel = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getInt(PREF_BANDW_PSERIES_VPT_LEVEL, 0);
         Editor editor = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).edit();
         editor.putBoolean(PREF_BANDW_PSERIES_VPT_ENABLED, payloadValue);
+        editor.putInt(PREF_BANDW_PSERIES_GUI_VPT_LEVEL, payloadValue ? vptLevel + 1 : 0);
         editor.apply();
         return true;
     }
@@ -224,8 +226,10 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
             GB.toast("Could not extract vptLevel from payload: " + Arrays.toString(response.payload), Toast.LENGTH_SHORT, GB.ERROR);
             return false;
         }
+        boolean vptEnabled = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(PREF_BANDW_PSERIES_VPT_ENABLED, false);
         Editor editor = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).edit();
         editor.putInt(PREF_BANDW_PSERIES_VPT_LEVEL, payloadValue);
+        editor.putInt(PREF_BANDW_PSERIES_GUI_VPT_LEVEL, vptEnabled ? payloadValue + 1 : 0);
         editor.apply();
         return true;
     }
@@ -238,13 +242,12 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
                     boolean ancMode = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(PREF_BANDW_PSERIES_ANC_MODE, true);
                     BandWBLEProfile.setAncModeState(builder, ancMode);
                     break;
-                case PREF_BANDW_PSERIES_VPT_ENABLED:
-                    boolean vptEnabled = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(PREF_BANDW_PSERIES_VPT_ENABLED, false);
-                    BandWBLEProfile.setVptEnabled(builder, vptEnabled);
-                    break;
-                case PREF_BANDW_PSERIES_VPT_LEVEL:
-                    int level = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getInt(PREF_BANDW_PSERIES_VPT_LEVEL, 0);
-                    BandWBLEProfile.setVptLevel(builder, level);
+                case PREF_BANDW_PSERIES_GUI_VPT_LEVEL:
+                    int level = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getInt(PREF_BANDW_PSERIES_GUI_VPT_LEVEL, 0);
+                    BandWBLEProfile.setVptEnabled(builder, level != 0);
+                    if (level != 0) {
+                        BandWBLEProfile.setVptLevel(builder, level - 1);
+                    }
                     break;
             }
             performImmediately(builder);
