@@ -1,6 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.bandwpseries;
 
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_ANC_MODE;
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_ACTIVE_NOISE_CANCELLING_TOGGLE;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_GUI_VPT_LEVEL;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_VPT_ENABLED;
 import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_BANDW_PSERIES_VPT_LEVEL;
@@ -146,7 +146,7 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
             return false;
         }
         Editor editor = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).edit();
-        editor.putBoolean(PREF_BANDW_PSERIES_ANC_MODE, payloadValue == ANC_MODE_ON);
+        editor.putBoolean(PREF_ACTIVE_NOISE_CANCELLING_TOGGLE, payloadValue == ANC_MODE_ON);
         editor.apply();
         return true;
     }
@@ -238,8 +238,8 @@ public class BandWPSeriesDeviceSupport extends AbstractBTLEDeviceSupport {
         try {
             TransactionBuilder builder = performInitialized("sendConfig");
             switch (config) {
-                case PREF_BANDW_PSERIES_ANC_MODE:
-                    boolean ancMode = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(PREF_BANDW_PSERIES_ANC_MODE, true);
+                case PREF_ACTIVE_NOISE_CANCELLING_TOGGLE:
+                    boolean ancMode = GBApplication.getDeviceSpecificSharedPrefs(gbDevice.getAddress()).getBoolean(PREF_ACTIVE_NOISE_CANCELLING_TOGGLE, true);
                     BandWBLEProfile.setAncModeState(builder, ancMode);
                     break;
                 case PREF_BANDW_PSERIES_GUI_VPT_LEVEL:
