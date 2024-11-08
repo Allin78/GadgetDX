@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import nodomain.freeyourgadget.gadgetbridge.GBException;
 import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettings;
+import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSpecificSettingsCustomizer;
 import nodomain.freeyourgadget.gadgetbridge.devices.AbstractDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
@@ -67,6 +68,11 @@ public class RedmiBuds5ProCoordinator extends AbstractDeviceCoordinator {
         deviceSpecificSettings.addRootScreen(R.xml.devicesettings_redmibuds5pro_gestures);
         deviceSpecificSettings.addRootScreen(R.xml.devicesettings_redmibuds5pro_sound);
         return deviceSpecificSettings;
+    }
+
+    @Override
+    public DeviceSpecificSettingsCustomizer getDeviceSpecificSettingsCustomizer(final GBDevice device) {
+        return new RedmiBuds5ProSettingsCustomizer(device);
     }
 
     @Override
