@@ -6,70 +6,14 @@ import java.util.List;
 
 public class Authentication {
 
-    final static byte[] TRANS_MAP = {
-            0x03, 0x64, (byte) 0xac, 0x28, 0x5a, (byte) 0xc9, (byte) 0xb3, 0x37, (byte) 0xc5, 0x0a, 0x10, (byte) 0xb7, (byte) 0xa3, (byte) 0xba, (byte) 0xb1, (byte) 0x97,
-            0x46, 0x3d, 0x05, (byte) 0xdc, 0x66, 0x6e, (byte) 0xf6, (byte) 0x9a, (byte) 0xf8, 0x0d, 0x58, (byte) 0x95, 0x67, (byte) 0xc6, (byte) 0xaa, (byte) 0xab,
-            (byte) 0xec, (byte) 0xa0, 0x68, (byte) 0x9b, (byte) 0x96, (byte) 0xd4, (byte) 0xeb, (byte) 0xbf, 0x43, 0x49, 0x36, (byte) 0xe9, 0x6a, (byte) 0x89, (byte) 0xd8, (byte) 0xc3,
-            (byte) 0x8a, (byte) 0x94, 0x63, (byte) 0x99, (byte) 0xbc, 0x7b, (byte) 0xbe, (byte) 0xc1, 0x22, (byte) 0xbb, 0x5c, 0x71, (byte) 0xd5, 0x1f, (byte) 0x92, 0x57,
-            0x5d, (byte) 0x8f, 0x44, 0x41, 0x1d, 0x51, (byte) 0xe6, 0x40, 0x17, (byte) 0xfb, (byte) 0xfd, 0x19, 0x32, 0x34, (byte) 0xb8, 0x61,
-            0x2a, (byte) 0xca, 0x23, 0x6f, (byte) 0xda, 0x39, (byte) 0xf7, (byte) 0xa2, 0x01, 0x7f, (byte) 0xd6, 0x31, (byte) 0xe7, (byte) 0xde, (byte) 0x80, 0x04,
-            (byte) 0xdd, 0x2c, 0x59, (byte) 0x82, (byte) 0xaf, (byte) 0xa8, (byte) 0xe0, 0x0f, (byte) 0xcd, (byte) 0xa1, 0x12, 0x3e, 0x30, (byte) 0xd1, 0x1c, (byte) 0xd0,
-            0x3a, 0x33, 0x72, 0x2e, 0x4f, (byte) 0x90, 0x02, 0x13, 0x06, 0x75, (byte) 0xce, (byte) 0x87, (byte) 0xc2, (byte) 0xef, (byte) 0xb2, (byte) 0xad,
-            0x7d, 0x38, 0x15, (byte) 0xe1, 0x52, (byte) 0x9f, 0x7a, 0x6c, 0x2f, 0x27, (byte) 0xc4, (byte) 0xe2, (byte) 0x81, (byte) 0xa9, (byte) 0xcf, (byte) 0x8d,
-            (byte) 0xc0, (byte) 0xd7, (byte) 0xdf, (byte) 0xff, 0x60, 0x76, 0x14, (byte) 0x8c, 0x5e, 0x55, 0x09, (byte) 0xe4, 0x08, (byte) 0xc7, 0x42, 0x20,
-            (byte) 0xfc, (byte) 0xd2, 0x50, (byte) 0x91, (byte) 0xd9, 0x4c, 0x62, (byte) 0x9e, (byte) 0xe8, (byte) 0xb9, (byte) 0xa6, (byte) 0xf9, 0x1a, 0x00, 0x21, 0x0b,
-            (byte) 0xfa, 0x35, (byte) 0x9c, 0x4e, 0x4b, 0x69, 0x48, (byte) 0xcb, 0x0e, (byte) 0xc8, (byte) 0xa4, 0x5b, (byte) 0xea, (byte) 0x84, 0x07, (byte) 0xb4,
-            0x18, (byte) 0xf4, (byte) 0xae, 0x6b, (byte) 0xdb, (byte) 0xa7, (byte) 0xcc, 0x3f, (byte) 0x8b, 0x4a, 0x0c, 0x3c, 0x25, (byte) 0xe5, 0x54, 0x4d,
-            0x45, (byte) 0x83, (byte) 0xed, 0x11, (byte) 0xf0, (byte) 0xb0, 0x53, (byte) 0x93, (byte) 0xf2, 0x74, 0x26, (byte) 0xb5, (byte) 0x9d, 0x6d, 0x7c, (byte) 0xf3,
-            0x2d, (byte) 0xf1, 0x56, 0x24, 0x7e, 0x47, 0x1b, (byte) 0x86, (byte) 0xbd, 0x70, (byte) 0x8e, 0x1e, 0x3b, 0x73, 0x16, 0x03,
-            (byte) 0xb6, (byte) 0xac, 0x28, 0x5a, (byte) 0xc9, (byte) 0xb3, 0x37, (byte) 0xc5, 0x0a, 0x10, (byte) 0xb7, (byte) 0xa3, (byte) 0xba, (byte) 0xb1, (byte) 0x97, 0x46, (byte) 0x88
-    };
+    private static byte[] step1(byte[] in) {
 
-    final static byte[] TRANS_MAP_1 = {
-            0x01, 0x2d, (byte) 0xe2, (byte) 0x93, (byte) 0xbe, 0x45, 0x15, (byte) 0xae, 0x78, 0x03, (byte) 0x87, (byte) 0xa4, (byte) 0xb8, 0x38, (byte) 0xcf, 0x3f,
-            0x08, 0x67, 0x09, (byte) 0x94, (byte) 0xeb, 0x26, (byte) 0xa8, 0x6b, (byte) 0xbd, 0x18, 0x34, 0x1b, (byte) 0xbb, (byte) 0xbf, 0x72, (byte) 0xf7,
-            0x40, 0x35, 0x48, (byte) 0x9c, 0x51, 0x2f, 0x3b, 0x55, (byte) 0xe3, (byte) 0xc0, (byte) 0x9f, (byte) 0xd8, (byte) 0xd3, (byte) 0xf3, (byte) 0x8d, (byte) 0xb1,
-            (byte) 0xff, (byte) 0xa7, 0x3e, (byte) 0xdc, (byte) 0x86, 0x77, (byte) 0xd7, (byte) 0xa6, 0x11, (byte) 0xfb, (byte) 0xf4, (byte) 0xba, (byte) 0x92, (byte) 0x91, 0x64, (byte) 0x83,
-            (byte) 0xf1, 0x33, (byte) 0xef, (byte) 0xda, 0x2c, (byte) 0xb5, (byte) 0xb2, 0x2b, (byte) 0x88, (byte) 0xd1, (byte) 0x99, (byte) 0xcb, (byte) 0x8c, (byte) 0x84, 0x1d, 0x14,
-            (byte) 0x81, (byte) 0x97, 0x71, (byte) 0xca, 0x5f, (byte) 0xa3, (byte) 0x8b, 0x57, 0x3c, (byte) 0x82, (byte) 0xc4, 0x52, 0x5c, 0x1c, (byte) 0xe8, (byte) 0xa0,
-            0x04, (byte) 0xb4, (byte) 0x85, 0x4a, (byte) 0xf6, 0x13, 0x54, (byte) 0xb6, (byte) 0xdf, 0x0c, 0x1a, (byte) 0x8e, (byte) 0xde, (byte) 0xe0, 0x39, (byte) 0xfc,
-            0x20, (byte) 0x9b, 0x24, 0x4e, (byte) 0xa9, (byte) 0x98, (byte) 0x9e, (byte) 0xab, (byte) 0xf2, 0x60, (byte) 0xd0, 0x6c, (byte) 0xea, (byte) 0xfa, (byte) 0xc7, (byte) 0xd9,
-            0x00, (byte) 0xd4, 0x1f, 0x6e, 0x43, (byte) 0xbc, (byte) 0xec, 0x53, (byte) 0x89, (byte) 0xfe, 0x7a, 0x5d, 0x49, (byte) 0xc9, 0x32, (byte) 0xc2,
-            (byte) 0xf9, (byte) 0x9a, (byte) 0xf8, 0x6d, 0x16, (byte) 0xdb, 0x59, (byte) 0x96, 0x44, (byte) 0xe9, (byte) 0xcd, (byte) 0xe6, 0x46, 0x42, (byte) 0x8f, 0x0a,
-            (byte) 0xc1, (byte) 0xcc, (byte) 0xb9, 0x65, (byte) 0xb0, (byte) 0xd2, (byte) 0xc6, (byte) 0xac, 0x1e, 0x41, 0x62, 0x29, 0x2e, 0x0e, 0x74, 0x50,
-            0x02, 0x5a, (byte) 0xc3, 0x25, 0x7b, (byte) 0x8a, 0x2a, 0x5b, (byte) 0xf0, 0x06, 0x0d, 0x47, 0x6f, 0x70, (byte) 0x9d, 0x7e,
-            0x10, (byte) 0xce, 0x12, 0x27, (byte) 0xd5, 0x4c, 0x4f, (byte) 0xd6, 0x79, 0x30, 0x68, 0x36, 0x75, 0x7d, (byte) 0xe4, (byte) 0xed,
-            (byte) 0x80, 0x6a, (byte) 0x90, 0x37, (byte) 0xa2, 0x5e, 0x76, (byte) 0xaa, (byte) 0xc5, 0x7f, 0x3d, (byte) 0xaf, (byte) 0xa5, (byte) 0xe5, 0x19, 0x61,
-            (byte) 0xfd, 0x4d, 0x7c, (byte) 0xb7, 0x0b, (byte) 0xee, (byte) 0xad, 0x4b, 0x22, (byte) 0xf5, (byte) 0xe7, 0x73, 0x23, 0x21, (byte) 0xc8, 0x05,
-            (byte) 0xe1, 0x66, (byte) 0xdd, (byte) 0xb3, 0x58, 0x69, 0x63, 0x56, 0x0f, (byte) 0xa1, 0x31, (byte) 0x95, 0x17, 0x07, 0x3a, 0x28
-    };
-
-    final static byte[] TRANS_MAP_2 = {
-            (byte) 0x80, 0x00, (byte) 0xb0, 0x09, 0x60, (byte) 0xef, (byte) 0xb9, (byte) 0xfd, 0x10, 0x12, (byte) 0x9f, (byte) 0xe4, 0x69, (byte) 0xba, (byte) 0xad, (byte) 0xf8,
-            (byte) 0xc0, 0x38, (byte) 0xc2, 0x65, 0x4f, 0x06, (byte) 0x94, (byte) 0xfc, 0x19, (byte) 0xde, 0x6a, 0x1b, 0x5d, 0x4e, (byte) 0xa8, (byte) 0x82,
-            0x70, (byte) 0xed, (byte) 0xe8, (byte) 0xec, 0x72, (byte) 0xb3, 0x15, (byte) 0xc3, (byte) 0xff, (byte) 0xab, (byte) 0xb6, 0x47, 0x44, 0x01, (byte) 0xac, 0x25,
-            (byte) 0xc9, (byte) 0xfa, (byte) 0x8e, 0x41, 0x1a, 0x21, (byte) 0xcb, (byte) 0xd3, 0x0d, 0x6e, (byte) 0xfe, 0x26, 0x58, (byte) 0xda, 0x32, 0x0f,
-            0x20, (byte) 0xa9, (byte) 0x9d, (byte) 0x84, (byte) 0x98, 0x05, (byte) 0x9c, (byte) 0xbb, 0x22, (byte) 0x8c, 0x63, (byte) 0xe7, (byte) 0xc5, (byte) 0xe1, 0x73, (byte) 0xc6,
-            (byte) 0xaf, 0x24, 0x5b, (byte) 0x87, 0x66, 0x27, (byte) 0xf7, 0x57, (byte) 0xf4, (byte) 0x96, (byte) 0xb1, (byte) 0xb7, 0x5c, (byte) 0x8b, (byte) 0xd5, 0x54,
-            0x79, (byte) 0xdf, (byte) 0xaa, (byte) 0xf6, 0x3e, (byte) 0xa3, (byte) 0xf1, 0x11, (byte) 0xca, (byte) 0xf5, (byte) 0xd1, 0x17, 0x7b, (byte) 0x93, (byte) 0x83, (byte) 0xbc,
-            (byte) 0xbd, 0x52, 0x1e, (byte) 0xeb, (byte) 0xae, (byte) 0xcc, (byte) 0xd6, 0x35, 0x08, (byte) 0xc8, (byte) 0x8a, (byte) 0xb4, (byte) 0xe2, (byte) 0xcd, (byte) 0xbf, (byte) 0xd9,
-            (byte) 0xd0, 0x50, 0x59, 0x3f, 0x4d, 0x62, 0x34, 0x0a, 0x48, (byte) 0x88, (byte) 0xb5, 0x56, 0x4c, 0x2e, 0x6b, (byte) 0x9e,
-            (byte) 0xd2, 0x3d, 0x3c, 0x03, 0x13, (byte) 0xfb, (byte) 0x97, 0x51, 0x75, 0x4a, (byte) 0x91, 0x71, 0x23, (byte) 0xbe, 0x76, 0x2a,
-            0x5f, (byte) 0xf9, (byte) 0xd4, 0x55, 0x0b, (byte) 0xdc, 0x37, 0x31, 0x16, 0x74, (byte) 0xd7, 0x77, (byte) 0xa7, (byte) 0xe6, 0x07, (byte) 0xdb,
-            (byte) 0xa4, 0x2f, 0x46, (byte) 0xf3, 0x61, 0x45, 0x67, (byte) 0xe3, 0x0c, (byte) 0xa2, 0x3b, 0x1c, (byte) 0x85, 0x18, 0x04, 0x1d,
-            0x29, (byte) 0xa0, (byte) 0x8f, (byte) 0xb2, 0x5a, (byte) 0xd8, (byte) 0xa6, 0x7e, (byte) 0xee, (byte) 0x8d, 0x53, 0x4b, (byte) 0xa1, (byte) 0x9a, (byte) 0xc1, 0x0e,
-            0x7a, 0x49, (byte) 0xa5, 0x2c, (byte) 0x81, (byte) 0xc4, (byte) 0xc7, 0x36, 0x2b, 0x7f, 0x43, (byte) 0x95, 0x33, (byte) 0xf2, 0x6c, 0x68,
-            0x6d, (byte) 0xf0, 0x02, 0x28, (byte) 0xce, (byte) 0xdd, (byte) 0x9b, (byte) 0xea, 0x5e, (byte) 0x99, 0x7c, 0x14, (byte) 0x86, (byte) 0xcf, (byte) 0xe5, 0x42,
-            (byte) 0xb8, 0x40, 0x78, 0x2d, 0x3a, (byte) 0xe9, 0x64, 0x1f, (byte) 0x92, (byte) 0x90, 0x7d, 0x39, 0x6f, (byte) 0xe0, (byte) 0x89, 0x30
-    };
-
-
-    private static byte[] process_1(byte[] input_data) {
-        byte[] output_data = new byte[0x110];
-        System.arraycopy(input_data, 0, output_data, 0, input_data.length);
+        byte[] out = new byte[0x110];
+        in[0xf] ^= 6;
+        System.arraycopy(in, 0, out, 0, in.length);
 
         List<Byte> input = new ArrayList<>();
-        for (byte b : input_data) {
+        for (byte b : in) {
             input.add(b);
         }
         byte xor = input.stream().reduce((byte) 0x0, (cum, e) -> (byte) (cum ^ e));
@@ -77,159 +21,100 @@ public class Authentication {
 
         for (int i = 0; i < 16; i++) {
             for (int j = 0; j < 17; j++) {
-                byte rot = (byte)(((input.get(j) & 0xff)  >>> 5) | ((input.get(j) & 0xff) << (8 - 5)));
+                byte rot = (byte) (((input.get(j) & 0xff) >>> 5) | ((input.get(j) & 0xff) << (8 - 5)));
                 input.set(j, rot);
             }
-            int i_input = i + 1;
+            int inIdx = i + 1;
             for (int k = 0; k < 16; k++) {
-                byte out = (byte) (TRANS_MAP[(i + 1) * 16 - k] + input.get(i_input));
-                output_data[(i + 1) * 16 + k] = out;
-                i_input +=1;
+                byte res = (byte) (AuthData.MAP_1[(i + 1) * 16 - k] + input.get(inIdx));
+                out[(i + 1) * 16 + k] = res;
+                inIdx += 1;
 
-                if (16 < i_input) {
-                    i_input = 0;
+                if (inIdx > 16) {
+                    inIdx = 0;
                 }
             }
         }
-        return output_data;
+        return out;
     }
 
-    private static byte[] process_2(byte[] output_data, byte[] input_data, int step) {
-        byte[] output_copy = output_data.clone();
-        int input_idx = 0;
+    private static byte[] step2(byte[] out, byte[] in) {
+        byte[] outCopy = out.clone();
+        int inOffset = 0;
         for (int i = 0; i < 8; i++) {
-            if (step != 0 && i == 2) {
+            if (i == 2) {
                 for (int j = 0; j < 16; j++) {
                     byte res;
                     if ((1 << j & 0x9999) != 0) {
-                        res = (byte) (output_data[j] ^ output_copy[j]);
+                        res = (byte) (out[j] ^ outCopy[j]);
                     } else {
-                        res = (byte) (output_data[j] + output_copy[j]);
+                        res = (byte) (out[j] + outCopy[j]);
                     }
-                    output_data[j] = res;
+                    out[j] = res;
                 }
             }
             for (int j = 0; j < 16; j++) {
                 byte res;
                 if ((1 << j & 0x9999) != 0) {
-                    res = (byte) (output_data[j] ^ input_data[input_idx + j]);
+                    res = (byte) (out[j] ^ in[inOffset + j]);
                 } else {
-                    res = (byte) (output_data[j] + input_data[input_idx + j]);
+                    res = (byte) (out[j] + in[inOffset + j]);
                 }
-                output_data[j] = res;
+                out[j] = res;
             }
             for (int j = 0; j < 16; j++) {
                 byte res;
                 if ((1 << j & 0x9999) != 0) {
-                    res = TRANS_MAP_1[output_data[j] & 0xff];
+                    res = AuthData.MAP_2[out[j] & 0xff];
                 } else {
-                    res = TRANS_MAP_2[output_data[j] & 0xff];
+                    res = AuthData.MAP_3[out[j] & 0xff];
                 }
-                output_data[j] = res;
+                out[j] = res;
             }
             for (int j = 0; j < 16; j++) {
                 byte res;
                 if ((1 << j & 0x9999) != 0) {
-                    res = (byte) (input_data[input_idx + j + 16] + output_data[j]);
+                    res = (byte) (in[inOffset + j + 16] + out[j]);
                 } else {
-                    res = (byte) (input_data[input_idx + j + 16] ^ output_data[j]);
+                    res = (byte) (in[inOffset + j + 16] ^ out[j]);
                 }
-                output_data[j] = res;
+                out[j] = res;
             }
 
-            byte sum_0_1_d = (byte) (output_data[1] + output_data[0] * 2);
-            byte sum_0_1 = (byte) (output_data[1] + output_data[0]);
-            byte sum_2_3_d = (byte) (output_data[3] + output_data[2] * 2);
-            byte sum_2_3 = (byte) (output_data[3] + output_data[2]);
-            byte sum_4_5_d = (byte) (output_data[5] + output_data[4] * 2);
-            byte sum_4_5 = (byte) (output_data[5] + output_data[4]);
-            byte sum_6_7_d = (byte) (output_data[7] + output_data[6] * 2);
-            byte sum_6_7 = (byte) (output_data[7] + output_data[6]);
-            byte sum_8_9_d = (byte) (output_data[9] + output_data[8] * 2);
-            byte sum_8_9 = (byte) (output_data[9] + output_data[8]);
-            byte sum_a_b_d = (byte) (output_data[0xb] + output_data[10] * 2);
-            byte sum_a_b = (byte) (output_data[0xb] + output_data[10]);
-            byte sum_c_d_d = (byte) (output_data[0xd] + output_data[0xc] * 2);
-            byte sum_c_d = (byte) (output_data[0xd] + output_data[0xc]);
-            byte sum_e_f_d = (byte) (output_data[0xf] + output_data[0xe] * 2);
-            byte sum_e_f = (byte) (output_data[0xf] + output_data[0xe]);
+            byte[] o = out.clone();
+            for (int j = 0; j < 16; j++) {
+                byte res = 0x0;
+                for (int v = 0; v < 16; v++) {
+                    res += (byte) (AuthData.COEFFICIENTS[j][v] * o[v]);
+                }
+                out[j] = res;
+            }
 
-            byte sum_89d_ab = (byte) (sum_a_b + sum_8_9_d);
-            sum_a_b = (byte) (sum_8_9_d * 2 + sum_a_b);
-            byte sum_cdd_ef = (byte) (sum_e_f + sum_c_d_d);
-            sum_e_f = (byte) (sum_c_d_d * 2 + sum_e_f);
-            sum_c_d_d = (byte) (sum_2_3_d + sum_0_1);
-            sum_0_1 = (byte) (sum_2_3_d * 2 + sum_0_1);
-            byte sum_45_67d = (byte) (sum_6_7_d + sum_4_5);
-            sum_4_5 = (byte) (sum_6_7_d * 2 + sum_4_5);
-            byte sum_89_abd = (byte) (sum_a_b_d + sum_8_9);
-            sum_8_9 = (byte) (sum_a_b_d * 2 + sum_8_9);
-            sum_2_3_d = (byte) (sum_e_f_d + sum_c_d);
-            sum_c_d = (byte) (sum_e_f_d * 2 + sum_c_d);
-            byte sum_01d_67 = (byte) (sum_6_7 + sum_0_1_d);
-            sum_6_7 = (byte) (sum_6_7 + sum_0_1_d * 2);
-            sum_6_7_d = (byte) (sum_4_5_d + sum_2_3);
-            sum_2_3 = (byte) (sum_4_5_d * 2 + sum_2_3);
-            sum_0_1_d = (byte) (sum_2_3_d + sum_8_9);
-            sum_2_3_d = (byte) (sum_8_9 * 2 + sum_2_3_d);
-            sum_4_5_d = (byte) (sum_6_7 + sum_6_7_d);
-            sum_6_7_d = (byte) (sum_6_7 * 2 + sum_6_7_d);
-            sum_8_9_d = (byte) (sum_e_f + sum_89d_ab);
-            sum_89d_ab = (byte) (sum_e_f * 2 + sum_89d_ab);
-            sum_a_b_d = (byte) (sum_4_5 + sum_c_d_d);
-            sum_c_d_d = (byte) (sum_4_5 * 2 + sum_c_d_d);
-            sum_e_f_d = (byte) (sum_c_d + sum_89_abd);
-            sum_89_abd = (byte) (sum_c_d * 2 + sum_89_abd);
-            sum_e_f = (byte) (sum_01d_67 + sum_2_3);
-            sum_01d_67 = (byte) (sum_2_3 * 2 + sum_01d_67);
-            sum_4_5 = (byte) (sum_a_b + sum_45_67d);
-            sum_45_67d = (byte) (sum_a_b * 2 + sum_45_67d);
-            sum_a_b = (byte) (sum_cdd_ef + sum_0_1);
-            sum_cdd_ef = (byte) (sum_cdd_ef + sum_0_1 * 2);
-
-            output_data[1] = (byte) (sum_e_f + sum_89_abd);
-            output_data[0] = (byte) (sum_e_f + sum_89_abd * 2);
-            output_data[3] = (byte) (sum_a_b + sum_45_67d);
-            output_data[2] = (byte) (sum_a_b + sum_45_67d * 2);
-            output_data[5] = (byte) (sum_0_1_d + sum_6_7_d);
-            output_data[4] = (byte) (sum_0_1_d + sum_6_7_d * 2);
-            output_data[7] = (byte) (sum_8_9_d + sum_c_d_d);
-            output_data[6] = (byte) (sum_8_9_d + sum_c_d_d * 2);
-            output_data[9] = (byte) (sum_e_f_d + sum_01d_67);
-            output_data[8] = (byte) (sum_e_f_d + sum_01d_67 * 2);
-            output_data[0xb] = (byte) (sum_4_5 + sum_cdd_ef);
-            output_data[0xa] = (byte) (sum_4_5 + sum_cdd_ef * 2);
-            output_data[0xd] = (byte) (sum_a_b_d + sum_2_3_d);
-            output_data[0xc] = (byte) (sum_a_b_d + sum_2_3_d * 2);
-            output_data[0xf] = (byte) (sum_4_5_d + sum_89d_ab);
-            output_data[0xe] = (byte) (sum_4_5_d + sum_89d_ab * 2);
-            input_idx += 0x20;
-
+            inOffset += 0x20;
         }
 
         for (int j = 0; j < 16; j++) {
             byte res;
             if ((1 << j & 0x9999) != 0) {
-                res = (byte) (input_data[j + 256] ^ output_data[j]);
+                res = (byte) (in[j + 256] ^ out[j]);
             } else {
-                res = (byte) (input_data[j + 256] + output_data[j]);
+                res = (byte) (in[j + 256] + out[j]);
             }
-            output_data[j] = res;
+            out[j] = res;
         }
-        return output_data;
+        return out;
     }
 
-    public static byte[] random() {
+    public static byte[] getRandomChallenge() {
         byte[] res = new byte[16];
         SecureRandom rnd = new SecureRandom();
         rnd.nextBytes(res);
         return res;
     }
 
-    public static byte[] encrypt(byte[] input) {
-        input[0xf] ^= 6;
-        byte[] res_1 = process_1(input);
-        return process_2(new byte[] {0x11, 0x22, 0x33, 0x33, 0x22, 0x11, 0x11, 0x22, 0x33, 0x33, 0x22, 0x11, 0x11, 0x22, 0x33, 0x33}, res_1,1);
+    public static byte[] computeChallengeResponse(byte[] input) {
+        byte[] res1 = step1(input);
+        return step2(AuthData.SEQ.clone(), res1);
     }
 
 }

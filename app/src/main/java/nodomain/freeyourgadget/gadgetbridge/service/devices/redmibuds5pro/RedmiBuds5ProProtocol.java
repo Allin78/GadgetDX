@@ -42,7 +42,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
     }
 
     public byte[] encodeStartAuthentication() {
-        byte[] authRnd = Authentication.random();
+        byte[] authRnd = Authentication.getRandomChallenge();
         LOG.debug("[AUTH] Sending challenge: {}", hexdump(authRnd));
 
         byte[] payload = new byte[17];
@@ -524,7 +524,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 System.arraycopy(responsePayload, 1, challenge, 0, 16);
 
                 LOG.info("[AUTH] Received Challenge: {}", hexdump(challenge));
-                byte[] challengeResponse = Authentication.encrypt(challenge);
+                byte[] challengeResponse = Authentication.computeChallengeResponse(challenge);
                 LOG.info("[AUTH] Sending Challenge Response: {}", hexdump(challengeResponse));
 
                 byte[] payload = new byte[17];
