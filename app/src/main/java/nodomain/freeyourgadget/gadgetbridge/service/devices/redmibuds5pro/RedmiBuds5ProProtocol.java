@@ -1,8 +1,10 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro;
 
+import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.*;
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.hexdump;
 
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +16,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEvent;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventBatteryInfo;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventSendBytes;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdateDeviceState;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventVersionInfo;
-import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro.prefs.Gestures;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro.prefs.Configuration.Config;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro.prefs.Configuration.StrengthTarget;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro.prefs.Gestures.InteractionType;
+import nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro.prefs.Gestures.Position;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice.State;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro.protocol.Authentication;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro.protocol.Message;
@@ -54,61 +59,61 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
     @Override
     public byte[] encodeSendConfiguration(String config) {
         switch (config) {
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL:
+            case PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL:
                 return encodeSetAmbientSoundControl();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH:
-                return encodeSetNoiseCancellingStrength();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH:
-                return encodeSetTransparencyStrength();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING:
-                return encodeSetAdaptiveNoiseCancelling();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING:
-                return encodeSetCustomizedNoiseCancelling();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT:
-                return encodeSetGesture(config, Gestures.InteractionType.SINGLE, Gestures.Position.LEFT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT:
-                return encodeSetGesture(config, Gestures.InteractionType.SINGLE, Gestures.Position.RIGHT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT:
-                return encodeSetGesture(config, Gestures.InteractionType.DOUBLE, Gestures.Position.LEFT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT:
-                return encodeSetGesture(config, Gestures.InteractionType.DOUBLE, Gestures.Position.RIGHT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT:
-                return encodeSetGesture(config, Gestures.InteractionType.TRIPLE, Gestures.Position.LEFT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT:
-                return encodeSetGesture(config, Gestures.InteractionType.TRIPLE, Gestures.Position.RIGHT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT:
-                return encodeSetGesture(config, Gestures.InteractionType.LONG, Gestures.Position.LEFT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT:
-                return encodeSetGesture(config, Gestures.InteractionType.LONG, Gestures.Position.RIGHT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT:
-                return encodeSetLongGestureMode(config, Gestures.Position.LEFT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT:
-                return encodeSetLongGestureMode(config, Gestures.Position.RIGHT);
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION:
+            case PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH:
+                return encodeSetEffectStrength(config, StrengthTarget.ANC);
+            case PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH:
+                return encodeSetEffectStrength(config, StrengthTarget.TRANSPARENCY);
+            case PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING:
+                return encodeSetBooleanConfig(config, Config.ADAPTIVE_ANC);
+            case PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING:
+                return encodeSetBooleanConfig(config, Config.CUSTOMIZED_ANC);
+
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT:
+                return encodeSetGesture(config, InteractionType.SINGLE, Position.LEFT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT:
+                return encodeSetGesture(config, InteractionType.SINGLE, Position.RIGHT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT:
+                return encodeSetGesture(config, InteractionType.DOUBLE, Position.LEFT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT:
+                return encodeSetGesture(config, InteractionType.DOUBLE, Position.RIGHT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT:
+                return encodeSetGesture(config, InteractionType.TRIPLE, Position.LEFT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT:
+                return encodeSetGesture(config, InteractionType.TRIPLE, Position.RIGHT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT:
+                return encodeSetGesture(config, InteractionType.LONG, Position.LEFT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT:
+                return encodeSetGesture(config, InteractionType.LONG, Position.RIGHT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT:
+                return encodeSetLongGestureMode(config, Position.LEFT);
+            case PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT:
+                return encodeSetLongGestureMode(config, Position.RIGHT);
+
+            case PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION:
                 return encodeSetEarDetection();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL:
-                return encodeSetAutoAnswerCall();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION:
-                return encodeSetDoubleConnection();
-//            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND:
-//                return encodeSetSurroundSound();
-//            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE:
-//                return encodeSetSurroundSoundMode();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND:
-                return encodeSetAdaptiveSound();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET:
-                return encodeSetEqualizerPreset();
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k:
-            case DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k:
+            case PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL:
+                return encodeSetBooleanConfig(config, Config.AUTO_ANSWER);
+            case PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION:
+                return encodeSetBooleanConfig(config, Config.DOUBLE_CONNECTION);
+            case PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND:
+                return encodeSetBooleanConfig(config, Config.ADAPTIVE_SOUND);
+
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET:
+                return encodeSetIntegerConfig(config, Config.EQ_PRESET);
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k:
+            case PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k:
                 return encodeSetCustomEqualizer();
+
             default:
                 LOG.debug("Unsupported config: {}", config);
         }
@@ -116,78 +121,39 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         return super.encodeSendConfiguration(config);
     }
 
-//    public byte[] encodeSetSurroundSoundMode() {
-//        Prefs prefs = getDevicePrefs();
-//        byte value = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE, "1"));
-//        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x36, 0x01, value}).encode();
-//    }
-//
-//
-//    public byte[] encodeSetSurroundSound() {
-//
-//        Prefs prefs = getDevicePrefs();
-//        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND, false) ? 0x03 : 0x02);
-//        LOG.debug("SURROUND SETTING");
-//        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x1D, value}).encode();
-//    }
-
     public byte[] encodeSetCustomEqualizer() {
         Prefs prefs = getDevicePrefs();
-        byte value_62 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62, "0"));
-        byte value_125 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125, "0"));
-        byte value_250 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250, "0"));
-        byte value_500 = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500, "0"));
-        byte value_1k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k, "0"));
-        byte value_2k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k, "0"));
-        byte value_4k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k, "0"));
-        byte value_8k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k, "0"));
-        byte value_12k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, "0"));
-        byte value_16k = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k, "0"));
+
+        List<String> bands = List.of(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62, PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125,
+                PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250, PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500, PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k,
+                PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k, PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k, PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k,
+                PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k);
+
+        byte[] eqCurve = new byte[10];
+        for (int i = 0; i < 10; i++) {
+            eqCurve[i] = (byte) Integer.parseInt(prefs.getString(bands.get(i), "0"));
+        }
         return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{
                 0x24, 0x00, 0x37, 0x05, 0x01, 0x01, 0x0A,
-                0x00, 0x3E, value_62, 0x00, 0x7D, value_125,
-                0x00, (byte) 0xFA, value_250, 0x01, (byte) 0xF4, value_500,
-                0x03, (byte) 0xE8, value_1k, 0x07, (byte) 0xE0, value_2k,
-                0x0F, (byte) 0xA0, value_4k, 0x1F, 0x40, value_8k,
-                0x2E, (byte) 0xE0, value_12k, 0x3E, (byte) 0x80, value_16k
+                0x00, 0x3E, eqCurve[0], 0x00, 0x7D, eqCurve[1],
+                0x00, (byte) 0xFA, eqCurve[2], 0x01, (byte) 0xF4, eqCurve[3],
+                0x03, (byte) 0xE8, eqCurve[4], 0x07, (byte) 0xE0, eqCurve[5],
+                0x0F, (byte) 0xA0, eqCurve[6], 0x1F, 0x40, eqCurve[7],
+                0x2E, (byte) 0xE0, eqCurve[8], 0x3E, (byte) 0x80, eqCurve[9]
         }).encode();
-    }
-
-    public byte[] encodeSetEqualizerPreset() {
-        Prefs prefs = getDevicePrefs();
-        byte value = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, "0"));
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x07, value}).encode();
-    }
-
-    public byte[] encodeSetAdaptiveSound() {
-        Prefs prefs = getDevicePrefs();
-        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND, false) ? 0x01 : 0x00);
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x29, value}).encode();
     }
 
     public byte[] encodeSetEarDetection() {
         Prefs prefs = getDevicePrefs();
-        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION, false) ? 0x00 : 0x01);
+        byte value = (byte) (prefs.getBoolean(PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION, false) ? 0x00 : 0x01);
         return new Message(MessageType.PHONE_REQUEST, Opcode.ANC, sequenceNumber++, new byte[]{0x02, 0x06, value}).encode();
     }
 
-    public byte[] encodeSetAutoAnswerCall() {
-        Prefs prefs = getDevicePrefs();
-        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL, false) ? 0x01 : 0x00);
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x03, value}).encode();
-    }
-
-    public byte[] encodeSetDoubleConnection() {
-        Prefs prefs = getDevicePrefs();
-        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION, false) ? 0x01 : 0x00);
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x04, value}).encode();
-    }
-
-    public byte[] encodeSetLongGestureMode(String config, Gestures.Position position) {
+    public byte[] encodeSetLongGestureMode(String config, Position position) {
         Prefs prefs = getDevicePrefs();
         byte value = (byte) Integer.parseInt(prefs.getString(config, "7"));
         byte[] payload = new byte[] {0x04, 0x00, 0x0a, (byte) 0xFF, (byte) 0xFF};
-        if (position == Gestures.Position.LEFT) {
+        if (position == Position.LEFT) {
             payload[3] = value;
         } else {
             payload[4] = value;
@@ -195,11 +161,11 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, payload).encode();
     }
 
-    public byte[] encodeSetGesture(String config, Gestures.InteractionType interactionType, Gestures.Position position) {
+    public byte[] encodeSetGesture(String config, InteractionType interactionType, Position position) {
         Prefs prefs = getDevicePrefs();
         byte value = (byte) Integer.parseInt(prefs.getString(config, "1"));
         byte[] payload = new byte[] {0x05, 0x00, 0x02, interactionType.value, (byte) 0xFF, (byte) 0xFF};
-        if (position == Gestures.Position.LEFT) {
+        if (position == Position.LEFT) {
             payload[4] = value;
         } else {
             payload[5] = value;
@@ -207,142 +173,112 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, payload).encode();
     }
 
-    public byte[] encodeSetAdaptiveNoiseCancelling() {
+    public byte[] encodeSetEffectStrength(String pref, StrengthTarget effect) {
         Prefs prefs = getDevicePrefs();
-        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING, false) ? 0x01 : 0x00);
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x25, value}).encode();
+        byte mode = (byte) Integer.parseInt(prefs.getString(pref, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, effect.value, mode}).encode();
     }
 
-    public byte[] encodeSetCustomizedNoiseCancelling() {
+    public byte[] encodeSetIntegerConfig(String pref, Config config) {
         Prefs prefs = getDevicePrefs();
-        byte value = (byte) (prefs.getBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, false) ? 0x01 : 0x00);
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, 0x3b, value}).encode();
+        byte value = (byte) Integer.parseInt(prefs.getString(pref, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, config.value, value}).encode();
     }
 
-    public byte[] encodeSetNoiseCancellingStrength() {
+    public byte[] encodeSetBooleanConfig(String pref, Config config) {
         Prefs prefs = getDevicePrefs();
-        byte mode = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, "0"));
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, 0x01, mode}).encode();
-    }
-
-    public byte[] encodeSetTransparencyStrength() {
-        Prefs prefs = getDevicePrefs();
-        byte mode = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, "0"));
-        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x04, 0x00, 0x0b, 0x02, mode}).encode();
+        byte value = (byte) (prefs.getBoolean(pref, false) ? 0x01 : 0x00);
+        return new Message(MessageType.PHONE_REQUEST, Opcode.SET_CONFIG, sequenceNumber++, new byte[]{0x03, 0x00, config.value, value}).encode();
     }
 
     public byte[] encodeGetConfig() {
-        Message strength = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x0b});
-        Message adaptiveAnc = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x25});
-        Message customAnc = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x3b});
-        Message gestures = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x02});
-        Message longGestures = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x0a});
-        Message earDetection = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x06});
-        Message doubleConnection = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x04});
-        Message autoCallAnswer = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x03});
-//        Message surroundSound = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x1D});
-//        Message surroundSoundMode = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x36});
-        Message adaptiveSound = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x29});
-        Message equalizerPreset = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x07});
-        Message equalizerCurve = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, 0x37});
+        List<Config> configs = List.of(Config.EFFECT_STRENGTH, Config.ADAPTIVE_ANC, Config.CUSTOMIZED_ANC, Config.GESTURES,
+                Config.LONG_GESTURES, Config.EAR_DETECTION, Config.DOUBLE_CONNECTION, Config.AUTO_ANSWER,
+                Config.ADAPTIVE_SOUND, Config.EQ_PRESET, Config.EQ_CURVE);
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            outputStream.write(strength.encode());
-            outputStream.write(adaptiveAnc.encode());
-            outputStream.write(customAnc.encode());
-            outputStream.write(gestures.encode());
-            outputStream.write(longGestures.encode());
-            outputStream.write(earDetection.encode());
-            outputStream.write(doubleConnection.encode());
-            outputStream.write(autoCallAnswer.encode());
-//            outputStream.write(surroundSound.encode());
-//            outputStream.write(surroundSoundMode.encode());
-            outputStream.write(adaptiveSound.encode());
-            outputStream.write(equalizerPreset.encode());
-            outputStream.write(equalizerCurve.encode());
+            for (Config config : configs) {
+                Message message = new Message(MessageType.PHONE_REQUEST, Opcode.GET_CONFIG, sequenceNumber++, new byte[]{0x00, config.value});
+                outputStream.write(message.encode());
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return outputStream.toByteArray();
     }
 
+    public byte[] encodeSetAmbientSoundControl() {
+        Prefs prefs = getDevicePrefs();
+        byte mode = (byte) Integer.parseInt(prefs.getString(PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "0"));
+        return new Message(MessageType.PHONE_REQUEST, Opcode.ANC, sequenceNumber++, new byte[]{0x02, 0x04, mode}).encode();
+    }
+
     public void decodeGetConfig(byte[] configPayload) {
 
         SharedPreferences preferences = getDevicePrefs().getPreferences();
-        SharedPreferences.Editor editor = preferences.edit();
-        switch (configPayload[2]) {
-            case 0x02:
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT, Integer.toString(configPayload[4]));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT, Integer.toString(configPayload[5]));
+        Editor editor = preferences.edit();
+        Config config = Config.fromCode(configPayload[2]);
+        switch (config) {
+            case GESTURES:
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT, Integer.toString(configPayload[4]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT, Integer.toString(configPayload[5]));
 
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT, Integer.toString(configPayload[7]));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT, Integer.toString(configPayload[8]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT, Integer.toString(configPayload[7]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_RIGHT, Integer.toString(configPayload[8]));
 
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT, Integer.toString(configPayload[10]));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT, Integer.toString(configPayload[11]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_LEFT, Integer.toString(configPayload[10]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_TRIPLE_TAP_RIGHT, Integer.toString(configPayload[11]));
 
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, Integer.toString(configPayload[13]));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, Integer.toString(configPayload[14]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, Integer.toString(configPayload[13]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, Integer.toString(configPayload[14]));
                 break;
-            case 0x03:
-                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL, configPayload[3] == 0x01);
+            case AUTO_ANSWER:
+                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_AUTO_REPLY_PHONECALL, configPayload[3] == 0x01);
                 break;
-            case 0x04:
-                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION, configPayload[3] == 0x01);
+            case DOUBLE_CONNECTION:
+                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_DOUBLE_CONNECTION, configPayload[3] == 0x01);
                 break;
-            case 0x07:
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, Integer.toString(configPayload[3]));
+            case EQ_PRESET:
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, Integer.toString(configPayload[3]));
                 break;
-            case 0x0A:
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT, Integer.toString(configPayload[3]));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT, Integer.toString(configPayload[4]));
+            case LONG_GESTURES:
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_LEFT, Integer.toString(configPayload[3]));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_SETTINGS_RIGHT, Integer.toString(configPayload[4]));
                 break;
-            case 0x0B:
+            case EFFECT_STRENGTH:
                 byte mode = configPayload[4];
-                if (configPayload[3] == 0x01) {
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, Integer.toString(mode));
-                } else if (configPayload[3] == 0x02) {
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
+                if (configPayload[3] == StrengthTarget.ANC.value) {
+                    editor.putString(PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, Integer.toString(mode));
+                } else if (configPayload[3] == StrengthTarget.TRANSPARENCY.value) {
+                    editor.putString(PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
                 }
                 break;
-//            case 0x1D:
-//                LOG.debug("Surround Sound: {}", hexdump(configPayload));
-//                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND, configPayload[3] == 0x03);
-//                break;
-            case 0x25:
-                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING, configPayload[3] == 0x01);
+            case ADAPTIVE_ANC:
+                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING, configPayload[3] == 0x01);
                 break;
-            case 0x29:
-                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND, configPayload[3] == 0x01);
+            case ADAPTIVE_SOUND:
+                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_ADAPTIVE_SOUND, configPayload[3] == 0x01);
                 break;
-//            case 0x36:
-//                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_SURROUND_SOUND_MODE, Integer.toString(configPayload[4]));
-//                break;
-            case 0x37:
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62, Integer.toString(configPayload[12] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125, Integer.toString(configPayload[15] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250, Integer.toString(configPayload[18] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500, Integer.toString(configPayload[21] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k, Integer.toString(configPayload[24] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k, Integer.toString(configPayload[27] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k, Integer.toString(configPayload[30] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k, Integer.toString(configPayload[33] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, Integer.toString(configPayload[36] & 0xFF));
-                editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k, Integer.toString(configPayload[39] & 0xFF));
+            case EQ_CURVE:
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62, Integer.toString(configPayload[12] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125, Integer.toString(configPayload[15] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250, Integer.toString(configPayload[18] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500, Integer.toString(configPayload[21] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k, Integer.toString(configPayload[24] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k, Integer.toString(configPayload[27] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k, Integer.toString(configPayload[30] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k, Integer.toString(configPayload[33] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, Integer.toString(configPayload[36] & 0xFF));
+                editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k, Integer.toString(configPayload[39] & 0xFF));
                 break;
-            case 0x3B:
-                editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, configPayload[3] == 0x01);
+            case CUSTOMIZED_ANC:
+                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, configPayload[3] == 0x01);
                 break;
             default:
                 LOG.debug("Unhandled device update: {}", hexdump(configPayload));
         }
         editor.apply();
-    }
-
-    public byte[] encodeSetAmbientSoundControl() {
-        Prefs prefs = getDevicePrefs();
-        byte mode = (byte) Integer.parseInt(prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, "0"));
-        return new Message(MessageType.PHONE_REQUEST, Opcode.ANC, sequenceNumber++, new byte[]{0x02, 0x04, mode}).encode();
     }
 
     private GBDeviceEventBatteryInfo parseBatteryInfo(byte batteryInfo, int index) {
@@ -406,14 +342,14 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
             byte len = deviceRunInfoPayload[i];
             byte index = deviceRunInfoPayload[i + 1];
             SharedPreferences preferences = getDevicePrefs().getPreferences();
-            SharedPreferences.Editor editor = preferences.edit();
+            Editor editor = preferences.edit();
             switch (index) {
                 case 0x09:
                     byte mode = deviceRunInfoPayload[i + 2];
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
+                    editor.putString(PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
                     break;
                 case 0x0A:
-                    editor.putBoolean(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION, deviceRunInfoPayload[i + 2] == 0x00);
+                    editor.putBoolean(PREF_REDMI_BUDS_5_PRO_WEARING_DETECTION, deviceRunInfoPayload[i + 2] == 0x00);
             }
             editor.apply();
             i += len + 1;
@@ -436,10 +372,10 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                     break;
                 case 0x04:
                     SharedPreferences preferences = getDevicePrefs().getPreferences();
-                    SharedPreferences.Editor editor = preferences.edit();
+                    Editor editor = preferences.edit();
 
                     byte mode = updatePayload[i + 2];
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
+                    editor.putString(PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(mode));
                     editor.apply();
                     break;
                 default:
@@ -471,16 +407,16 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                     break;
                 case 0x0B:
                     SharedPreferences preferences = getDevicePrefs().getPreferences();
-                    SharedPreferences.Editor editor = preferences.edit();
+                    Editor editor = preferences.edit();
 
                     byte soundCtrlMode = notifyPayload[i + 3];
-                    editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(soundCtrlMode));
+                    editor.putString(PREF_REDMI_BUDS_5_PRO_AMBIENT_SOUND_CONTROL, Integer.toString(soundCtrlMode));
 
                     byte mode = notifyPayload[i + 4];
                     if (notifyPayload[i + 3] == 0x01) {
-                        editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, Integer.toString(mode));
+                        editor.putString(PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH, Integer.toString(mode));
                     } else {
-                        editor.putString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
+                        editor.putString(PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH, Integer.toString(mode));
                     }
 
                     editor.apply();
@@ -493,86 +429,103 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
         return events.toArray(new GBDeviceEvent[0]);
     }
 
-
-    @Override
-    public GBDeviceEvent[] decodeResponse(byte[] responseData) {
-
-        LOG.debug("Incoming message: " + hexdump(responseData));
-
+    private GBDeviceEvent[] handleAuthentication(Message authMessage) {
         List<GBDeviceEvent> events = new ArrayList<>();
+        switch (authMessage.getOpcode()) {
+            case AUTH_CHALLENGE:
+                if (authMessage.getType() == MessageType.RESPONSE) {
+                    LOG.debug("[AUTH] Received Challenge Response");
+                    /*
+                        TODO Should check if equal, but does not really matter
+                     */
+                    LOG.debug("[AUTH] Sending authentication confirmation");
+                    events.add(new GBDeviceEventSendBytes(new Message(MessageType.PHONE_REQUEST, Opcode.AUTH_CONFIRM, sequenceNumber++, new byte[]{0x01, 0x00}).encode()));
+                } else {
+                    byte[] responsePayload = authMessage.getPayload();
+                    byte[] challenge = new byte[16];
+                    System.arraycopy(responsePayload, 1, challenge, 0, 16);
 
-        List<Message> messages = Message.splitPiggybackedMessages(responseData);
+                    LOG.info("[AUTH] Received Challenge: {}", hexdump(challenge));
+                    byte[] challengeResponse = Authentication.computeChallengeResponse(challenge);
+                    LOG.info("[AUTH] Sending Challenge Response: {}", hexdump(challengeResponse));
 
-        for (Message response : messages) {
-
-            LOG.debug("Parsed message: " + response);
-
-
-            if (response.getType() == MessageType.RESPONSE && response.getOpcode() == Opcode.AUTH_CHALLENGE) {
-                LOG.debug("[AUTH] Received Challenge Response");
-            /*
-                TODO Should check if equal, but does not really matter
-             */
-                LOG.debug("[AUTH] Sending authentication confirmation");
-                events.add(new GBDeviceEventSendBytes(new Message(MessageType.PHONE_REQUEST, Opcode.AUTH_CONFIRM, sequenceNumber++, new byte[]{0x01, 0x00}).encode()));
-            } else if (response.getType() == MessageType.RESPONSE && response.getOpcode() == Opcode.AUTH_CONFIRM) {
-                LOG.debug("[AUTH] Confirmed first authentication step");
-
-            } else if (response.getType() == MessageType.EARBUDS_REQUEST && response.getOpcode() == Opcode.AUTH_CHALLENGE) {
-                byte[] responsePayload = response.getPayload();
-                byte[] challenge = new byte[16];
-                System.arraycopy(responsePayload, 1, challenge, 0, 16);
-
-                LOG.info("[AUTH] Received Challenge: {}", hexdump(challenge));
-                byte[] challengeResponse = Authentication.computeChallengeResponse(challenge);
-                LOG.info("[AUTH] Sending Challenge Response: {}", hexdump(challengeResponse));
-
-                byte[] payload = new byte[17];
-                payload[0] = 0x01;
-                System.arraycopy(challengeResponse, 0, payload, 1, 16);
-                Message res = new Message(MessageType.RESPONSE, Opcode.AUTH_CHALLENGE, response.getSequenceNumber(), payload);
-                events.add(new GBDeviceEventSendBytes(res.encode()));
-
-            } else if (response.getType() == MessageType.EARBUDS_REQUEST && response.getOpcode() == Opcode.AUTH_CONFIRM) {
-                LOG.debug("[AUTH] Received authentication confirmation");
-                Message res = new Message(MessageType.RESPONSE, Opcode.AUTH_CONFIRM, response.getSequenceNumber(), new byte[]{0x01});
-                LOG.debug("[AUTH] Sending final authentication confirmation");
-                events.add(new GBDeviceEventSendBytes(res.encode()));
-
-                LOG.debug("[INIT] Sending device info request");
-                Message info = new Message(MessageType.PHONE_REQUEST, Opcode.GET_DEVICE_INFO, sequenceNumber++, new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff});
-                events.add(new GBDeviceEventSendBytes(info.encode()));
-
-                LOG.debug("[INIT] Sending device run info request");
-                Message runInfo = new Message(MessageType.PHONE_REQUEST, Opcode.GET_DEVICE_RUN_INFO, sequenceNumber++, new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff});
-                events.add(new GBDeviceEventSendBytes(runInfo.encode()));
-
-                LOG.debug("[INIT] Sending configuration request");
-                events.add(new GBDeviceEventSendBytes(encodeGetConfig()));
-            } else if (response.getType() == MessageType.RESPONSE && response.getOpcode() == Opcode.GET_DEVICE_INFO) {
-                LOG.debug("[INIT] Received device info");
-                if (getDevice().getState() != GBDevice.State.INITIALIZED) {
-                    events.addAll(Arrays.asList(decodeDeviceInfo(response.getPayload())));
-                    LOG.debug("[INIT] Device Initialized");
-                    events.add(new GBDeviceEventUpdateDeviceState(GBDevice.State.INITIALIZED));
+                    byte[] payload = new byte[17];
+                    payload[0] = 0x01;
+                    System.arraycopy(challengeResponse, 0, payload, 1, 16);
+                    Message res = new Message(MessageType.RESPONSE, Opcode.AUTH_CHALLENGE, authMessage.getSequenceNumber(), payload);
+                    events.add(new GBDeviceEventSendBytes(res.encode()));
                 }
-            } else if (response.getType() == MessageType.RESPONSE && response.getOpcode() == Opcode.GET_DEVICE_RUN_INFO) {
-                LOG.debug("[INIT] Received device run info");
-                decodeDeviceRunInfo(response.getPayload());
-            } else if (response.getOpcode() == Opcode.REPORT_STATUS) {
-                events.addAll(Arrays.asList(decodeDeviceUpdate(response)));
-            } else if (response.getOpcode() == Opcode.GET_CONFIG) {
+                break;
+            case AUTH_CONFIRM:
+                if (authMessage.getType() == MessageType.RESPONSE) {
+                    LOG.debug("[AUTH] Confirmed first authentication step");
+                } else {
+                    LOG.debug("[AUTH] Received authentication confirmation");
+                    Message res = new Message(MessageType.RESPONSE, Opcode.AUTH_CONFIRM, authMessage.getSequenceNumber(), new byte[]{0x01});
+                    LOG.debug("[AUTH] Sending final authentication confirmation");
+                    events.add(new GBDeviceEventSendBytes(res.encode()));
 
-                decodeGetConfig(response.getPayload());
+                    LOG.debug("[INIT] Sending device info request");
+                    Message info = new Message(MessageType.PHONE_REQUEST, Opcode.GET_DEVICE_INFO, sequenceNumber++, new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff});
+                    events.add(new GBDeviceEventSendBytes(info.encode()));
 
-            } else if (response.getOpcode() == Opcode.NOTIFY_CONFIG) {
-                events.addAll(Arrays.asList(decodeNotifyConfig(response)));
-            } else {
-                LOG.debug("[ERROR] Unhandled message: {}", response);
-            }
+                    LOG.debug("[INIT] Sending device run info request");
+                    Message runInfo = new Message(MessageType.PHONE_REQUEST, Opcode.GET_DEVICE_RUN_INFO, sequenceNumber++, new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff});
+                    events.add(new GBDeviceEventSendBytes(runInfo.encode()));
+
+                    LOG.debug("[INIT] Sending configuration request");
+                    events.add(new GBDeviceEventSendBytes(encodeGetConfig()));
+                }
+                break;
         }
         return events.toArray(new GBDeviceEvent[0]);
     }
 
+    @Override
+    public GBDeviceEvent[] decodeResponse(byte[] responseData) {
+
+        LOG.debug("Incoming message: {}", hexdump(responseData));
+
+        List<GBDeviceEvent> events = new ArrayList<>();
+
+        List<Message> incomingMessages = Message.splitPiggybackedMessages(responseData);
+
+        for (Message message : incomingMessages) {
+
+            LOG.debug("Parsed message: {}", message);
+
+            switch (message.getOpcode()) {
+                case AUTH_CHALLENGE:
+                case AUTH_CONFIRM:
+                    events.addAll(Arrays.asList(handleAuthentication(message)));
+                    break;
+                case GET_DEVICE_INFO:
+                    LOG.debug("[INIT] Received device info");
+                    if (getDevice().getState() != State.INITIALIZED) {
+                        events.addAll(Arrays.asList(decodeDeviceInfo(message.getPayload())));
+                        LOG.debug("[INIT] Device Initialized");
+                        events.add(new GBDeviceEventUpdateDeviceState(State.INITIALIZED));
+                    }
+                    break;
+                case GET_DEVICE_RUN_INFO:
+                    LOG.debug("[INIT] Received device run info");
+                    decodeDeviceRunInfo(message.getPayload());
+                    break;
+                case REPORT_STATUS:
+                    events.addAll(Arrays.asList(decodeDeviceUpdate(message)));
+                    break;
+                case GET_CONFIG:
+                    decodeGetConfig(message.getPayload());
+                    break;
+                case NOTIFY_CONFIG:
+                    events.addAll(Arrays.asList(decodeNotifyConfig(message)));
+                    break;
+                default:
+                    LOG.debug("[ERROR] Unhandled message: {}", message);
+                    break;
+            }
+        }
+        return events.toArray(new GBDeviceEvent[0]);
+    }
 
 }
