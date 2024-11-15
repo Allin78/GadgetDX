@@ -8,6 +8,7 @@
 * Huawei: Display high-resolution heart rate
 * Huawei: Improve activity parsing
 * Huawei: Sync skin temperature
+* Bangle.js: Support sending activity type from Bangle
 
 #### 0.82.1
 * Huawei: Improve activity parsing

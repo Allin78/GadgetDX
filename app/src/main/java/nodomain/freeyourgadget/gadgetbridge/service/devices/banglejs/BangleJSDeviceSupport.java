@@ -126,6 +126,7 @@ import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationProvide
 import nodomain.freeyourgadget.gadgetbridge.externalevents.gps.GBLocationService;
 import nodomain.freeyourgadget.gadgetbridge.externalevents.sleepasandroid.SleepAsAndroidAction;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
+import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
 import nodomain.freeyourgadget.gadgetbridge.model.BatteryState;
@@ -821,25 +822,32 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         int steps = json.optInt("stp", 0);
         int intensity = json.optInt("mov", ActivitySample.NOT_MEASURED);
         boolean realtime = json.optInt("rt", 0) == 1;
-        int activity = BangleJSSampleProvider.TYPE_ACTIVITY;
-        /*if (json.has("act")) {
-            String actName = "TYPE_" + json.getString("act").toUpperCase();
-            try {
-                Field f = ActivityKind.class.getField(actName);
-                try {
-                    activity = f.getInt(null);
-                } catch (IllegalAccessException e) {
-                    LOG.info("JSON activity '"+actName+"' not readable");
+        ActivityKind activity = ActivityKind.ACTIVITY;
+        if (json.has("act")) {
+            String actName = json.optString("act","").toUpperCase();
+            switch (actName) {
+                case "ACTIVITY": break; // already set
+                case "UNKNOWN": activity=ActivityKind.UNKNOWN; break;
+                case "NOT_WORN": activity=ActivityKind.NOT_WORN; break;
+                case "DEEP_SLEEP": activity=ActivityKind.DEEP_SLEEP; break;
+                case "LIGHT_SLEEP": activity=ActivityKind.LIGHT_SLEEP; break;
+                case "REM_SLEEP": activity=ActivityKind.REM_SLEEP; break;
+                case "RUNNING": activity=ActivityKind.RUNNING; break;
+                case "WALKING": activity=ActivityKind.WALKING; break;
+                case "SWIMMING": activity=ActivityKind.SWIMMING; break;
+                case "CYCLING": activity=ActivityKind.CYCLING; break;
+                case "EXERCISE": activity=ActivityKind.EXERCISE; break;
+                default: {
+                    LOG.warn("JSON activity 'act:" + actName + "' not known");
+                    activity = ActivityKind.UNKNOWN;
                 }
-            } catch (NoSuchFieldException e) {
-                LOG.info("JSON activity '"+actName+"' not found");
             }
-        }*/
+        }
         if(hrm>0) {
             sleepAsAndroidSender.onHrChanged(hrm, 0);
         }
         sample.setTimestamp(timestamp);
-        sample.setRawKind(activity);
+        sample.setRawKind(activity.getCode());
         sample.setHeartRate(hrm);
         sample.setSteps(steps);
         sample.setRawIntensity(intensity);
