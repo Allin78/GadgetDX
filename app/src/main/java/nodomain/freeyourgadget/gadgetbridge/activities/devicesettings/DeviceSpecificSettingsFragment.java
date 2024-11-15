@@ -636,6 +636,9 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_SONYSWR12_LOW_VIBRATION);
         addPreferenceHandlerFor(PREF_SONYSWR12_SMART_INTERVAL);
 
+        addPreferenceHandlerFor(PREF_FREEBUDS5I_INEAR);
+        addPreferenceHandlerFor(PREF_FREEBUDS5I_AUDIOMODE);
+
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_INEAR);
         addPreferenceHandlerFor(PREF_NOTHING_EAR1_AUDIOMODE);
 

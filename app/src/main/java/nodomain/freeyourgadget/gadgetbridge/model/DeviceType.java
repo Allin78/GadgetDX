@@ -51,6 +51,7 @@ import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.FitProDeviceCoordinat
 import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.colacao.ColaCao21Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.fitpro.colacao.ColaCao23Coordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.flipper.zero.FlipperZeroCoordinator;
+import nodomain.freeyourgadget.gadgetbridge.devices.freebuds.Freebuds5iDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBuds2DeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBuds2ProDeviceCoordinator;
 import nodomain.freeyourgadget.gadgetbridge.devices.galaxy_buds.GalaxyBudsDeviceCoordinator;
@@ -483,6 +484,7 @@ public enum DeviceType {
     NOTHING_CMF_BUDS_PRO_2(CmfBudsPro2Coordinator.class),
     NOTHING_CMF_WATCH_PRO(CmfWatchProCoordinator.class),
     NOTHING_CMF_WATCH_PRO_2(CmfWatchPro2Coordinator.class),
+    FREEBUDS5I(Freebuds5iDeviceCoordinator.class),
     GALAXY_BUDS_PRO(GalaxyBudsProDeviceCoordinator.class),
     GALAXY_BUDS_LIVE(GalaxyBudsLiveDeviceCoordinator.class),
     GALAXY_BUDS(GalaxyBudsDeviceCoordinator.class),

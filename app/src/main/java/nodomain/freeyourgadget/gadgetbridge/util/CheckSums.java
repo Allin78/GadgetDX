@@ -55,6 +55,10 @@ public class CheckSums {
         return (crc & 0xff);
     }
 
+    public static int getCRC16xmodem(byte[] seq) {
+        return getCRC16(seq, 0x0000);
+    }
+
     //thanks http://stackoverflow.com/questions/13209364/convert-c-crc16-to-java-crc16
     public static int getCRC16(byte[] seq) {
         return getCRC16(seq, 0xFFFF);

@@ -3223,6 +3223,18 @@
         <item>off</item>
     </string-array>
 
+    <string-array name="freebuds5i_audio_mode_names">
+        <item>@string/prefs_active_noise_cancelling</item>
+        <item>@string/prefs_active_noise_cancelling_transparency</item>
+        <item>@string/off</item>
+    </string-array>
+
+    <string-array name="freebuds5i_audio_mode_values">
+        <item>anc</item>
+        <item>transparency</item>
+        <item>off</item>
+    </string-array>
+
     <string-array name="notification_list_is_blacklist_names">
         <item>@string/pref_title_notification_use_as_deny</item>
         <item>@string/pref_title_notification_use_as_allow</item>
