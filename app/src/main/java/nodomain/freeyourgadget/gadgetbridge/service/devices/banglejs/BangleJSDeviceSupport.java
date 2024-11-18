@@ -824,23 +824,12 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
         boolean realtime = json.optInt("rt", 0) == 1;
         ActivityKind activity = ActivityKind.ACTIVITY;
         if (json.has("act")) {
-            String actName = json.optString("act","").toUpperCase();
-            switch (actName) {
-                case "ACTIVITY": break; // already set
-                case "UNKNOWN": activity=ActivityKind.UNKNOWN; break;
-                case "NOT_WORN": activity=ActivityKind.NOT_WORN; break;
-                case "DEEP_SLEEP": activity=ActivityKind.DEEP_SLEEP; break;
-                case "LIGHT_SLEEP": activity=ActivityKind.LIGHT_SLEEP; break;
-                case "REM_SLEEP": activity=ActivityKind.REM_SLEEP; break;
-                case "RUNNING": activity=ActivityKind.RUNNING; break;
-                case "WALKING": activity=ActivityKind.WALKING; break;
-                case "SWIMMING": activity=ActivityKind.SWIMMING; break;
-                case "CYCLING": activity=ActivityKind.CYCLING; break;
-                case "EXERCISE": activity=ActivityKind.EXERCISE; break;
-                default: {
-                    LOG.warn("JSON activity 'act:" + actName + "' not known");
-                    activity = ActivityKind.UNKNOWN;
-                }
+            try {
+                String actName = json.optString("act","").toUpperCase();
+                activity = ActivityKind.valueOf(actName);
+            } catch (final Exception e) {
+                LOG.warn("JSON activity not known", e);
+                activity = ActivityKind.UNKNOWN;
             }
         }
         if(hrm>0) {
