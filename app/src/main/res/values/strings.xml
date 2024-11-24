@@ -2719,8 +2719,8 @@
     <string name="pref_adaptive_volume_control_title">Adaptive volume control</string>
     <string name="pref_adaptive_noise_cancelling_title">Adaptive ANC</string>
     <string name="pref_adaptive_noise_cancelling_summary">Set the strength of the ANC automatically depending on the ambient sound level</string>
-    <string name="pref_personalized_noise_cancelling_title">Personalized ANC</string>
-    <string name="pref_personalized_noise_cancelling_summary">Set whether to use personalized active noise cancelling</string>
+<!--    <string name="pref_personalized_noise_cancelling_title">Personalized ANC</string>-->
+<!--    <string name="pref_personalized_noise_cancelling_summary">Set whether to use personalized active noise cancelling</string>-->
     <string name="sony_speak_to_chat">Speak-to-chat</string>
     <string name="sony_speak_to_chat_summary">Turn off noise cancelling automatically when you start talking.</string>
     <string name="sony_speak_to_chat_sensitivity">Voice Detection Sensitivity</string>
