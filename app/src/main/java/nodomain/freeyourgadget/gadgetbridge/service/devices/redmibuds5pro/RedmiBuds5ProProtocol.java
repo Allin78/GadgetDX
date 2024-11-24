@@ -67,8 +67,8 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 return encodeSetEffectStrength(config, StrengthTarget.TRANSPARENCY);
             case PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING:
                 return encodeSetBooleanConfig(config, Config.ADAPTIVE_ANC);
-            case PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING:
-                return encodeSetBooleanConfig(config, Config.CUSTOMIZED_ANC);
+//            case PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING:
+//                return encodeSetBooleanConfig(config, Config.CUSTOMIZED_ANC);
 
             case PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT:
                 return encodeSetGesture(config, InteractionType.SINGLE, Position.LEFT);
@@ -152,7 +152,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
     public byte[] encodeSetLongGestureMode(String config, Position position) {
         Prefs prefs = getDevicePrefs();
         byte value = (byte) Integer.parseInt(prefs.getString(config, "7"));
-        byte[] payload = new byte[] {0x04, 0x00, 0x0a, (byte) 0xFF, (byte) 0xFF};
+        byte[] payload = new byte[]{0x04, 0x00, 0x0a, (byte) 0xFF, (byte) 0xFF};
         if (position == Position.LEFT) {
             payload[3] = value;
         } else {
@@ -164,7 +164,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
     public byte[] encodeSetGesture(String config, InteractionType interactionType, Position position) {
         Prefs prefs = getDevicePrefs();
         byte value = (byte) Integer.parseInt(prefs.getString(config, "1"));
-        byte[] payload = new byte[] {0x05, 0x00, 0x02, interactionType.value, (byte) 0xFF, (byte) 0xFF};
+        byte[] payload = new byte[]{0x05, 0x00, 0x02, interactionType.value, (byte) 0xFF, (byte) 0xFF};
         if (position == Position.LEFT) {
             payload[4] = value;
         } else {
@@ -192,9 +192,9 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
     }
 
     public byte[] encodeGetConfig() {
-        List<Config> configs = List.of(Config.EFFECT_STRENGTH, Config.ADAPTIVE_ANC, Config.CUSTOMIZED_ANC, Config.GESTURES,
-                Config.LONG_GESTURES, Config.EAR_DETECTION, Config.DOUBLE_CONNECTION, Config.AUTO_ANSWER,
-                Config.ADAPTIVE_SOUND, Config.EQ_PRESET, Config.EQ_CURVE);
+        List<Config> configs = List.of(Config.EFFECT_STRENGTH, Config.ADAPTIVE_ANC, // Config.CUSTOMIZED_ANC,
+                Config.GESTURES, Config.LONG_GESTURES, Config.EAR_DETECTION, Config.DOUBLE_CONNECTION,
+                Config.AUTO_ANSWER, Config.ADAPTIVE_SOUND, Config.EQ_PRESET, Config.EQ_CURVE);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -272,9 +272,9 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k, Integer.toString(configPayload[36] & 0xFF));
                 editor.putString(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k, Integer.toString(configPayload[39] & 0xFF));
                 break;
-            case CUSTOMIZED_ANC:
-                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, configPayload[3] == 0x01);
-                break;
+//            case CUSTOMIZED_ANC:
+//                editor.putBoolean(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING, configPayload[3] == 0x01);
+//                break;
             default:
                 LOG.debug("Unhandled device update: {}", hexdump(configPayload));
         }
@@ -522,7 +522,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                     events.addAll(Arrays.asList(decodeNotifyConfig(message)));
                     break;
                 default:
-                    LOG.debug("[ERROR] Unhandled message: {}", message);
+                    LOG.debug("Unhandled message: {}", message);
                     break;
             }
         }

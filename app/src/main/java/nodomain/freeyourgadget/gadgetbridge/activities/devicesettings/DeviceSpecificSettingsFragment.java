@@ -680,7 +680,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING);
-        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING);
+//        addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_LEFT);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_SINGLE_TAP_RIGHT);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_CONTROL_DOUBLE_TAP_LEFT);
@@ -708,6 +708,7 @@ public class DeviceSpecificSettingsFragment extends AbstractPreferenceFragment i
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k);
         addPreferenceHandlerFor(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k);
+
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL);
         addPreferenceHandlerFor(PREF_SONY_AMBIENT_SOUND_CONTROL_BUTTON_MODE);
         addPreferenceHandlerFor(PREF_SONY_FOCUS_VOICE);

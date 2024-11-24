@@ -2,6 +2,8 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro.proto
 
 import static nodomain.freeyourgadget.gadgetbridge.util.GB.hexdump;
 
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -10,8 +12,8 @@ import java.util.List;
 
 public class Message {
 
-    public static final byte[] MESSAGE_HEADER = {(byte) 0xfe, (byte) 0xdc, (byte) 0xba};
-    public static final byte MESSAGE_TRAILER = (byte) 0xef;
+    private static final byte[] MESSAGE_HEADER = {(byte) 0xfe, (byte) 0xdc, (byte) 0xba};
+    private static final byte MESSAGE_TRAILER = (byte) 0xef;
 
     private static final int MESSAGE_OFFSET = MESSAGE_HEADER.length;
 
@@ -27,11 +29,43 @@ public class Message {
         this.payload = payload;
     }
 
+    public static Message fromBytes(byte[] message) {
+        MessageType type = MessageType.fromCode(message[MESSAGE_OFFSET]);
+        Opcode opcode = Opcode.fromCode(message[MESSAGE_OFFSET + 1]);
+
+        int payloadOffset = MESSAGE_OFFSET + ((!type.isRequest()) ? 6 : 5);
+        byte sequenceNumber = message[payloadOffset - 1];
+
+        int actualPayloadLength = message.length - payloadOffset - 1;
+        byte[] payload = new byte[actualPayloadLength];
+        System.arraycopy(message, payloadOffset, payload, 0, actualPayloadLength);
+        return new Message(type, opcode, sequenceNumber, payload);
+    }
+
+    public static List<Message> splitPiggybackedMessages(byte[] input) {
+        List<Message> messages = new ArrayList<>();
+
+        List<Integer> startHeader = new ArrayList<>();
+        for (int i = 0; i < input.length - 3; i++) {
+            if (input[i] == MESSAGE_HEADER[0] && input[i + 1] == MESSAGE_HEADER[1] && input[i + 2] == MESSAGE_HEADER[2]) {
+                startHeader.add(i);
+            }
+        }
+
+        for (int i = 0; i < startHeader.size(); i++) {
+            if (i == startHeader.size() - 1) {
+                messages.add(fromBytes(Arrays.copyOfRange(input, startHeader.get(i), input.length)));
+            } else {
+                messages.add(fromBytes(Arrays.copyOfRange(input, startHeader.get(i), startHeader.get(i + 1))));
+            }
+        }
+        return messages;
+    }
+
     public byte[] encode() {
 
         int size = (!type.isRequest()) ? 2 : 1;
         final ByteBuffer buf = ByteBuffer.allocate(payload.length + 8 + size);
-
         int payloadLength = payload.length + size;
 
         buf.order(ByteOrder.BIG_ENDIAN);
@@ -51,48 +85,10 @@ public class Message {
         return buf.array();
     }
 
-    public static Message fromBytes(byte[] message) {
-        MessageType type = MessageType.fromCode(message[MESSAGE_OFFSET]);
-        Opcode opcode = Opcode.fromCode(message[MESSAGE_OFFSET + 1]);
-        short payloadLength = (short) (message[MESSAGE_OFFSET + 2] << 8 | message[MESSAGE_OFFSET + 3]);
-
-        int payloadOffset = MESSAGE_OFFSET + ((!type.isRequest()) ? 6 : 5);
-        byte sequenceNumber = message[payloadOffset - 1];
-
-        int actualPayloadLength = message.length - payloadOffset - 1;
-        byte[] payload = new byte[actualPayloadLength];
-        System.arraycopy(message, payloadOffset, payload, 0, actualPayloadLength);
-        return new Message(type, opcode, sequenceNumber, payload);
-    }
-
-    public static List<Message> splitPiggybackedMessages(byte[] input) {
-        List<Message> messages = new ArrayList<>();
-
-        List<Integer> startHeader = new ArrayList<>();
-        for (int i = 0; i < input.length - 3; i++) {
-            if (input[i] == MESSAGE_HEADER[0] && input[i+1] == MESSAGE_HEADER[1] && input[i+2] == MESSAGE_HEADER[2]) {
-                startHeader.add(i);
-            }
-        }
-
-        for (int i = 0; i < startHeader.size(); i++) {
-            if (i == startHeader.size() - 1) {
-                messages.add(fromBytes(Arrays.copyOfRange(input, startHeader.get(i), input.length)));
-            } else {
-                messages.add(fromBytes(Arrays.copyOfRange(input, startHeader.get(i), startHeader.get(i + 1))));
-            }
-        }
-        return messages;
-    }
-
+    @NonNull
     @Override
     public String toString() {
-        return "Message{" +
-                "type=" + type +
-                ", opcode=" + opcode +
-                ", sequenceNumber=" + sequenceNumber +
-                ", payload=" + hexdump(payload) +
-                '}';
+        return "Message{" + "type=" + type + ", opcode=" + opcode + ", sequenceNumber=" + sequenceNumber + ", payload=" + hexdump(payload) + '}';
     }
 
     public MessageType getType() {

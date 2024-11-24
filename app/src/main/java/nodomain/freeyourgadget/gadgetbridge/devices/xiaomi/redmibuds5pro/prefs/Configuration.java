@@ -44,8 +44,4 @@ public class Configuration {
         }
     }
 
-    public enum ConfigType {
-        INTEGER,
-        BOOLEAN
-    }
 }

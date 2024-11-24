@@ -32,7 +32,7 @@ public class RedmiBuds5ProIOThread extends BtClassicIoThread {
     protected byte[] parseIncoming(InputStream stream) throws IOException {
         byte[] buffer = new byte[1048576];
         int bytes = stream.read(buffer);
-        LOG.debug("read " + bytes + " bytes. " + hexdump(buffer, 0, bytes));
+        LOG.debug("read {} bytes. {}", bytes, hexdump(buffer, 0, bytes));
         return Arrays.copyOf(buffer, bytes);
     }
 

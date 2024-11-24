@@ -1,16 +1,5 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.xiaomi.redmibuds5pro;
 
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62;
-import static nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k;
-
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
@@ -46,7 +35,7 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
             final Preference ancLevel = handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_NOISE_CANCELLING_STRENGTH);
             final Preference transparencyLevel = handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_TRANSPARENCY_STRENGTH);
             final Preference adaptiveAnc = handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_ADAPTIVE_NOISE_CANCELLING);
-            final Preference customizedAnc = handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING);
+//            final Preference customizedAnc = handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_PERSONALIZED_NOISE_CANCELLING);
             if (ancLevel != null) {
                 ancLevel.setVisible(mode.equals("1"));
             }
@@ -56,9 +45,9 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
             if (adaptiveAnc != null) {
                 adaptiveAnc.setVisible(mode.equals("1"));
             }
-            if (customizedAnc != null) {
-                customizedAnc.setVisible(mode.equals("1"));
-            }
+//            if (customizedAnc != null) {
+//                customizedAnc.setVisible(mode.equals("1"));
+//            }
         }
     }
 
@@ -74,29 +63,23 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
         final ListPreference equalizerPreset = handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET);
 
         if (longPressLeft != null) {
-            final Preference.OnPreferenceChangeListener longPressLeftButtonListener = new Preference.OnPreferenceChangeListener() {
-
-                public boolean onPreferenceChange(Preference preference, Object newVal) {
-                    String mode = newVal.toString();
-                    if (longPressLeftSettings != null) {
-                        longPressLeftSettings.setVisible(mode.equals("6"));
-                    }
-                    return true;
+            final Preference.OnPreferenceChangeListener longPressLeftButtonListener = (preference, newVal) -> {
+                String mode = newVal.toString();
+                if (longPressLeftSettings != null) {
+                    longPressLeftSettings.setVisible(mode.equals("6"));
                 }
+                return true;
             };
             longPressLeftButtonListener.onPreferenceChange(longPressLeft, longPressLeft.getValue());
             handler.addPreferenceHandlerFor(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, longPressLeftButtonListener);
         }
         if (longPressRight != null) {
-            final Preference.OnPreferenceChangeListener longPressRightButtonListener = new Preference.OnPreferenceChangeListener() {
-
-                public boolean onPreferenceChange(Preference preference, Object newVal) {
-                    String mode = newVal.toString();
-                    if (longPressRightSettings != null) {
-                        longPressRightSettings.setVisible(mode.equals("6"));
-                    }
-                    return true;
+            final Preference.OnPreferenceChangeListener longPressRightButtonListener = (preference, newVal) -> {
+                String mode = newVal.toString();
+                if (longPressRightSettings != null) {
+                    longPressRightSettings.setVisible(mode.equals("6"));
                 }
+                return true;
             };
             longPressRightButtonListener.onPreferenceChange(longPressRight, longPressRight.getValue());
             handler.addPreferenceHandlerFor(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, longPressRightButtonListener);
@@ -104,30 +87,28 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
 
         if (equalizerPreset != null) {
 
-            final Preference.OnPreferenceChangeListener equalizerPresetListener = new Preference.OnPreferenceChangeListener() {
+            final Preference.OnPreferenceChangeListener equalizerPresetListener = (preference, newVal) -> {
 
                 final List<Preference> prefsToDisable = Arrays.asList(
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k),
-                        handler.findPreference(PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k)
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_62),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_125),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_250),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_500),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_1k),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_2k),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_4k),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_8k),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_12k),
+                        handler.findPreference(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_BAND_16k)
                 );
 
-                public boolean onPreferenceChange(Preference preference, Object newVal) {
-                    String mode = newVal.toString();
-                    for (Preference pref : prefsToDisable) {
-                        if (pref != null) {
-                            pref.setEnabled(mode.equals("10"));
-                        }
+                String mode = newVal.toString();
+                for (Preference pref : prefsToDisable) {
+                    if (pref != null) {
+                        pref.setEnabled(mode.equals("10"));
                     }
-                    return true;
                 }
+                return true;
             };
             equalizerPresetListener.onPreferenceChange(equalizerPreset, equalizerPreset.getValue());
             handler.addPreferenceHandlerFor(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, equalizerPresetListener);
