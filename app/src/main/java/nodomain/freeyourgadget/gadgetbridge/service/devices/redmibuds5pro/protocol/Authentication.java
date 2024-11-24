@@ -1,120 +1,165 @@
 package nodomain.freeyourgadget.gadgetbridge.service.devices.redmibuds5pro.protocol;
-
+import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+    Authentication based on the custom Bluetooth version of the SAFER+ encryption algorithm with:
+    - 128 bit key size
+    - 8 rounds
+ */
 public class Authentication {
 
-    private static byte[] step1(byte[] in) {
+    private final static int PATTERN = 0x9999;
+    private final static int BLOCK_SIZE = 16;
 
-        byte[] out = new byte[0x110];
-        in[0xf] ^= 6;
-        System.arraycopy(in, 0, out, 0, in.length);
+    byte[][] biasMatrix;
+    byte[] expTab;
+    byte[] logTab;
 
-        List<Byte> input = new ArrayList<>();
-        for (byte b : in) {
-            input.add(b);
-        }
-        byte xor = input.stream().reduce((byte) 0x0, (cum, e) -> (byte) (cum ^ e));
-        input.add(xor);
-
-        for (int i = 0; i < 16; i++) {
-            for (int j = 0; j < 17; j++) {
-                byte rot = (byte) (((input.get(j) & 0xff) >>> 5) | ((input.get(j) & 0xff) << (8 - 5)));
-                input.set(j, rot);
-            }
-            int inIdx = i + 1;
-            for (int k = 0; k < 16; k++) {
-                byte res = (byte) (AuthData.MAP_1[(i + 1) * 16 - k] + input.get(inIdx));
-                out[(i + 1) * 16 + k] = res;
-                inIdx += 1;
-
-                if (inIdx > 16) {
-                    inIdx = 0;
-                }
-            }
-        }
-        return out;
+    public Authentication() {
+        generateBiasMatrix();
+        generateExpTab();
+        generateLogTab();
     }
 
-    private static byte[] step2(byte[] out, byte[] in) {
-        byte[] outCopy = out.clone();
-        int inOffset = 0;
-        for (int i = 0; i < 8; i++) {
-            if (i == 2) {
-                for (int j = 0; j < 16; j++) {
-                    byte res;
-                    if ((1 << j & 0x9999) != 0) {
-                        res = (byte) (out[j] ^ outCopy[j]);
-                    } else {
-                        res = (byte) (out[j] + outCopy[j]);
-                    }
-                    out[j] = res;
-                }
-            }
-            for (int j = 0; j < 16; j++) {
-                byte res;
-                if ((1 << j & 0x9999) != 0) {
-                    res = (byte) (out[j] ^ in[inOffset + j]);
-                } else {
-                    res = (byte) (out[j] + in[inOffset + j]);
-                }
-                out[j] = res;
-            }
-            for (int j = 0; j < 16; j++) {
-                byte res;
-                if ((1 << j & 0x9999) != 0) {
-                    res = AuthData.MAP_2[out[j] & 0xff];
-                } else {
-                    res = AuthData.MAP_3[out[j] & 0xff];
-                }
-                out[j] = res;
-            }
-            for (int j = 0; j < 16; j++) {
-                byte res;
-                if ((1 << j & 0x9999) != 0) {
-                    res = (byte) (in[inOffset + j + 16] + out[j]);
-                } else {
-                    res = (byte) (in[inOffset + j + 16] ^ out[j]);
-                }
-                out[j] = res;
-            }
+    private void generateBiasMatrix() {
+        biasMatrix = new byte[16][];
 
-            byte[] o = out.clone();
+        for (int i = 0; i < 16; i++) {
+            byte[] biasVec = new byte[16];
             for (int j = 0; j < 16; j++) {
-                byte res = 0x0;
-                for (int v = 0; v < 16; v++) {
-                    res += (byte) (AuthData.COEFFICIENTS[j][v] * o[v]);
-                }
-                out[j] = res;
+                int exponent = (17 * (i + 2) + (j + 1));
+                BigInteger base = BigInteger.valueOf(45);
+                BigInteger modExp = base.pow(base.pow(exponent).mod(BigInteger.valueOf(257)).intValue())
+                        .mod(BigInteger.valueOf(257));
+                byte val = (byte) (modExp.intValue() == 256 ? 0 : modExp.intValue());
+                biasVec[j] = val;
             }
-
-            inOffset += 0x20;
+            biasMatrix[i] = biasVec;
         }
+    }
 
-        for (int j = 0; j < 16; j++) {
-            byte res;
-            if ((1 << j & 0x9999) != 0) {
-                res = (byte) (in[j + 256] ^ out[j]);
+    private void generateExpTab() {
+        expTab = new byte[256];
+
+        for (int i = 0; i < 256; i++) {
+            BigInteger base = BigInteger.valueOf(45);
+            BigInteger exp = base.pow(i).mod(BigInteger.valueOf(257));
+            expTab[i] = (byte) (i == 128 ? 0 : exp.intValue());
+        }
+    }
+
+    private void generateLogTab() {
+        logTab = new byte[256];
+
+        for (int i = 0; i < 256; i++) {
+            if (i == 0) {
+                logTab[i] = (byte) 128;
             } else {
-                res = (byte) (in[j + 256] + out[j]);
+                BigInteger base = BigInteger.valueOf(45);
+                BigInteger modExp = base.pow(i).mod(BigInteger.valueOf(257));
+                if (modExp.intValue() != 256) {
+                    logTab[modExp.intValue()] = (byte) i;
+                }
             }
-            out[j] = res;
         }
-        return out;
+    }
+
+    private byte[][] keySchedule(byte[] keyInit) {
+
+        keyInit[15] ^= 6;
+
+        byte[][] keys = new byte[17][];
+        keys[0] = keyInit;
+
+        List<Byte> register = new ArrayList<>();
+        for (byte b : keyInit) {
+            register.add(b);
+        }
+        byte xor = register.stream().reduce((byte) 0x0, (cSum, e) -> (byte) (cSum ^ e));
+        register.add(xor);
+
+        for (int keyIdx = 1; keyIdx < keys.length; keyIdx++) {
+            byte[] keyI = new byte[16];
+            for (int i = 0; i < 17; i++) {
+                byte rot = (byte) (((register.get(i) & 0xff) >>> 5) | ((register.get(i) & 0xff) << (8 - 5)));
+                register.set(i, rot);
+            }
+            for (int i = 0; i < 16; i++) {
+                keyI[i] = (byte) (register.get((keyIdx + i) % 17) + biasMatrix[keyIdx - 1][i]);
+            }
+            keys[keyIdx] = keyI;
+        }
+
+        return keys;
+    }
+
+    private byte[] encrypt(byte[] plaintext, byte[][] keys) {
+
+        byte[] ciphertext = plaintext.clone();
+        for (int round = 0; round < 8; round++) {
+            if (round == 2) {
+                for (int i = 0; i < BLOCK_SIZE; i++) {
+                    if ((1 << i & PATTERN) != 0) {
+                        ciphertext[i] ^= plaintext[i];
+                    } else {
+                        ciphertext[i] += plaintext[i];
+                    }
+                }
+            }
+            for (int i = 0; i < BLOCK_SIZE; i++) {
+                if ((1 << i & PATTERN) != 0) {
+                    ciphertext[i] ^= keys[round * 2][i];
+                } else {
+                    ciphertext[i] += keys[round * 2][i];
+                }
+            }
+            for (int i = 0; i < BLOCK_SIZE; i++) {
+                if ((1 << i & PATTERN) != 0) {
+                    ciphertext[i] = expTab[ciphertext[i] & 0xff];
+                } else {
+                    ciphertext[i] = logTab[ciphertext[i] & 0xff];
+                }
+            }
+            for (int i = 0; i < BLOCK_SIZE; i++) {
+                if ((1 << i & PATTERN) != 0) {
+                    ciphertext[i] = (byte) (keys[round * 2 + 1][i] + ciphertext[i]);
+                } else {
+                    ciphertext[i] = (byte) (keys[round * 2 + 1][i] ^ ciphertext[i]);
+                }
+            }
+            byte[] ciphertextCopy = ciphertext.clone();
+            for (int i = 0; i < BLOCK_SIZE; i++) {
+                byte cSum = 0;
+                for (int j = 0; j < BLOCK_SIZE; j++) {
+                    cSum += (byte) (AuthData.COEFFICIENTS[i][j] * ciphertextCopy[j]);
+                }
+                ciphertext[i] = cSum;
+            }
+        }
+
+        for (int i = 0; i < BLOCK_SIZE; i++) {
+            if ((1 << i & PATTERN) != 0) {
+                ciphertext[i] = (byte) (keys[16][i] ^ ciphertext[i]);
+            } else {
+                ciphertext[i] = (byte) (keys[16][i] + ciphertext[i]);
+            }
+        }
+        return ciphertext;
     }
 
     public static byte[] getRandomChallenge() {
-        byte[] res = new byte[16];
+        byte[] res = new byte[BLOCK_SIZE];
         SecureRandom rnd = new SecureRandom();
         rnd.nextBytes(res);
         return res;
     }
 
-    public static byte[] computeChallengeResponse(byte[] input) {
-        byte[] res1 = step1(input);
-        return step2(AuthData.SEQ.clone(), res1);
+    public byte[] computeChallengeResponse(byte[] challenge) {
+        byte[][] keys = keySchedule(challenge);
+        return encrypt(AuthData.SEQ, keys);
     }
 
 }

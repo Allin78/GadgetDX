@@ -436,7 +436,7 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                 if (authMessage.getType() == MessageType.RESPONSE) {
                     LOG.debug("[AUTH] Received Challenge Response");
                     /*
-                        TODO Should check if equal, but does not really matter
+                        Should check if equal, but does not really matter
                      */
                     LOG.debug("[AUTH] Sending authentication confirmation");
                     events.add(new GBDeviceEventSendBytes(new Message(MessageType.PHONE_REQUEST, Opcode.AUTH_CONFIRM, sequenceNumber++, new byte[]{0x01, 0x00}).encode()));
@@ -446,7 +446,8 @@ public class RedmiBuds5ProProtocol extends GBDeviceProtocol {
                     System.arraycopy(responsePayload, 1, challenge, 0, 16);
 
                     LOG.info("[AUTH] Received Challenge: {}", hexdump(challenge));
-                    byte[] challengeResponse = Authentication.computeChallengeResponse(challenge);
+                    Authentication auth = new Authentication();
+                    byte[] challengeResponse = auth.computeChallengeResponse(challenge);
                     LOG.info("[AUTH] Sending Challenge Response: {}", hexdump(challengeResponse));
 
                     byte[] payload = new byte[17];
