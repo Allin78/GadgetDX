@@ -86,7 +86,7 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
                 }
                 return true;
             };
-            longPressLeftButtonListener.onPreferenceChange(longPressLeft, longPressLeft.getValue());
+            longPressLeftButtonListener.onPreferenceChange(longPressLeft, prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, "6"));
             handler.addPreferenceHandlerFor(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_LEFT, longPressLeftButtonListener);
         }
         if (longPressRight != null) {
@@ -97,7 +97,7 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
                 }
                 return true;
             };
-            longPressRightButtonListener.onPreferenceChange(longPressRight, longPressRight.getValue());
+            longPressRightButtonListener.onPreferenceChange(longPressRight, prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, "6"));
             handler.addPreferenceHandlerFor(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_CONTROL_LONG_TAP_MODE_RIGHT, longPressRightButtonListener);
         }
 
@@ -126,7 +126,7 @@ public class RedmiBuds5ProSettingsCustomizer implements DeviceSpecificSettingsCu
                 }
                 return true;
             };
-            equalizerPresetListener.onPreferenceChange(equalizerPreset, equalizerPreset.getValue());
+            equalizerPresetListener.onPreferenceChange(equalizerPreset, prefs.getString(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, "0"));
             handler.addPreferenceHandlerFor(DeviceSettingsPreferenceConst.PREF_REDMI_BUDS_5_PRO_EQUALIZER_PRESET, equalizerPresetListener);
         }
     }

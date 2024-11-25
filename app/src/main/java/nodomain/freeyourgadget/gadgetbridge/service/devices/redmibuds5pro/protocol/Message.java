@@ -89,8 +89,7 @@ public class Message {
         buf.put(MESSAGE_HEADER);
         buf.put(type.getCode());
         buf.put(opcode.getOpcode());
-        buf.put((byte) (payloadLength >> 8 & 0xff));
-        buf.put((byte) (payloadLength & 0xff));
+        buf.putShort((short) payloadLength);
         if (!type.isRequest()) {
             buf.put((byte) 0x00);
         }

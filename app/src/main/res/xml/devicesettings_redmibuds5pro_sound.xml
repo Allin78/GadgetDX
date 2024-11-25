@@ -12,10 +12,10 @@
             android:title="@string/pref_header_equalizer">
 
             <ListPreference
-                android:defaultValue="off"
                 android:entries="@array/redmi_buds_5_pro_equalizer_presets_names"
                 android:entryValues="@array/redmi_buds_5_pro_equalizer_presets_values"
                 android:icon="@drawable/ic_graphic_eq"
+                android:defaultValue="0"
                 android:key="pref_redmi_buds_5_pro_equalizer_preset"
                 android:summary="%s"
                 android:title="@string/prefs_equalizer_preset" />
@@ -28,6 +28,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_62"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_62" />
@@ -36,6 +37,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_125"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_125" />
@@ -44,6 +46,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_250"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_250" />
@@ -52,6 +55,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_500"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_500" />
@@ -60,6 +64,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_1k"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_1k" />
@@ -68,6 +73,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_2k"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_2k" />
@@ -76,6 +82,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_4k"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_4k" />
@@ -84,6 +91,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_8k"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_8k" />
@@ -92,6 +100,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_12k"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_12k" />
@@ -100,6 +109,7 @@
                     android:entries="@array/redmi_buds_5_pro_equalizer_offsets_names"
                     android:entryValues="@array/redmi_buds_5_pro_equalizer_offsets_values"
                     android:icon="@drawable/ic_graphic_eq"
+                    android:defaultValue="0"
                     android:key="pref_redmi_buds_5_pro_equalizer_band_16k"
                     android:summary="%s"
                     android:title="@string/redmi_buds_5_pro_equalizer_band_16k" />
