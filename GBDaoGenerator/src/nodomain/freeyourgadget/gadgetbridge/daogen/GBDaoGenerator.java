@@ -54,7 +54,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(85, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(89, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -127,6 +127,8 @@ public class GBDaoGenerator {
         addGarminHrvValueSample(schema, user, device);
         addGarminRespiratoryRateSample(schema, user, device);
         addGarminHeartRateRestingSample(schema, user, device);
+        addGarminRestingMetabolicRateSample(schema, user, device);
+        addGarminSleepStatsSample(schema, user, device);
         addPendingFile(schema, user, device);
         addWena3EnergySample(schema, user, device);
         addWena3BehaviorSample(schema, user, device);
@@ -152,6 +154,9 @@ public class GBDaoGenerator {
         addHuaweiWorkoutDataSample(schema, huaweiWorkoutSummary);
         addHuaweiWorkoutPaceSample(schema, huaweiWorkoutSummary);
         addHuaweiWorkoutSwimSegmentsSample(schema, huaweiWorkoutSummary);
+
+        Entity huaweiDictData = addHuaweiDictData(schema, user, device);
+        addHuaweiDictDataValues(schema, huaweiDictData);
 
         addCalendarSyncState(schema, device);
         addAlarms(schema, user, device);
@@ -867,6 +872,22 @@ public class GBDaoGenerator {
         return hrRestingSample;
     }
 
+    private static Entity addGarminRestingMetabolicRateSample(Schema schema, Entity user, Entity device) {
+        Entity sample = addEntity(schema, "GarminRestingMetabolicRateSample");
+        sample.addImport(MAIN_PACKAGE + ".model.RestingMetabolicRateSample");
+        addCommonTimeSampleProperties("RestingMetabolicRateSample", sample, user, device);
+        sample.addIntProperty("restingMetabolicRate").notNull().codeBeforeGetter(OVERRIDE);
+        return sample;
+    }
+
+    private static Entity addGarminSleepStatsSample(Schema schema, Entity user, Entity device) {
+        Entity sample = addEntity(schema, "GarminSleepStatsSample");
+        sample.addImport(MAIN_PACKAGE + ".model.SleepScoreSample");
+        addCommonTimeSampleProperties("SleepScoreSample", sample, user, device);
+        sample.addIntProperty("sleepScore").notNull().codeBeforeGetter(OVERRIDE);
+        return sample;
+    }
+
     private static Entity addPendingFile(Schema schema, Entity user, Entity device) {
         Entity pendingFile = addEntity(schema, "PendingFile");
         pendingFile.setJavaDoc(
@@ -1333,7 +1354,7 @@ public class GBDaoGenerator {
         activitySample.addIntProperty("distance").notNull().codeBeforeGetter(
                 "@Override\n" +
                 "    public int getDistanceCm() {\n" +
-                "        return getDistance() * 100;\n" +
+                "        return getDistance() == HuaweiActivitySample.NOT_MEASURED ? HuaweiActivitySample.NOT_MEASURED : getDistance() * 100;\n" +
                 "    }\n"
         );
         activitySample.addIntProperty("spo").notNull();
@@ -1389,6 +1410,26 @@ public class GBDaoGenerator {
         workoutSummary.addByteArrayProperty("recoveryHeartRates");
 
         workoutSummary.addByteProperty("swimType").notNull();
+
+        workoutSummary.addIntProperty("maxMET").notNull();
+
+        workoutSummary.addByteProperty("hrZoneType").notNull();
+
+        workoutSummary.addShortProperty("runPaceZone1Min").notNull();
+        workoutSummary.addShortProperty("runPaceZone2Min").notNull();
+        workoutSummary.addShortProperty("runPaceZone3Min").notNull();
+        workoutSummary.addShortProperty("runPaceZone4Min").notNull();
+        workoutSummary.addShortProperty("runPaceZone5Min").notNull();
+        workoutSummary.addShortProperty("runPaceZone5Max").notNull();
+
+        workoutSummary.addShortProperty("runPaceZone1Time").notNull();
+        workoutSummary.addShortProperty("runPaceZone2Time").notNull();
+        workoutSummary.addShortProperty("runPaceZone3Time").notNull();
+        workoutSummary.addShortProperty("runPaceZone4Time").notNull();
+        workoutSummary.addShortProperty("runPaceZone5Time").notNull();
+
+        workoutSummary.addByteProperty("algType").notNull();
+        workoutSummary.addIntProperty("trainingPoints").notNull();
 
         return workoutSummary;
     }
@@ -1467,6 +1508,42 @@ public class GBDaoGenerator {
 
         return workoutSwimSegmentsSample;
     }
+
+    private static Entity addHuaweiDictData(Schema schema, Entity user, Entity device) {
+        Entity dictData = addEntity(schema, "HuaweiDictData");
+
+        dictData.setJavaDoc("Contains Huawei Dict Data");
+
+        dictData.addLongProperty("dictId").primaryKey().autoincrement();
+
+        Property deviceId = dictData.addLongProperty("deviceId").notNull().getProperty();
+        dictData.addToOne(device, deviceId);
+        Property userId = dictData.addLongProperty("userId").notNull().getProperty();
+        dictData.addToOne(user, userId);
+
+        dictData.addIntProperty("dictClass").notNull();
+        dictData.addLongProperty("startTimestamp").notNull();
+        dictData.addLongProperty("endTimestamp");
+        dictData.addLongProperty("modifyTimestamp");
+
+        return dictData;
+    }
+
+    private static Entity addHuaweiDictDataValues(Schema schema, Entity summaryEntity) {
+        Entity dictDataValues = addEntity(schema, "HuaweiDictDataValues");
+
+        dictDataValues.setJavaDoc("Contains Huawei Dict data values");
+
+        Property id = dictDataValues.addLongProperty("dictId").primaryKey().notNull().getProperty();
+        dictDataValues.addToOne(summaryEntity, id);
+
+        dictDataValues.addIntProperty("dictType").notNull().primaryKey();
+        dictDataValues.addByteProperty("tag").notNull().primaryKey();
+        dictDataValues.addByteArrayProperty("value");
+
+        return dictDataValues;
+    }
+
 
     private static void addTemperatureProperties(Entity activitySample) {
         activitySample.addFloatProperty(SAMPLE_TEMPERATURE).notNull().codeBeforeGetter(OVERRIDE);

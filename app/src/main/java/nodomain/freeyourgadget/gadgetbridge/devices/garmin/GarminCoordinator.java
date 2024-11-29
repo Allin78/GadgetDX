@@ -45,6 +45,8 @@ import nodomain.freeyourgadget.gadgetbridge.model.BodyEnergySample;
 import nodomain.freeyourgadget.gadgetbridge.model.HrvSummarySample;
 import nodomain.freeyourgadget.gadgetbridge.model.HrvValueSample;
 import nodomain.freeyourgadget.gadgetbridge.model.RespiratoryRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.RestingMetabolicRateSample;
+import nodomain.freeyourgadget.gadgetbridge.model.SleepScoreSample;
 import nodomain.freeyourgadget.gadgetbridge.model.Spo2Sample;
 import nodomain.freeyourgadget.gadgetbridge.model.StressSample;
 import nodomain.freeyourgadget.gadgetbridge.model.Vo2MaxSample;
@@ -154,6 +156,16 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public TimeSampleProvider<? extends RestingMetabolicRateSample> getRestingMetabolicRateProvider(final GBDevice device, final DaoSession session) {
+        return new GarminRestingMetabolicRateSampleProvider(device, session);
+    }
+
+    @Override
+    public TimeSampleProvider<? extends SleepScoreSample> getSleepScoreProvider(final GBDevice device, final DaoSession session) {
+        return new GarminSleepStatsSampleProvider(device, session);
+    }
+
+    @Override
     public GarminHeartRateRestingSampleProvider getHeartRateRestingSampleProvider(final GBDevice device, final DaoSession session) {
         return new GarminHeartRateRestingSampleProvider(device, session);
     }
@@ -245,6 +257,11 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsActiveCalories() {
+        return true;
+    }
+
+    @Override
     public int[] getStressRanges() {
         // 1-25 = relaxed
         // 26-50 = low
@@ -280,6 +297,11 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
 
     @Override
     public boolean supportsAwakeSleep() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsSleepScore() {
         return true;
     }
 

@@ -598,6 +598,14 @@ public class HuaweiPacket {
                         return new MusicControl.Control.Response(paramsProvider).fromPacket(this);
                     case MusicControl.MusicInfoParams.id:
                         return new MusicControl.MusicInfoParams.Response(paramsProvider).fromPacket(this);
+                    case MusicControl.MusicList.id:
+                        return new MusicControl.MusicList.Response(paramsProvider).fromPacket(this);
+                    case MusicControl.MusicPlaylists.id:
+                        return new MusicControl.MusicPlaylists.Response(paramsProvider).fromPacket(this);
+                    case MusicControl.MusicPlaylistMusics.id:
+                        return new MusicControl.MusicPlaylistMusics.Response(paramsProvider).fromPacket(this);
+                    case MusicControl.MusicOperation.id:
+                        return new MusicControl.MusicOperation.Response(paramsProvider).fromPacket(this);
                     case MusicControl.UploadMusicFileInfo.id:
                         return new MusicControl.UploadMusicFileInfo.UploadMusicFileInfoRequest(paramsProvider).fromPacket(this);
                     case MusicControl.ExtendedMusicInfoParams.id:
@@ -831,7 +839,7 @@ public class HuaweiPacket {
 
     public List<byte[]> serializeFileChunk(byte[] fileChunk, int uploadPosition, int unitSize, byte fileId, boolean isEncrypted) throws SerializeException {
         List<byte[]> retv = new ArrayList<>();
-        final int sliceHeaderLength = 6;
+        final int subHeaderLength = 6;
         final int packageHeaderAndFooterLength = 6;
 
         int packetCount = (int) Math.ceil(((double) fileChunk.length) / (double) unitSize);
@@ -844,14 +852,14 @@ public class HuaweiPacket {
 
             int contentSize = Math.min(unitSize, buffer.remaining());
 
-            ByteBuffer payload = ByteBuffer.allocate(contentSize + sliceHeaderLength);
-            payload.put(fileId);                                      // Slice
-            payload.put((byte)i);                                       // Flag
+            ByteBuffer payload = ByteBuffer.allocate(contentSize + subHeaderLength);
+            payload.put(fileId);
+            payload.put((byte)i);
             payload.putInt(sliceStart);
 
             byte[] packetContent = new byte[contentSize];
             buffer.get(packetContent);
-            payload.put(packetContent);                              // Packet databyte[] packetContent = new byte[contentSize];
+            payload.put(packetContent);
 
 
             byte[] new_payload = null;

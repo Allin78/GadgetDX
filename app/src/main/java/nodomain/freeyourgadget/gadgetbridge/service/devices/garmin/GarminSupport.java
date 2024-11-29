@@ -4,6 +4,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.net.Uri;
 import android.widget.Toast;
@@ -231,6 +233,19 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
 
         processDownloadQueue();
 
+    }
+
+    protected String getNotificationAttachmentPath(int notificationId) {
+        return notificationsHandler.getNotificationAttachmentPath(notificationId);
+    }
+
+    protected Bitmap getNotificationAttachmentBitmap(int notificationId) {
+        final String picturePath = getNotificationAttachmentPath(notificationId);
+        final Bitmap bitmap = BitmapFactory.decodeFile(picturePath);
+        if (bitmap == null) {
+            LOG.warn("Failed to load bitmap for {} from {}", notificationId, picturePath);
+        }
+        return bitmap;
     }
 
     @Override
