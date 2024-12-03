@@ -73,6 +73,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.Predefine
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.RecordData;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.fit.RecordDefinition;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.messages.ConfigurationMessage;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.messages.DeviceInformationMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.messages.DownloadRequestMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.messages.GFDIMessage;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.messages.MusicControlEntityUpdateMessage;
@@ -235,6 +236,9 @@ public class GarminSupport extends AbstractBTLEDeviceSupport implements ICommuni
         sendOutgoingMessage("send followup", followup); //send followup message if any
 
         if (parsedMessage instanceof ConfigurationMessage) { //the last forced message exchange
+            completeInitialization();
+        } else if (parsedMessage instanceof DeviceInformationMessage && communicator instanceof CommunicatorV1) {
+            // HACK: We do not get a ConfigurationMessage on V1
             completeInitialization();
         }
 
