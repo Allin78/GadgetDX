@@ -23,6 +23,7 @@ import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -32,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -59,11 +61,13 @@ import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.entities.Device;
 import nodomain.freeyourgadget.gadgetbridge.entities.MiBandActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.entities.User;
+import nodomain.freeyourgadget.gadgetbridge.externalevents.sleepasandroid.SleepAsAndroidAction;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice.State;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityUser;
 import nodomain.freeyourgadget.gadgetbridge.model.Alarm;
+import nodomain.freeyourgadget.gadgetbridge.service.SleepAsAndroidSender;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarEvent;
 import nodomain.freeyourgadget.gadgetbridge.util.calendar.CalendarManager;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
@@ -129,6 +133,8 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
     private RealtimeSamplesSupport realtimeSamplesSupport;
     private boolean alarmClockRinging;
 
+    private SleepAsAndroidSender sleepAsAndroidSender = null;
+
     public MiBandSupport() {
         super(LOG);
         addSupportedService(GattService.UUID_SERVICE_GENERIC_ACCESS);
@@ -141,6 +147,9 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
     @Override
     protected TransactionBuilder initializeDevice(TransactionBuilder builder) {
         builder.add(new SetDeviceStateAction(getDevice(), State.INITIALIZING, getContext()));
+        if (sleepAsAndroidSender == null) {
+            sleepAsAndroidSender = new SleepAsAndroidSender(gbDevice);
+        }
         enableNotifications(builder, true)
                 .setLowLatency(builder)
                 .readDate(builder) // without reading the data, we get sporadic connection problems, especially directly after turning on BT
@@ -1185,6 +1194,85 @@ public class MiBandSupport extends AbstractBTLEDeviceSupport {
         } catch (IOException ex) {
             LOG.error("Unable to send Events to MI device", ex);
         }
+    }
+
+    @Override
+    public void onSleepAsAndroidAction(String action, Bundle extras) {
+        // Validate if our device can work with an action
+        try {
+
+            sleepAsAndroidSender.validateAction(action);
+        } catch (UnsupportedOperationException e) {
+            return;
+        }
+
+        // Consult the SleepAsAndroid documentation for a set of actions and their extra
+        // https://docs.sleep.urbandroid.org/devs/wearable_api.html
+        switch (action) {
+            // Received when the app checks if the watch is reachable
+            case SleepAsAndroidAction.CHECK_CONNECTED:
+                sleepAsAndroidSender.confirmConnected();
+                break;
+            // Received when the app starts sleep tracking
+            case SleepAsAndroidAction.START_TRACKING:
+                boolean hr_measurement = extras.getBoolean("DO_HR_MONITORING", false);
+
+                onEnableRealtimeHeartRateMeasurement(hr_measurement);
+
+                boolean o2_measuremnt = extras.getBoolean("DO_OXIMETER_MONITORING", false);
+                sleepAsAndroidSender.startTracking();
+                break;
+            // Received when the app stops sleep tracking
+            case SleepAsAndroidAction.STOP_TRACKING:
+                this.onEnableRealtimeHeartRateMeasurement(false);
+                sleepAsAndroidSender.stopTracking();
+                break;
+            case SleepAsAndroidAction.SET_SUSPENDED:
+                boolean suspended = extras.getBoolean("SUSPENDED", false);
+                sleepAsAndroidSender.pauseTracking(suspended);
+                break;
+            // Received when the app changes the batch size for the movement data
+            case SleepAsAndroidAction.SET_BATCH_SIZE:
+                long batchSize = extras.getLong("SIZE", 12L);
+                sleepAsAndroidSender.setBatchSize(batchSize);
+                break;
+            // Received when the app sends a notification
+            case SleepAsAndroidAction.SHOW_NOTIFICATION:
+                NotificationSpec notificationSpec = new NotificationSpec();
+                notificationSpec.title = extras.getString("TITLE");
+                notificationSpec.body = extras.getString("BODY");
+                this.onNotification(notificationSpec);
+                break;
+            case SleepAsAndroidAction.START_ALARM:
+                // Vibrate the device if the alarm starts
+                GBApplication.deviceService(gbDevice).onFindDevice(true);
+                break;
+            case SleepAsAndroidAction.STOP_ALARM:
+                // Stop vibrating the alarm
+                GBApplication.deviceService(gbDevice).onFindDevice(false);
+                break;
+            case SleepAsAndroidAction.UPDATE_ALARM:
+                long alarmTimestamp = extras.getLong("TIMESTAMP");
+
+                // Sets the alarm at a giver hour and minute
+                // Snoozing from the app will create a new alarm in the future
+                setSleepAsAndroidAlarm(alarmTimestamp);
+                break;
+            default:
+                LOG.warn("Received unsupported " + action);
+                break;
+        }
+    }
+
+    private void setSleepAsAndroidAlarm(long alarmTimestamp) {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(new Timestamp(alarmTimestamp).getTime());
+        Alarm alarm = AlarmUtils.createSingleShot(SleepAsAndroidSender.getAlarmSlot(), false, false, calendar);
+        ArrayList<Alarm> alarms = new ArrayList<>(1);
+        alarms.add(alarm);
+
+        GBApplication.deviceService(gbDevice).onSetAlarms(alarms);
     }
 
     @Override
