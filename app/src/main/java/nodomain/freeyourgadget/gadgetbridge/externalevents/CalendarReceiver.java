@@ -18,6 +18,8 @@
 package nodomain.freeyourgadget.gadgetbridge.externalevents;
 
 
+import static androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -28,7 +30,8 @@ import android.os.Handler;
 import android.provider.CalendarContract;
 import android.widget.Toast;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.core.content.ContextCompat;
+//import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +113,8 @@ public class CalendarReceiver extends ContentObserver {
 
         mContext.getContentResolver().registerContentObserver(CalendarContract.Events.CONTENT_URI, true, this);
         // Add a receiver to allow us to quickly force as calendar sync (without having to provide data)
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(mForceSyncReceiver, new IntentFilter(ACTION_FORCE_SYNC));
+        ContextCompat.registerReceiver(mContext, mForceSyncReceiver, new IntentFilter(ACTION_FORCE_SYNC), RECEIVER_NOT_EXPORTED);
+        //LocalBroadcastManager.getInstance(mContext).registerReceiver(mForceSyncReceiver, new IntentFilter(ACTION_FORCE_SYNC));
     }
 
     public GBDevice getGBDevice() {
@@ -265,7 +269,8 @@ public class CalendarReceiver extends ContentObserver {
 
     public void dispose() {
         mContext.getContentResolver().unregisterContentObserver(this);
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mForceSyncReceiver);
+        mContext.unregisterReceiver(mForceSyncReceiver);
+        //LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mForceSyncReceiver);
         mSyncHandler.removeCallbacksAndMessages(null);
     }
 
