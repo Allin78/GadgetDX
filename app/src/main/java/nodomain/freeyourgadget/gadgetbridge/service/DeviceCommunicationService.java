@@ -813,6 +813,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
         }
 
         DeviceSupport deviceSupport = getDeviceSupport(device);
+        DeviceCoordinator coordinator = getDeviceCoordinator(device);
 
         Prefs devicePrefs = new Prefs(GBApplication.getDeviceSpecificSharedPrefs(device.getAddress()));
 
@@ -861,6 +862,7 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                 notificationSpec.iconId = intentCopy.getIntExtra(EXTRA_NOTIFICATION_ICONID, 0);
                 notificationSpec.picturePath = intent.getStringExtra(NOTIFICATION_PICTURE_PATH);
                 notificationSpec.dndSuppressed = intentCopy.getIntExtra(EXTRA_NOTIFICATION_DNDSUPPRESSED, 0);
+                notificationSpec.background = intentCopy.getBooleanExtra(EXTRA_NOTIFICATION_BACKGROUND, false);
 
                 if (notificationSpec.type == NotificationType.GENERIC_SMS && notificationSpec.phoneNumber != null) {
                     GBApplication.getIDSenderLookup().add(notificationSpec.getId(), notificationSpec.phoneNumber);
@@ -882,7 +884,9 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
                     notificationSpec.cannedReplies = replies.toArray(new String[0]);
                 }
 
-                deviceSupport.onNotification(notificationSpec);
+                if (!notificationSpec.background || coordinator.supportsBackgroundNotifications(device)) {
+                    deviceSupport.onNotification(notificationSpec);
+                }
                 break;
             }
             case ACTION_DELETE_NOTIFICATION: {

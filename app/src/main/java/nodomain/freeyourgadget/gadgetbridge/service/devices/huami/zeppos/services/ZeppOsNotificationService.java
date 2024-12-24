@@ -39,6 +39,7 @@ import nodomain.freeyourgadget.gadgetbridge.BuildConfig;
 import nodomain.freeyourgadget.gadgetbridge.activities.devicesettings.DeviceSettingsPreferenceConst;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventCallControl;
 import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventNotificationControl;
+import nodomain.freeyourgadget.gadgetbridge.deviceevents.GBDeviceEventUpdatePreferences;
 import nodomain.freeyourgadget.gadgetbridge.model.CallSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationSpec;
 import nodomain.freeyourgadget.gadgetbridge.model.NotificationType;
@@ -47,9 +48,9 @@ import nodomain.freeyourgadget.gadgetbridge.service.btle.TransactionBuilder;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.ZeppOsSupport;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.AbstractZeppOsService;
 import nodomain.freeyourgadget.gadgetbridge.util.BitmapUtil;
-import nodomain.freeyourgadget.gadgetbridge.util.GB;
 import nodomain.freeyourgadget.gadgetbridge.util.LimitedQueue;
 import nodomain.freeyourgadget.gadgetbridge.util.NotificationUtils;
+import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 import nodomain.freeyourgadget.gadgetbridge.util.StringUtils;
 
 public class ZeppOsNotificationService extends AbstractZeppOsService {
@@ -77,6 +78,8 @@ public class ZeppOsNotificationService extends AbstractZeppOsService {
     public static final byte NOTIFICATION_DISMISS_REJECT_CALL = 0x01;
     public static final byte NOTIFICATION_CALL_STATE_START = 0x00;
     public static final byte NOTIFICATION_CALL_STATE_END = 0x02;
+
+    public static final String PREF_VERSION = "zepp_os_notifications_version";
 
     private int version = -1;
     private boolean supportsPictures = false;
@@ -121,6 +124,7 @@ public class ZeppOsNotificationService extends AbstractZeppOsService {
         switch (cmd) {
             case NOTIFICATION_CMD_CAPABILITIES_RESPONSE: {
                 version = buf.get() & 0xff;
+                getSupport().evaluateGBDeviceEvent(new GBDeviceEventUpdatePreferences(PREF_VERSION, version));
                 if (version < 4 || version > 5) {
                     // Untested, might work, might not..
                     LOG.warn("Unsupported notification service version {}", version);
@@ -357,7 +361,7 @@ public class ZeppOsNotificationService extends AbstractZeppOsService {
 
             baos.write((byte) (hasReply ? 1 : 0));
             if (version >= 5) {
-                baos.write(0); // 1 for silent
+                baos.write(notificationSpec.background ? 1 : 0); // 1 for silent
             }
             if (supportsPictures) {
                 baos.write((byte) (notificationSpec.picturePath != null ? 1 : 0));
@@ -596,5 +600,10 @@ public class ZeppOsNotificationService extends AbstractZeppOsService {
 
             return null;
         }
+    }
+
+    public static boolean supportsBackgroundNotifications(final Prefs devicePrefs) {
+        final int version = devicePrefs.getInt(PREF_VERSION, 0);
+        return version >= 5;
     }
 }

@@ -13,15 +13,23 @@ public class NotificationUpdateMessage extends GFDIMessage {
     final private int count; //how many notifications of the same type are present
     final private int notificationId;
     final private boolean hasActions;
+    final private boolean background;
     final private boolean hasPicture;
     final private boolean useLegacyActions = false;
 
-    public NotificationUpdateMessage(NotificationUpdateType notificationUpdateType, NotificationType notificationType, int count, int notificationId, boolean hasActions, boolean hasPicture) {
+    public NotificationUpdateMessage(NotificationUpdateType notificationUpdateType,
+                                     NotificationType notificationType,
+                                     int count,
+                                     int notificationId,
+                                     boolean background,
+                                     boolean hasActions,
+                                     boolean hasPicture) {
         this.garminMessage = GarminMessage.NOTIFICATION_UPDATE;
         this.notificationUpdateType = notificationUpdateType;
         this.notificationType = notificationType;
         this.count = count;
         this.notificationId = notificationId;
+        this.background = background;
         this.hasActions = hasActions;
         this.hasPicture = hasPicture;
     }
@@ -32,7 +40,7 @@ public class NotificationUpdateMessage extends GFDIMessage {
         writer.writeShort(0); // packet size will be filled below
         writer.writeShort(this.garminMessage.getId());
         writer.writeByte(this.notificationUpdateType.ordinal());
-        writer.writeByte(getCategoryFlags(this.notificationType));
+        writer.writeByte(getCategoryFlags(this.notificationType, this.background));
         writer.writeByte(getCategoryValue(this.notificationType));
         writer.writeByte(this.count);
         writer.writeInt(this.notificationId);
@@ -54,28 +62,33 @@ public class NotificationUpdateMessage extends GFDIMessage {
 
     }
 
-    private int getCategoryFlags(NotificationType notificationType) {
+    private int getCategoryFlags(NotificationType notificationType, boolean background) {
         EnumSet<NotificationFlag> flags = EnumSet.noneOf(NotificationFlag.class);
         if (this.hasActions && this.useLegacyActions) { //only needed for legacy actions
             flags.add(NotificationFlag.ACTION_ACCEPT);
         }
         flags.add(NotificationFlag.ACTION_DECLINE);
 
-        switch (notificationType.getGenericType()) {
-            case "generic_phone":
-            case "generic_email":
-            case "generic_sms":
-            case "generic_chat":
-                flags.add(NotificationFlag.FOREGROUND);
-                break;
-            case "generic_navigation":
-            case "generic_social":
-            case "generic_alarm_clock":
-            case "generic":
-                // TODO: Maybe make this configurable, but most users expect all notifications
-                // to be foreground, sending them as background was generating bug reports.
-                flags.add(NotificationFlag.FOREGROUND);
+        if (background) {
+            flags.add(NotificationFlag.BACKGROUND);
+        } else {
+            switch (notificationType.getGenericType()) {
+                case "generic_phone":
+                case "generic_email":
+                case "generic_sms":
+                case "generic_chat":
+                    flags.add(NotificationFlag.FOREGROUND);
+                    break;
+                case "generic_navigation":
+                case "generic_social":
+                case "generic_alarm_clock":
+                case "generic":
+                    // TODO: Maybe make this configurable, but most users expect all notifications
+                    // to be foreground, sending them as background was generating bug reports.
+                    flags.add(NotificationFlag.FOREGROUND);
+            }
         }
+
         return (int) EnumUtils.generateBitVector(NotificationFlag.class, flags);
     }
 

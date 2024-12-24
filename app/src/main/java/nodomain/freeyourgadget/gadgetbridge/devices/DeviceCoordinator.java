@@ -787,6 +787,11 @@ public interface DeviceCoordinator {
     int getDisabledIconResource();
 
     /**
+     * Whether the device supports silent background notifications.
+     */
+    boolean supportsBackgroundNotifications(GBDevice device);
+
+    /**
      * Whether the device supports a variety of vibration patterns for notifications.
      */
     boolean supportsNotificationVibrationPatterns();

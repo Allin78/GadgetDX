@@ -68,6 +68,7 @@ import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.service
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsContactsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsLogsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsLoyaltyCardService;
+import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsNotificationService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsRemindersService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsShortcutCardsService;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.huami.zeppos.services.ZeppOsConfigService;
@@ -619,6 +620,11 @@ public abstract class ZeppOsCoordinator extends HuamiCoordinator {
 
     public static boolean experimentalFeatures(final GBDevice device) {
         return getPrefs(device).getBoolean("zepp_os_experimental_features", false);
+    }
+
+    @Override
+    public boolean supportsBackgroundNotifications(final GBDevice device) {
+        return ZeppOsNotificationService.supportsBackgroundNotifications(getPrefs(device));
     }
 
     @Override

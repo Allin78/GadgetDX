@@ -118,7 +118,15 @@ public class NotificationsHandler implements MessageHandler {
         }
 
         final boolean hasPicture = !StringUtils.isEmpty(notificationSpec.picturePath);
-        return new NotificationUpdateMessage(notificationUpdateType, notificationSpec.type, getNotificationsCount(notificationSpec.type), notificationSpec.getId(), hasActions, hasPicture);
+        return new NotificationUpdateMessage(
+                notificationUpdateType,
+                notificationSpec.type,
+                getNotificationsCount(notificationSpec.type),
+                notificationSpec.getId(),
+                notificationSpec.background,
+                hasActions,
+                hasPicture
+        );
     }
 
     private int getNotificationsCount(NotificationType notificationType) {
@@ -155,7 +163,14 @@ public class NotificationsHandler implements MessageHandler {
             NotificationSpec e = iterator.next();
             if (e.getId() == id) {
                 iterator.remove();
-                return new NotificationUpdateMessage(NotificationUpdateMessage.NotificationUpdateType.REMOVE, e.type, getNotificationsCount(e.type), id, false, false);
+                return new NotificationUpdateMessage(
+                        NotificationUpdateMessage.NotificationUpdateType.REMOVE,
+                        e.type, getNotificationsCount(e.type),
+                        id,
+                        false,
+                        false,
+                        false
+                );
             }
         }
         return null;

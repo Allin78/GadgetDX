@@ -54,7 +54,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -354,6 +353,8 @@ public class NotificationListener extends NotificationListenerService {
             return;
         }
 
+        NotificationSpec notificationSpec = new NotificationSpec();
+
         // Ignore too frequent notifications, according to user preference
         long curTime = System.nanoTime();
         Long notificationBurstPreventionValue = notificationBurstPrevention.get(source);
@@ -361,11 +362,10 @@ public class NotificationListener extends NotificationListenerService {
             long diff = curTime - notificationBurstPreventionValue;
             if (diff < TimeUnit.SECONDS.toNanos(prefs.getInt("notifications_timeout", 0))) {
                 LOG.info("Ignoring frequent notification, last one was {} ms ago", TimeUnit.NANOSECONDS.toMillis(diff));
-                return;
+                notificationSpec.background = true;
             }
         }
 
-        NotificationSpec notificationSpec = new NotificationSpec();
         notificationSpec.key = sbn.getKey();
         notificationSpec.when = notification.when;
 

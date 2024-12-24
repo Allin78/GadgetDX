@@ -56,6 +56,8 @@ public class NotificationSpec {
 
     public int dndSuppressed;
 
+    public boolean background;
+
     public NotificationSpec() {
         this(-1);
     }

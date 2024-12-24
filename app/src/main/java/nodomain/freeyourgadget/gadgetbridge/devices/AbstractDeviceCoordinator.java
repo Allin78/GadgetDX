@@ -876,6 +876,11 @@ public abstract class AbstractDeviceCoordinator implements DeviceCoordinator {
     }
 
     @Override
+    public boolean supportsBackgroundNotifications(final GBDevice device) {
+        return false;
+    }
+
+    @Override
     public boolean supportsNotificationVibrationPatterns() {
         return false;
     }
