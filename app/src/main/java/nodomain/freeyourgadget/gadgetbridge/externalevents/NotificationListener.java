@@ -149,7 +149,6 @@ public class NotificationListener extends NotificationListenerService {
     private Runnable mSetMusicStateRunnable = null;
 
     private final GoogleMapsNotificationHandler googleMapsNotificationHandler = new GoogleMapsNotificationHandler();
-
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
         @Override

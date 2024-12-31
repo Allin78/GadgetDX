@@ -353,44 +353,45 @@ public class PineTimeJFSupport extends AbstractBTLEDeviceSupport implements DfuL
         safeWriteToCharacteristic(builder, PineTimeJFConstants.UUID_CHARACTERISTICS_NAVIGATION_MAN_DISTANCE, navigationInfoSpec.distanceToTurn.getBytes(StandardCharsets.UTF_8));
         String iconname;
         switch (navigationInfoSpec.nextAction) {
-            case NavigationInfoSpec.ACTION_CONTINUE:
+            case CONTINUE:
+            case DEPART:
                 iconname = "continue";
                 break;
-            case NavigationInfoSpec.ACTION_TURN_LEFT:
+            case TURN_LEFT:
                 iconname = "turn-left";
                 break;
-            case NavigationInfoSpec.ACTION_TURN_LEFT_SLIGHTLY:
+            case TURN_LEFT_SLIGHTLY:
                 iconname = "turn-slight-left";
                 break;
-            case NavigationInfoSpec.ACTION_TURN_LEFT_SHARPLY:
+            case TURN_LEFT_SHARPLY:
                 iconname = "turn-sharp-left";
                 break;
-            case NavigationInfoSpec.ACTION_TURN_RIGHT:
+            case TURN_RIGHT:
                 iconname = "turn-right";
                 break;
-            case NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY:
+            case TURN_RIGHT_SLIGHTLY:
                 iconname = "turn-slight-right";
                 break;
-            case NavigationInfoSpec.ACTION_TURN_RIGHT_SHARPLY:
+            case TURN_RIGHT_SHARPLY:
                 iconname = "turn-sharp-right";
                 break;
-            case NavigationInfoSpec.ACTION_KEEP_LEFT:
+            case KEEP_LEFT:
                 iconname = "continue-left";
                 break;
-            case NavigationInfoSpec.ACTION_KEEP_RIGHT:
+            case KEEP_RIGHT:
                 iconname = "continue-right";
                 break;
-            case NavigationInfoSpec.ACTION_UTURN_LEFT:
-            case NavigationInfoSpec.ACTION_UTURN_RIGHT:
+            case UTURN_LEFT:
+            case UTURN_RIGHT:
                 iconname = "uturn";
                 break;
-            case NavigationInfoSpec.ACTION_ROUNDABOUT_RIGHT:
-		iconname = "roundabout-right";
-		break;
-            case NavigationInfoSpec.ACTION_ROUNDABOUT_LEFT:
+            case ROUNDABOUT_RIGHT:
+                iconname = "roundabout-right";
+                break;
+            case ROUNDABOUT_LEFT:
                 iconname = "roundabout-left";
                 break;
-            case NavigationInfoSpec.ACTION_OFFROUTE:
+            case OFFROUTE:
                 iconname = "close";
                 break;
             default:

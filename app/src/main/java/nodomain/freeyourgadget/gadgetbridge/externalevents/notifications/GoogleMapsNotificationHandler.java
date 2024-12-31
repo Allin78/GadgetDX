@@ -43,20 +43,19 @@ public class GoogleMapsNotificationHandler {
 
     private boolean shouldSendNavigation = false;
 
-    static class IconType {
+    public static class IconType {
         int[] icon;
-        int iconType;
+        NavigationInfoSpec.Action iconType;
 
-        public IconType(int iconType, int[] icon) {
-            this.icon = icon;
+        public IconType(NavigationInfoSpec.Action iconType, int[] icon) {
             this.iconType = iconType;
+            this.icon = icon;
         }
     }
-    List<IconType> knownImages;
 
-    public GoogleMapsNotificationHandler() {
-        knownImages = new ArrayList<>();
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_CONTINUE, new int[]{
+    public static final List<IconType> knownImages = new ArrayList<IconType>() {
+        {
+            add(new IconType(NavigationInfoSpec.Action.DEPART, new int[]{
                 0b00000000000000000000000000000000, // Straight on with gaps
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -89,8 +88,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_CONTINUE, new int[]{
+                }));
+            add(new IconType(NavigationInfoSpec.Action.CONTINUE, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -123,8 +122,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_LEFT, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -157,8 +156,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_RIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_RIGHT, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -191,8 +190,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_LEFT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_LEFT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -225,8 +224,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_LEFT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_LEFT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -259,8 +258,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_LEFT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_LEFT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -293,8 +292,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_RIGHT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -327,8 +326,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_RIGHT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -361,8 +360,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_RIGHT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -395,8 +394,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_RIGHT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -429,8 +428,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_TURN_RIGHT_SLIGHTLY, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.TURN_RIGHT_SLIGHTLY, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -463,8 +462,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_UTURN_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.UTURN_LEFT, new int[]{
                 0b00000000000000000000000000000000, // LHD
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -497,8 +496,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_UTURN_RIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.UTURN_RIGHT, new int[]{
                 0b00000000000000000000000000000000, // RHD
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -531,8 +530,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_KEEP_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.KEEP_LEFT, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -565,8 +564,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_KEEP_RIGHT, new int[]{
+                }));
+            add(new IconType(NavigationInfoSpec.Action.KEEP_RIGHT, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -599,9 +598,9 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
-        }));
+                }));
 
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_FINISH, new int[]{
+            add(new IconType(NavigationInfoSpec.Action.FINISH, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -634,9 +633,9 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_FINISH, new int[]{
-                0b00000000000000000000000000000000, // RHD
+            }));
+            add(new IconType(NavigationInfoSpec.Action.FINISH_LEFT, new int[]{
+                0b00000000000000000000000000000000, // LHD
                 0b00000000111000000000000000000000,
                 0b00000111111110000000000000000000,
                 0b00001111111111100000000000000000,
@@ -668,9 +667,9 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_FINISH, new int[]{
-                0b00000000000000000000000000000000, // LHD
+            }));
+            add(new IconType(NavigationInfoSpec.Action.FINISH_RIGHT, new int[]{
+                0b00000000000000000000000000000000, // RHD
                 0b00000000000000000000011100000000,
                 0b00000000000000000011111111100000,
                 0b00000000000000000111111111110000,
@@ -702,8 +701,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_LEFT, new int[]{
                 0b000000000000000000000000000000000,
                 0b000000000000000000000000000000000,
                 0b000000000000000000000000000000000,
@@ -736,8 +735,8 @@ public class GoogleMapsNotificationHandler {
                 0b000000000000000000000000000000000,
                 0b000000000000000000000000000000000,
                 0b000000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_RIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_RIGHT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -770,8 +769,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_STRAIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_STRAIGHT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000011000000000000000,
                 0b00000000000000111100000000000000,
@@ -804,8 +803,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_STRAIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_STRAIGHT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000011000000000000000,
                 0b00000000000000111100000000000000,
@@ -838,8 +837,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_LEFT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -872,8 +871,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_RIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_RIGHT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -906,8 +905,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_LEFT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -940,8 +939,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_RIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_RIGHT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -974,8 +973,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_LEFT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_LEFT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -1008,8 +1007,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_RIGHT, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_RIGHT, new int[]{
                 0b00000000000000000000000000000000,// GUESSED - this may not be an exact match
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -1042,8 +1041,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_UTURN, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_UTURN, new int[]{
                 0b00000000000000000000000000000000, // LHD
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -1076,8 +1075,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_ROUNDABOUT_UTURN, new int[]{
+                }));
+            add(new IconType(NavigationInfoSpec.Action.ROUNDABOUT_UTURN, new int[]{
                 0b00000000000000000000000000000000, // RHD
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -1110,8 +1109,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_MERGE, new int[]{
+                }));
+            add(new IconType(NavigationInfoSpec.Action.MERGE, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -1144,8 +1143,8 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-        knownImages.add(new IconType(NavigationInfoSpec.ACTION_MERGE, new int[]{
+            }));
+            add(new IconType(NavigationInfoSpec.Action.MERGE, new int[]{
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
@@ -1178,8 +1177,9 @@ public class GoogleMapsNotificationHandler {
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000,
                 0b00000000000000000000000000000000
-        }));
-    }
+            }));
+        }
+    };
 
     public boolean handle(Context context, StatusBarNotification sbn) {
         if (sbn.getPackageName().equals("com.google.android.apps.maps")) {
@@ -1200,7 +1200,7 @@ public class GoogleMapsNotificationHandler {
             if (navLines.length < 3) return false; // not in the format we expected - might be 'Shared with you' notification
             // navLines now has at least 3 elements
             LOG.info("Navigation: " + instruction + "," + distance + "," + navLines[0] + "," + navLines[1] + "," + navLines[2]);
-            int matchedIcon = -1;
+            NavigationInfoSpec.Action matchedIcon = NavigationInfoSpec.Action.UNKNOWN;
             // getLargeIcon only works in API 23+ - don't try and get icons on older devices
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 Icon icon = notification.getLargeIcon();
@@ -1242,14 +1242,13 @@ public class GoogleMapsNotificationHandler {
                             bestDiff = diff;
                         }
                     }
-                    if (matchedIcon < 0) {
+                    if (matchedIcon == NavigationInfoSpec.Action.UNKNOWN) {
                         LOG.info("Icon NEW:\n" + pixelString);
-                        knownImages.add(new IconType(255, pixelPack));
                     }
                 }
             }
             NavigationInfoSpec navInfo = new NavigationInfoSpec();
-            if (matchedIcon>=0)
+            if (matchedIcon != NavigationInfoSpec.Action.UNKNOWN)
                 navInfo.nextAction = matchedIcon;
             navInfo.instruction = instruction;
             if (distance != null)

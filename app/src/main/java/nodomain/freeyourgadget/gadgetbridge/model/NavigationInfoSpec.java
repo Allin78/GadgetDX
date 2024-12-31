@@ -17,28 +17,55 @@
 package nodomain.freeyourgadget.gadgetbridge.model;
 
 public class NavigationInfoSpec {
-    public static final int ACTION_CONTINUE = 1;
-    public static final int ACTION_TURN_LEFT = 2;
-    public static final int ACTION_TURN_LEFT_SLIGHTLY = 3;
-    public static final int ACTION_TURN_LEFT_SHARPLY = 4;
-    public static final int ACTION_TURN_RIGHT = 5;
-    public static final int ACTION_TURN_RIGHT_SLIGHTLY = 6;
-    public static final int ACTION_TURN_RIGHT_SHARPLY = 7;
-    public static final int ACTION_KEEP_LEFT = 8;
-    public static final int ACTION_KEEP_RIGHT = 9;
-    public static final int ACTION_UTURN_LEFT = 10;
-    public static final int ACTION_UTURN_RIGHT = 11;
-    public static final int ACTION_OFFROUTE = 12;
-    public static final int ACTION_ROUNDABOUT_RIGHT = 13;
-    public static final int ACTION_ROUNDABOUT_LEFT = 14;
-    public static final int ACTION_ROUNDABOUT_STRAIGHT = 15;
-    public static final int ACTION_ROUNDABOUT_UTURN = 16;
-    public static final int ACTION_FINISH = 17;
-    public static final int ACTION_MERGE = 18;
+    public enum Action {
+        UNKNOWN(-1),
+        CONTINUE(0),
+        DEPART(1),
+        TURN_LEFT(2),
+        TURN_LEFT_SLIGHTLY(3),
+        TURN_LEFT_SHARPLY(4),
+        TURN_RIGHT(5),
+        TURN_RIGHT_SLIGHTLY(6),
+        TURN_RIGHT_SHARPLY(7),
+        KEEP_LEFT(8),
+        KEEP_RIGHT(9),
+        UTURN_LEFT(10),
+        UTURN_RIGHT(11),
+        ROUNDABOUT_RIGHT(12),
+        ROUNDABOUT_LEFT(13),
+        ROUNDABOUT_STRAIGHT(14),
+        ROUNDABOUT_UTURN(15),
+        MERGE(16),
+        FINISH(17),
+        FINISH_LEFT(18),
+        FINISH_RIGHT(19),
+        OFFROUTE(20);
 
-    // ETA? Total Distance?
+        public final int id;
+
+        Action(int id) {
+            this.id = id;
+        }
+
+        // Since the ids of the actions are serialized as ints, this allows conversion back to the enum.
+        // Not the most efficient way, but there are only ~20 items to look at so it should be fine.
+        public static Action fromId(int id) {
+            for (Action type : values()) {
+                if (type.id == id) {
+                    return type;
+                }
+            }
+            return Action.UNKNOWN;
+        }
+    }
+
+
+    // Usually the road name and which action to take.
     public String instruction;
-    public String distanceToTurn; ///< Distance to turn (as a string, eg "100m")
-    public int nextAction; ///< One of the ACTION_ constants
-    public String ETA; ///< Estimated time of Arrival
+    // Distance to turn (as a string, eg "100m")
+    public String distanceToTurn;
+    // One of the Action constants.
+    public Action nextAction;
+    // Estimated time of Arrival.
+    public String ETA;
 }

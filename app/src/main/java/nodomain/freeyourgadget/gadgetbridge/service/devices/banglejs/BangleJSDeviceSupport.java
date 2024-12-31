@@ -2141,11 +2141,14 @@ public class BangleJSDeviceSupport extends AbstractBTLEDeviceSupport {
                 o.put("instr", navigationInfoSpec.instruction);
             o.put("distance", navigationInfoSpec.distanceToTurn);
             String[] navActions = {
-                    "","continue", "left", "left_slight", "left_sharp",  "right", "right_slight",
-                    "right_sharp", "keep_left", "keep_right", "uturn_left", "uturn_right",
-                    "offroute", "roundabout_right", "roundabout_left", "roundabout_straight", "roundabout_uturn", "finish"};
-            if (navigationInfoSpec.nextAction>0 && navigationInfoSpec.nextAction<navActions.length)
-                o.put("action", navActions[navigationInfoSpec.nextAction]);
+                "continue", "depart", "left", "left_slight", "left_sharp", "right", "right_slight", "right_sharp",
+                "keep_left", "keep_right", "uturn_left", "uturn_right", "roundabout_right", "roundabout_left",
+                "roundabout_straight", "roundabout_uturn", "merge", "finish", "finish", "finish", "offroute"
+            };
+            if (navigationInfoSpec.nextAction != NavigationInfoSpec.Action.UNKNOWN &&
+                navigationInfoSpec.nextAction.id < navActions.length) {
+                o.put("action", navActions[navigationInfoSpec.nextAction.id]);
+            }
             if (navigationInfoSpec.ETA!=null)
                 o.put("eta", navigationInfoSpec.ETA);
             uartTxJSON("onSetNavigationInfo", o);

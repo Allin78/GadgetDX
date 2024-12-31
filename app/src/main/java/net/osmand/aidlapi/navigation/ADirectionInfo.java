@@ -5,13 +5,15 @@ import android.os.Parcel;
 
 import net.osmand.aidlapi.AidlParams;
 
+import nodomain.freeyourgadget.gadgetbridge.model.NavigationInfoSpec;
+
 public class ADirectionInfo extends AidlParams {
 
 	private int distanceTo; //distance to next turn
-	private int turnType; //turn type
+	private NavigationInfoSpec.Action turnType; //turn type
 	private boolean isLeftSide; //is movement left-sided
 
-	public ADirectionInfo(int distanceTo, int turnType, boolean isLeftSide) {
+	public ADirectionInfo(int distanceTo, NavigationInfoSpec.Action turnType, boolean isLeftSide) {
 		this.distanceTo = distanceTo;
 		this.turnType = turnType;
 		this.isLeftSide = isLeftSide;
@@ -37,7 +39,7 @@ public class ADirectionInfo extends AidlParams {
 		return distanceTo;
 	}
 
-	public int getTurnType() {
+	public NavigationInfoSpec.Action getTurnType() {
 		return turnType;
 	}
 
@@ -49,7 +51,7 @@ public class ADirectionInfo extends AidlParams {
 		this.distanceTo = distanceTo;
 	}
 
-	public void setTurnType(int turnType) {
+	public void setTurnType(NavigationInfoSpec.Action turnType) {
 		this.turnType = turnType;
 	}
 
@@ -60,14 +62,14 @@ public class ADirectionInfo extends AidlParams {
 	@Override
 	protected void readFromBundle(Bundle bundle) {
 		distanceTo = bundle.getInt("distanceTo");
-		turnType = bundle.getInt("turnType");
+		turnType = NavigationInfoSpec.Action.fromId(bundle.getInt("turnType"));
 		isLeftSide = bundle.getBoolean("isLeftSide");
 	}
 
 	@Override
 	public void writeToBundle(Bundle bundle) {
 		bundle.putInt("distanceTo", distanceTo);
-		bundle.putInt("turnType", turnType);
+		bundle.putInt("turnType", turnType.id);
 		bundle.putBoolean("isLeftSide", isLeftSide);
 	}
 }

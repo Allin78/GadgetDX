@@ -995,7 +995,8 @@ public class DeviceCommunicationService extends Service implements SharedPrefere
             case ACTION_SETNAVIGATIONINFO:
                 NavigationInfoSpec navigationInfoSpec = new NavigationInfoSpec();
                 navigationInfoSpec.instruction = intentCopy.getStringExtra(EXTRA_NAVIGATION_INSTRUCTION);
-                navigationInfoSpec.nextAction = intentCopy.getIntExtra(EXTRA_NAVIGATION_NEXT_ACTION,0);
+                navigationInfoSpec.nextAction =
+                    NavigationInfoSpec.Action.fromId(intentCopy.getIntExtra(EXTRA_NAVIGATION_NEXT_ACTION, 0));
                 navigationInfoSpec.distanceToTurn = intentCopy.getStringExtra(EXTRA_NAVIGATION_DISTANCE_TO_TURN);
                 navigationInfoSpec.ETA = intentCopy.getStringExtra(EXTRA_NAVIGATION_ETA);
                 deviceSupport.onSetNavigationInfo(navigationInfoSpec);
