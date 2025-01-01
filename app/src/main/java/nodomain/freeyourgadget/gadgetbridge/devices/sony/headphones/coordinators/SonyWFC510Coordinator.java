@@ -1,4 +1,4 @@
-/*  Copyright (C) 2023-2024 Daniel Dakhno, José Rebelo
+/*  Copyright (C) 2024 Marcel
 
     This file is part of Gadgetbridge.
 
@@ -25,36 +25,40 @@ import nodomain.freeyourgadget.gadgetbridge.R;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCapabilities;
 import nodomain.freeyourgadget.gadgetbridge.devices.sony.headphones.SonyHeadphonesCoordinator;
 
-public class SonyWH1000XM5Coordinator extends SonyHeadphonesCoordinator {
-    @Override
-    protected Pattern getSupportedDeviceName() {
-        return Pattern.compile(".*WH-1000XM5.*");
-    }
+public class SonyWFC510Coordinator extends SonyHeadphonesCoordinator {
 
     @Override
-    public int getDeviceNameResource() {
-        return R.string.devicetype_sony_wh_1000xm5;
+    protected Pattern getSupportedDeviceName() {
+        return Pattern.compile("WF-C510");
     }
 
     @Override
     public Set<SonyHeadphonesCapabilities> getCapabilities() {
         return new HashSet<>(Arrays.asList(
-                // TODO R.xml.devicesettings_connect_two_devices,
-                // TODO automatic ANC depending on state (might need phone?)
-                SonyHeadphonesCapabilities.BatterySingle,
-                SonyHeadphonesCapabilities.PowerOffFromPhone,
-                SonyHeadphonesCapabilities.AmbientSoundControl,
-                SonyHeadphonesCapabilities.SpeakToChatEnabled,
-                SonyHeadphonesCapabilities.SpeakToChatConfig,
-                SonyHeadphonesCapabilities.SpeakToChatFocusOnVoice,
-                // TODO SonyHeadphonesCapabilities.AudioUpsampling,
-                // TODO SonyHeadphonesCapabilities.AmbientSoundControlButtonMode,
-                SonyHeadphonesCapabilities.VoiceNotifications,
-                SonyHeadphonesCapabilities.AutomaticPowerOffWhenTakenOff,
-                // TODO SonyHeadphonesCapabilities.TouchSensorSingle,
+                SonyHeadphonesCapabilities.BatteryDual2,
+                SonyHeadphonesCapabilities.BatteryCase,
+                SonyHeadphonesCapabilities.AmbientSoundControl2,
+                SonyHeadphonesCapabilities.NoNoiseCancelling,
+                SonyHeadphonesCapabilities.EqualizerSimple,
                 SonyHeadphonesCapabilities.EqualizerWithCustomBands,
-                SonyHeadphonesCapabilities.QuickAccess,
-                SonyHeadphonesCapabilities.PauseWhenTakenOff
+                SonyHeadphonesCapabilities.AudioUpsampling,
+                SonyHeadphonesCapabilities.ButtonModesLeftRight,
+                SonyHeadphonesCapabilities.PowerOffFromPhone
         ));
+    }
+
+    @Override
+    public int getDeviceNameResource() {
+        return R.string.devicetype_sony_wf_c510;
+    }
+
+    @Override
+    public int getDefaultIconResource() {
+        return R.drawable.ic_device_galaxy_buds;
+    }
+
+    @Override
+    public int getDisabledIconResource() {
+        return R.drawable.ic_device_galaxy_buds_disabled;
     }
 }
