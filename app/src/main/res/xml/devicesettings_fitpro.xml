@@ -8,5 +8,5 @@
         android:key="language"
         android:summary="%s"
         android:title="@string/pref_title_language" />
-    
+
 </androidx.preference.PreferenceScreen>
