@@ -45,7 +45,7 @@ public class OpenTracksController extends Activity {
      * their documentation here: https://github.com/OpenTracksApp/OpenTracks#api
      * `startRecording()` sends an explicit Intent to OpenTracks signalling it
      * to start recording. It passes along the package name and class name of
-     * our `OpenTracksController` which OpenTracks will use to send the 
+     * our `OpenTracksController` which OpenTracks will use to send the
      * statistics URIs to. After starting the recording service, OpenTracks
      * uses a new explicit Intent to start our `OpenTracksController` and passes
      * along the URIs and the read permissions for those URIs (using

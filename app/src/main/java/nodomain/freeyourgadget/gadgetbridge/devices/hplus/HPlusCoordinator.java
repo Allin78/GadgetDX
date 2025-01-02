@@ -270,4 +270,4 @@ public class HPlusCoordinator extends AbstractBLEDeviceCoordinator {
         return R.drawable.ic_device_hplus_disabled;
     }
 }
-    
+

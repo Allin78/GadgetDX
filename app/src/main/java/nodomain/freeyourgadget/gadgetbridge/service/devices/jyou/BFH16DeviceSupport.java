@@ -355,8 +355,6 @@ public class BFH16DeviceSupport extends AbstractBTLEDeviceSupport {
 
     }
 
-    
-
     //FUNCTIONS
     //______________________________________________________________________________________________
 

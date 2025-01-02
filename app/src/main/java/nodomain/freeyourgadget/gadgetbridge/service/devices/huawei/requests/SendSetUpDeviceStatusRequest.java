@@ -43,7 +43,7 @@ public class SendSetUpDeviceStatusRequest extends Request {
     @Override
     protected List<byte[]> createRequest() throws RequestCreationException {
         int relationShip = 1; // Hardcoded value for now - 1 = mainDevice
-        String deviceName = supportProvider.getDevice().getName(); 
+        String deviceName = supportProvider.getDevice().getName();
         try {
             return new SetUpDeviceStatusRequest(paramsProvider, relationShip, deviceName).serialize();
         } catch (HuaweiPacket.CryptoException e) {

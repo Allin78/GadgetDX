@@ -85,8 +85,6 @@ public class DaySleepChartFragment extends AbstractActivityChartFragment<DaySlee
     private int heartRateMax = 0;
     private float intensityTotal = 0;
 
-
-
     private int mSmartAlarmFrom = -1;
     private int mSmartAlarmTo = -1;
     private int mTimestampFrom = -1;
@@ -133,8 +131,6 @@ public class DaySleepChartFragment extends AbstractActivityChartFragment<DaySlee
         Triple<Float, Float, Float> intensityData = calculateIntensityData(samples);
         return new MyChartsData(mySleepChartsData, chartsData, hrData.getLeft(), hrData.getMiddle(), hrData.getRight(), intensityData.getLeft(), intensityData.getMiddle(), intensityData.getRight());
     }
-
-
 
     private MySleepChartsData refreshSleepAmounts(GBDevice mGBDevice, List<? extends ActivitySample> samples, List<? extends SleepScoreSample> sleepScoreSamples) {
         SleepAnalysis sleepAnalysis = new SleepAnalysis();

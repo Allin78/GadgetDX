@@ -100,7 +100,7 @@ public class HuaweiAppManager {
     public boolean deleteApp(UUID uuid) {
         if (this.installedAppList == null)
             return false;
-        
+
         for (final App.InstalledAppInfo appInfo : installedAppList) {
             final UUID appUuid = UUID.nameUUIDFromBytes(appInfo.packageName.getBytes());
             if (appUuid.equals(uuid)) {

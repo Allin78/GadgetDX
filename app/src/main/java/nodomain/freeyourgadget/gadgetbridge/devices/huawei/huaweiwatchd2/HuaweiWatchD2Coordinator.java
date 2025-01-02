@@ -1,4 +1,4 @@
-/*  Copyright (C) 2024 Vitalii Tomin 
+/*  Copyright (C) 2024 Vitalii Tomin
 
     This file is part of Gadgetbridge.
 

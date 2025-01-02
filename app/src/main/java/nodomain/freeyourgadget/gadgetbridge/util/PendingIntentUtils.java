@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.os.Build;
 
 public  class PendingIntentUtils {
-    
+
     public static PendingIntent getBroadcast(Context context,
                                              int requestCode,
                                              Intent intent,
@@ -39,7 +39,7 @@ public  class PendingIntentUtils {
 
         return PendingIntent.getBroadcast(context, requestCode, intent, flags);
     }
-    
+
     public static PendingIntent getActivity(Context context,
                                              int requestCode,
                                              Intent intent,
@@ -56,7 +56,7 @@ public  class PendingIntentUtils {
 
         return PendingIntent.getActivity(context, requestCode, intent, flags);
     }
-    
+
     public static PendingIntent getService(Context context,
                                              int requestCode,
                                              Intent intent,
@@ -73,5 +73,5 @@ public  class PendingIntentUtils {
 
         return PendingIntent.getService(context, requestCode, intent, flags);
     }
-    
+
 }

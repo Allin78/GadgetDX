@@ -436,7 +436,7 @@ public class HuaweiCoordinator {
     public boolean supportsMotionGoal() {
         return supportsCommandForService(0x07, 0x01);
     }
-    
+
     public boolean supportsInactivityWarnings() {
         return supportsCommandForService(0x07, 0x06);
     }

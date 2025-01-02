@@ -100,7 +100,7 @@ public class WorkoutGpsParser extends XiaomiActivityParser {
                 activityTrack.addTrackPoint(ap);
                 LOG.trace("ActivityPoint V1: ts={} lon={} lat={}", ts, longitude, latitude);
             }
-        } else { 
+        } else {
             while (buf.position() < buf.limit()) {
                 final int ts = buf.getInt();
                 final float longitude = buf.getFloat();

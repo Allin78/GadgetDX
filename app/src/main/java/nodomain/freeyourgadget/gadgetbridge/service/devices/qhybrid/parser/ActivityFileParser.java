@@ -23,14 +23,13 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class ActivityFileParser {
-    
+
     // state flags;
     int heartRateQuality;
     ActivityEntry.WEARING_STATE wearingState = ActivityEntry.WEARING_STATE.WEARING;
     int currentTimestamp = 0; // Aligns with `e2 04` from my testing
     ActivityEntry currentSample = null;
     int currentId = 1;
-    
 
     public Map.Entry<ArrayList<ActivityEntry>, ArrayList<HybridHRSpo2Sample>> parseFile(byte[] file) {
         ByteBuffer buffer = ByteBuffer.wrap(file);
@@ -40,18 +39,14 @@ public class ActivityFileParser {
         short version = buffer.getShort(2);
         if (version != 22) throw new RuntimeException("File version " + version + ", 16 required");
 
-        this.currentTimestamp = buffer.getInt(8); 
-
+        this.currentTimestamp = buffer.getInt(8);
         short timeOffsetMinutes = buffer.getShort(12);
-
         short fileId = buffer.getShort(16);
-
-        buffer.position(52); // Seem to be another 32 bytes after the initial 20 stop 
+        buffer.position(52); // Seem to be another 32 bytes after the initial 20 stop
 
         ArrayList<ActivityEntry> samples = new ArrayList<>();
         ArrayList<HybridHRSpo2Sample> spo2Samples = new ArrayList<>();
         finishCurrentPacket(samples);
-
 
         while (buffer.position() < buffer.capacity() - 4) {
             byte next = buffer.get();
@@ -66,67 +61,60 @@ public class ActivityFileParser {
                         int timestamp = buffer.getInt();
                         buffer.getShort(); // duration
                         buffer.getShort(); // minutes offset
-                        this.currentTimestamp = timestamp; 
-                    
-                    } else if (f1 == (byte) 0xD3) { // Workout-related 
+                        this.currentTimestamp = timestamp;
+                    } else if (f1 == (byte) 0xD3) { // Workout-related
                         int hr1 = f2 & 0xFF; // Might be min HR during workout sometimes?
                         byte[] infoB = new byte[2];
                         buffer.get(infoB);
 
                         byte v1 = buffer.get();
-                        byte v2 = buffer.get(buffer.position()); // Could be important for 11 byte packet  
+                        byte v2 = buffer.get(buffer.position()); // Could be important for 11 byte packet
                         if (v1 == (byte) 0xDF) {
-                            int hr2 = v2 & 0xFF; // Max HR during workout - extra data inside? 
+                            int hr2 = v2 & 0xFF; // Max HR during workout - extra data inside?
                             buffer.get();
-                            if (infoB[0] == (byte) 0x08) 
+                            if (infoB[0] == (byte) 0x08)
                                 buffer.get(new byte[11]); // ?
-                            
-                            else if (!elemValidFlags(buffer.get(buffer.position() + 4))) 
-                                buffer.get(new byte[3]);
-                            
 
+                            else if (!elemValidFlags(buffer.get(buffer.position() + 4)))
+                                buffer.get(new byte[3]);
                         } else if (v1 == (byte) 0xE2 && v2 == (byte) 0x04) {
                             buffer.get(new byte[13]);
 
                             if (!elemValidFlags(buffer.get(buffer.position())))
                                 buffer.get(new byte[3]);
-    
-                        } else if (!elemValidFlags(buffer.get(buffer.position() + 4))) 
+                        } else if (!elemValidFlags(buffer.get(buffer.position() + 4)))
                             buffer.get();
-                        
-
                     } else if (f1 == (byte) 0xCF || f1 == (byte) 0xDF) {
-                        continue; // Not sure what to do with this                                  
-                    
+                        continue; // Not sure what to do with this
                     } else if (f1 == (byte) 0xD6) {
                         HybridHRSpo2Sample spo2Sample = new HybridHRSpo2Sample();
                         spo2Sample.setTimestamp(currentTimestamp * 1000L);
                         spo2Sample.setSpo2(buffer.get() & 0xFF);
                         spo2Samples.add(spo2Sample);
-                        
+
                         buffer.get(new byte[3]); // Likely something to do with sample statistics
 
                     } else if (f1 == (byte) 0xFE && f2 == (byte) 0xFE) {
                         if (buffer.get(buffer.position()) == (byte) 0xFE) { buffer.get(); } // WHY?
-                                                                     
+
                     } else if (elemValidFlags(buffer.get(buffer.position() + 2))) {
                         parseVariabilityBytes(f1, f2);
-                        int heartRate = buffer.get() & 0xFF; 
+                        int heartRate = buffer.get() & 0xFF;
                         int calories = buffer.get() & 0xFF;
-                        boolean isActive = (calories & 0x40) == 0x40; 
-                        calories &= 0x3F; 
+                        boolean isActive = (calories & 0x40) == 0x40;
+                        calories &= 0x3F;
 
-                        currentSample.heartRate = heartRate; 
-                        currentSample.calories = calories; 
-                        currentSample.isActive = isActive; 
+                        currentSample.heartRate = heartRate;
+                        currentSample.calories = calories;
+                        currentSample.isActive = isActive;
                         finishCurrentPacket(samples);
 
                         continue;
-                    } 
-                    
+                    }
+
                     if (buffer.position() > buffer.capacity() - 4) {
                         continue;
-                    } 
+                    }
 
                     parseVariabilityBytes(buffer.get(), buffer.get());
                     int heartRate = buffer.get() & 0xFF;
@@ -140,34 +128,29 @@ public class ActivityFileParser {
                     finishCurrentPacket(samples);
 
                     break;
-             
              case (byte) 0xC2: // Or `c2 X` `ac X` as per #2884
-                    buffer.get(new byte[3]); 
-                    
+                    buffer.get(new byte[3]);
                     break;
 
-             case (byte) 0xE2: 
+             case (byte) 0xE2:
                     buffer.get(new byte[9]);
 
                     if (!elemValidFlags(buffer.get(buffer.position()))) {
                         buffer.get(new byte[6]);
                     }
-                    
                     break;
 
              case (byte) 0xE0:
                     // Workout Info
                     for (int i = 0; i < 14; i++) {
-                        buffer.get(); // Attribute # 
+                        buffer.get(); // Attribute #
                         byte size = buffer.get();
-                        buffer.get(new byte[size & 0xFF]); // Can eventually use this, nowhere to pass for now 
+                        buffer.get(new byte[size & 0xFF]); // Can eventually use this, nowhere to pass for now
                     }
-                    
                     break;
 
              case (byte) 0xDD:
                     buffer.get(new byte[20]); // No idea what this is
-                    
                     break;
 
             case (byte) 0xD6:
@@ -177,7 +160,7 @@ public class ActivityFileParser {
                     spo2Sample.setSpo2(buffer.get() & 0xFF);
                     spo2Samples.add(spo2Sample);
                     break;
-            
+
             case (byte) 0xCB: // Very rare, may even be removed
             case (byte) 0xCC: // Around 73 or 74
             case (byte) 0xCF: // Almost always 128 (0x80)
@@ -187,16 +170,13 @@ public class ActivityFileParser {
              default:
                     ;
             }
-
-    
-
         }
         return Map.entry(samples, spo2Samples);
     }
 
     private static boolean elemValidFlags(byte value) {
     for (byte i : new byte[]{(byte) 0xCE, (byte) 0xDD, (byte) 0xCB, (byte) 0xCC, (byte) 0xCF, (byte) 0xD6, (byte) 0xE2})
-        if (value == i) 
+        if (value == i)
             return true;
 
     return false;

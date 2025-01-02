@@ -26,7 +26,7 @@ public class BleNamesResolver {
 	private static SparseArray<String> mValueFormats = new SparseArray<String>();
 	private static SparseArray<String> mAppearance = new SparseArray<String>();
 	private static SparseArray<String> mHeartRateSensorLocation = new SparseArray<String>();
-	
+
 	static public String resolveServiceName(final String uuid)
 	{
 		String result = mServices.get(uuid);
@@ -38,44 +38,44 @@ public class BleNamesResolver {
 	{
 		Integer tmp = Integer.valueOf(format);
 		return mValueFormats.get(tmp, "Unknown Format");
-	}	
-	
+	}
+
 	static public String resolveCharacteristicName(final String uuid)
 	{
 		String result = mCharacteristics.get(uuid);
 		if(result == null) result = "Unknown Characteristic";
 		return result;
 	}
-	
+
 	static public String resolveUuid(final String uuid) {
 		String result = mServices.get(uuid);
 		if(result != null) return "Service: " + result;
-		
+
 		result = mCharacteristics.get(uuid);
 		if(result != null) return "Characteristic: " + result;
-		
+
 		result = "Unknown UUID";
 		return result;
 	}
-	
+
 	static public String resolveAppearance(int key) {
 		Integer tmp = Integer.valueOf(key);
-		return mAppearance.get(tmp, "Unknown Appearance");		
+		return mAppearance.get(tmp, "Unknown Appearance");
 	}
-	
+
 	static public String resolveHeartRateSensorLocation(int key) {
 		Integer tmp = Integer.valueOf(key);
-		return mHeartRateSensorLocation.get(tmp, "Other");		
+		return mHeartRateSensorLocation.get(tmp, "Other");
 	}
-	
+
 	static public boolean isService(final String uuid) {
 		return mServices.containsKey(uuid);
 	}
 
 	static public boolean isCharacteristic(final String uuid) {
 		return mCharacteristics.containsKey(uuid);
-	}	
-	
+	}
+
 	static {
 		mServices.put("00001811-0000-1000-8000-00805f9b34fb", "Alert Notification Service");
 		mServices.put("0000180f-0000-1000-8000-00805f9b34fb", "Battery Service");
@@ -192,7 +192,7 @@ public class BleNamesResolver {
 		mCharacteristics.put("00002a0e-0000-1000-8000-00805f9b34fb", "Time Zone");
 		mCharacteristics.put("00002a07-0000-1000-8000-00805f9b34fb", "Tx Power Level");
 		mCharacteristics.put("00002a45-0000-1000-8000-00805f9b34fb", "Unread Alert Status");
-		
+
 		mCharacteristics.put("14702856-620a-3973-7c78-9cfff0876abd", "(Propr: HPLUS Control)");
 		mCharacteristics.put("14702853-620a-3973-7c78-9cfff0876abd", "(Propr: HPLUS Measurements)");
 		//mCharacteristics.put("0000fff1-0000-1000-8000-00805f9b34fb", "(Propr: Nothing CMF Command Read");
@@ -208,7 +208,7 @@ public class BleNamesResolver {
 		mValueFormats.put(Integer.valueOf(18), "16bit unsigned int");
 		mValueFormats.put(Integer.valueOf(20), "32bit unsigned int");
 		mValueFormats.put(Integer.valueOf(17), "8bit unsigned int");
-		
+
 		// lets add also couple appearance string description
 		// https://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.gap.appearance.xml
 		mAppearance.put(Integer.valueOf(833), "Heart Rate Sensor: Belt");
@@ -222,7 +222,7 @@ public class BleNamesResolver {
 		mAppearance.put(Integer.valueOf(1155), "Cycling: Cadence Sensor");
 		mAppearance.put(Integer.valueOf(1156), "Cycling: Speed and Cadence Sensor");
 		mAppearance.put(Integer.valueOf(1157), "Cycling: Power Sensor");
-		
+
 		mHeartRateSensorLocation.put(Integer.valueOf(0), "Other");
 		mHeartRateSensorLocation.put(Integer.valueOf(1), "Chest");
 		mHeartRateSensorLocation.put(Integer.valueOf(2), "Wrist");

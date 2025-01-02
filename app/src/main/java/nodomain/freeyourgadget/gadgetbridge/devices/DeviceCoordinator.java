@@ -613,7 +613,7 @@ public interface DeviceCoordinator {
     boolean supportsWeather();
 
     /**
-     * Indicates whether the device supports being found by vibrating, 
+     * Indicates whether the device supports being found by vibrating,
      * making some sound or lighting up
      */
     boolean supportsFindDevice();

@@ -22,7 +22,7 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
 
     @Override
     public boolean isChecked() {
-        return child.isChecked(); 
+        return child.isChecked();
     }
 
     @Override
@@ -34,5 +34,4 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
     public void toggle() {
         child.toggle();
     }
-    
 }

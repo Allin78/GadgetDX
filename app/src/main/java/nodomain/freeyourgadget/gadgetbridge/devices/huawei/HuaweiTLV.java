@@ -395,7 +395,7 @@ final class VarInt {
     public String toString() {
         return "VarInt(dValue: " + this.dValue + ", size: " + this.size + ", eValue: " + StringUtils.bytesToHex(this.eValue) + ")";
     }
-    
+
     /**
     * Returns the size of the encoded input value.
     *

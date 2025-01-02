@@ -27,7 +27,7 @@ import android.widget.ListAdapter;
  * interface, it is automatically set as the DragSortListener for
  * the DragSortListView instance.
  */
-public abstract class DragSortCursorAdapter extends CursorAdapter implements 
+public abstract class DragSortCursorAdapter extends CursorAdapter implements
         DragSortListView.DragSortListener {
 
     private static final int REMOVED = -1;
@@ -38,7 +38,7 @@ public abstract class DragSortCursorAdapter extends CursorAdapter implements
     private SparseIntArray mListMapping = new SparseIntArray();
 
     private List<Integer> mRemovedCursorPositions = new ArrayList<Integer>();
-    
+
     @Deprecated
     public DragSortCursorAdapter(Context context, Cursor c) {
         super(context, c);
@@ -120,7 +120,7 @@ public abstract class DragSortCursorAdapter extends CursorAdapter implements
             }
             mListMapping.put(to, cursorFrom);
 
-            cleanMapping();        
+            cleanMapping();
             notifyDataSetChanged();
         }
     }

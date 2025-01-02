@@ -46,7 +46,7 @@ interface IOsmAndAidlCallback {
      *  @param layerId - id of layer point and button associated with
      */
     void onContextMenuButtonClicked(in int buttonId, String pointId, String layerId);
-    
+
     /**
      *  Callback for {@link IOsmAndAidlInterface} registerForVoiceRouterMessages() method.
      */

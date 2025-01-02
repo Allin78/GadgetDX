@@ -59,7 +59,7 @@ public class CheckSums {
     public static int getCRC16(byte[] seq) {
         return getCRC16(seq, 0xFFFF);
     }
-    
+
     public static int getCRC16(byte[] seq, int crc) {
         for (byte b : seq) {
             crc = ((crc >>> 8) | (crc << 8)) & 0xffff;
@@ -71,7 +71,7 @@ public class CheckSums {
         crc &= 0xffff;
         return crc;
     }
-    
+
     public static int getCRC16ansi(byte[] seq) {
         int crc = 0xffff;
         int polynomial = 0xA001;

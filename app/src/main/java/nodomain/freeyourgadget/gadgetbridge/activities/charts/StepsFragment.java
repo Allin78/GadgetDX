@@ -129,6 +129,4 @@ abstract class StepsFragment<T extends ChartsData> extends AbstractChartFragment
             this.day = day;
         }
     }
-
-
 }

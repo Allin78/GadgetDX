@@ -89,7 +89,7 @@ public class MusicManagerActivity extends AbstractGBActivity {
 
     private int maxMusicCount = 0;
     private int maxPlaylistCount = 0;
-    
+
     public GBDevice getGBDevice() {
         return mGBDevice;
     }

@@ -456,7 +456,7 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
             builder.addInt(PACE_MIN, UNIT_SECONDS_PER_KM);
             builder.addFloat(SPEED_MAX, UNIT_KMPH);
             builder.addInt(STEPS, UNIT_STEPS);
-            builder.addShort(STEP_RATE_MAX, UNIT_SPM);					   
+            builder.addShort(STEP_RATE_MAX, UNIT_SPM);
             builder.addByte(HR_AVG, UNIT_BPM);
             builder.addByte(HR_MAX, UNIT_BPM);
             builder.addByte(HR_MIN, UNIT_BPM);
@@ -702,7 +702,7 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
 
         return builder.build();
     }
-    
+
     @Nullable
     private XiaomiSimpleActivityParser getRowingParser(final XiaomiActivityFileId fileId) {
         final int version = fileId.getVersion();
@@ -737,8 +737,8 @@ public class WorkoutSummaryParser extends XiaomiActivityParser implements Activi
         builder.addUnknown(4);   // STROKE_RATE_MAX, UNIT_STROKES_PER_MINUTE
         builder.addUnknown(31);
         return builder.build();
-    }    
-    
+    }
+
     @Nullable
     private XiaomiSimpleActivityParser getTreadmillParser(final XiaomiActivityFileId fileId) {
         final int version = fileId.getVersion();

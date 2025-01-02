@@ -4,7 +4,7 @@ package org.bouncycastle.shaded.crypto;
  * this exception is thrown whenever we find something we don't expect in a
  * message.
  */
-public class InvalidCipherTextException 
+public class InvalidCipherTextException
     extends CryptoException
 {
     /**

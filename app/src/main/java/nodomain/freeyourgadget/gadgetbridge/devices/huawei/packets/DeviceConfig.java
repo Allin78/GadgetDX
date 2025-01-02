@@ -1126,7 +1126,7 @@ public class DeviceConfig {
                             .put("groupName", "health_group_name")
                             .put("groupOp", 2)
                             .put("groupType", 256)
-                            .put("peerDeviceId", new String(selfAuthId, StandardCharsets.UTF_8)) 
+                            .put("peerDeviceId", new String(selfAuthId, StandardCharsets.UTF_8))
                             .put("connDeviceId", new String(selfAuthId, StandardCharsets.UTF_8))
                             .put("appId", "com.huawei.health")
                             .put("ownerName", "");
@@ -1489,9 +1489,7 @@ public class DeviceConfig {
                         .put(0x81, tlvList);
             }
         }
-        
     }
-
 
     public static class SettingRelated {
         public static final int id = 0x31;

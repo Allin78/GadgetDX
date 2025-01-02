@@ -30,7 +30,7 @@ public class AmazfitBipLiteSupport extends AmazfitBipSupport {
     public byte getCryptFlags() {
         return (byte) 0x80;
     }
-    
+
     @Override
     protected byte getAuthFlags() {
         return 0x00;

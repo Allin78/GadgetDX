@@ -121,7 +121,7 @@ public class CyclingSensorSupport extends CyclingSensorBaseSupport {
         );
         persistenceInterval = deviceSpecificPrefs.getInt(DeviceSettingsPreferenceConst.PREF_CYCLING_SENSOR_PERSISTENCE_INTERVAL, 60) * 1000;
         nextPersistenceTimestamp = 0;
-        
+
         float wheelDiameter = deviceSpecificPrefs.getFloat(DeviceSettingsPreferenceConst.PREF_CYCLING_SENSOR_WHEEL_DIAMETER, 29);
         wheelCircumferenceMeters = (float)(wheelDiameter * 2.54 * Math.PI) / 100;
     }

@@ -28,7 +28,7 @@ public interface BlockCipherPadding
      * add the pad bytes to the passed in block, returning the
      * number of bytes added.
      * <p>
-     * Note: this assumes that the last block of plain text is always 
+     * Note: this assumes that the last block of plain text is always
      * passed to it inside in. i.e. if inOff is zero, indicating the
      * entire block is to be overwritten with padding the value of in
      * should be the same as the last block of plain text. The reason

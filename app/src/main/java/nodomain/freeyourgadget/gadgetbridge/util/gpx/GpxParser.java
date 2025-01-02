@@ -214,7 +214,7 @@ public class GpxParser {
                         parseExtensions(trackPointBuilder);
                         continue;
                 }
-            } 
+            }
 
             eventType = parser.next();
         }

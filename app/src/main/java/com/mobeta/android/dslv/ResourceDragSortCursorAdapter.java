@@ -36,9 +36,9 @@ public abstract class ResourceDragSortCursorAdapter extends DragSortCursorAdapte
     private int mLayout;
 
     private int mDropDownLayout;
-    
+
     private LayoutInflater mInflater;
-    
+
     /**
      * Constructor the enables auto-requery.
      *
@@ -58,7 +58,7 @@ public abstract class ResourceDragSortCursorAdapter extends DragSortCursorAdapte
         mLayout = mDropDownLayout = layout;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-    
+
     /**
      * Constructor with default behavior as per
      * {@link CursorAdapter#CursorAdapter(Context, Cursor, boolean)}; it is recommended
@@ -75,9 +75,9 @@ public abstract class ResourceDragSortCursorAdapter extends DragSortCursorAdapte
      *                    cursor whenever it changes so the most recent
      *                    data is always displayed.  Using true here is discouraged.
      */
-    public ResourceDragSortCursorAdapter(Context context, int layout, Cursor c, 
+    public ResourceDragSortCursorAdapter(Context context, int layout, Cursor c,
             boolean autoRequery) {
-        
+
         super(context, c, autoRequery);
         mLayout = mDropDownLayout = layout;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -102,7 +102,7 @@ public abstract class ResourceDragSortCursorAdapter extends DragSortCursorAdapte
 
     /**
      * Inflates view(s) from the specified XML file.
-     * 
+     *
      * @see android.widget.CursorAdapter#newView(android.content.Context,
      *      android.database.Cursor, ViewGroup)
      */
@@ -124,7 +124,7 @@ public abstract class ResourceDragSortCursorAdapter extends DragSortCursorAdapte
     public void setViewResource(int layout) {
         mLayout = layout;
     }
-    
+
     /**
      * <p>Sets the layout resource of the drop down views.</p>
      *

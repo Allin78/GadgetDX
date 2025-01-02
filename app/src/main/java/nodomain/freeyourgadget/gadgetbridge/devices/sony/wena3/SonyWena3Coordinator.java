@@ -109,7 +109,7 @@ public class SonyWena3Coordinator extends AbstractBLEDeviceCoordinator {
     protected void deleteDevice(@NonNull GBDevice gbDevice, @NonNull Device device, @NonNull DaoSession session) {
         Long deviceId = device.getId();
         QueryBuilder<?> qb;
-        
+
         qb = session.getWena3HeartRateSampleDao().queryBuilder();
         qb.where(Wena3HeartRateSampleDao.Properties.DeviceId.eq(deviceId)).buildDelete().executeDeleteWithoutDetachingEntities();
         qb = session.getWena3BehaviorSampleDao().queryBuilder();

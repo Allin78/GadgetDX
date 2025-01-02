@@ -80,7 +80,7 @@
                 android:layout_marginHorizontal="2dp"
                 android:text="&lt;"
                 tools:ignore="HardcodedText"/>
-            
+
             <Button
                 android:id="@+id/charts_next_day"
                 android:layout_width="wrap_content"

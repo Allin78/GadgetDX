@@ -46,7 +46,7 @@ public class HuaweiP2PCalendarService extends HuaweiBaseP2PService {
     public final int OPERATION_ADD = 1;
     public final int OPERATION_DELETE = 2;
     public final int OPERATION_UPDATE = 3;
-    
+
     public static final String MODULE = "hw.unitedevice.calendarapp";
 
     private final AtomicBoolean isRegistered = new AtomicBoolean(false);

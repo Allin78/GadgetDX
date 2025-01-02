@@ -77,7 +77,7 @@ public class ZeppOsActivityDetailsParser extends AbstractHuamiActivityDetailsPar
 
         // Keep track of unknown type codes so we can print them without spamming the logs
         final Map<Byte, Integer> unknownTypeCodes = new HashMap<>();
-        
+
         while (buf.position() < buf.limit()) {
             final byte typeCode = buf.get();
             final byte length = buf.get();

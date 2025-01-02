@@ -20,7 +20,7 @@ public abstract class DefaultMultiBlockCipher
 
         int resultLen = 0;
         int blockSize = this.getMultiBlockSize();
-        
+
         for (int i = 0; i != blockCount; i++)
         {
             resultLen += this.processBlock(in, inOff, out, outOff + resultLen);

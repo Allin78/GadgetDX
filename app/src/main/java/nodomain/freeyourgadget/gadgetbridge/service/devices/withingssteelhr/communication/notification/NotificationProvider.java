@@ -180,5 +180,5 @@ public class NotificationProvider {
                 return AncsConstants.CATEGORY_ID_OTHER;
         }
     }
-    
+
 }

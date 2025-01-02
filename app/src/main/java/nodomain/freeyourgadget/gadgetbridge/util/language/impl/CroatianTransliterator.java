@@ -14,21 +14,20 @@
 
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>. */
-    package nodomain.freeyourgadget.gadgetbridge.util.language.impl;
+package nodomain.freeyourgadget.gadgetbridge.util.language.impl;
 
-    import java.util.HashMap;
-    
-    import nodomain.freeyourgadget.gadgetbridge.util.language.SimpleTransliterator;
-    
-    public class CroatianTransliterator extends SimpleTransliterator {
-        public CroatianTransliterator() {
-            super(new HashMap<Character, String>() {{
-                put('Č', "C");  put('č', "c");
-                put('Ć', "C");  put('ć', "c");
-                put('Đ', "D");  put('đ', "d");
-                put('Š', "S");  put('š', "s");
-                put('Ž', "z");  put('ž', "z");
-            }});
-        }
+import java.util.HashMap;
+
+import nodomain.freeyourgadget.gadgetbridge.util.language.SimpleTransliterator;
+
+public class CroatianTransliterator extends SimpleTransliterator {
+    public CroatianTransliterator() {
+        super(new HashMap<Character, String>() {{
+            put('Č', "C");  put('č', "c");
+            put('Ć', "C");  put('ć', "c");
+            put('Đ', "D");  put('đ', "d");
+            put('Š', "S");  put('š', "s");
+            put('Ž', "z");  put('ž', "z");
+        }});
     }
-    
+}

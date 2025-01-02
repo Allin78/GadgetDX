@@ -1188,7 +1188,7 @@ public class GoogleMapsNotificationHandler {
             Notification notification = sbn.getNotification();
             if (!NotificationCompat.getLocalOnly(notification))
                 return false; // ignore non-local notifications
-            
+
             String distance = (notification.extras.get("android.title")==null) ? "" :
                     notification.extras.get("android.title").toString(); // eg 100 yd
             String instruction = (notification.extras.get("android.text")==null) ? "" :

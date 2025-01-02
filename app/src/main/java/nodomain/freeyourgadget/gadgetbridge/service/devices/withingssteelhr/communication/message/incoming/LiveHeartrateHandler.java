@@ -64,9 +64,9 @@ public class LiveHeartrateHandler implements IncomingMessageHandler {
         if (heartRate > 0) {
             saveHeartRateData(heartRate);
         }
-    
+
     }
-    
+
     private void saveHeartRateData(int heartRate) {
         WithingsSteelHRActivitySample sample = new WithingsSteelHRActivitySample();
         sample.setTimestamp((int) (GregorianCalendar.getInstance().getTimeInMillis() / 1000L));
