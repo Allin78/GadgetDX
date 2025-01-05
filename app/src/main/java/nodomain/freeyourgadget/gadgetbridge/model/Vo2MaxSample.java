@@ -20,7 +20,8 @@ public interface Vo2MaxSample extends TimeSample {
     enum Type {
         ANY,
         RUNNING,
-        CYCLING
+        CYCLING,
+        WALKING
     }
 
     Type getType();

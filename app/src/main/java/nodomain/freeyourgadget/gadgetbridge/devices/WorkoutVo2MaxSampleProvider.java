@@ -148,6 +148,17 @@ public class WorkoutVo2MaxSampleProvider implements Vo2MaxSampleProvider<Vo2MaxS
                 ));
             }
         }
+
+        if (coordinator.supportsVO2MaxWalking()) {
+            if (type == Vo2MaxSample.Type.ANY || type == Vo2MaxSample.Type.WALKING) {
+                codes.addAll(Arrays.asList(
+                        ActivityKind.INDOOR_WALKING.getCode(),
+                        ActivityKind.OUTDOOR_WALKING.getCode(),
+                        ActivityKind.WALKING.getCode()
+                ));
+            }
+        }
+
         if (coordinator.supportsVO2MaxCycling()) {
             if (type == Vo2MaxSample.Type.ANY || type == Vo2MaxSample.Type.CYCLING) {
                 codes.addAll(Arrays.asList(
@@ -255,6 +266,11 @@ public class WorkoutVo2MaxSampleProvider implements Vo2MaxSampleProvider<Vo2MaxS
                 case CROSS_COUNTRY_RUNNING:
                 case RUNNING:
                     type = Vo2MaxSample.Type.RUNNING;
+                    break;
+                case INDOOR_WALKING:
+                case OUTDOOR_WALKING:
+                case WALKING:
+                    type = Vo2MaxSample.Type.WALKING;
                     break;
                 case CYCLING:
                 case INDOOR_CYCLING:

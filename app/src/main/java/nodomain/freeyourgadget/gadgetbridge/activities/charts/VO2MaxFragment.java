@@ -51,13 +51,16 @@ public class VO2MaxFragment extends AbstractChartFragment<VO2MaxFragment.VO2MaxD
 
     private TextView mDateView;
     private TextView vo2MaxRunningValue;
+    private TextView vo2MaxWalkingValue;
     private TextView vo2MaxCyclingValue;
     private ImageView vo2MaxRunningGauge;
+    private ImageView vo2MaxWalkingGauge;
     private ImageView vo2MaxCyclingGauge;
     protected GaugeDrawer gaugeDrawer = new GaugeDrawer();
     private LineChart vo2MaxChart;
     private RelativeLayout vo2maxCyclingWrapper;
     private RelativeLayout vo2maxRunningWrapper;
+    private RelativeLayout vo2maxWalkingWrapper;
     private GridLayout tilesGridWrapper;
     private int tsFrom;
     GBDevice device;
@@ -72,12 +75,15 @@ public class VO2MaxFragment extends AbstractChartFragment<VO2MaxFragment.VO2MaxD
 
         mDateView = rootView.findViewById(R.id.vo2max_date_view);
         vo2MaxRunningValue = rootView.findViewById(R.id.vo2max_running_gauge_value);
+        vo2MaxWalkingValue = rootView.findViewById(R.id.vo2max_walking_gauge_value);
         vo2MaxCyclingValue = rootView.findViewById(R.id.vo2max_cycling_gauge_value);
         vo2MaxRunningGauge = rootView.findViewById(R.id.vo2max_running_gauge);
+        vo2MaxWalkingGauge = rootView.findViewById(R.id.vo2max_walking_gauge);
         vo2MaxCyclingGauge = rootView.findViewById(R.id.vo2max_cycling_gauge);
         vo2MaxChart = rootView.findViewById(R.id.vo2max_chart);
         vo2maxCyclingWrapper = rootView.findViewById(R.id.vo2max_cycling_card_layout);
         vo2maxRunningWrapper = rootView.findViewById(R.id.vo2max_running_card_layout);
+        vo2maxWalkingWrapper = rootView.findViewById(R.id.vo2max_walking_card_layout);
         tilesGridWrapper = rootView.findViewById(R.id.tiles_grid_wrapper);
         device = getChartsHost().getDevice();
         if (!supportsVO2MaxCycling(device)) {
@@ -85,6 +91,9 @@ public class VO2MaxFragment extends AbstractChartFragment<VO2MaxFragment.VO2MaxD
         }
         if (!supportsVO2MaxRunning(device)) {
             tilesGridWrapper.removeView(vo2maxRunningWrapper);
+        }
+        if (!supportsVO2MaxWalking(device)) {
+            tilesGridWrapper.removeView(vo2maxWalkingWrapper);
         }
         setupVO2MaxChart();
         refresh();
@@ -102,6 +111,11 @@ public class VO2MaxFragment extends AbstractChartFragment<VO2MaxFragment.VO2MaxD
     public boolean supportsVO2MaxRunning(GBDevice device) {
         DeviceCoordinator coordinator = device.getDeviceCoordinator();
         return coordinator != null && coordinator.supportsVO2MaxRunning();
+    }
+
+    public boolean supportsVO2MaxWalking(GBDevice device) {
+        DeviceCoordinator coordinator = device.getDeviceCoordinator();
+        return coordinator != null && coordinator.supportsVO2MaxWalking();
     }
 
     @Override
@@ -147,12 +161,16 @@ public class VO2MaxFragment extends AbstractChartFragment<VO2MaxFragment.VO2MaxD
         mDateView.setText(formattedDate);
 
         List<Entry> runningEntries = new ArrayList<>();
+        List<Entry> walkingEntries = new ArrayList<>();
         List<Entry> cyclingEntries = new ArrayList<>();
         vo2MaxData.records.forEach((record) -> {
             float nd = (float) (record.timestamp - this.tsFrom) / (60 * 60 * 24);
             switch (record.type) {
                 case RUNNING:
                     runningEntries.add(new Entry(nd, record.value));
+                    break;
+                case WALKING:
+                    walkingEntries.add(new Entry(nd, record.value));
                     break;
                 case CYCLING:
                     cyclingEntries.add(new Entry(nd, record.value));
@@ -169,6 +187,13 @@ public class VO2MaxFragment extends AbstractChartFragment<VO2MaxFragment.VO2MaxD
             vo2MaxRunningValue.setText(String.valueOf(latestRunningRecord != null ? Math.round(latestRunningRecord.value) : "-"));
             gaugeDrawer.drawSegmentedGauge(vo2MaxRunningGauge, colors, segments, runningVO2MaxValue, false, true);
             lineDataSets.add(createDataSet(runningEntries, getResources().getColor(R.color.vo2max_running_char_line_color), getString(R.string.vo2max_running)));
+        }
+        if (supportsVO2MaxWalking(device)) {
+            VO2MaxRecord latestWalkingRecord = vo2MaxData.getLatestValue(Vo2MaxSample.Type.WALKING);
+            float walkingVO2MaxValue = calculateVO2maxGaugeValue(vo2MaxRanges, latestWalkingRecord != null ? latestWalkingRecord.value : 0);
+            vo2MaxWalkingValue.setText(String.valueOf(latestWalkingRecord != null ? Math.round(latestWalkingRecord.value) : "-"));
+            gaugeDrawer.drawSegmentedGauge(vo2MaxWalkingGauge, colors, segments, walkingVO2MaxValue, false, true);
+            lineDataSets.add(createDataSet(walkingEntries, getResources().getColor(R.color.vo2max_walking_char_line_color), getString(R.string.vo2max_walking)));
         }
         if (supportsVO2MaxCycling(device)) {
             VO2MaxRecord latestCyclingRecord = vo2MaxData.getLatestValue(Vo2MaxSample.Type.CYCLING);

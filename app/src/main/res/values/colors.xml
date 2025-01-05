@@ -55,6 +55,7 @@
     <color name="hrv_status_poor" type="color">#be03fc</color>
     <color name="hrv_status_char_line_color" type="color">#d12a2a</color>
     <color name="vo2max_running_char_line_color" type="color">#46acea</color>
+    <color name="vo2max_walking_char_line_color" type="color">#CDDC39</color>
     <color name="vo2max_cycling_char_line_color" type="color">#59b22c</color>
     <color name="vo2max_value_poor_color" type="color">#d93832</color>
     <color name="vo2max_value_fair_color" type="color">#ffa703</color>

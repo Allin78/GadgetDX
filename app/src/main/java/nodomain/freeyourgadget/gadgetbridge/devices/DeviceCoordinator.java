@@ -226,6 +226,7 @@ public interface DeviceCoordinator {
     boolean supportsVO2Max();
     boolean supportsVO2MaxCycling();
     boolean supportsVO2MaxRunning();
+    boolean supportsVO2MaxWalking();
     boolean supportsSleepMeasurement();
     boolean supportsStepCounter();
     boolean supportsSpeedzones();

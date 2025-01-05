@@ -278,6 +278,11 @@ public abstract class GarminCoordinator extends AbstractBLEDeviceCoordinator {
     }
 
     @Override
+    public boolean supportsVO2MaxWalking() {
+        return true;
+    }
+
+    @Override
     public boolean supportsActiveCalories() {
         return true;
     }
