@@ -32,7 +32,6 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
@@ -41,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +55,7 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityPoint;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.util.ChartUtils;
 
 
 public class ActivitySummariesChartFragment extends AbstractActivityChartFragment<ChartsData> {
@@ -267,27 +266,12 @@ public class ActivitySummariesChartFragment extends AbstractActivityChartFragmen
                 tsTranslation = new TimestampTranslation();
             }
 
-            final List<Entry> heartRateEntries = new ArrayList<>(activityPoints.size());
-            final List<ILineDataSet> heartRateDataSets = new ArrayList<>();
-            int lastTsShorten = 0;
-            for (final ActivityPoint activityPoint : activityPoints) {
-                int tsShorten = tsTranslation.shorten((int) (activityPoint.getTime().getTime() / 1000));
-                if (lastTsShorten == 0 || (tsShorten - lastTsShorten) <= 60 * HeartRateUtils.MAX_HR_MEASUREMENTS_GAP_MINUTES) {
-                    heartRateEntries.add(new Entry(tsShorten, activityPoint.getHeartRate()));
-                } else {
-                    if (!heartRateEntries.isEmpty()) {
-                        List<Entry> clone = new ArrayList<>(heartRateEntries.size());
-                        clone.addAll(heartRateEntries);
-                        heartRateDataSets.add(createHeartrateSet(clone, "Heart Rate"));
-                        heartRateEntries.clear();
-                    }
-                }
-                lastTsShorten = tsShorten;
-                heartRateEntries.add(new Entry(tsShorten, activityPoint.getHeartRate()));
-            }
-            if (!heartRateEntries.isEmpty()) {
-                heartRateDataSets.add(createHeartrateSet(heartRateEntries, "Heart Rate"));
-            }
+            final List<Entry> heartRateEntries = activityPoints.stream()
+                    .filter(ap -> HeartRateUtils.getInstance().isValidHeartRateValue(ap.getHeartRate()))
+                    .map(ap -> new Entry(tsTranslation.shorten((int) (ap.getTime().getTime() / 1000)), ap.getHeartRate()))
+                    .collect(Collectors.toList());
+
+            final List<ILineDataSet> heartRateDataSets = ChartUtils.findGaps(heartRateEntries, l -> createHeartrateSet(l, "Heart Rate"));
 
             if (activitySamplesData != null) {
                 // if we have activity samples, replace the heart rate dataset

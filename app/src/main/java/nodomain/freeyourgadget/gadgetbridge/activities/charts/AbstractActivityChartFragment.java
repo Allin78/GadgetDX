@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -46,6 +47,7 @@ import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
+import nodomain.freeyourgadget.gadgetbridge.util.ChartUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public abstract class AbstractActivityChartFragment<D extends ChartsData> extends AbstractChartFragment<D>  {
@@ -270,33 +272,20 @@ public abstract class AbstractActivityChartFragment<D extends ChartsData> extend
         }
 
         boolean hr = supportsHeartrate(gbDevice);
-        final List<Entry> heartRateLineEntries = new ArrayList<>();
-        final List<ILineDataSet> heartRateDataSets = new ArrayList<>();
-        int lastTsShorten = 0;
+        final List<ILineDataSet> heartRateDataSets;
         HeartRateUtils heartRateUtilsInstance = HeartRateUtils.getInstance();
 
         // Currently only for HR
         if (hr) {
-            for (ActivitySample sample : highResSamples) {
-                if (sample.getKind() != ActivityKind.NOT_WORN && heartRateUtilsInstance.isValidHeartRateValue(sample.getHeartRate())) {
-                    int tsShorten = tsTranslation.shorten(sample.getTimestamp());
-                    if (lastTsShorten == 0 || (tsShorten - lastTsShorten) <= 60 * HeartRateUtils.MAX_HR_MEASUREMENTS_GAP_MINUTES) {
-                        heartRateLineEntries.add(new Entry(tsShorten, sample.getHeartRate()));
-                    } else {
-                        if (!heartRateLineEntries.isEmpty()) {
-                            List<Entry> clone = new ArrayList<>(heartRateLineEntries.size());
-                            clone.addAll(heartRateLineEntries);
-                            heartRateDataSets.add(createHeartrateSet(clone, "Heart Rate"));
-                            heartRateLineEntries.clear();
-                        }
-                    }
-                    lastTsShorten = tsShorten;
-                    heartRateLineEntries.add(new Entry(tsShorten, sample.getHeartRate()));
-                }
-            }
-        }
-        if (!heartRateLineEntries.isEmpty()) {
-            heartRateDataSets.add(createHeartrateSet(heartRateLineEntries, "Heart Rate"));
+            final List<Entry> heartRateLineEntries = highResSamples.stream()
+                    .filter(s -> s.getKind() != ActivityKind.NOT_WORN)
+                    .filter(s -> heartRateUtilsInstance.isValidHeartRateValue(s.getHeartRate()))
+                    .map(s -> new Entry(tsTranslation.shorten(s.getTimestamp()), s.getHeartRate()))
+                    .collect(Collectors.toList());
+
+            heartRateDataSets = ChartUtils.findGaps(heartRateLineEntries, l -> createHeartrateSet(l, "Heart Rate"));
+        } else {
+            heartRateDataSets = new ArrayList<>();
         }
 
         // convert Entry Lists to Datasets

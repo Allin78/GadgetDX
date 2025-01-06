@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
@@ -36,10 +37,10 @@ import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
 import nodomain.freeyourgadget.gadgetbridge.devices.SampleProvider;
 import nodomain.freeyourgadget.gadgetbridge.entities.AbstractActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
-import nodomain.freeyourgadget.gadgetbridge.model.ActivityKind;
 import nodomain.freeyourgadget.gadgetbridge.model.ActivitySample;
 import nodomain.freeyourgadget.gadgetbridge.model.HeartRateSample;
 import nodomain.freeyourgadget.gadgetbridge.util.Accumulator;
+import nodomain.freeyourgadget.gadgetbridge.util.ChartUtils;
 import nodomain.freeyourgadget.gadgetbridge.util.Prefs;
 
 public class HeartRateDailyFragment extends AbstractChartFragment<HeartRateDailyFragment.HeartRateData> {
@@ -239,36 +240,16 @@ public class HeartRateDailyFragment extends AbstractChartFragment<HeartRateDaily
 
         HeartRateUtils heartRateUtilsInstance = HeartRateUtils.getInstance();
         final TimestampTranslation tsTranslation = new TimestampTranslation();
-        final List<Entry> lineEntries = new ArrayList<>();
         List<? extends ActivitySample> samples = data.samples;
         final Accumulator accumulator = new Accumulator();
 
-        final List<ILineDataSet> lineDataSets = new ArrayList<>();
-        int lastTsShorten = 0;
-        for (int i =0; i < samples.size(); i++) {
-            final ActivitySample sample = samples.get(i);
-            final int tsShorten = tsTranslation.shorten(sample.getTimestamp());
-            if (!heartRateUtilsInstance.isValidHeartRateValue(sample.getHeartRate())) {
-                continue;
-            }
-            if (lastTsShorten == 0 || (tsShorten - lastTsShorten) <= 60 * HeartRateUtils.MAX_HR_MEASUREMENTS_GAP_MINUTES) {
-                lineEntries.add(new Entry(tsShorten, sample.getHeartRate()));
-            } else {
-                if (!lineEntries.isEmpty()) {
-                    List<Entry> clone = new ArrayList<>(lineEntries.size());
-                    clone.addAll(lineEntries);
-                    lineDataSets.add(createHeartRateDataSet(clone));
-                    lineEntries.clear();
-                }
-            }
-            lastTsShorten = tsShorten;
-            lineEntries.add(new Entry(tsShorten, sample.getHeartRate()));
-            accumulator.add(sample.getHeartRate());
-        }
+        final List<Entry> heartRateLineEntries = samples.stream()
+                .filter(s -> heartRateUtilsInstance.isValidHeartRateValue(s.getHeartRate()))
+                .peek(s -> accumulator.add(s.getHeartRate()))
+                .map(s -> new Entry(tsTranslation.shorten(s.getTimestamp()), s.getHeartRate()))
+                .collect(Collectors.toList());
 
-        if (!lineEntries.isEmpty()) {
-            lineDataSets.add(createHeartRateDataSet(lineEntries));
-        }
+        final List<ILineDataSet> lineDataSets = ChartUtils.findGaps(heartRateLineEntries, this::createHeartRateDataSet);
 
         final int average = accumulator.getCount() > 0 ? (int) Math.round(accumulator.getAverage()) : -1;
         final int minimum = accumulator.getCount() > 0 ? (int) Math.round(accumulator.getMin()) : -1;
