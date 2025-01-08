@@ -76,7 +76,7 @@ android {
         //noinspection OldTargetApi
         targetSdkVersion 34
         compileSdk 34
-        minSdkVersion 26
+        minSdkVersion 21
 
         // Note: always bump BOTH versionCode and versionName!
         versionName "0.83.1"
