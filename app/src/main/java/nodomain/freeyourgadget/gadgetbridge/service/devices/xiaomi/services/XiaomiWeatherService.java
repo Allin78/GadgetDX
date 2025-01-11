@@ -57,7 +57,7 @@ public class XiaomiWeatherService extends AbstractXiaomiService {
     private static final int CMD_UPDATE_DAILY_FORECAST = 1;
     private static final int CMD_UPDATE_HOURLY_FORECAST = 2;
     private static final int CMD_REQUEST_CONDITIONS_FOR_LOCATION = 3;
-    private static final int CMD_GET_LOCATIONS = 5;
+    public static final int CMD_GET_LOCATIONS = 5;
     private static final int CMD_SET_LOCATIONS = 6;
     private static final int CMD_ADD_LOCATION = 7;
     private static final int CMD_REMOVE_LOCATIONS = 8;

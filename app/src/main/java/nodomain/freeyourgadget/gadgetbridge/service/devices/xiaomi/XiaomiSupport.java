@@ -260,8 +260,7 @@ public class XiaomiSupport extends AbstractDeviceSupport {
 
     @Override
     public void onTestNewFunction() {
-        //sendCommand("test new function", 2, 29);
-        parseAllActivityFilesFromStorage();
+        sendCommand("test get weather locations", XiaomiWeatherService.COMMAND_TYPE, XiaomiWeatherService.CMD_GET_LOCATIONS);
     }
 
     @Override
