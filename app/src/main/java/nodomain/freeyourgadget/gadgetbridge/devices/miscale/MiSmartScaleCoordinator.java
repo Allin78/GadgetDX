@@ -123,6 +123,11 @@ public class MiSmartScaleCoordinator extends AbstractBLEDeviceCoordinator {
         return false;
     }
 
+    @Override
+    public boolean supportsActivityDataFetching() {
+        return true;
+    }
+
     @NonNull
     @Override
     public Class<? extends DeviceSupport> getDeviceSupportClass() {
