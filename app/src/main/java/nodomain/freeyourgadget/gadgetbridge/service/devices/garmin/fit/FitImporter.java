@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -391,6 +392,8 @@ public class FitImporter {
             GB.toast(context, "Error finding base summary", Toast.LENGTH_LONG, GB.ERROR, e);
             return;
         }
+
+        summary.setFileCreateTime(new Date(fileId.getTimeCreated() * 1000L));
 
         workoutParser.updateSummary(summary);
 

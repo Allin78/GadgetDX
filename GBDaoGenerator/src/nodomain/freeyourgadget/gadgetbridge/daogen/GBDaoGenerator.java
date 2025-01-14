@@ -1219,6 +1219,7 @@ public class GBDaoGenerator {
                 "This class represents the summary of a user's activity event. I.e. a walk, hike, a bicycle tour, etc.");
 
         summary.addStringProperty("name").codeBeforeGetter(OVERRIDE);
+        summary.addDateProperty("fileCreateTime");
         summary.addDateProperty("startTime").notNull().codeBeforeGetter(OVERRIDE);
         summary.addDateProperty("endTime").notNull().codeBeforeGetter(OVERRIDE);
         summary.addIntProperty("activityKind").notNull().codeBeforeGetter(OVERRIDE);

@@ -57,7 +57,20 @@ public interface ActivitySummaryParser {
         qb.where(BaseActivitySummaryDao.Properties.StartTime.eq(new Date(timestampSeconds * 1000L)));
         qb.where(BaseActivitySummaryDao.Properties.DeviceId.eq(deviceId));
         qb.where(BaseActivitySummaryDao.Properties.UserId.eq(user.getId()));
-        final List<BaseActivitySummary> summaries = qb.build().list();
+        List<BaseActivitySummary> summaries = qb
+                .where(BaseActivitySummaryDao.Properties.FileCreateTime.eq(new Date(timestampSeconds * 1000L)))
+                .where(BaseActivitySummaryDao.Properties.DeviceId.eq(deviceId))
+                .where(BaseActivitySummaryDao.Properties.UserId.eq(user.getId()))
+                .list();
+
+        if (summaries.isEmpty()) {
+            // Fall back: Query by startTime instead of fileCreateTime
+            summaries = qb
+                    .where(BaseActivitySummaryDao.Properties.StartTime.eq(new Date(timestampSeconds * 1000L)))
+                    .where(BaseActivitySummaryDao.Properties.DeviceId.eq(deviceId))
+                    .where(BaseActivitySummaryDao.Properties.UserId.eq(user.getId()))
+                    .list();
+        }
         if (summaries.isEmpty()) {
             final BaseActivitySummary summary = new BaseActivitySummary();
             summary.setStartTime(new Date(timestampSeconds * 1000L));
