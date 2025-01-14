@@ -1,6 +1,7 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.garmin;
 
 import static nodomain.freeyourgadget.gadgetbridge.model.ActivitySummaryEntries.*;
+import static nodomain.freeyourgadget.gadgetbridge.service.devices.garmin.GarminTimeUtils.GARMIN_TIME_EPOCH;
 
 import android.content.Context;
 
@@ -156,6 +157,9 @@ public class GarminWorkoutParser implements ActivitySummaryParser {
         }
         summary.setActivityKind(activityKind.getCode());
 
+        if (session.getStartTime() != null) {
+            summary.setStartTime(new Date((session.getStartTime() + GARMIN_TIME_EPOCH) * 1000));
+        }
         if (session.getTotalElapsedTime() != null) {
             summary.setEndTime(new Date(summary.getStartTime().getTime() + session.getTotalElapsedTime().intValue()));
         }
