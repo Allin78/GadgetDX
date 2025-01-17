@@ -499,6 +499,7 @@ public class XiaomiWeatherService extends AbstractXiaomiService {
         if (!locationsInitialized) {
             LOG.debug("Received request from device but multi location weather support still isn't initialized");
             getSupport().sendCommand("get weather locations", COMMAND_TYPE, CMD_GET_LOCATIONS);
+            locationsInitialized = true; // remind only once
         }
 
         if (command.hasStatus() && command.getStatus() != 0) {
