@@ -554,7 +554,7 @@ public class NotificationListener extends NotificationListenerService {
         final boolean shouldIgnore;
         if (start.isBefore(end)) {
             // eg. 06:00 -> 22:00
-            shouldIgnore = now.isAfter(start) && now.isBefore(end);
+            shouldIgnore = now.isBefore(start) || now.isAfter(end);
         } else {
             // goes past midnight, eg. 22:00 -> 06:00
             shouldIgnore = now.isAfter(start) || now.isBefore(end);
