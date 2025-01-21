@@ -19,6 +19,7 @@ package nodomain.freeyourgadget.gadgetbridge.service.devices.xiaomi.activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +32,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
+import nodomain.freeyourgadget.gadgetbridge.GBApplication;
 import nodomain.freeyourgadget.gadgetbridge.R;
+import nodomain.freeyourgadget.gadgetbridge.database.DBHandler;
+import nodomain.freeyourgadget.gadgetbridge.devices.PendingFileProvider;
+import nodomain.freeyourgadget.gadgetbridge.entities.DaoSession;
 import nodomain.freeyourgadget.gadgetbridge.impl.GBDevice;
 import nodomain.freeyourgadget.gadgetbridge.service.btle.BLETypeConversions;
 import nodomain.freeyourgadget.gadgetbridge.service.devices.xiaomi.XiaomiPreferences;
@@ -126,29 +132,28 @@ public class XiaomiActivityFileFetcher {
         final byte[] fileIdBytes = Arrays.copyOfRange(data, 0, 7);
         final XiaomiActivityFileId fileId = XiaomiActivityFileId.from(fileIdBytes);
 
-        dumpBytesToExternalStorage(fileId, data);
-
-        if (!XiaomiPreferences.keepActivityDataOnDevice(mHealthService.getSupport().getDevice())) {
-            LOG.debug("Acking recorded data {}", fileId);
-            // TODO is this too early?
-            mHealthService.ackRecordedData(fileId);
-        }
-
-        final XiaomiActivityParser activityParser = XiaomiActivityParser.create(fileId);
-        if (activityParser == null) {
-            LOG.warn("Failed to find parser for {}", fileId);
+        final String path = dumpBytesToExternalStorage(fileId, data);
+        if (path == null) {
+            // We failed to persist it - move on to the next
             triggerNextFetch();
             return;
         }
 
-        try {
-            if (activityParser.parse(mHealthService.getSupport(), fileId, data)) {
-                LOG.info("Successfully parsed {}", fileId);
-            } else {
-                LOG.warn("Failed to parse {}", fileId);
-            }
-        } catch (final Exception ex) {
-            LOG.error("Exception while parsing {}", fileId, ex);
+        try (DBHandler handler = GBApplication.acquireDB()) {
+            final DaoSession session = handler.getDaoSession();
+
+            final PendingFileProvider pendingFileProvider = new PendingFileProvider(mHealthService.getSupport().getDevice(), session);
+
+            pendingFileProvider.addPendingFile(path);
+        } catch (final Exception e) {
+            GB.toast(mHealthService.getSupport().getContext(), "Error saving pending file", Toast.LENGTH_LONG, GB.ERROR, e);
+            triggerNextFetch();
+            return;
+        }
+
+        if (!XiaomiPreferences.keepActivityDataOnDevice(mHealthService.getSupport().getDevice())) {
+            LOG.debug("Acking recorded data {}", fileId);
+            mHealthService.ackRecordedData(fileId);
         }
 
         triggerNextFetch();
@@ -184,11 +189,13 @@ public class XiaomiActivityFileFetcher {
 
         if (fileId == null) {
             LOG.debug("Nothing more to fetch");
+
+            // Keep the device marked as busy while we process the files asynchronously, but unset
+            // isBusyFetching so we do not start multiple processors
             isFetching = false;
-            mHealthService.getSupport().getDevice().unsetBusyTask();
-            GB.signalActivityDataFinish(mHealthService.getSupport().getDevice());
-            GB.updateTransferNotification(null, "", false, 100, mHealthService.getSupport().getContext());
-            mHealthService.getSupport().getDevice().sendDeviceUpdateIntent(mHealthService.getSupport().getContext());
+
+            parseAllPendingFiles();
+
             return;
         }
 
@@ -199,7 +206,64 @@ public class XiaomiActivityFileFetcher {
         mHealthService.requestRecordedData(fileId);
     }
 
-    protected void dumpBytesToExternalStorage(final XiaomiActivityFileId fileId, final byte[] bytes) {
+    private void parseAllPendingFiles() {
+        // Now parse all pending files
+        final List<File> filesToProcess;
+        try (DBHandler handler = GBApplication.acquireDB()) {
+            final DaoSession session = handler.getDaoSession();
+
+            final PendingFileProvider pendingFileProvider = new PendingFileProvider(
+                    mHealthService.getSupport().getDevice(),
+                    session
+            );
+
+            filesToProcess = pendingFileProvider.getAllPendingFiles()
+                    .stream()
+                    .map(pf -> new File(pf.getPath()))
+                    .collect(Collectors.toList());
+        } catch (final Exception e) {
+            LOG.error("Failed to get pending files", e);
+            return;
+        }
+
+        if (filesToProcess.isEmpty()) {
+            mHealthService.getSupport().getDevice().unsetBusyTask();
+            GB.signalActivityDataFinish(mHealthService.getSupport().getDevice());
+            GB.updateTransferNotification(null, "", false, 100, mHealthService.getSupport().getContext());
+            mHealthService.getSupport().getDevice().sendDeviceUpdateIntent(mHealthService.getSupport().getContext());
+            return;
+        }
+
+        final XiaomiAsyncActivityParser xiaomiAsyncActivityParser = new XiaomiAsyncActivityParser(
+                mHealthService.getSupport().getContext(),
+                mHealthService.getSupport().getDevice()
+        );
+        final long[] lastNotificationUpdateTs = new long[]{System.currentTimeMillis()};
+        xiaomiAsyncActivityParser.process(filesToProcess, new XiaomiAsyncActivityParser.Callback() {
+            @Override
+            public void onProgress(final int i) {
+                final long now = System.currentTimeMillis();
+                if (now - lastNotificationUpdateTs[0] > 1500L) {
+                    lastNotificationUpdateTs[0] = now;
+                    GB.updateTransferNotification(
+                            "Parsing activity files", "File " + i + " of " + filesToProcess.size(),
+                            true,
+                            (i * 100) / filesToProcess.size(), mHealthService.getSupport().getContext()
+                    );
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                mHealthService.getSupport().getDevice().unsetBusyTask();
+                GB.signalActivityDataFinish(mHealthService.getSupport().getDevice());
+                GB.updateTransferNotification(null, "", false, 100, mHealthService.getSupport().getContext());
+                mHealthService.getSupport().getDevice().sendDeviceUpdateIntent(mHealthService.getSupport().getContext());
+            }
+        });
+    }
+
+    private String dumpBytesToExternalStorage(final XiaomiActivityFileId fileId, final byte[] bytes) {
         try {
             final GBDevice device = mHealthService.getSupport().getDevice();
             final File exportDirectory = device.getDeviceCoordinator().getWritableExportDirectory(device);
@@ -211,8 +275,12 @@ public class XiaomiActivityFileFetcher {
             final OutputStream outputStream = new FileOutputStream(outputFile);
             outputStream.write(bytes);
             outputStream.close();
+
+            return outputFile.getAbsolutePath();
         } catch (final Exception e) {
             LOG.error("Failed to dump bytes to storage", e);
         }
+
+        return null;
     }
 }

@@ -54,7 +54,7 @@ public class GBDaoGenerator {
 
 
     public static void main(String[] args) throws Exception {
-        final Schema schema = new Schema(94, MAIN_PACKAGE + ".entities");
+        final Schema schema = new Schema(95, MAIN_PACKAGE + ".entities");
 
         Entity userAttributes = addUserAttributes(schema);
         Entity user = addUserInfo(schema, userAttributes);
@@ -931,6 +931,8 @@ public class GBDaoGenerator {
 
         // We need a single-column primary key so that we can delete records
         pendingFile.addIdProperty().autoincrement();
+
+        pendingFile.addStringProperty("metadata");
 
         Property path = pendingFile.addStringProperty("path").notNull().getProperty();
         Property deviceId = pendingFile.addLongProperty("deviceId").notNull().getProperty();
