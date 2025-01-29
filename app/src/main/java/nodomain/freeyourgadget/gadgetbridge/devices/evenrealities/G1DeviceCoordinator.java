@@ -1,5 +1,6 @@
 package nodomain.freeyourgadget.gadgetbridge.devices.evenrealities;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 
 import android.app.Activity;
@@ -53,6 +54,18 @@ public class G1DeviceCoordinator extends AbstractBLEDeviceCoordinator {
   @Override
   public String getManufacturer() {
     return "Even Realities";
+  }
+
+  @Override
+  @DrawableRes
+  public int getDefaultIconResource() {
+    return R.drawable.ic_device_even_realities_g1;
+  }
+
+  @Override
+  @DrawableRes
+  public int getDisabledIconResource() {
+    return R.drawable.ic_device_even_realities_g1_disabled;
   }
 
   @Override
