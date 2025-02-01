@@ -518,7 +518,7 @@ public enum DeviceType {
     WASPOS(WaspOSCoordinator.class),
     UM25(UM25Coordinator.class),
     DOMYOS_T540(DomyosT540Coordinator.class),
-    Even_Realities_G1(G1DeviceCoordinator.class),
+    EVEN_REALITIES_G_1(G1DeviceCoordinator.class),
     NOTHING_EAR1(Ear1Coordinator.class),
     NOTHING_EAR2(Ear2Coordinator.class),
     NOTHING_EAR_STICK(EarStickCoordinator.class),
